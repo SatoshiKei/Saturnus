@@ -1,0 +1,134 @@
+.notes-app,
+.notes-view,
+.calendar-app,
+.calendar-event-view {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #fffef8;
+  color: #111;
+}
+
+.notes-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.notes-list__row {
+  width: 100%;
+  text-align: left;
+  padding: 14px 16px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  background: transparent;
+}
+
+.notes-list__row:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.notes-list__title {
+  display: block;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.notes-list__preview {
+  display: block;
+  font-size: 13px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.notes-view__article {
+  padding: 16px 20px 40px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.notes-view__article h1 {
+  margin: 0 0 12px;
+  font-size: 22px;
+}
+
+.notes-view__date {
+  font-size: 13px;
+  color: #888;
+}
+
+.calendar-grid {
+  padding: 12px 16px;
+  background: #fff;
+}
+
+.calendar-grid__weekdays,
+.calendar-grid__days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.calendar-grid__weekdays {
+  color: #888;
+  margin-bottom: 8px;
+}
+
+.calendar-grid__day {
+  padding: 8px 0;
+  border-radius: 8px;
+}
+
+.calendar-grid__day--event {
+  background: #ffebee;
+  color: #c62828;
+  font-weight: 600;
+}
+
+.calendar-events {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 24px;
+  overflow-y: auto;
+  flex: 1;
+  background: #f5f5f5;
+}
+
+.calendar-events__row {
+  width: 100%;
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e0e0e0;
+  text-align: left;
+  cursor: pointer;
+  background: #fff;
+}
+
+.calendar-events__time {
+  font-size: 13px;
+  color: #007aff;
+  min-width: 48px;
+}
+
+.calendar-events__title {
+  font-weight: 500;
+}
+
+.calendar-event-view__body {
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.calendar-event-view__body h1 {
+  margin-top: 0;
+}
+
+.calendar-event-view__notes {
+  color: #666;
+  font-size: 14px;
+}

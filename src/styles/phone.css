@@ -1,0 +1,210 @@
+.phone-shell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  transform: scale(var(--phone-scale, 1));
+  transform-origin: center center;
+}
+
+.phone-shell__device {
+  width: 320px;
+  height: 680px;
+  border-radius: 44px;
+  background: #0d0d0f;
+  box-shadow:
+    0 0 0 2px #2a2a2e,
+    0 24px 80px rgba(0, 0, 0, 0.65),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.phone-shell__content {
+  flex: 1;
+  min-height: 0;
+  background: #000;
+  position: relative;
+}
+
+.phone-shell__home-indicator {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 4px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.35);
+  z-index: 20;
+}
+
+.phone-shell__close {
+  pointer-events: auto;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.phone-shell__close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.phone-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.phone-status__icons {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.phone-status__signal,
+.phone-status__wifi,
+.phone-status__battery {
+  width: 16px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 2px;
+  opacity: 0.85;
+}
+
+.phone-home {
+  height: 100%;
+  position: relative;
+  padding: 48px 16px 80px;
+  overflow: hidden;
+}
+
+.phone-home__wallpaper {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(165deg, #2b5876 0%, #1e3250 40%, #0f1a2e 100%);
+  z-index: 0;
+}
+
+.phone-home__grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px 8px;
+}
+
+.phone-home__app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: #fff;
+}
+
+.phone-home__app:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.phone-home__app-label {
+  font-size: 11px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.phone-home__dock {
+  position: absolute;
+  bottom: 24px;
+  left: 16px;
+  right: 16px;
+  z-index: 2;
+  display: flex;
+  justify-content: space-around;
+  padding: 12px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+}
+
+.phone-home__dock-app {
+  cursor: pointer;
+}
+
+.app-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  display: block;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.app-icon--whatsapp {
+  background: linear-gradient(145deg, #25d366, #128c7e);
+}
+
+.app-icon--notes {
+  background: linear-gradient(145deg, #ffe066, #f4c430);
+}
+
+.app-icon--calendar {
+  background: linear-gradient(145deg, #ff6b6b, #ee5a24);
+}
+
+.app-icon--photos {
+  background: linear-gradient(145deg, #a29bfe, #6c5ce7);
+}
+
+.app-icon--files {
+  background: linear-gradient(145deg, #74b9ff, #0984e3);
+}
+
+.app-icon--phone {
+  background: linear-gradient(145deg, #55efc4, #00b894);
+}
+
+.app-icon--settings {
+  background: linear-gradient(145deg, #b2bec3, #636e72);
+}
+
+.ios-app-header {
+  padding: 48px 16px 12px;
+  background: #f2f2f7;
+  color: #111;
+  border-bottom: 1px solid #ddd;
+}
+
+.ios-app-header h1 {
+  margin: 8px 0 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.ios-app-header__back {
+  color: #007aff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.ios-app-header--notes {
+  background: #fffef5;
+}
+
+.ios-app-header--calendar {
+  background: #fff;
+}

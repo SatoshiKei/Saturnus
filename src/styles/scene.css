@@ -1,0 +1,132 @@
+.scene-viewport {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #050508;
+}
+
+.scene-stage {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: top left;
+}
+
+.scene-canvas {
+  position: relative;
+  transform-origin: top left;
+}
+
+.scene-object {
+  position: absolute;
+  padding: 0;
+  border: none;
+  background: transparent;
+  line-height: 0;
+}
+
+.scene-object img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.scene-object--interactive {
+  cursor: pointer;
+}
+
+.scene-object--interactive:focus-visible {
+  outline: 2px solid #ffd166;
+  outline-offset: 2px;
+}
+
+.scene-stage--phone-open .scene-canvas {
+  filter: blur(3px) brightness(0.45);
+  transition: filter 280ms ease;
+}
+
+.scene-phone-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.scene-phone-overlay__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  pointer-events: auto;
+  cursor: pointer;
+  animation: fade-in 280ms ease;
+}
+
+.scene-phone-overlay .phone-shell {
+  pointer-events: auto;
+  animation: phone-rise 320ms ease;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes phone-rise {
+  from {
+    opacity: 0;
+    transform: scale(0.88) translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.phone-object {
+  position: absolute;
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+}
+
+.phone-object__bezel {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 22px;
+  background: linear-gradient(145deg, #3a3a3e, #1a1a1c);
+  padding: 6px;
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, 0.55),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.phone-object__screen {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 18px;
+  background: linear-gradient(160deg, #1c1f3a, #0f1018);
+}
+
+.phone-object__screen--lock {
+  padding-bottom: 18%;
+}
+
+.phone-object__time {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+}
