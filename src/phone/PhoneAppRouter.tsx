@@ -3,8 +3,10 @@ import { CalendarEventView } from '../apps/calendar/CalendarEventView'
 import { CalendarHome } from '../apps/calendar/CalendarHome'
 import { NoteView } from '../apps/notes/NoteView'
 import { NotesHome } from '../apps/notes/NotesHome'
+import { PhoneCallsHome } from '../apps/phone/PhoneCallsHome'
+import { ArchivedChatsView } from '../apps/whatsapp/ArchivedChatsView'
 import { ChatView } from '../apps/whatsapp/ChatView'
-import { WhatsAppHome } from '../apps/whatsapp/WhatsAppHome'
+import { WhatsAppShell } from '../apps/whatsapp/WhatsAppShell'
 import { PhoneHome } from './PhoneHome'
 
 export function PhoneAppRouter() {
@@ -14,10 +16,15 @@ export function PhoneAppRouter() {
     case 'home':
       return <PhoneHome />
     case 'app':
-      if (route.appId === 'whatsapp') return <WhatsAppHome onBack={back} />
+      if (route.appId === 'whatsapp') return <WhatsAppShell onBackToPhone={back} />
       if (route.appId === 'notes') return <NotesHome onBack={back} />
       if (route.appId === 'calendar') return <CalendarHome onBack={back} />
+      if (route.appId === 'phone') return <PhoneCallsHome onBack={back} />
       return <PhoneHome />
+    case 'whatsapp':
+      return <WhatsAppShell initialTab={route.tab} onBackToPhone={back} />
+    case 'whatsapp-archived':
+      return <ArchivedChatsView onBack={back} />
     case 'whatsapp-chat':
       return <ChatView chatId={route.chatId} onBack={back} />
     case 'note':

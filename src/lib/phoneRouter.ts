@@ -1,4 +1,4 @@
-import type { PhoneAppId, PhoneRoute } from '../types/phone'
+import type { PhoneAppId, PhoneRoute, WhatsAppTab } from '../types/phone'
 
 export function phoneHome(): PhoneRoute {
   return { screen: 'home' }
@@ -6,6 +6,14 @@ export function phoneHome(): PhoneRoute {
 
 export function openApp(appId: PhoneAppId): PhoneRoute {
   return { screen: 'app', appId }
+}
+
+export function openWhatsApp(tab: WhatsAppTab = 'chats'): PhoneRoute {
+  return { screen: 'whatsapp', tab }
+}
+
+export function openWhatsAppArchived(): PhoneRoute {
+  return { screen: 'whatsapp-archived' }
 }
 
 export function openWhatsAppChat(chatId: string): PhoneRoute {
@@ -35,6 +43,7 @@ export function currentRoute(stack: PhoneRoute[]): PhoneRoute {
 
 export function resolveAppFromRoute(route: PhoneRoute): string | null {
   if (route.screen === 'app') return route.appId
+  if (route.screen === 'whatsapp' || route.screen === 'whatsapp-archived') return 'whatsapp'
   if (route.screen === 'whatsapp-chat') return 'whatsapp'
   if (route.screen === 'note') return 'notes'
   if (route.screen === 'calendar-event') return 'calendar'

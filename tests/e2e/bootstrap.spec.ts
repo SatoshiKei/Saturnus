@@ -34,7 +34,12 @@ test('SATURNUS bootstrap flow and screenshots', async ({ page }) => {
   await page.screenshot({ path: path.join(shots, '06-whatsapp-audio.png'), fullPage: true })
 
   await page.getByRole('button', { name: 'Voltar à lista' }).click()
-  await page.getByTestId('whatsapp-home').getByRole('button', { name: 'Voltar' }).click()
+  await page.getByTestId('chat-row-elisa').click()
+  await page.getByTestId('image-message-open').click()
+  await expect(page.getByRole('dialog', { name: 'Imagem ampliada' })).toBeVisible()
+  await page.getByRole('dialog', { name: 'Imagem ampliada' }).getByRole('button', { name: 'Fechar', exact: true }).click()
+  await page.getByRole('button', { name: 'Voltar à lista' }).click()
+  await page.getByTestId('whatsapp-home').getByRole('button', { name: /Início/i }).click()
 
   await page.getByTestId('app-notes').click()
   await expect(page.getByTestId('notes-home')).toBeVisible()

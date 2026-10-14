@@ -42,6 +42,8 @@ docs/ASSETS.md   licenças
 
 Estado do telefone: `PhoneSessionContext` (aberto/fechado + pilha de rotas). Sem Redux.
 
+Bloqueios de interação (composer, ligações, etc.): `src/data/phoneFeatures.ts` — altere para `false` para liberar.
+
 ## Dados mock
 
 | Arquivo | Conteúdo |

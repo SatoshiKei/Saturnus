@@ -6,6 +6,7 @@ interface MessageBubbleProps {
   message: ChatMessage
   contact: Contact
   allMessages: ChatMessage[]
+  onImageOpen?: (src: string, alt: string, caption?: string) => void
 }
 
 function findReplyText(allMessages: ChatMessage[], replyTo?: string): string | undefined {
@@ -18,7 +19,7 @@ function findReplyText(allMessages: ChatMessage[], replyTo?: string): string | u
   return 'Mensagem'
 }
 
-export function MessageBubble({ message, contact, allMessages }: MessageBubbleProps) {
+export function MessageBubble({ message, contact, allMessages, onImageOpen }: MessageBubbleProps) {
   if (message.kind === 'date-separator') {
     return (
       <div className="wa-date-sep" role="separator">
@@ -58,7 +59,9 @@ export function MessageBubble({ message, contact, allMessages }: MessageBubblePr
       ) : (
         <span className="wa-row__avatar-spacer" />
       )}
-      <div className={`wa-bubble wa-bubble--${message.kind}${outgoing ? ' wa-bubble--out' : ''}`}>
+      <div
+        className={`wa-bubble wa-bubble--${message.kind}${outgoing ? ' wa-bubble--out wa-bubble--tail-out' : ' wa-bubble--tail-in'}`}
+      >
         {message.kind === 'text' && message.forwarded ? (
           <span className="wa-bubble__forwarded">Encaminhada</span>
         ) : null}
@@ -66,7 +69,9 @@ export function MessageBubble({ message, contact, allMessages }: MessageBubblePr
           <span className="wa-bubble__quote">{findReplyText(allMessages, message.replyTo)}</span>
         ) : null}
         {message.kind === 'text' ? <p>{message.text}</p> : null}
-        {message.kind === 'image' ? <ImageMessage message={message} /> : null}
+        {message.kind === 'image' ? (
+          <ImageMessage message={message} onOpen={onImageOpen} />
+        ) : null}
         {message.kind === 'audio' ? <AudioMessage message={message} /> : null}
         <span className="wa-bubble__meta">
           {message.timestamp}

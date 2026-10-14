@@ -7,9 +7,13 @@ export type PhoneAppId =
   | 'phone'
   | 'settings'
 
+export type WhatsAppTab = 'chats' | 'updates' | 'communities' | 'calls' | 'settings'
+
 export type PhoneRoute =
   | { screen: 'home' }
   | { screen: 'app'; appId: PhoneAppId }
+  | { screen: 'whatsapp'; tab: WhatsAppTab }
+  | { screen: 'whatsapp-archived' }
   | { screen: 'whatsapp-chat'; chatId: string }
   | { screen: 'note'; noteId: string }
   | { screen: 'calendar-event'; eventId: string }
