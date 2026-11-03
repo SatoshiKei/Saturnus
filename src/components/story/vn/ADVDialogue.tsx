@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { formatAdvDialogueText } from './advText'
 
 export function ADVDialogue({
   speaker,
@@ -35,7 +36,7 @@ export function ADVDialogue({
       >
         <div className="vn-adv__panel">
           {speaker ? <p className="vn-adv__speaker">{speaker.toUpperCase()}</p> : null}
-          <p className="vn-adv__text">{text}</p>
+          <p className="vn-adv__text">{formatAdvDialogueText(text)}</p>
           {extra}
           {canAdvance ? <span className="vn-adv__next" aria-hidden /> : null}
         </div>

@@ -2,6 +2,7 @@ import { useMemo, useState, type CSSProperties } from 'react'
 import { contradictionDefs } from '../../../data/game/seedStory'
 import { seedDocuments } from '../../../data/game/seedDocuments'
 import { useInvestigation } from '../../../game/hooks/useInvestigation'
+import { isPersonVisibleInRegistry } from '../../../game/personRegistryGates'
 import { tryConfirmContradiction } from '../../../game/state/investigationStore'
 import type { Evidence, InvestigationState, Location, Person } from '../../../game/types'
 import {
@@ -48,22 +49,8 @@ function Chips({ items, empty }: { items: string[]; empty: string }) {
 }
 
 /* ---------------- Pessoas ---------------- */
-const personVisibleAfterFlag: Record<string, string> = {
-  elisa: 'block02_elisa_search_unlocked',
-  andre: 'block02_elisa_search_unlocked',
-  nico: 'block02_vertice_archive',
-  lucas: 'block02_paula_chat_done',
-  iara: 'block02_vertice_iara',
-  sandro: 'block02_vertice_sandro',
-  caio: 'block02_vertice_caio',
-}
-
 function PeopleTab({ inv }: { inv: InvestigationState }) {
-  const people = Object.values(inv.people).filter((p) => {
-    if (p.id === 'augusto') return false
-    const need = personVisibleAfterFlag[p.id]
-    return !need || inv.flags[need]
-  })
+  const people = Object.values(inv.people).filter((p) => isPersonVisibleInRegistry(p.id, inv))
   const [sel, setSel] = useState<string | null>(null)
   const person: Person | undefined = people.find((p) => p.id === sel) ?? people[0]
   if (!person) return <p className="nb-muted">Nenhuma pessoa registrada ainda.</p>

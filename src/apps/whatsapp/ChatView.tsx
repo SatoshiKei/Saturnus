@@ -25,9 +25,10 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
   const messagesRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    if (!chat) return
     if (chatId === 'chat-julia') onJuliaChatReviewed()
     if (chatId === 'chat-paula-augusto') onPaulaAugustoChatOpened()
-  }, [chatId])
+  }, [chatId, chat])
 
   useEffect(() => {
     const el = messagesRef.current

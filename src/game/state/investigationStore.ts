@@ -1,5 +1,6 @@
 import { contradictionDefs } from '../../data/game/seedStory'
 import type { InvestigationState, StoryActionRef, PersonStatus } from '../types'
+import { repairInvestigationState } from '../personRegistryGates'
 import { createInitialState, SAVE_KEY } from './initialState'
 import { applyStoryActions } from '../story/actions'
 import { runStoryEngine } from '../story/engine'
@@ -172,7 +173,14 @@ export function loadGame(): boolean {
     const raw = localStorage.getItem(SAVE_KEY)
     if (!raw) return false
     const parsed = JSON.parse(raw) as InvestigationState
-    state = runStoryEngine(parsed)
+    const repaired = repairInvestigationState(parsed)
+    state = runStoryEngine(repaired)
+    if (
+      repaired.flags.block02_paula_chat_done !== parsed.flags.block02_paula_chat_done ||
+      repaired.flags.block02_lucas_available !== parsed.flags.block02_lucas_available
+    ) {
+      saveGame(state)
+    }
     emit()
     return true
   } catch {

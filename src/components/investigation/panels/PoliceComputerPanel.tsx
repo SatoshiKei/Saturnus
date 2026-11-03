@@ -5,6 +5,7 @@ import { runPoliceSearch } from '../../../game/search/runSearch'
 import { dispatchActions } from '../../../game/state/investigationStore'
 import { applyPoliceSearchHit } from '../../../game/story/block02Handlers'
 import { useGameHub } from '../../../app/GameHubContext'
+import { canInterviewLucas, isPersonVisibleInRegistry } from '../../../game/personRegistryGates'
 import { personStatusLabel } from '../../../lib/labels'
 import { GamePanel } from '../../ui/GamePanel'
 
@@ -58,19 +59,7 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
     }
   }
 
-  const personGate: Record<string, string> = {
-    elisa: 'block02_elisa_search_unlocked',
-    andre: 'block02_elisa_search_unlocked',
-    nico: 'block02_vertice_archive',
-    lucas: 'block02_paula_chat_done',
-    iara: 'block02_vertice_iara',
-    sandro: 'block02_vertice_sandro',
-    caio: 'block02_vertice_caio',
-  }
-  const people = Object.values(inv.people).filter((p) => {
-    const need = personGate[p.id]
-    return !need || inv.flags[need]
-  })
+  const people = Object.values(inv.people).filter((p) => isPersonVisibleInRegistry(p.id, inv))
   const pending = inv.tasks.filter((t) => !t.completed)
 
   return (
@@ -204,7 +193,7 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
                       <td>
                         {personStatusLabel[p.status]}
                         {p.id === 'lucas' &&
-                        inv.flags.block02_lucas_available &&
+                        canInterviewLucas(inv) &&
                         !inv.flags.block02_lucas_interview_done ? (
                           <button
                             type="button"
