@@ -1,6 +1,7 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it } from 'vitest'
+import { GameHubProvider } from '../../src/app/GameHubContext'
 import { CaseNotepad } from '../../src/components/investigation/CaseNotepad'
 import { InvestigationNotebook } from '../../src/components/investigation/panels/CasebookPanel'
 import { LocationsMap } from '../../src/components/investigation/panels/LocationsPanel'
@@ -28,11 +29,15 @@ describe('interface diegética', () => {
 
   it('mapa não mostra locais desconhecidos e permite escolher um conhecido', async () => {
     const user = userEvent.setup()
-    render(<LocationsMap onClose={() => {}} />)
+    render(
+      <GameHubProvider>
+        <LocationsMap onClose={() => {}} />
+      </GameHubProvider>,
+    )
     expect(screen.queryByText('Boate Vértice')).not.toBeInTheDocument()
     expect(screen.getByTestId('map-pin-delegacia')).toBeInTheDocument()
-    await user.click(screen.getByTestId('map-pin-universidade'))
-    expect(screen.getByRole('button', { name: 'Visitar' })).toBeInTheDocument()
+    await user.click(screen.getByTestId('map-pin-delegacia'))
+    expect(screen.getByText('Você está aqui.')).toBeInTheDocument()
   })
 
   it('caderno usa rótulos em português nas fichas de pessoas', () => {

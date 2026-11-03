@@ -41,6 +41,13 @@ export type ChatMessage =
       kind: 'date-separator'
       label: string
     }
+  | {
+      id: string
+      kind: 'media-missing'
+      from: 'me' | 'them'
+      label: string
+      timestamp: string
+    }
 
 export interface Contact {
   id: string

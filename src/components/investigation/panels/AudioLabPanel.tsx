@@ -4,6 +4,7 @@ import { useInvestigation } from '../../../game/hooks/useInvestigation'
 import type { Evidence } from '../../../game/types'
 import { assetPath } from '../../../lib/assetPath'
 import { evidenceOriginLabel, evidenceSourceLabel, evidenceTypeLabel } from '../../../lib/labels'
+import { runProvisionalEmergencyAnalysis } from '../../../game/story/block01Handlers'
 import { GamePanel } from '../../ui/GamePanel'
 
 /** PRNG determinístico a partir do id — a forma de onda é estável entre sessões. */
@@ -71,6 +72,7 @@ function fmt(sec?: number) {
  */
 export function AudioWorkbench({ onClose }: { onClose: () => void }) {
   const inv = useInvestigation()
+  const emergencyProvisionalDone = inv.flags.block01_emergency_provisional
   const files = inv.evidenceOwned
     .map((id) => inv.evidence[id])
     .filter((e): e is Evidence => Boolean(e) && (e.type === 'audio' || e.type === 'derived'))
@@ -149,7 +151,9 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                     data-active={f.id === current?.id}
                     onClick={() => select(f.id)}
                   >
-                    <span className="aw-file__name">{f.title}</span>
+                    <span className="aw-file__name">
+                      {f.displayFileName ?? f.title}
+                    </span>
                     <span className="aw-file__meta">
                       {fmt(f.durationSec)} ·{' '}
                       {lock ? (
@@ -210,6 +214,28 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                 <p className="aw-msg" data-blocked={blocked} role="status">
                   {exportMsg}
                 </p>
+              ) : null}
+
+              {current.id === 'emergency_call_raw' && current.puzzleMeta?.implementation === 'placeholder' ? (
+                <div className="aw-provisional" data-testid="emergency-provisional-panel">
+                  <p className="aw-provisional__note">
+                    Restauração automática provisória — a análise forense definitiva substituirá este fluxo.
+                  </p>
+                  <button
+                    type="button"
+                    className="aw-provisional__go"
+                    data-testid="emergency-provisional-analysis"
+                    disabled={emergencyProvisionalDone}
+                    onClick={() => runProvisionalEmergencyAnalysis()}
+                  >
+                    {emergencyProvisionalDone ? 'Análise provisória concluída' : 'Análise provisória'}
+                  </button>
+                  {inv.evidenceOwned.includes('emergency_call_restored') ? (
+                    <blockquote className="aw-provisional__transcript">
+                      “…eu preciso…”, “…ele tá aqui…”, “…eu não consigo…”, “…não lembra…”
+                    </blockquote>
+                  ) : null}
+                </div>
               ) : null}
 
               <nav className="aw-modules" aria-label="Módulos de análise">

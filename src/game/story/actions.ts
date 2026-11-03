@@ -1,5 +1,6 @@
-import { extraTimelineOnContradiction } from '../../data/game/seedStory'
+import { extraTimelineOnContradiction, hypothesisCatalog } from '../../data/game/seedStory'
 import { seedEvidenceCatalog } from '../../data/game/seedEvidence'
+import { block01MarianaChatIds } from '../../data/block01/marianaChats'
 import { appDefinitions } from '../../data/game/seedApps'
 import type { InvestigationState, StoryActionRef } from '../types'
 import { maxPersonStatus } from '../state/personStatusOrder'
@@ -81,9 +82,13 @@ function applyOne(state: InvestigationState, action: StoryActionRef): Investigat
       if (state.tasks.some((t) => t.id === action.id)) return state
       return {
         ...state,
-        tasks: [...state.tasks, { id: action.id, label: action.id, completed: false }],
+        tasks: [...state.tasks, { id: action.id, label: action.label ?? action.id, completed: false }],
       }
     }
+    case 'removeTask':
+      return { ...state, tasks: state.tasks.filter((t) => t.id !== action.id) }
+    case 'replaceTasks':
+      return { ...state, tasks: action.tasks.map((t) => ({ ...t })) }
     case 'completeTask':
       return {
         ...state,
@@ -143,8 +148,28 @@ function applyOne(state: InvestigationState, action: StoryActionRef): Investigat
         toastQueue: [...state.toastQueue, 'Aplicativo instalado'],
       }
     }
-    case 'addHypothesis':
-      return state
+    case 'addHypothesis': {
+      if (state.hypotheses[action.id]) return state
+      const def = hypothesisCatalog.find((h) => h.id === action.id)
+      if (!def) return state
+      return {
+        ...state,
+        hypotheses: { ...state.hypotheses, [action.id]: { ...def, supportingEvidenceIds: [...def.supportingEvidenceIds], contradictingEvidenceIds: [...def.contradictingEvidenceIds] } },
+      }
+    }
+    case 'linkHypothesis': {
+      const h = state.hypotheses[action.hypothesisId]
+      if (!h) return state
+      const key = action.role === 'support' ? 'supportingEvidenceIds' : 'contradictingEvidenceIds'
+      if (h[key].includes(action.evidenceId)) return state
+      return {
+        ...state,
+        hypotheses: {
+          ...state.hypotheses,
+          [action.hypothesisId]: { ...h, [key]: [...h[key], action.evidenceId] },
+        },
+      }
+    }
     case 'updateHypothesis': {
       const h = state.hypotheses[action.id]
       if (!h) return state
@@ -192,8 +217,7 @@ export function createInitialPhoneState(device: 'mariana' | 'augusto') {
     hiddenAppsRevealed: false,
     diaryUnlocked: false,
     diaryPasswordAttempts: 0,
-    unlockedChatIds:
-      device === 'mariana' ? ['chat-julia', 'chat-rafael'] : ['chat-camila'],
+    unlockedChatIds: device === 'mariana' ? [...block01MarianaChatIds] : ['chat-camila-augusto'],
     readMessageIds: [] as string[],
   }
 }

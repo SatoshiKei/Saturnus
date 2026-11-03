@@ -13,6 +13,9 @@ import { SceneObject } from './SceneObject'
 import { HubOverlay } from '../components/investigation/HubOverlay'
 import { CaseNotepad } from '../components/investigation/CaseNotepad'
 import { ProvocationBanner } from '../components/investigation/ProvocationBanner'
+import { Block01Opening } from '../components/story/Block01Opening'
+import { HospitalInterviewScene } from '../components/story/HospitalInterviewScene'
+import { onMarianaPhoneClosed, onMarianaPhoneOpened } from '../game/story/block01Handlers'
 import '../styles/tokens.css'
 import '../styles/scene.css'
 
@@ -29,14 +32,27 @@ export function Scene() {
   const viewportRef = useRef<HTMLDivElement>(null)
   const [scale, setScale] = useState(() => computeSceneScale(window.innerWidth, window.innerHeight))
   const { phoneOpen, openPhone, closePhone } = usePhoneSession()
-  const { hubPanel, openHub, closeHub, setPhoneDevice } = useGameHub()
+  const {
+    hubPanel,
+    openHub,
+    closeHub,
+    setPhoneDevice,
+    phoneDevice,
+    locationScene,
+    closeLocationScene,
+  } = useGameHub()
   const inv = useInvestigation()
   const { menuOpen } = useUiState()
 
   const [hoverId, setHoverId] = useState<string | null>(null)
   const [camera, setCamera] = useState<Camera | null>(null)
   const [hints, setHints] = useState(false)
+  const [openingDone, setOpeningDone] = useState(() => Boolean(inv.flags.block01_opening_seen))
   const pending = useRef<number | null>(null)
+
+  useEffect(() => {
+    if (inv.flags.block01_opening_seen) setOpeningDone(true)
+  }, [inv.flags.block01_opening_seen])
 
   useEffect(() => {
     const el = viewportRef.current
@@ -93,7 +109,9 @@ export function Scene() {
       const target = def.hubTarget
       if (!target) return
       if (target === 'mariana-phone' || target === 'augusto-phone') {
-        setPhoneDevice(target === 'augusto-phone' ? 'augusto' : 'mariana')
+        const device = target === 'augusto-phone' ? 'augusto' : 'mariana'
+        setPhoneDevice(device)
+        if (device === 'mariana') onMarianaPhoneOpened()
         openPhone()
         return
       }
@@ -115,15 +133,20 @@ export function Scene() {
     setCamera(null)
   }, [closeHub])
 
+  const handleClosePhone = useCallback(() => {
+    if (phoneDevice === 'mariana') onMarianaPhoneClosed()
+    closePhone()
+  }, [closePhone, phoneDevice])
+
   // ESC fecha o celular
   useEffect(() => {
     if (!phoneOpen) return
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') closePhone()
+      if (e.key === 'Escape') handleClosePhone()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [phoneOpen, closePhone])
+  }, [phoneOpen, handleClosePhone])
 
   const s = scale.scale
   const z = camera?.zoom ?? 1
@@ -201,10 +224,18 @@ export function Scene() {
               type="button"
               className="scene-phone-overlay__backdrop"
               aria-label="Fechar telefone e voltar à mesa"
-              onClick={closePhone}
+              onClick={handleClosePhone}
             />
-            <PhoneShell onClose={closePhone} scale={scale.scale} />
+            <PhoneShell onClose={handleClosePhone} scale={scale.scale} />
           </div>
+        ) : null}
+
+        {!menuOpen && !openingDone && !inv.flags.block01_opening_seen ? (
+          <Block01Opening onDone={() => setOpeningDone(true)} />
+        ) : null}
+
+        {locationScene === 'hospital' ? (
+          <HospitalInterviewScene onClose={closeLocationScene} />
         ) : null}
 
         <HubOverlay panel={hubPanel} onClose={handleCloseHub} />

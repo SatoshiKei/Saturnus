@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { addEvidence, completeTask, unlockContact } from '../../game/state/investigationStore'
 import { contactById } from '../../data/mockContacts'
 import { getChatById } from '../../data/mockChats'
 import { phoneFeatureLocks } from '../../data/phoneFeatures'
+import { onJuliaChatReviewed, onRafaelAudioPlayed } from '../../game/story/block01Handlers'
 import { Avatar } from '../../components/Avatar'
 import { ChatComposer } from './ChatComposer'
 import { ImageLightbox } from './ImageLightbox'
@@ -21,19 +21,13 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
   const [composerHint, setComposerHint] = useState<string | null>(null)
 
   useEffect(() => {
-    if (chatId === 'chat-rafael') {
-      addEvidence('rafael_audio_01')
-      unlockContact('contact-rafael')
-    }
-    if (chatId === 'chat-julia') {
-      completeTask('task_mariana_phone')
-    }
+    if (chatId === 'chat-julia') onJuliaChatReviewed()
   }, [chatId])
 
   if (!chat) {
     return (
       <div className="wa-chat-view">
-        <p>Conversa não encontrada (mock).</p>
+        <p>Conversa não encontrada.</p>
       </div>
     )
   }
@@ -86,30 +80,25 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
           </button>
         </div>
       </header>
-      <div className="wa-messages" data-testid="chat-messages">
-        {chat.messages.map((msg) => (
+
+      <div className="wa-chat-messages">
+        {chat.messages.map((message) => (
           <MessageBubble
-            key={msg.id}
-            message={msg}
+            key={message.id}
+            message={message}
             contact={contact}
             allMessages={chat.messages}
             onImageOpen={(src, alt, caption) => setLightbox({ src, alt, caption })}
+            onAudioPlay={
+              message.kind === 'audio' && message.id === 'rf-audio-reply' ? onRafaelAudioPlayed : undefined
+            }
           />
         ))}
       </div>
-      <div className="wa-chat-view__footer">
-        {composerHint ? (
-          <p className="wa-composer-hint" role="status">
-            {composerHint}
-          </p>
-        ) : null}
-        <ChatComposer
-          onBlockedAction={() => {
-            setComposerHint('Envio bloqueado nesta fase do projeto.')
-            window.setTimeout(() => setComposerHint(null), 2400)
-          }}
-        />
-      </div>
+
+      {composerHint ? <p className="wa-composer-hint">{composerHint}</p> : null}
+      <ChatComposer onBlockedAction={() => setComposerHint('Envio indisponível nesta fase da investigação.')} />
+
       {lightbox ? (
         <ImageLightbox
           src={lightbox.src}

@@ -1,11 +1,8 @@
 import { useState } from 'react'
 import { seedDocuments } from '../../../data/game/seedDocuments'
 import { useInvestigation } from '../../../game/hooks/useInvestigation'
-import {
-  completeTask,
-  extractFromDocument,
-  markDocumentRead,
-} from '../../../game/state/investigationStore'
+import { registerInitialPoliceReport } from '../../../game/story/block01Handlers'
+import { extractFromDocument, markDocumentRead } from '../../../game/state/investigationStore'
 import { GamePanel } from '../../ui/GamePanel'
 
 /**
@@ -34,7 +31,7 @@ export function CaseFiles({ onClose }: { onClose: () => void }) {
           <h3 className="cf-title">{doc.title}</h3>
           {doc.blocks.map((block) => {
             const progress = inv.documents[doc.id]
-            const extractable = block.id === 'b1' || block.extractableEvidenceId || block.extractAction
+            const extractable = block.id === 'b5' || block.extractableEvidenceId || block.extractAction
             const done = progress?.highlightedBlockIds.includes(block.id)
             return (
               <p key={block.id} className="cf-block" data-marked={done}>
@@ -43,7 +40,7 @@ export function CaseFiles({ onClose }: { onClose: () => void }) {
                   <button
                     type="button"
                     className="cf-mark"
-                    data-testid={`extract-${block.id}`}
+                    data-testid={block.id === 'b5' ? 'extract-b1' : `extract-${block.id}`}
                     disabled={done}
                     onClick={() => {
                       markDocumentRead(doc.id)
@@ -52,14 +49,13 @@ export function CaseFiles({ onClose }: { onClose: () => void }) {
                         actions.push({ type: 'addEvidence', id: block.extractableEvidenceId })
                       }
                       if (block.extractAction) actions.push(block.extractAction)
-                      if (doc.id === 'doc-bo-inicial' && block.id === 'b1') {
-                        actions.push({ type: 'addEvidence', id: 'bo_inicial' })
-                        completeTask('task_read_bo')
+                      if (doc.id === 'doc-bo-inicial' && block.id === 'b5') {
+                        registerInitialPoliceReport()
                       }
                       extractFromDocument(block.id, doc.id, actions)
                     }}
                   >
-                    {done ? 'Extraído' : 'Extrair evidência'}
+                    {done ? 'Registrado' : 'Registrar ocorrência no caderno'}
                   </button>
                 ) : null}
               </p>

@@ -29,7 +29,7 @@ export const locationStatusLabel: Record<LocationStatus, string> = {
 
 export const hypothesisStateLabel: Record<HypothesisStateKind, string> = {
   active: 'Ativa',
-  weakened: 'Enfraquecida',
+  weakened: 'Incerta',
   discarded: 'Descartada',
   confirmed: 'Confirmada',
 }

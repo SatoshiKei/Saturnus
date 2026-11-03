@@ -446,6 +446,12 @@
   word-break: break-word;
 }
 
+.wa-bubble__missing {
+  margin: 0;
+  font-style: italic;
+  color: #667781;
+}
+
 .wa-bubble__meta {
   float: right;
   margin-left: 8px;

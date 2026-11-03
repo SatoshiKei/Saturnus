@@ -1,7 +1,13 @@
 import type { Contact } from '../../game/types'
 
 export const seedContacts: Contact[] = [
-  { id: 'contact-julia', personId: 'julia', displayName: 'Júlia', unlocked: false },
-  { id: 'contact-rafael', personId: 'rafael', displayName: 'Rafael', unlocked: false },
-  { id: 'contact-camila', personId: 'camila', displayName: 'Camila', unlocked: true },
+  { id: 'contact-julia', personId: 'julia', displayName: 'Júlia Martins', phone: '21 9xxxx-1102', unlocked: false },
+  { id: 'contact-camila', personId: 'camila', displayName: 'Camila', phone: '21 9xxxx-1188', unlocked: true },
+  {
+    id: 'contact-rafael',
+    personId: 'rafael',
+    displayName: 'Rafael',
+    phone: '21 9xxxx-3340',
+    unlocked: false,
+  },
 ]

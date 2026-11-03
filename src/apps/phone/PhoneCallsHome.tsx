@@ -1,3 +1,4 @@
+import { useGameHub } from '../../app/GameHubContext'
 import { CallList } from '../whatsapp/CallList'
 
 interface PhoneCallsHomeProps {
@@ -5,6 +6,7 @@ interface PhoneCallsHomeProps {
 }
 
 export function PhoneCallsHome({ onBack }: PhoneCallsHomeProps) {
+  const { phoneDevice } = useGameHub()
   return (
     <div className="phone-app-recents" data-testid="phone-calls-home">
       <header className="phone-app-recents__header">
@@ -17,7 +19,7 @@ export function PhoneCallsHome({ onBack }: PhoneCallsHomeProps) {
           <span className="phone-app-recents__seg-item">Perdidas</span>
         </nav>
       </header>
-      <CallList variant="phone" />
+      <CallList variant="phone" device={phoneDevice} />
     </div>
   )
 }

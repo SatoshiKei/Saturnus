@@ -7,6 +7,7 @@ interface MessageBubbleProps {
   contact: Contact
   allMessages: ChatMessage[]
   onImageOpen?: (src: string, alt: string, caption?: string) => void
+  onAudioPlay?: () => void
 }
 
 function findReplyText(allMessages: ChatMessage[], replyTo?: string): string | undefined {
@@ -19,7 +20,7 @@ function findReplyText(allMessages: ChatMessage[], replyTo?: string): string | u
   return 'Mensagem'
 }
 
-export function MessageBubble({ message, contact, allMessages, onImageOpen }: MessageBubbleProps) {
+export function MessageBubble({ message, contact, allMessages, onImageOpen, onAudioPlay }: MessageBubbleProps) {
   if (message.kind === 'date-separator') {
     return (
       <div className="wa-date-sep" role="separator">
@@ -72,10 +73,13 @@ export function MessageBubble({ message, contact, allMessages, onImageOpen }: Me
         {message.kind === 'image' ? (
           <ImageMessage message={message} onOpen={onImageOpen} />
         ) : null}
-        {message.kind === 'audio' ? <AudioMessage message={message} /> : null}
+        {message.kind === 'media-missing' ? (
+          <p className="wa-bubble__missing">{message.label}</p>
+        ) : null}
+        {message.kind === 'audio' ? <AudioMessage message={message} onPlayStart={onAudioPlay} /> : null}
         <span className="wa-bubble__meta">
           {message.timestamp}
-          {outgoing && message.status ? (
+          {outgoing && message.kind === 'text' && message.status ? (
             <span className={`wa-checks wa-checks--${message.status}`} aria-label={message.status}>
               ✓✓
             </span>

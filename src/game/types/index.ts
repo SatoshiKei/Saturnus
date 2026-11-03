@@ -19,6 +19,13 @@ export type EvidenceType =
 
 export type HypothesisStateKind = 'active' | 'weakened' | 'discarded' | 'confirmed'
 
+/** Metadados de puzzle em evidências de áudio (substituível depois). */
+export interface AudioPuzzleMeta {
+  puzzleId: string
+  implementation: 'placeholder' | 'full'
+  completionEvidenceId: string
+}
+
 export interface Person {
   id: string
   name: string
@@ -65,6 +72,9 @@ export interface Evidence {
   contentRef?: string
   audioSrc?: string
   durationSec?: number
+  /** Nome exibido na estação (pode diferir do arquivo em disco). */
+  displayFileName?: string
+  puzzleMeta?: AudioPuzzleMeta
 }
 
 export interface AudioEvidence extends Evidence {
@@ -217,7 +227,10 @@ export type StoryActionRef =
   | { type: 'unlockLocation'; id: string; status?: LocationStatus }
   | { type: 'unlockContact'; contactId: string }
   | { type: 'unlockTopic'; id: string }
-  | { type: 'addTask'; id: string }
+  | { type: 'addTask'; id: string; label?: string }
+  | { type: 'linkHypothesis'; hypothesisId: string; evidenceId: string; role: 'support' | 'contradict' }
+  | { type: 'removeTask'; id: string }
+  | { type: 'replaceTasks'; tasks: CaseTask[] }
   | { type: 'completeTask'; id: string }
   | { type: 'addTimelineEvent'; id: string }
   | { type: 'updateTimelineEvent'; id: string }

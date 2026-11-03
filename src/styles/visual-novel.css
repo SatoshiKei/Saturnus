@@ -1,0 +1,113 @@
+.vn {
+  position: absolute;
+  inset: 0;
+  z-index: 95;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1.2em 1.4em 1.6em;
+  pointer-events: auto;
+  background: linear-gradient(180deg, rgba(4, 6, 9, 0.15) 0%, rgba(4, 6, 9, 0.72) 55%, rgba(4, 6, 9, 0.92) 100%);
+}
+
+.vn__portrait {
+  position: absolute;
+  left: 1.4em;
+  bottom: 9.5em;
+  margin: 0;
+  width: min(220px, 22vw);
+  opacity: 0.95;
+}
+
+.vn__portrait img {
+  display: block;
+  width: 100%;
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.55));
+}
+
+.vn__box {
+  margin-left: auto;
+  width: min(100%, 920px);
+  padding: 1em 1.2em 1.1em;
+  background: rgba(12, 16, 20, 0.94);
+  border: 1px solid var(--border-subtle);
+  border-left: 3px solid var(--accent-saturn);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+}
+
+.vn__speaker {
+  margin: 0 0 0.35em;
+  font-size: 0.78em;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-saturn);
+}
+
+.vn__text {
+  margin: 0;
+  line-height: 1.55;
+  font-size: clamp(14px, calc(var(--u) * 17px), 18px);
+  color: var(--text-primary);
+  white-space: pre-line;
+}
+
+.vn__choices {
+  list-style: none;
+  margin: 0.9em 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45em;
+}
+
+.vn__choice,
+.vn__continue {
+  width: 100%;
+  padding: 0.55em 0.9em;
+  text-align: left;
+  font: inherit;
+  font-size: 0.92em;
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+}
+
+.vn__choice:hover,
+.vn__continue:hover {
+  background: rgba(200, 150, 62, 0.12);
+  border-color: var(--accent-saturn-dim);
+}
+
+.vn-scene {
+  position: absolute;
+  inset: 0;
+  z-index: 90;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.65)),
+    var(--vn-bg, #1a2228) center / cover;
+}
+
+.vn-scene__bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.7em 1em;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.vn-scene__bar button {
+  font: inherit;
+  font-size: 0.85em;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.vn-scene__title {
+  font-size: 0.78em;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}

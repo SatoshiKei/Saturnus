@@ -134,3 +134,37 @@
 .inv-dev button:hover {
   background: rgba(121, 194, 189, 0.12);
 }
+
+.inv-dev__section {
+  margin: 0.4rem 0 0.2rem;
+  font-size: 0.72em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(121, 194, 189, 0.75);
+}
+
+.block01-opening {
+  position: absolute;
+  inset: 0;
+  z-index: 120;
+  background: #050608;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.block01-opening__date {
+  margin: 0;
+  font-size: clamp(15px, calc(var(--u, 1) * 18px), 22px);
+  letter-spacing: 0.06em;
+  color: rgba(226, 223, 213, 0.88);
+  animation: block01-date-in 1.2s ease both;
+}
+
+@keyframes block01-date-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}

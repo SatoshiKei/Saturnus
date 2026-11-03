@@ -1,4 +1,6 @@
 import { mockNotes } from '../../data/mockNotes'
+import { onNoteRead } from '../../game/story/block01Handlers'
+import { useEffect } from 'react'
 
 interface NoteViewProps {
   noteId: string
@@ -7,6 +9,10 @@ interface NoteViewProps {
 
 export function NoteView({ noteId, onBack }: NoteViewProps) {
   const note = mockNotes.find((n) => n.id === noteId)
+
+  useEffect(() => {
+    if (note?.storyFlag) onNoteRead(note.storyFlag)
+  }, [note?.storyFlag, noteId])
 
   if (!note) {
     return <p className="notes-view">Nota não encontrada.</p>

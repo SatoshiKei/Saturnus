@@ -1,14 +1,17 @@
 import { contactById } from '../../data/mockContacts'
+import { marianaDeviceCallLog } from '../../data/block01/marianaCalls'
 import { mockCallLog } from '../../data/mockCalls'
 import { phoneFeatureLocks } from '../../data/phoneFeatures'
 import { Avatar } from '../../components/Avatar'
 
 interface CallListProps {
   variant: 'whatsapp' | 'phone'
+  device?: 'mariana' | 'augusto'
 }
 
-export function CallList({ variant }: CallListProps) {
+export function CallList({ variant, device = 'augusto' }: CallListProps) {
   const locked = phoneFeatureLocks.voiceCall
+  const log = device === 'mariana' ? marianaDeviceCallLog : mockCallLog
 
   return (
     <div className={`wa-calls wa-calls--${variant}`} data-testid="call-history">
@@ -18,7 +21,7 @@ export function CallList({ variant }: CallListProps) {
         </p>
       ) : null}
       <ul className="wa-calls__list">
-        {mockCallLog.map((entry) => {
+        {log.map((entry) => {
           const contact = contactById[entry.contactId]
           return (
             <li key={entry.id}>

@@ -4,6 +4,7 @@ import { useInvestigation } from '../../../game/hooks/useInvestigation'
 import type { Evidence, Location } from '../../../game/types'
 import { assetPath } from '../../../lib/assetPath'
 import { locationStatusLabel } from '../../../lib/labels'
+import { useGameHub } from '../../../app/GameHubContext'
 import { GamePanel } from '../../ui/GamePanel'
 
 /** posição do marcador: usa o estado salvo ou, em saves antigos, o seed */
@@ -21,6 +22,7 @@ function markerPos(l: Location) {
  */
 export function LocationsMap({ onClose }: { onClose: () => void }) {
   const inv = useInvestigation()
+  const { openLocationScene } = useGameHub()
   const places = useMemo(
     () => Object.values(inv.locations).filter((l) => l.status !== 'unknown' && markerPos(l)),
     [inv.locations],
@@ -95,8 +97,16 @@ export function LocationsMap({ onClose }: { onClose: () => void }) {
                 <button
                   type="button"
                   className="lm-visit"
+                  data-testid={`visit-${place.id}`}
                   disabled={place.status !== 'visitAvailable'}
-                  onClick={() => setNote('A cena deste local ainda não está disponível nesta versão.')}
+                  onClick={() => {
+                    if (place.id === 'hospital') {
+                      onClose()
+                      openLocationScene('hospital')
+                      return
+                    }
+                    setNote('A cena deste local ainda não está disponível nesta versão.')
+                  }}
                 >
                   {place.status === 'visited' ? 'Revisitar' : 'Visitar'}
                 </button>

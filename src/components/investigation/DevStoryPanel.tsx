@@ -1,10 +1,6 @@
 import { useState } from 'react'
-import {
-  devApply,
-  discoverPerson,
-  resetGame,
-  revealHiddenApps,
-} from '../../game/state/investigationStore'
+import { block01DevCheckpoints } from '../../game/story/block01DevCheckpoints'
+import { devApply, resetGame } from '../../game/state/investigationStore'
 
 export function DevStoryPanel() {
   const [open, setOpen] = useState(false)
@@ -29,37 +25,20 @@ export function DevStoryPanel() {
           ×
         </button>
       </header>
-      <button
-        type="button"
-        data-testid="dev-discover-mariana-password"
-        onClick={() => devApply([{ type: 'discoverPassword', which: 'marianaAccount' }])}
-      >
-        Descobrir senha conta Mariana
-      </button>
-      <button
-        type="button"
-        data-testid="dev-discover-diary-password"
-        onClick={() => devApply([{ type: 'discoverPassword', which: 'diary' }])}
-      >
-        Descobrir senha diário
-      </button>
-      <button type="button" onClick={() => revealHiddenApps()}>
-        Revelar apps ocultos
-      </button>
-      <button type="button" onClick={() => discoverPerson('rafael', 'contactable')}>
-        Rafael → contactable
-      </button>
-      <button
-        type="button"
-        onClick={() =>
-          devApply([
-            { type: 'addEvidence', id: 'julia_statement_memory' },
-            { type: 'addEvidence', id: 'mariana_memory_audio' },
-          ])
-        }
-      >
-        + evidências contradição demo
-      </button>
+      <p className="inv-dev__section">Bloco 1 — O desaparecimento</p>
+      {block01DevCheckpoints.map((cp) => (
+        <button
+          key={cp.id}
+          type="button"
+          data-testid={`dev-${cp.id}`}
+          onClick={() => {
+            if (cp.id === 'b01-start') resetGame()
+            else if (cp.actions.length) devApply(cp.actions)
+          }}
+        >
+          {cp.label}
+        </button>
+      ))}
       <button type="button" onClick={() => resetGame()}>
         Reset save
       </button>

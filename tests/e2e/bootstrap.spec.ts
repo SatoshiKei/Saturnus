@@ -44,7 +44,7 @@ test('SATURNUS bootstrap flow and screenshots', async ({ page }) => {
 
   await page.getByTestId('app-notes').click()
   await expect(page.getByTestId('notes-home')).toBeVisible()
-  await page.getByTestId('note-row-n1').click()
+  await page.getByTestId('note-row-n-quarta').click()
   await expect(page.getByTestId('note-view')).toBeVisible()
   await page.screenshot({ path: path.join(shots, '07-notes.png'), fullPage: true })
   await page.getByTestId('note-view').getByRole('button', { name: 'Voltar' }).click()

@@ -7,6 +7,7 @@ export function marianaVisibleChats(state: InvestigationState) {
   return mockChats.filter((c) => !c.archived && unlocked.has(c.id))
 }
 
-export function augustoVisibleChats(_state: InvestigationState) {
-  return mockChats.filter((c) => c.contactId === 'camila' && !c.archived)
+export function augustoVisibleChats(state: InvestigationState) {
+  const unlocked = new Set(state.phones.augusto.unlockedChatIds)
+  return mockChats.filter((c) => !c.archived && unlocked.has(c.id))
 }

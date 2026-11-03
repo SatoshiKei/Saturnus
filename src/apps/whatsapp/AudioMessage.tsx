@@ -12,7 +12,13 @@ function formatDuration(sec: number): string {
   return `${m}:${s.toString().padStart(2, '0')}`
 }
 
-export function AudioMessage({ message }: { message: AudioMsg }) {
+export function AudioMessage({
+  message,
+  onPlayStart,
+}: {
+  message: AudioMsg
+  onPlayStart?: () => void
+}) {
   const audioRef = useRef<HTMLAudioElement>(null)
   const [playing, setPlaying] = useState(false)
   const [progress, setProgress] = useState(0)
@@ -33,6 +39,7 @@ export function AudioMessage({ message }: { message: AudioMsg }) {
     } else {
       await audio.play()
       setPlaying(true)
+      onPlayStart?.()
     }
   }
 

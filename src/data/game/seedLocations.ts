@@ -1,9 +1,5 @@
 import type { Location } from '../../game/types'
 
-/**
- * `mapX/mapY` posicionam o marcador sobre o mapa (0–1).
- * Locais com status `unknown` não aparecem na interface.
- */
 export const seedLocations: Location[] = [
   {
     id: 'delegacia',
@@ -16,22 +12,22 @@ export const seedLocations: Location[] = [
     mapY: 0.43,
   },
   {
-    id: 'universidade',
-    name: 'Universidade',
-    description: 'Campus frequentado por Mariana.',
-    status: 'known',
-    relatedPersonIds: ['mariana'],
+    id: 'hospital',
+    name: 'Hospital Municipal',
+    description: 'Posto de enfermagem onde Mariana trabalhava.',
+    status: 'unknown',
+    relatedPersonIds: ['julia', 'camila', 'mariana'],
     relatedEvidenceIds: [],
-    sceneId: 'university-03',
-    mapX: 0.22,
-    mapY: 0.24,
+    sceneId: 'hospital-corridor',
+    mapX: 0.38,
+    mapY: 0.52,
   },
   {
     id: 'vertice',
     name: 'Boate Vértice',
-    description: 'Casa noturna — referência futura.',
+    description: '—',
     status: 'unknown',
-    relatedPersonIds: ['nico'],
+    relatedPersonIds: [],
     relatedEvidenceIds: [],
     mapX: 0.74,
     mapY: 0.62,

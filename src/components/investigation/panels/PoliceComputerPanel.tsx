@@ -65,7 +65,7 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
       backLabel="Sair"
       barExtra={
         <span className="pc-session">
-          Del. A. Mendes ·{' '}
+          Insp. Augusto Nogueira · designação interina ·{' '}
           {clock.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
         </span>
       }
@@ -148,7 +148,7 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
                 <dt>Situação</dt>
                 <dd>Em apuração</dd>
                 <dt>Responsável</dt>
-                <dd>Delegado Augusto Mendes</dd>
+                <dd>Augusto Nogueira (designação interina)</dd>
                 <dt>Elementos reunidos</dt>
                 <dd>
                   {inv.evidenceOwned.length} evidência(s) · {Object.values(inv.documents).filter((d) => d.read).length} documento(s) lido(s)

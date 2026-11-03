@@ -1494,6 +1494,49 @@
   font-size: 1.1em;
 }
 
+.aw-provisional {
+  margin: 0 0 1.2em;
+  padding: 1em 1.1em;
+  border: 1px solid rgba(200, 150, 62, 0.35);
+  background: rgba(200, 150, 62, 0.08);
+  border-radius: 3px;
+}
+
+.aw-provisional__note {
+  margin: 0 0 0.8em;
+  font-size: 0.88em;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.aw-provisional__go {
+  padding: 0.55em 1.2em;
+  font: inherit;
+  font-size: 0.85em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #1a1308;
+  background: var(--accent-saturn);
+  border: 0;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.aw-provisional__go:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.aw-provisional__transcript {
+  margin: 0.9em 0 0;
+  padding: 0.6em 0.9em;
+  font-family: var(--font-paper);
+  font-style: italic;
+  line-height: 1.5;
+  border-left: 3px solid var(--accent-saturn-dim);
+  color: var(--text-primary);
+}
+
 /* ═══════════════ Telefone fixo da delegacia ═══════════════ */
 .ll {
   display: grid;
