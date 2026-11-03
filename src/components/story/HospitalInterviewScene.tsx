@@ -6,6 +6,7 @@ import {
   hospitalTopicLabels,
   type HospitalTopicId,
 } from '../../data/block01/hospitalInterview'
+import { portraitSrcForStory } from '../../lib/characterSprites'
 import { assetPath } from '../../lib/assetPath'
 import { dispatchActions, setFlag } from '../../game/state/investigationStore'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
@@ -13,9 +14,9 @@ import { VisualNovelDialog } from './VisualNovelDialog'
 import '../../styles/visual-novel.css'
 
 const portraits = {
-  julia: assetPath('/assets/sprites/julia.png'),
-  camila: assetPath('/assets/sprites/camila.png'),
-  augusto: undefined,
+  julia: portraitSrcForStory('julia'),
+  camila: portraitSrcForStory('camila'),
+  augusto: portraitSrcForStory('augusto'),
 } as const
 
 type Mode = 'menu' | 'play' | 'outro'

@@ -1,24 +1,26 @@
 import type { Contact } from '../types/messaging'
+import { contactAvatarSrc } from '../lib/characterSprites'
 
 export function Avatar({
   contact,
   size = 40,
 }: {
-  contact: Pick<Contact, 'initials' | 'avatarHue' | 'name'>
+  contact: Pick<Contact, 'id' | 'initials' | 'avatarHue' | 'name'>
   size?: number
 }) {
+  const src = contactAvatarSrc(contact.id)
   return (
     <span
-      className="avatar"
+      className={`avatar${src ? ' avatar--photo' : ''}`}
       style={{
         width: size,
         height: size,
-        background: `hsl(${contact.avatarHue} 45% 42%)`,
+        background: src ? '#e8e8ed' : `hsl(${contact.avatarHue} 45% 42%)`,
         fontSize: size * 0.36,
       }}
       aria-hidden
     >
-      {contact.initials}
+      {src ? <img src={src} alt="" /> : contact.initials}
     </span>
   )
 }

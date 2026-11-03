@@ -1,4 +1,5 @@
 import type { ChatMessage, Contact } from '../../types/messaging'
+import { Avatar } from '../../components/Avatar'
 import { AudioMessage } from './AudioMessage'
 import { ImageMessage } from './ImageMessage'
 
@@ -49,13 +50,7 @@ export function MessageBubble({ message, contact, allMessages, onImageOpen, onAu
     <div className={`wa-row wa-row--${outgoing ? 'out' : 'in'}`} data-message-id={message.id}>
       {!outgoing && message.kind === 'audio' && message.showAvatar ? (
         <span className="wa-row__avatar">
-          <span
-            className="avatar avatar--sm"
-            style={{ background: `hsl(${contact.avatarHue} 45% 42%)` }}
-            aria-hidden
-          >
-            {contact.initials}
-          </span>
+          <Avatar contact={contact} size={28} />
         </span>
       ) : (
         <span className="wa-row__avatar-spacer" />

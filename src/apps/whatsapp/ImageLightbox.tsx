@@ -1,4 +1,4 @@
-import { assetPath } from '../../lib/assetPath'
+import { resolveChatMediaSrc } from '../../lib/characterSprites'
 
 interface ImageLightboxProps {
   src: string
@@ -17,7 +17,7 @@ export function ImageLightbox({ src, alt, caption, onClose }: ImageLightboxProps
         aria-label="Fechar imagem ampliada"
       />
       <div className="wa-lightbox__content">
-        <img src={assetPath(src)} alt={alt} className="wa-lightbox__img" />
+        <img src={resolveChatMediaSrc(src)} alt={alt} className="wa-lightbox__img" />
         {caption ? <p className="wa-lightbox__caption">{caption}</p> : null}
       </div>
       <button type="button" className="wa-lightbox__close" onClick={onClose} aria-label="Fechar">

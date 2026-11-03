@@ -3,6 +3,8 @@ import { CalendarEventView } from '../apps/calendar/CalendarEventView'
 import { CalendarHome } from '../apps/calendar/CalendarHome'
 import { AppStoreView } from '../apps/device/AppStoreView'
 import { DeviceSettingsApp } from '../apps/device/DeviceSettingsApp'
+import { FilesApp } from '../apps/device/FilesApp'
+import { PhotosApp } from '../apps/device/PhotosApp'
 import { HiddenDiaryApp } from '../apps/device/HiddenDiaryApp'
 import { RecorderApp } from '../apps/device/RecorderApp'
 import { WaveLabApp } from '../apps/device/WaveLabApp'
@@ -46,6 +48,10 @@ export function PhoneAppRouter() {
       return <HiddenDiaryApp onBack={back} />
     case 'device-settings':
       return <DeviceSettingsApp onBack={back} />
+    case 'photos':
+      return <PhotosApp onBack={back} />
+    case 'files':
+      return <FilesApp onBack={back} />
     default:
       return <PhoneHome />
   }

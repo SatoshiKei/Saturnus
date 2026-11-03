@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { contactById } from '../../data/mockContacts'
 import { getChatById } from '../../data/mockChats'
 import { phoneFeatureLocks } from '../../data/phoneFeatures'
@@ -19,10 +19,17 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
     null,
   )
   const [composerHint, setComposerHint] = useState<string | null>(null)
+  const messagesRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (chatId === 'chat-julia') onJuliaChatReviewed()
   }, [chatId])
+
+  useEffect(() => {
+    const el = messagesRef.current
+    if (!el) return
+    el.scrollTop = el.scrollHeight
+  }, [chatId, chat?.messages.length])
 
   if (!chat) {
     return (
@@ -81,7 +88,7 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
         </div>
       </header>
 
-      <div className="wa-chat-messages">
+      <div className="wa-messages" ref={messagesRef}>
         {chat.messages.map((message) => (
           <MessageBubble
             key={message.id}
@@ -96,8 +103,10 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
         ))}
       </div>
 
-      {composerHint ? <p className="wa-composer-hint">{composerHint}</p> : null}
-      <ChatComposer onBlockedAction={() => setComposerHint('Envio indisponível nesta fase da investigação.')} />
+      <footer className="wa-chat-view__footer">
+        {composerHint ? <p className="wa-composer-hint">{composerHint}</p> : null}
+        <ChatComposer onBlockedAction={() => setComposerHint('Envio indisponível nesta fase da investigação.')} />
+      </footer>
 
       {lightbox ? (
         <ImageLightbox

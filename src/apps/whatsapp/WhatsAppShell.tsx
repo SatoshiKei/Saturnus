@@ -108,7 +108,7 @@ export function WhatsAppShell({ initialTab = 'chats', onBackToPhone }: WhatsAppS
 
       <div className="wa-shell__body">
         {tab === 'chats' ? <ChatList chats={activeChats} /> : null}
-        {tab === 'calls' ? <CallList variant="whatsapp" /> : null}
+        {tab === 'calls' ? <CallList variant="whatsapp" device={phoneDevice} /> : null}
       </div>
 
       {toast ? (

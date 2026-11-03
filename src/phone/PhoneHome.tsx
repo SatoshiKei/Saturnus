@@ -6,7 +6,7 @@ import { visibleAppsForDevice } from '../lib/phoneApps'
 import { openApp } from '../lib/phoneRouter'
 import type { PhoneAppId } from '../types/phone'
 
-const placeholders = new Set<PhoneAppId>(['photos', 'files', 'browser'])
+const placeholders = new Set<PhoneAppId>(['browser'])
 
 export function PhoneHome() {
   const { push } = usePhoneSession()
@@ -34,6 +34,14 @@ export function PhoneHome() {
     }
     if (id === 'settings') {
       push({ screen: 'device-settings' })
+      return
+    }
+    if (id === 'photos') {
+      push({ screen: 'photos' })
+      return
+    }
+    if (id === 'files') {
+      push({ screen: 'files' })
       return
     }
     push(openApp(id))

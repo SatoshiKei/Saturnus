@@ -1,4 +1,4 @@
-import { assetPath } from '../../lib/assetPath'
+import { resolveChatMediaSrc } from '../../lib/characterSprites'
 import type { ChatMessage } from '../../types/messaging'
 
 type ImageMsg = Extract<ChatMessage, { kind: 'image' }>
@@ -20,7 +20,7 @@ export function ImageMessage({ message, onOpen }: ImageMessageProps) {
         data-testid="image-message-open"
         onClick={() => onOpen?.(message.imageSrc, alt, message.caption)}
       >
-        <img src={assetPath(message.imageSrc)} alt={alt} />
+        <img src={resolveChatMediaSrc(message.imageSrc)} alt={alt} />
       </button>
       {message.caption ? <figcaption>{message.caption}</figcaption> : null}
     </figure>

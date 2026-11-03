@@ -346,12 +346,14 @@
 }
 
 /* —— Mensagens —— */
-.wa-messages {
+.wa-messages,
+.wa-chat-messages {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 6px 8px;
+  padding: 6px 8px 10px;
+  -webkit-overflow-scrolling: touch;
   background-color: #e5ddd5;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Cg fill='%23d1c9c2' fill-opacity='0.35'%3E%3Ccircle cx='20' cy='30' r='2'/%3E%3Ccircle cx='90' cy='70' r='1.5'/%3E%3Ccircle cx='160' cy='40' r='2'/%3E%3Ccircle cx='50' cy='140' r='1.5'/%3E%3Ccircle cx='130' cy='120' r='2'/%3E%3C/g%3E%3C/svg%3E");
 }
@@ -359,8 +361,9 @@
 .wa-chat-view__footer {
   flex-shrink: 0;
   position: relative;
-  padding-bottom: var(--phone-inset-bottom, 22px);
+  padding-bottom: max(var(--phone-inset-bottom, 22px), 12px);
   background: #f0f0f0;
+  z-index: 2;
 }
 
 .wa-date-sep {
@@ -516,7 +519,10 @@
 
 .wa-image-msg img {
   max-width: min(220px, 100%);
+  max-height: 280px;
   display: block;
+  object-fit: cover;
+  object-position: top center;
 }
 
 .wa-image-msg figcaption {

@@ -27,6 +27,8 @@ export type PhoneRoute =
   | { screen: 'wavelab' }
   | { screen: 'hidden-diary' }
   | { screen: 'device-settings' }
+  | { screen: 'photos' }
+  | { screen: 'files' }
   | { screen: 'files-browser' }
 
 export interface PhoneAppDef {

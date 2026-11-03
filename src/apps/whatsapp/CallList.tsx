@@ -1,6 +1,7 @@
-import { contactById } from '../../data/mockContacts'
+import { augustoDeviceCallLog } from '../../data/block01/augustoCalls'
 import { marianaDeviceCallLog } from '../../data/block01/marianaCalls'
-import { mockCallLog } from '../../data/mockCalls'
+import { contactById } from '../../data/mockContacts'
+import type { Contact } from '../../types/messaging'
 import { phoneFeatureLocks } from '../../data/phoneFeatures'
 import { Avatar } from '../../components/Avatar'
 
@@ -11,7 +12,15 @@ interface CallListProps {
 
 export function CallList({ variant, device = 'augusto' }: CallListProps) {
   const locked = phoneFeatureLocks.voiceCall
-  const log = device === 'mariana' ? marianaDeviceCallLog : mockCallLog
+  const log = device === 'mariana' ? marianaDeviceCallLog : augustoDeviceCallLog
+
+  const contactFor = (contactId: string): Contact =>
+    contactById[contactId] ?? {
+      id: contactId,
+      name: 'Contato',
+      avatarHue: 200,
+      initials: '?',
+    } satisfies Contact
 
   return (
     <div className={`wa-calls wa-calls--${variant}`} data-testid="call-history">
@@ -22,7 +31,7 @@ export function CallList({ variant, device = 'augusto' }: CallListProps) {
       ) : null}
       <ul className="wa-calls__list">
         {log.map((entry) => {
-          const contact = contactById[entry.contactId]
+          const contact = contactFor(entry.contactId)
           return (
             <li key={entry.id}>
               <div className="wa-calls__row">
