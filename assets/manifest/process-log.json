@@ -1,0 +1,69 @@
+{
+  "at": "2026-11-02T23:58:48.199Z",
+  "processed": [
+    {
+      "id": "police-01",
+      "output": "assets/backgrounds/processed/police/police-01-station-hall.jpg"
+    },
+    {
+      "id": "police-02",
+      "output": "assets/backgrounds/processed/police/police-02-interrogation-tone.jpg"
+    },
+    {
+      "id": "hospital-01",
+      "output": "assets/backgrounds/processed/hospital/hospital-01-corridor-exit.jpg"
+    },
+    {
+      "id": "hospital-02",
+      "output": "assets/backgrounds/processed/hospital/hospital-02-corridor-chairs.jpg"
+    },
+    {
+      "id": "apartment-01",
+      "output": "assets/backgrounds/processed/apartment/apartment-01-living-modest.jpg"
+    },
+    {
+      "id": "apartment-04",
+      "output": "assets/backgrounds/processed/apartment/apartment-04-hall-brazil-sp.jpg"
+    },
+    {
+      "id": "university-02",
+      "output": "assets/backgrounds/processed/university/university-02-library-aisles.jpg"
+    },
+    {
+      "id": "university-03",
+      "output": "assets/backgrounds/processed/university/university-03-classroom-empty.jpg"
+    },
+    {
+      "id": "bar-01",
+      "output": "assets/backgrounds/processed/bar/bar-01-neighborhood-interior.jpg"
+    },
+    {
+      "id": "nightclub-01",
+      "output": "assets/backgrounds/processed/nightclub/nightclub-01-lights-haze.jpg"
+    },
+    {
+      "id": "nightclub-02",
+      "output": "assets/backgrounds/processed/nightclub/nightclub-02-dj-booth.jpg"
+    },
+    {
+      "id": "port-01",
+      "output": "assets/backgrounds/processed/port/port-01-guanabara-rj.jpg"
+    },
+    {
+      "id": "bridge_guardrail-01",
+      "output": "assets/backgrounds/processed/bridge_guardrail/bridge-01-overpass-rail.jpg"
+    },
+    {
+      "id": "roads-01",
+      "output": "assets/backgrounds/processed/roads/roads-01-shoulder-highway.jpg"
+    },
+    {
+      "id": "prison_forum-01",
+      "output": "assets/backgrounds/processed/prison_forum/forum-01-courthouse-columns.jpg"
+    },
+    {
+      "id": "journalist-01",
+      "output": "assets/backgrounds/processed/journalist/journalist-01-newsroom-desks.jpg"
+    }
+  ]
+}

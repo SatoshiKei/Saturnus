@@ -11,7 +11,11 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "npm run build && playwright test",
-    "audio:generate": "node scripts/generate-test-audio.mjs"
+    "audio:generate": "node scripts/generate-test-audio.mjs",
+    "assets:fetch": "node scripts/fetch-vn-assets.mjs",
+    "assets:process": "node scripts/process-vn-backgrounds.mjs",
+    "assets:inventory": "node scripts/generate-background-inventory.mjs && node scripts/generate-props-inventory.mjs",
+    "assets:vn": "npm run assets:fetch && npm run assets:process && npm run assets:inventory"
   },
   "dependencies": {
     "react": "^19.2.8",
@@ -28,6 +32,7 @@
     "@vitejs/plugin-react": "^6.1.1",
     "jsdom": "^29.1.1",
     "oxlint": "^1.81.0",
+    "sharp": "^0.34.4",
     "typescript": "~6.0.2",
     "vite": "^8.3.0",
     "vitest": "^5.0.4"

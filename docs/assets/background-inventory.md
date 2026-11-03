@@ -1,0 +1,69 @@
+# Inventário de backgrounds — SATURNUS
+
+Direção visual: fotos reais com tratamento VN (referência estilo Umineko Ryukishi07 — **sem** usar assets proprietários da 07th Expansion).
+
+Gerado a partir de `assets/manifest/backgrounds.json`. Reexecute após download: `npm run assets:inventory`.
+
+| Arquivo | Raw | Processed | Fonte | Licença | Autor | Categoria | Região | Adequação narrativa | Download | Observações |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| police-01-station-hall.jpg | assets/backgrounds/raw/police/police-01-station-hall.jpg | assets/backgrounds/processed/police/police-01-station-hall.jpg | Unsplash | Unsplash License | Unsplash contributor | police | generic | Corredor/saguão de DP ou posto policial genérico | ok | Poucas pessoas; crop horizontal possível |
+| police-02-interrogation-tone.jpg | assets/backgrounds/raw/police/police-02-interrogation-tone.jpg | assets/backgrounds/processed/police/police-02-interrogation-tone.jpg | Pexels | Pexels License | Tima Miroshnichenko | police | generic | Corredor austero / sala de espera policial | ok | Já em grayscale; bom para VN |
+| police-03-office-desks.jpg | assets/backgrounds/raw/police/police-03-office-desks.jpg | — | Unsplash | Unsplash License | Unsplash | police | generic | Sala de investigação / mesa de delegacia | ok | Reutilizado do bootstrap; sem marcas |
+| police-04-night-lights.jpg | assets/backgrounds/raw/police/police-04-night-lights.jpg | — | Unsplash | Unsplash License | Unsplash | police | generic | Blitz / operação noturna (crop para remover detalhes) | ok | Verificar crop para placas |
+| hospital-01-corridor-exit.jpg | assets/backgrounds/raw/hospital/hospital-01-corridor-exit.jpg | assets/backgrounds/processed/hospital/hospital-01-corridor-exit.jpg | Pexels | Pexels License | Luis Ribeiro | hospital | generic | Corredor de hospital de médio porte | ok | Vazio, fluorescente |
+| hospital-02-corridor-chairs.jpg | assets/backgrounds/raw/hospital/hospital-02-corridor-chairs.jpg | assets/backgrounds/processed/hospital/hospital-02-corridor-chairs.jpg | Pexels | Pexels License | Van Mailian | hospital | generic | Posto de enfermagem / fila de espera | ok | Portas abertas; fácil crop |
+| hospital-03-equipment-hall.jpg | assets/backgrounds/raw/hospital/hospital-03-equipment-hall.jpg | — | Pexels | Pexels License | Juan Moccagatta | hospital | generic | Área clínica / transição para quarto | ok | Equipamento genérico |
+| hospital-04-patient-room-tone.jpg | assets/backgrounds/raw/hospital/hospital-04-patient-room-tone.jpg | — | Unsplash | Unsplash License | Unsplash | hospital | generic | Quarto de paciente / enfermaria | ok | Ambiente limpo, poucos elementos |
+| apartment-01-living-modest.jpg | assets/backgrounds/raw/apartment/apartment-01-living-modest.jpg | assets/backgrounds/processed/apartment/apartment-01-living-modest.jpg | Unsplash | Unsplash License | Unsplash | apartment | generic | Apartamento modesto — candidato apartamento Mariana (mock) | ok | Sem rostos; mobília neutra |
+| apartment-02-kitchen-small.jpg | assets/backgrounds/raw/apartment/apartment-02-kitchen-small.jpg | — | Unsplash | Unsplash License | Unsplash | apartment | generic | Cozinha de apartamento pequeno | ok | Crop para remover marcas de eletro |
+| apartment-03-bedroom-simple.jpg | assets/backgrounds/raw/apartment/apartment-03-bedroom-simple.jpg | — | Unsplash | Unsplash License | Unsplash | apartment | generic | Quarto de apartamento / testemunha | ok | Iluminação lateral |
+| apartment-04-hall-brazil-sp.jpg | assets/backgrounds/raw/apartment/apartment-04-hall-brazil-sp.jpg | assets/backgrounds/processed/apartment/apartment-04-hall-brazil-sp.jpg | Pexels | Pexels License | Aaron Mello | apartment | Brasil — São Paulo (Sé) | Corredor de prédio antigo — transição urbana BR | ok | Referência brasileira explícita |
+| university-01-campus-walk.jpg | assets/backgrounds/raw/university/university-01-campus-walk.jpg | — | Unsplash | Unsplash License | Unsplash | university | generic | Campus universitário simples | ok | Poucas pessoas ao fundo — crop |
+| university-02-library-aisles.jpg | assets/backgrounds/raw/university/university-02-library-aisles.jpg | assets/backgrounds/processed/university/university-02-library-aisles.jpg | Unsplash | Unsplash License | Unsplash | university | generic | Biblioteca universitária | ok | Sem rostos |
+| university-03-classroom-empty.jpg | assets/backgrounds/raw/university/university-03-classroom-empty.jpg | assets/backgrounds/processed/university/university-03-classroom-empty.jpg | Pexels | Pexels License | Berna Elif | university | generic | Sala de aula vazia | ok | Carteiras alinhadas; validated 2025-11-02 |
+| university-04-lecture-hall.jpg | assets/backgrounds/raw/university/university-04-lecture-hall.jpg | — | Unsplash | Unsplash License | Unsplash | university | generic | Auditório / aula magna | ok | Vazio |
+| bar-01-neighborhood-interior.jpg | assets/backgrounds/raw/bar/bar-01-neighborhood-interior.jpg | assets/backgrounds/processed/bar/bar-01-neighborhood-interior.jpg | Pexels | Pexels License | Quang Nguyen Vinh | bar | generic | Boteco de bairro / Bar do Geraldo (mock) | ok | Evitar logos no balcão — crop; validated 2025-11-02 |
+| bar-02-empty-stools.jpg | assets/backgrounds/raw/bar/bar-02-empty-stools.jpg | — | Pexels | Pexels License | Mirac Sendil | bar | generic | Bar vazio antes do movimento | ok | Tom quente; validated 2025-11-02 |
+| bar-03-wood-interior.jpg | assets/backgrounds/raw/bar/bar-03-wood-interior.jpg | — | Unsplash | Unsplash License | Unsplash | bar | generic | Bar interno alternativo | ok | Sem pessoas |
+| bar-04-bottles-shelf.jpg | assets/backgrounds/raw/bar/bar-04-bottles-shelf.jpg | — | Unsplash | Unsplash License | Unsplash | bar | generic | Detalhe / transição no bar | ok | Crop estreito possível |
+| nightclub-01-lights-haze.jpg | assets/backgrounds/raw/nightclub/nightclub-01-lights-haze.jpg | assets/backgrounds/processed/nightclub/nightclub-01-lights-haze.jpg | Unsplash | Unsplash License | Unsplash | nightclub | generic | Boate Vértice — pista (mock) | ok | Silhuetas; crop para reduzir rostos |
+| nightclub-02-dj-booth.jpg | assets/backgrounds/raw/nightclub/nightclub-02-dj-booth.jpg | assets/backgrounds/processed/nightclub/nightclub-02-dj-booth.jpg | Unsplash | Unsplash License | Unsplash | nightclub | generic | Cabine de DJ | ok | Equipamento genérico |
+| nightclub-03-corridor-dark.jpg | assets/backgrounds/raw/nightclub/nightclub-03-corridor-dark.jpg | — | Unsplash | Unsplash License | Unsplash | nightclub | generic | Corredor de boate / backstage | ok | Baixa luz |
+| nightclub-04-neon-bar.jpg | assets/backgrounds/raw/nightclub/nightclub-04-neon-bar.jpg | — | Unsplash | Unsplash License | Unsplash | nightclub | generic | Bar interno da boate | ok | Neon sem texto legível — verificar crop |
+| port-01-guanabara-rj.jpg | assets/backgrounds/raw/port/port-01-guanabara-rj.jpg | assets/backgrounds/processed/port/port-01-guanabara-rj.jpg | Pexels | Pexels License | Lucas Rodrigues Vimieiro | port | Brasil — Rio de Janeiro (Baía de Guanabara) | Área portuária / Maralto — transição (mock) | ok | Silhueta ao pôr do sol; pouco detalhe identificável |
+| port-02-ship-dock.jpg | assets/backgrounds/raw/port/port-02-ship-dock.jpg | — | Unsplash | Unsplash License | Unsplash | port | generic | Terminal / doca de granéis | ok | Containers — crop para marcas |
+| port-03-warehouse-harbor.jpg | assets/backgrounds/raw/port/port-03-warehouse-harbor.jpg | — | Unsplash | Unsplash License | Unsplash | port | generic | Galpão portuário | ok | Vazio |
+| port-04-rio-industrial-facade.jpg | assets/backgrounds/raw/port/port-04-rio-industrial-facade.jpg | — | Unsplash | Unsplash License | higor marques | port | Brasil — Rio de Janeiro | Edificação industrial urbana RJ | ok | Rio de Janeiro; fábrica degradada |
+| bridge-01-overpass-rail.jpg | assets/backgrounds/raw/bridge_guardrail/bridge-01-overpass-rail.jpg | assets/backgrounds/processed/bridge_guardrail/bridge-01-overpass-rail.jpg | Pexels | Pexels License | Anshu Kumar | bridge_guardrail | generic | Passarela com guardrail — candidato cena Elisa (mock) | ok | Verificar altura do rail no crop; validated 2025-11-02 |
+| bridge-02-walkway-fog.jpg | assets/backgrounds/raw/bridge_guardrail/bridge-02-walkway-fog.jpg | — | Pexels | Pexels License | Erik Mclean | bridge_guardrail | generic | Passarela atmosférica | ok | Poucos elementos; validated 2025-11-02 |
+| bridge-03-urban-bridge-night.jpg | assets/backgrounds/raw/bridge_guardrail/bridge-03-urban-bridge-night.jpg | — | Unsplash | Unsplash License | Unsplash | bridge_guardrail | generic | Transição urbana noturna | ok | Luzes bokeh |
+| roads-01-shoulder-highway.jpg | assets/backgrounds/raw/roads/roads-01-shoulder-highway.jpg | assets/backgrounds/processed/roads/roads-01-shoulder-highway.jpg | Unsplash | Unsplash License | Unsplash | roads | generic | Estrada com acostamento | ok | Carros distantes — crop |
+| roads-02-empty-street-night.jpg | assets/backgrounds/raw/roads/roads-02-empty-street-night.jpg | — | Unsplash | Unsplash License | Unsplash | roads | generic | Rua noturna com iluminação irregular | ok | Atmosfera melancólica |
+| roads-03-wet-asphalt.jpg | assets/backgrounds/raw/roads/roads-03-wet-asphalt.jpg | — | Unsplash | Unsplash License | Unsplash | roads | generic | Transição / fuga urbana | ok | Reflexos |
+| roads-04-gas-station-night.jpg | assets/backgrounds/raw/roads/roads-04-gas-station-night.jpg | — | Unsplash | Unsplash License | Unsplash | roads | generic | Posto de gasolina | ok | Remover logos de posto via crop |
+| forum-01-courthouse-columns.jpg | assets/backgrounds/raw/prison_forum/forum-01-courthouse-columns.jpg | assets/backgrounds/processed/prison_forum/forum-01-courthouse-columns.jpg | Unsplash | Unsplash License | Unsplash | prison_forum | generic | Fachada de fórum / tribunal | ok | Externa; sem texto |
+| prison-01-concrete-wall.jpg | assets/backgrounds/raw/prison_forum/prison-01-concrete-wall.jpg | — | Unsplash | Unsplash License | Unsplash | prison_forum | generic | Exterior prisional genérico | ok | Sem identificação |
+| prison-02-visitation-glass.jpg | assets/backgrounds/raw/prison_forum/prison-02-visitation-glass.jpg | — | Pexels | Pexels License | Mikhail Nilov | prison_forum | generic | Parlatório / sala de visitas (adaptável) | ok | Sala de reunião vazia; validated 2025-11-02 |
+| prison-03-archive-shelves.jpg | assets/backgrounds/raw/prison_forum/prison-03-archive-shelves.jpg | — | Unsplash | Unsplash License | Unsplash | prison_forum | generic | Sala de arquivos / interrogatório alternativo | ok | Reutilizar se duplicado — curadoria |
+| journalist-01-newsroom-desks.jpg | assets/backgrounds/raw/journalist/journalist-01-newsroom-desks.jpg | assets/backgrounds/processed/journalist/journalist-01-newsroom-desks.jpg | Unsplash | Unsplash License | Unsplash | journalist | generic | Redação / arquivo de jornalista | ok | Monitores sem conteúdo legível — crop |
+| journalist-02-paper-archive.jpg | assets/backgrounds/raw/journalist/journalist-02-paper-archive.jpg | — | Unsplash | Unsplash License | Unsplash | journalist | generic | Mesa com documentos / investigação paralela | ok | Macro; sem logos |
+| journalist-03-typewriter-desk.jpg | assets/backgrounds/raw/journalist/journalist-03-typewriter-desk.jpg | — | Unsplash | Unsplash License | Unsplash | journalist | generic | Arquivo pessoal / mesa de repórter | ok | Atmosfera retrô |
+| misc-01-protest-street.jpg | assets/backgrounds/raw/misc/misc-01-protest-street.jpg | — | Unsplash | Unsplash License | Unsplash | misc | generic | Protesto Maralto (mock) — usar crop amplo ou desfoque extra | ok | Muitas pessoas; candidato secundário |
+| misc-02-industrial-street.jpg | assets/backgrounds/raw/misc/misc-02-industrial-street.jpg | — | Unsplash | Unsplash License | Unsplash | misc | generic | Rua industrial / Maralto | ok | Vertical; crop horizontal |
+| misc-03-guardhouse-small.jpg | assets/backgrounds/raw/misc/misc-03-guardhouse-small.jpg | — | Unsplash | Unsplash License | Unsplash | misc | generic | Guarita / portão industrial | ok | Pequena edificação |
+| misc-04-urban-plaza.jpg | assets/backgrounds/raw/misc/misc-04-urban-plaza.jpg | — | Unsplash | Unsplash License | Unsplash | misc | generic | Praça / encontro urbano | ok | Verificar pessoas ao fundo |
+| misc-05-parking-empty.jpg | assets/backgrounds/raw/misc/misc-05-parking-empty.jpg | — | Pexels | Pexels License | Carl Newton | misc | generic | Estacionamento / transição | ok | Garagem subterrânea; validated 2025-11-02 |
+| misc-06-seaside-urban.jpg | assets/backgrounds/raw/misc/misc-06-seaside-urban.jpg | — | Unsplash | Unsplash License | Unsplash | misc | generic | Beira-mar urbano — Niterói/Rio genérico | ok | Substituir se 404; ver misc-06-alt |
+| misc-07-workshop-garage.jpg | assets/backgrounds/raw/misc/misc-07-workshop-garage.jpg | — | Unsplash | Unsplash License | Unsplash | misc | generic | Oficina / depósito | ok | Interior industrial |
+| misc-08-simple-house-exterior.jpg | assets/backgrounds/raw/misc/misc-08-simple-house-exterior.jpg | — | Unsplash | Unsplash License | Unsplash | misc | generic | Casa simples de testemunha | ok | Externa residencial neutra |
+
+## Licenças (resumo)
+
+- **Unsplash License**: [unsplash.com/license](https://unsplash.com/license) — uso gratuito incluindo não comercial/comercial; sem atribuição obrigatória.
+- **Pexels License**: [pexels.com/license](https://www.pexels.com/license/) — uso gratuito; verificar se atribuição desejada.
+
+## Curadoria manual
+
+1. Rejeitar imagens com logos legíveis, placas ou rostos dominantes.
+2. Preferir versão `processed/` em cenas melancólicas; manter `raw/` para reprocessar.
+3. Atualizar `docs/assets/scene-map.md` ao escolher candidato final por cena.

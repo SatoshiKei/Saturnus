@@ -58,9 +58,10 @@ Textos e nomes são **descartáveis**, não canon.
 
 ## Assets
 
-- Processados: `public/assets/scene/`
-- Originais: `public/assets/source/`
-- Registro: `docs/ASSETS.md`
+- **Bootstrap UI (mesa):** `public/assets/scene/` — ver `docs/ASSETS.md`
+- **Biblioteca VN (fotos):** `assets/backgrounds/{raw,processed}/`, `assets/props/raw/`
+- **Inventário:** `docs/assets/background-inventory.md`, `docs/assets/scene-map.md`
+- **Pipeline:** `npm run assets:vn` (fetch + process + inventário)
 
 ## Adicionar objeto na cena
 

@@ -1,0 +1,145 @@
+[
+  {
+    "id": "prop-phone-01",
+    "filename": "prop-smartphone-table.jpg",
+    "url": "https://images.pexels.com/photos/788946/pexels-photo-788946.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "sourcePage": "https://www.pexels.com/photo/iphone-on-table-788946/",
+    "author": "Pexels",
+    "source": "Pexels",
+    "license": "Pexels License",
+    "tags": ["celular", "iphone-like", "mesa"],
+    "notes": "Recortar telefone; fundo simples"
+  },
+  {
+    "id": "prop-notebook-01",
+    "filename": "prop-notebook-pen.jpg",
+    "url": "https://images.pexels.com/photos/5717421/pexels-photo-5717421.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "sourcePage": "https://www.pexels.com/photo/black-notebook-with-handwritten-notes-5717421/",
+    "author": "Pexels",
+    "source": "Pexels",
+    "license": "Pexels License",
+    "tags": ["caderno", "caneta", "papeis"],
+    "notes": "Caderno espiral com anotações; validated 2025-11-02"
+  },
+  {
+    "id": "prop-recorder-01",
+    "filename": "prop-voice-recorder.jpg",
+    "url": "https://images.pexels.com/photos/18446974/pexels-photo-18446974.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "sourcePage": "https://www.pexels.com/photo/teenage-engineering-tp-7-field-recorder-18446974/",
+    "author": "Pexels",
+    "source": "Pexels",
+    "license": "Pexels License",
+    "tags": ["gravador", "microfone"],
+    "notes": "Gravador portátil (marca visível); crop para VN; validated 2025-11-02"
+  },
+  {
+    "id": "prop-headphones-01",
+    "filename": "prop-headphones-desk.jpg",
+    "url": "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=1200&q=85&fm=jpg",
+    "sourcePage": "https://unsplash.com/photos/f032a568e944",
+    "author": "Unsplash",
+    "source": "Unsplash",
+    "license": "Unsplash License",
+    "tags": ["fones", "mesa"],
+    "notes": "Fones over-ear"
+  },
+  {
+    "id": "prop-folder-01",
+    "filename": "prop-manila-folder.jpg",
+    "url": "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1200&q=85&fm=jpg",
+    "sourcePage": "https://unsplash.com/photos/c8848c66ca85",
+    "author": "Unsplash",
+    "source": "Unsplash",
+    "license": "Unsplash License",
+    "tags": ["pasta", "documentos"],
+    "notes": "Documentos e caneta"
+  },
+  {
+    "id": "prop-cup-01",
+    "filename": "prop-coffee-cup.jpg",
+    "url": "https://images.pexels.com/photos/312418/pexels-photo-312418.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "sourcePage": "https://www.pexels.com/photo/white-ceramic-mug-312417/",
+    "author": "Pexels",
+    "source": "Pexels",
+    "license": "Pexels License",
+    "tags": ["xicara", "cafe"],
+    "notes": "Fundo neutro"
+  },
+  {
+    "id": "prop-radio-01",
+    "filename": "prop-walkie-talkie.jpg",
+    "url": "https://images.pexels.com/photos/10349990/pexels-photo-10349990.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "sourcePage": "https://www.pexels.com/photo/person-holding-black-walkie-talkie-10349990/",
+    "author": "Pexels",
+    "source": "Pexels",
+    "license": "Pexels License",
+    "tags": ["radio", "comunicacao"],
+    "notes": "Rádio portátil em mãos (colete laranja); crop no aparelho; validated 2025-11-02"
+  },
+  {
+    "id": "prop-calendar-01",
+    "filename": "prop-wall-calendar.jpg",
+    "url": "https://images.pexels.com/photos/37124477/pexels-photo-37124477.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "sourcePage": "https://www.pexels.com/photo/sunlit-calendar-with-classical-art-theme-37124477/",
+    "author": "Pexels",
+    "source": "Pexels",
+    "license": "Pexels License",
+    "tags": ["calendario", "parede"],
+    "notes": "Calendário de parede; validated 2025-11-02"
+  },
+  {
+    "id": "prop-papers-01",
+    "filename": "prop-scattered-papers.jpg",
+    "url": "https://images.pexels.com/photos/6539020/pexels-photo-6539020.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "sourcePage": "https://www.pexels.com/photo/grayscale-photography-of-a-messy-office-6539020/",
+    "author": "Pexels",
+    "source": "Pexels",
+    "license": "Pexels License",
+    "tags": ["papeis", "mesa"],
+    "notes": "Escritório bagunçado, P&B; validated 2025-11-02"
+  },
+  {
+    "id": "prop-vinyl-01",
+    "filename": "prop-vinyl-record.jpg",
+    "url": "https://images.unsplash.com/photo-1619983081563-430f63602796?w=1200&q=85&fm=jpg",
+    "sourcePage": "https://unsplash.com/photos/430f63602796",
+    "author": "Unsplash",
+    "source": "Unsplash",
+    "license": "Unsplash License",
+    "tags": ["vinil", "disco"],
+    "notes": "Disco de vinil close"
+  },
+  {
+    "id": "prop-turntable-01",
+    "filename": "prop-turntable.jpg",
+    "url": "https://images.pexels.com/photos/705794/pexels-photo-705794.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "sourcePage": "https://www.pexels.com/photo/vinyl-player-705794/",
+    "author": "Pexels",
+    "source": "Pexels",
+    "license": "Pexels License",
+    "tags": ["toca-discos", "audio"],
+    "notes": "Toca-discos close; validated 2025-11-02"
+  },
+  {
+    "id": "prop-landline-01",
+    "filename": "prop-landline-phone.jpg",
+    "url": "https://images.pexels.com/photos/13796734/pexels-photo-13796734.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "sourcePage": "https://www.pexels.com/photo/black-rotary-phone-on-a-wooden-surface-13796734/",
+    "author": "Pexels",
+    "source": "Pexels",
+    "license": "Pexels License",
+    "tags": ["telefone-fixo", "retro"],
+    "notes": "Telefone de disco preto; validated 2025-11-02"
+  },
+  {
+    "id": "prop-speaker-01",
+    "filename": "prop-bluetooth-speaker.jpg",
+    "url": "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=1200&q=85&fm=jpg",
+    "sourcePage": "https://unsplash.com/photos/423dbba4e7e1",
+    "author": "Unsplash",
+    "source": "Unsplash",
+    "license": "Unsplash License",
+    "tags": ["speaker", "bluetooth"],
+    "notes": "Speaker pequeno; remover marca no recorte"
+  }
+]
