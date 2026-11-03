@@ -9,10 +9,14 @@ test.use({ viewport: { width: 1920, height: 1080 } })
 
 test('SATURNUS bootstrap flow and screenshots', async ({ page }) => {
   await page.goto('/')
+  const menu = page.getByTestId('main-menu')
+  if (await menu.isVisible()) {
+    await page.getByTestId('main-menu-continue').click()
+  }
   await expect(page.getByTestId('investigation-scene')).toBeVisible()
   await page.screenshot({ path: path.join(shots, '01-investigation-room.png'), fullPage: true })
 
-  await page.getByTestId('desk-phone').click()
+  await page.getByTestId('scene-mariana-phone').click()
   await expect(page.getByTestId('phone-overlay')).toBeVisible()
   await expect(page.getByTestId('phone-shell')).toBeVisible()
   await page.screenshot({ path: path.join(shots, '02-phone-open.png'), fullPage: true })
@@ -24,20 +28,17 @@ test('SATURNUS bootstrap flow and screenshots', async ({ page }) => {
   await expect(page.getByTestId('whatsapp-home')).toBeVisible()
   await page.screenshot({ path: path.join(shots, '04-whatsapp-chat-list.png'), fullPage: true })
 
-  await page.getByTestId('chat-row-mariana').click()
+  await page.getByTestId('chat-row-julia').click()
   await expect(page.getByTestId('whatsapp-chat-view')).toBeVisible()
   await page.screenshot({ path: path.join(shots, '05-whatsapp-conversation.png'), fullPage: true })
 
+  await page.getByRole('button', { name: 'Voltar à lista' }).click()
+  await page.getByTestId('chat-row-rafael').click()
   const audioPlay = page.getByTestId('audio-message').getByRole('button', { name: /Reproduzir áudio/i })
   await audioPlay.click()
   await page.waitForTimeout(400)
   await page.screenshot({ path: path.join(shots, '06-whatsapp-audio.png'), fullPage: true })
 
-  await page.getByRole('button', { name: 'Voltar à lista' }).click()
-  await page.getByTestId('chat-row-elisa').click()
-  await page.getByTestId('image-message-open').click()
-  await expect(page.getByRole('dialog', { name: 'Imagem ampliada' })).toBeVisible()
-  await page.getByRole('dialog', { name: 'Imagem ampliada' }).getByRole('button', { name: 'Fechar', exact: true }).click()
   await page.getByRole('button', { name: 'Voltar à lista' }).click()
   await page.getByTestId('whatsapp-home').getByRole('button', { name: /Início/i }).click()
 

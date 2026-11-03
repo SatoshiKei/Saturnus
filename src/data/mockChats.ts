@@ -2,6 +2,53 @@ import type { ChatThread } from '../types/messaging'
 
 export const mockChats: ChatThread[] = [
   {
+    id: 'chat-julia',
+    contactId: 'julia',
+    unreadCount: 1,
+    lastPreview: 'Você viu a Mariana?',
+    lastTime: '21:40',
+    messages: [
+      {
+        id: 'ju1',
+        kind: 'text',
+        from: 'them',
+        text: 'Augusto, preciso falar sobre a memória dela.',
+        timestamp: '21:38',
+      },
+      {
+        id: 'ju2',
+        kind: 'text',
+        from: 'them',
+        text: 'Você viu a Mariana?',
+        timestamp: '21:40',
+      },
+    ],
+  },
+  {
+    id: 'chat-rafael',
+    contactId: 'rafael',
+    lastPreview: 'Áudio',
+    lastTime: '20:02',
+    messages: [
+      {
+        id: 'rf1',
+        kind: 'text',
+        from: 'them',
+        text: 'Encaminhei o áudio que ela pediu pra guardar.',
+        timestamp: '20:00',
+      },
+      {
+        id: 'rf2',
+        kind: 'audio',
+        from: 'them',
+        audioSrc: '/assets/audio/voice-mock-a.wav',
+        durationSec: 12,
+        timestamp: '20:02',
+        showAvatar: true,
+      },
+    ],
+  },
+  {
     id: 'chat-mariana',
     contactId: 'mariana',
     unreadCount: 2,
@@ -46,6 +93,28 @@ export const mockChats: ChatThread[] = [
         from: 'them',
         text: 'Viu isso?',
         timestamp: '22:15',
+      },
+    ],
+  },
+  {
+    id: 'chat-camila',
+    contactId: 'camila',
+    lastPreview: 'Recebi o arquivo',
+    lastTime: '18:10',
+    messages: [
+      {
+        id: 'ca1',
+        kind: 'text',
+        from: 'them',
+        text: 'Delegado, segue o que consegui separar do prontuário.',
+        timestamp: '18:08',
+      },
+      {
+        id: 'ca2',
+        kind: 'text',
+        from: 'them',
+        text: 'Recebi o arquivo',
+        timestamp: '18:10',
       },
     ],
   },

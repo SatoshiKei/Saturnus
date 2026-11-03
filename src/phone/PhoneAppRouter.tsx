@@ -1,6 +1,11 @@
 import { usePhoneSession } from '../app/PhoneSessionContext'
 import { CalendarEventView } from '../apps/calendar/CalendarEventView'
 import { CalendarHome } from '../apps/calendar/CalendarHome'
+import { AppStoreView } from '../apps/device/AppStoreView'
+import { DeviceSettingsApp } from '../apps/device/DeviceSettingsApp'
+import { HiddenDiaryApp } from '../apps/device/HiddenDiaryApp'
+import { RecorderApp } from '../apps/device/RecorderApp'
+import { WaveLabApp } from '../apps/device/WaveLabApp'
 import { NoteView } from '../apps/notes/NoteView'
 import { NotesHome } from '../apps/notes/NotesHome'
 import { PhoneCallsHome } from '../apps/phone/PhoneCallsHome'
@@ -31,6 +36,16 @@ export function PhoneAppRouter() {
       return <NoteView noteId={route.noteId} onBack={back} />
     case 'calendar-event':
       return <CalendarEventView eventId={route.eventId} onBack={back} />
+    case 'appstore':
+      return <AppStoreView onBack={back} />
+    case 'recorder':
+      return <RecorderApp onBack={back} />
+    case 'wavelab':
+      return <WaveLabApp onBack={back} />
+    case 'hidden-diary':
+      return <HiddenDiaryApp onBack={back} />
+    case 'device-settings':
+      return <DeviceSettingsApp onBack={back} />
     default:
       return <PhoneHome />
   }

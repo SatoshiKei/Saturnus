@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" role="img" aria-label="Mapa">
+  <rect width="200" height="160" rx="6" fill="#6b5344"/>
+  <rect x="8" y="8" width="184" height="144" rx="4" fill="#8b7355"/>
+  <path d="M40 120 L90 60 L130 90 L160 50" fill="none" stroke="#c4a574" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="90" cy="60" r="6" fill="#e74c3c"/>
+  <circle cx="130" cy="90" r="5" fill="#3498db"/>
+  <circle cx="160" cy="50" r="5" fill="#f39c12"/>
+</svg>

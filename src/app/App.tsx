@@ -1,15 +1,22 @@
 import { PhoneSessionProvider } from './PhoneSessionContext'
+import { GameHubProvider } from './GameHubContext'
+import { InvestigationBootstrap } from './InvestigationBootstrap'
 import { Scene } from '../scene/Scene'
 import '../styles/global.css'
 import '../styles/whatsapp.css'
 import '../styles/notes-calendar.css'
+import '../styles/investigation.css'
 
 export default function App() {
   return (
-    <PhoneSessionProvider>
-      <main aria-label="SATURNUS — mesa de investigação">
-        <Scene />
-      </main>
-    </PhoneSessionProvider>
+    <GameHubProvider>
+      <PhoneSessionProvider>
+        <InvestigationBootstrap>
+          <main aria-label="SATURNUS — mesa de investigação">
+            <Scene />
+          </main>
+        </InvestigationBootstrap>
+      </PhoneSessionProvider>
+    </GameHubProvider>
   )
 }

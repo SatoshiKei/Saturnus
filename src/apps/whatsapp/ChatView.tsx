@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { addEvidence, completeTask, unlockContact } from '../../game/state/investigationStore'
 import { contactById } from '../../data/mockContacts'
 import { getChatById } from '../../data/mockChats'
 import { phoneFeatureLocks } from '../../data/phoneFeatures'
@@ -18,6 +19,16 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
     null,
   )
   const [composerHint, setComposerHint] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (chatId === 'chat-rafael') {
+      addEvidence('rafael_audio_01')
+      unlockContact('contact-rafael')
+    }
+    if (chatId === 'chat-julia') {
+      completeTask('task_mariana_phone')
+    }
+  }, [chatId])
 
   if (!chat) {
     return (

@@ -11,6 +11,9 @@ export const mockContacts: Contact[] = [
   { id: 'miro', name: 'Miro', avatarHue: 95, initials: 'MI' },
   { id: 'rui', name: 'Rui', avatarHue: 240, initials: 'RU' },
   { id: 'bia', name: 'Bia', avatarHue: 300, initials: 'BI' },
+  { id: 'julia', name: 'Júlia', avatarHue: 55, initials: 'JU' },
+  { id: 'rafael', name: 'Rafael', avatarHue: 120, initials: 'RA' },
+  { id: 'camila', name: 'Camila', avatarHue: 280, initials: 'CA' },
 ]
 
 export const contactById = Object.fromEntries(mockContacts.map((c) => [c.id, c])) as Record<

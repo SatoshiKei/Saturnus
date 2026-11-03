@@ -20,7 +20,7 @@ export function PhoneObject({ def, onActivate, variant }: PhoneObjectProps) {
         transform: def.rotation ? `rotate(${def.rotation}deg)` : undefined,
       }}
       aria-label={def.ariaLabel}
-      data-testid="desk-phone"
+      data-testid={`scene-${def.id}`}
       onClick={onActivate}
     >
       <span className="phone-object__bezel">

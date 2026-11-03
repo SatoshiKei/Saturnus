@@ -6,6 +6,11 @@ export type PhoneAppId =
   | 'files'
   | 'phone'
   | 'settings'
+  | 'recorder'
+  | 'browser'
+  | 'appstore'
+  | 'hidden-diary'
+  | 'wavelab-mobile'
 
 export type WhatsAppTab = 'chats' | 'updates' | 'communities' | 'calls' | 'settings'
 
@@ -17,6 +22,12 @@ export type PhoneRoute =
   | { screen: 'whatsapp-chat'; chatId: string }
   | { screen: 'note'; noteId: string }
   | { screen: 'calendar-event'; eventId: string }
+  | { screen: 'appstore' }
+  | { screen: 'recorder' }
+  | { screen: 'wavelab' }
+  | { screen: 'hidden-diary' }
+  | { screen: 'device-settings' }
+  | { screen: 'files-browser' }
 
 export interface PhoneAppDef {
   id: PhoneAppId

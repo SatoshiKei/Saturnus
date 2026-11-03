@@ -1,7 +1,10 @@
 import { useState } from 'react'
-import { archivedChats, activeChats } from '../../data/mockChats'
+import { archivedChats } from '../../data/mockChats'
 import { phoneFeatureLocks } from '../../data/phoneFeatures'
 import { usePhoneSession } from '../../app/PhoneSessionContext'
+import { useGameHub } from '../../app/GameHubContext'
+import { useInvestigation } from '../../game/hooks/useInvestigation'
+import { augustoVisibleChats, marianaVisibleChats } from '../../lib/marianaChats'
 import { openWhatsAppArchived } from '../../lib/phoneRouter'
 import type { WhatsAppTab } from '../../types/phone'
 import { CallList } from './CallList'
@@ -15,6 +18,10 @@ interface WhatsAppShellProps {
 
 export function WhatsAppShell({ initialTab = 'chats', onBackToPhone }: WhatsAppShellProps) {
   const { push } = usePhoneSession()
+  const { phoneDevice } = useGameHub()
+  const inv = useInvestigation()
+  const activeChats =
+    phoneDevice === 'augusto' ? augustoVisibleChats(inv) : marianaVisibleChats(inv)
   const [tab, setTab] = useState<WhatsAppTab>(initialTab)
   const [toast, setToast] = useState<string | null>(null)
 

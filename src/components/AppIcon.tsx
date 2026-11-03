@@ -8,6 +8,11 @@ const labels: Record<PhoneAppId, string> = {
   files: 'Arquivos',
   phone: 'Telefone',
   settings: 'Ajustes',
+  recorder: 'Gravador',
+  browser: 'Navegador',
+  appstore: 'Loja',
+  'hidden-diary': 'Diário',
+  'wavelab-mobile': 'WaveLab',
 }
 
 interface AppIconProps {
