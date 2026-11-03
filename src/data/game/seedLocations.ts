@@ -25,10 +25,11 @@ export const seedLocations: Location[] = [
   {
     id: 'vertice',
     name: 'Boate Vértice',
-    description: '—',
+    description: 'Casa noturna — fechada ao público durante o dia.',
     status: 'unknown',
-    relatedPersonIds: [],
+    relatedPersonIds: ['iara', 'sandro', 'caio'],
     relatedEvidenceIds: [],
+    sceneId: 'vertice-floor',
     mapX: 0.74,
     mapY: 0.62,
   },

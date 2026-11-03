@@ -5,6 +5,11 @@ import julia from '../assets/sprites/julia.png'
 import mariana from '../assets/sprites/mariana.png'
 import paula from '../assets/sprites/paula.png'
 import rafael from '../assets/sprites/rafael.png'
+import lucas from '../assets/sprites/lucas.png'
+import nico from '../assets/sprites/nico.png'
+import bia from '../assets/sprites/bia.png'
+import geraldo from '../assets/sprites/geraldo.png'
+import rui from '../assets/sprites/rui.png'
 
 /** Retratos disponíveis — ids alinhados a `mockContacts` / personagens. */
 export const CHARACTER_SPRITE_URLS: Record<string, string> = {
@@ -14,6 +19,11 @@ export const CHARACTER_SPRITE_URLS: Record<string, string> = {
   mariana,
   paula,
   rafael,
+  lucas,
+  nico,
+  iara: bia,
+  sandro: geraldo,
+  caio: rui,
 }
 
 export function contactAvatarSrc(contactId: string): string | undefined {
@@ -29,6 +39,8 @@ export function resolveChatMediaSrc(src: string): string {
   return assetPath(src)
 }
 
-export function portraitSrcForStory(id: 'julia' | 'camila' | 'augusto'): string | undefined {
+export function portraitSrcForStory(
+  id: 'julia' | 'camila' | 'augusto' | 'lucas' | 'iara' | 'sandro' | 'caio',
+): string | undefined {
   return CHARACTER_SPRITE_URLS[id]
 }

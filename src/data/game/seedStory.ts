@@ -66,6 +66,13 @@ export const hypothesisCatalog: Hypothesis[] = [
     contradictingEvidenceIds: [],
     state: 'active',
   },
+  {
+    id: 'hyp_voluntary_disappearance',
+    title: 'Mariana desapareceu voluntariamente durante tentativa de provar a inocência de André',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
 ]
 
 export const contradictionDefs: ContradictionDef[] = [
@@ -88,7 +95,27 @@ export const seedInterviewTopics: InterviewTopic[] = []
 
 export const seedProvocations: ProvocationEvent[] = []
 
-export const seedSearchRules: SearchRule[] = []
+export const seedSearchRules: SearchRule[] = [
+  {
+    id: 'block02_elisa_process',
+    category: 'police',
+    requiredFlags: ['block02_elisa_search_unlocked'],
+    requiredTerms: ['elisa'],
+    results: [
+      {
+        title: 'Processo criminal — Elisa Duarte',
+        snippet:
+          'Vítima: Elisa Duarte, 17 anos. Réu: André Silva. Homicídio doloso. Condenado em 1ª instância; recurso pendente.',
+        evidenceId: 'elisa_case_summary',
+      },
+      {
+        title: 'Testemunhas arquivadas',
+        snippet: 'Nicolas “Nico” — DJ — consta como testemunha no mesmo processo.',
+        evidenceId: 'nico_elisa_witness',
+      },
+    ],
+  },
+]
 
 export const seedStoryTriggers: StoryTrigger[] = [
   {
@@ -116,6 +143,25 @@ export const seedStoryTriggers: StoryTrigger[] = [
       { type: 'unlockChat', device: 'augusto', chatId: 'chat-rafael-augusto' },
       { type: 'replaceTasks', tasks: block01EndTasks },
       { type: 'setFlag', id: 'block01_complete', value: true },
+    ],
+  },
+  {
+    id: 'block02_start',
+    once: true,
+    conditions: [{ type: 'flag', id: 'block01_complete', value: true }],
+    actions: [{ type: 'setFlag', id: 'block02_started', value: true }],
+  },
+  {
+    id: 'block02_unlock_paula',
+    once: true,
+    conditions: [
+      { type: 'flag', id: 'block01_complete', value: true },
+      { type: 'flag', id: 'block01_note_quarta_read', value: true },
+    ],
+    actions: [
+      { type: 'unlockContact', contactId: 'contact-paula' },
+      { type: 'unlockChat', device: 'augusto', chatId: 'chat-paula-augusto' },
+      { type: 'setFlag', id: 'block02_paula_chat_unlocked', value: true },
     ],
   },
 ]

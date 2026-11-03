@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { contactById } from '../../data/mockContacts'
 import { getChatById } from '../../data/mockChats'
+import { useInvestigation } from '../../game/hooks/useInvestigation'
+import { onPaulaAugustoChatOpened, onRafaelForwardAudioPlayed } from '../../game/story/block02Handlers'
 import { phoneFeatureLocks } from '../../data/phoneFeatures'
 import { onJuliaChatReviewed, onRafaelAudioPlayed } from '../../game/story/block01Handlers'
 import { Avatar } from '../../components/Avatar'
@@ -14,7 +16,8 @@ interface ChatViewProps {
 }
 
 export function ChatView({ chatId, onBack }: ChatViewProps) {
-  const chat = getChatById(chatId)
+  const inv = useInvestigation()
+  const chat = getChatById(chatId, inv)
   const [lightbox, setLightbox] = useState<{ src: string; alt: string; caption?: string } | null>(
     null,
   )
@@ -23,6 +26,7 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
 
   useEffect(() => {
     if (chatId === 'chat-julia') onJuliaChatReviewed()
+    if (chatId === 'chat-paula-augusto') onPaulaAugustoChatOpened()
   }, [chatId])
 
   useEffect(() => {
@@ -97,7 +101,11 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
             allMessages={chat.messages}
             onImageOpen={(src, alt, caption) => setLightbox({ src, alt, caption })}
             onAudioPlay={
-              message.kind === 'audio' && message.id === 'rf-audio-reply' ? onRafaelAudioPlayed : undefined
+              message.kind === 'audio' && message.id === 'rf-audio-reply'
+                ? onRafaelAudioPlayed
+                : message.kind === 'audio' && message.id === 'r2-audio-forward'
+                  ? onRafaelForwardAudioPlayed
+                  : undefined
             }
           />
         ))}

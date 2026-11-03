@@ -5,6 +5,7 @@ import type { Evidence } from '../../../game/types'
 import { assetPath } from '../../../lib/assetPath'
 import { evidenceOriginLabel, evidenceSourceLabel, evidenceTypeLabel } from '../../../lib/labels'
 import { runProvisionalEmergencyAnalysis } from '../../../game/story/block01Handlers'
+import { runProvisionalRafaelForwardAnalysis } from '../../../game/story/block02Handlers'
 import { GamePanel } from '../../ui/GamePanel'
 
 /** PRNG determinístico a partir do id — a forma de onda é estável entre sessões. */
@@ -73,6 +74,7 @@ function fmt(sec?: number) {
 export function AudioWorkbench({ onClose }: { onClose: () => void }) {
   const inv = useInvestigation()
   const emergencyProvisionalDone = inv.flags.block01_emergency_provisional
+  const rafaelForwardProvisionalDone = inv.flags.block02_rafael_forward_provisional
   const files = inv.evidenceOwned
     .map((id) => inv.evidence[id])
     .filter((e): e is Evidence => Boolean(e) && (e.type === 'audio' || e.type === 'derived'))
@@ -233,6 +235,32 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                   {inv.evidenceOwned.includes('emergency_call_restored') ? (
                     <blockquote className="aw-provisional__transcript">
                       “…eu preciso…”, “…ele tá aqui…”, “…eu não consigo…”, “…não lembra…”
+                    </blockquote>
+                  ) : null}
+                </div>
+              ) : null}
+
+              {current.id === 'rafael_forward_from_mariana' &&
+              current.puzzleMeta?.implementation === 'placeholder' ? (
+                <div className="aw-provisional" data-testid="rafael-forward-provisional-panel">
+                  <p className="aw-provisional__note">
+                    Análise provisória (puzzle-03 placeholder) — substituída pelo fluxo forense definitivo
+                    depois.
+                  </p>
+                  <button
+                    type="button"
+                    className="aw-provisional__go"
+                    data-testid="rafael-forward-provisional-analysis"
+                    disabled={rafaelForwardProvisionalDone}
+                    onClick={() => runProvisionalRafaelForwardAnalysis()}
+                  >
+                    {rafaelForwardProvisionalDone
+                      ? 'Análise provisória concluída'
+                      : 'Análise provisória (vinheta Vértice)'}
+                  </button>
+                  {inv.evidenceOwned.includes('rafael_recording_vertice_tag') ? (
+                    <blockquote className="aw-provisional__transcript">
+                      Vinheta parcialmente recuperada: “…Vértice…”
                     </blockquote>
                   ) : null}
                 </div>

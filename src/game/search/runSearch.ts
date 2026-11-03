@@ -16,6 +16,7 @@ export function runPoliceSearch(query: string, _state: InvestigationState) {
     []
 
   for (const rule of seedSearchRules) {
+    if (rule.requiredFlags?.some((f) => !_state.flags[f])) continue
     const required = rule.requiredTerms.map(normalizeTerm)
     if (!required.every((r) => terms.some((t) => t.includes(r) || r.includes(t)))) continue
     for (const r of rule.results) {

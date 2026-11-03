@@ -15,6 +15,8 @@ import { CaseNotepad } from '../components/investigation/CaseNotepad'
 import { ProvocationBanner } from '../components/investigation/ProvocationBanner'
 import { Block01Opening } from '../components/story/Block01Opening'
 import { HospitalInterviewScene } from '../components/story/HospitalInterviewScene'
+import { VerticeInterviewScene } from '../components/story/VerticeInterviewScene'
+import { LucasInterviewScene } from '../components/story/LucasInterviewScene'
 import { onMarianaPhoneClosed, onMarianaPhoneOpened } from '../game/story/block01Handlers'
 import '../styles/tokens.css'
 import '../styles/scene.css'
@@ -236,6 +238,12 @@ export function Scene() {
 
         {locationScene === 'hospital' ? (
           <HospitalInterviewScene onClose={closeLocationScene} />
+        ) : null}
+        {locationScene === 'vertice' ? (
+          <VerticeInterviewScene onClose={closeLocationScene} />
+        ) : null}
+        {locationScene === 'lucas' ? (
+          <LucasInterviewScene onClose={closeLocationScene} />
         ) : null}
 
         <HubOverlay panel={hubPanel} onClose={handleCloseHub} />

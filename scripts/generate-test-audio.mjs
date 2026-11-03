@@ -72,4 +72,23 @@ writeWav(join(outDir, 'rafael-reply-block01.wav'), 28, (t) => {
   return Math.sin(2 * Math.PI * base * t) * 0.28 * env + noise(t, 2) * 0.05
 })
 
-console.log('Wrote block01 placeholder audio to', outDir)
+/** Encaminhamento Rafael — degradado + vinheta simulada no meio. */
+writeWav(join(outDir, 'rafael-forward-block02.wav'), 34, (t) => {
+  const env = Math.min(1, t * 2) * Math.max(0, 1 - (t - 33) * 3)
+  const jingle =
+    t > 14 && t < 18
+      ? Math.sin(2 * Math.PI * (440 + 80 * Math.sin(t * 12)) * t) * 0.35
+      : 0
+  const bed = Math.sin(2 * Math.PI * 90 * t) * 0.06 * env
+  return (bed + jingle + noise(t, 3) * 0.4) * env
+})
+
+writeWav(join(outDir, 'rafael-forward-block02-restored.wav'), 28, (t) => {
+  const jingle =
+    t > 10 && t < 16
+      ? Math.sin(2 * Math.PI * (520 + 60 * Math.sin(t * 9)) * t) * 0.42
+      : noise(t, 4) * 0.08
+  return jingle + noise(t, 5) * 0.1
+})
+
+console.log('Wrote placeholder audio to', outDir)

@@ -256,6 +256,8 @@ export interface SearchRule {
   category: 'web' | 'news' | 'police' | 'case' | 'public' | 'internal'
   requiredTerms: string[]
   optionalTerms?: string[]
+  /** Todas as flags devem estar ativas para a regra valer. */
+  requiredFlags?: string[]
   results: { title: string; snippet: string; documentId?: string; evidenceId?: string }[]
   discoverTerms?: string[]
 }

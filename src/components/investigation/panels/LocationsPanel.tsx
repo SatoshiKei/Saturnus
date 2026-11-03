@@ -105,6 +105,11 @@ export function LocationsMap({ onClose }: { onClose: () => void }) {
                       openLocationScene('hospital')
                       return
                     }
+                    if (place.id === 'vertice') {
+                      onClose()
+                      openLocationScene('vertice')
+                      return
+                    }
                     setNote('A cena deste local ainda não está disponível nesta versão.')
                   }}
                 >

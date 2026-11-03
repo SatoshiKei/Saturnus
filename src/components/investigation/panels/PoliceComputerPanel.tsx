@@ -3,6 +3,8 @@ import { seedDocuments } from '../../../data/game/seedDocuments'
 import { useInvestigation } from '../../../game/hooks/useInvestigation'
 import { runPoliceSearch } from '../../../game/search/runSearch'
 import { dispatchActions } from '../../../game/state/investigationStore'
+import { applyPoliceSearchHit } from '../../../game/story/block02Handlers'
+import { useGameHub } from '../../../app/GameHubContext'
 import { personStatusLabel } from '../../../lib/labels'
 import { GamePanel } from '../../ui/GamePanel'
 
@@ -32,6 +34,7 @@ interface SearchHit {
 
 export function PoliceComputer({ onClose }: { onClose: () => void }) {
   const inv = useInvestigation()
+  const { openLocationScene } = useGameHub()
   const [section, setSection] = useState<Section>('busca')
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<SearchHit[]>([])
@@ -45,6 +48,9 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
     if (!q) return
     const { hits, newTerms } = runPoliceSearch(q, inv)
     setResults(hits.map(({ title, snippet }) => ({ title, snippet })))
+    for (const h of hits) {
+      if (h.evidenceId) applyPoliceSearchHit(h.evidenceId)
+    }
     setSearched(true)
     setRecent((r) => [q, ...r.filter((x) => x !== q)].slice(0, 5))
     if (newTerms.length) {
@@ -52,7 +58,19 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
     }
   }
 
-  const people = Object.values(inv.people)
+  const personGate: Record<string, string> = {
+    elisa: 'block02_elisa_search_unlocked',
+    andre: 'block02_elisa_search_unlocked',
+    nico: 'block02_vertice_archive',
+    lucas: 'block02_paula_chat_done',
+    iara: 'block02_vertice_iara',
+    sandro: 'block02_vertice_sandro',
+    caio: 'block02_vertice_caio',
+  }
+  const people = Object.values(inv.people).filter((p) => {
+    const need = personGate[p.id]
+    return !need || inv.flags[need]
+  })
   const pending = inv.tasks.filter((t) => !t.completed)
 
   return (
@@ -119,7 +137,7 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
               ) : null}
               <div className="pc-results" aria-live="polite">
                 {results.map((r) => (
-                  <article key={r.title} className="pc-record">
+                  <article key={r.title} className="pc-record" data-testid={`search-hit-${r.title}`}>
                     <h4>{r.title}</h4>
                     <p>{r.snippet}</p>
                   </article>
@@ -183,7 +201,24 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
                     <tr key={p.id}>
                       <td>{p.name}</td>
                       <td>{p.occupation ?? '—'}</td>
-                      <td>{personStatusLabel[p.status]}</td>
+                      <td>
+                        {personStatusLabel[p.status]}
+                        {p.id === 'lucas' &&
+                        inv.flags.block02_lucas_available &&
+                        !inv.flags.block02_lucas_interview_done ? (
+                          <button
+                            type="button"
+                            className="pc-inline"
+                            data-testid="lucas-interview-open"
+                            onClick={() => {
+                              onClose()
+                              openLocationScene('lucas')
+                            }}
+                          >
+                            Entrevistar
+                          </button>
+                        ) : null}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

@@ -10,4 +10,11 @@ export const seedContacts: Contact[] = [
     phone: '21 9xxxx-3340',
     unlocked: false,
   },
+  {
+    id: 'contact-paula',
+    personId: 'paula',
+    displayName: 'Paula',
+    phone: '21 9xxxx-2210',
+    unlocked: false,
+  },
 ]
