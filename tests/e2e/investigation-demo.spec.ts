@@ -66,7 +66,7 @@ test('investigation systems demo flow', async ({ page }) => {
   await page.getByTestId('recorder-reveal-protected').click()
   await page.getByTestId('phone-close').click()
 
-  await page.getByTestId('scene-papers-stack').click()
+  await page.getByTestId('scene-audio-station').click()
   await expect(page.getByTestId('export-blocked-rafael_audio_protected')).toBeVisible()
   await page.getByTestId('hub-close').click()
 

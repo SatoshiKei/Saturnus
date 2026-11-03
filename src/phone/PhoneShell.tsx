@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react'
+import { useGameHub } from '../app/GameHubContext'
 import { PhoneAppRouter } from './PhoneAppRouter'
 import { PhoneStatusBar } from './PhoneStatusBar'
 import '../styles/phone.css'
@@ -9,6 +10,7 @@ interface PhoneShellProps {
 }
 
 export function PhoneShell({ onClose, scale }: PhoneShellProps) {
+  const { phoneDevice } = useGameHub()
   const shellScale = Math.min(1.15, Math.max(0.72, scale * 1.4))
 
   return (
@@ -16,6 +18,7 @@ export function PhoneShell({ onClose, scale }: PhoneShellProps) {
       className="phone-shell"
       style={{ '--phone-scale': shellScale } as CSSProperties}
       data-testid="phone-shell"
+      data-device={phoneDevice}
     >
       <div className="phone-shell__device">
         <PhoneStatusBar />

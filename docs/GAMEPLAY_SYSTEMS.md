@@ -1,21 +1,34 @@
 # Gameplay systems (SATURNUS)
 
-Hub principal: mesa do delegado (`src/scene/Scene.tsx`). Objetos com `hubTarget` abrem ferramentas ou telefones.
+Hub principal: mesa do delegado (`src/scene/Scene.tsx`). Objetos com `hubTarget` abrem a interface correspondente.
+A parte visual (cena, tokens, painéis) está descrita em [`docs/UI_VISUAL_SYSTEM.md`](UI_VISUAL_SYSTEM.md).
 
 ### Layout da sala
 
-- Composição: `src/data/sceneComposition.ts` (1920×1080).
-- Fundo: `public/assets/scene/hub-delegacia-bg.jpg` (tom institucional `police-02`, **não** o corredor corporativo antigo).
-- Props interativos: fotos em `public/assets/scene/props/` (pastas, caderno, papéis, etc.).
-- **Pendências** (canto inferior esquerdo): lista de tarefas de Augusto (`ObjectivesStrip`), não é um quadro na parede.
-- Título no topo: contexto “Delegacia — sala de Augusto”.
+- Cena fixa 16:9 (1920×1080) com letterbox; composição em `src/data/sceneComposition.ts`.
+- Fundo: `public/assets/scene/hub-office-bg.jpg` (foto filtrada, original preservado em `assets/backgrounds/raw/police/`).
+- Objetos: PNGs transparentes em `public/assets/scene/hub/`. Smartphones são desenhados em CSS (`PhoneObject`).
+- **Pendências**: bloco de notas de Augusto (`CaseNotepad`), aba pequena no canto e folha lateral ao abrir. Não há texto permanente de instrução nem título de local.
+- Mapeamento objeto → sistema (nunca reutilizar a interface errada):
+
+| Objeto | `hubTarget` | Interface |
+|---|---|---|
+| Celular de Mariana | `mariana-phone` | `PhoneShell` (aparelho `mariana`) |
+| Celular de Augusto | `augusto-phone` | `PhoneShell` (aparelho `augusto`) |
+| Telefone fixo | `landline` | `PoliceLandline` (chamadas, ramais, registro — não é smartphone) |
+| Monitor | `computer` | `PoliceComputer` |
+| Caderno | `casebook` | `InvestigationNotebook` |
+| Pasta | `case-files` | `CaseFiles` |
+| Bancada de áudio | `audio-lab` | `AudioWorkbench` |
+| Mapa na parede | `map` | `LocationsMap` (locais desconhecidos não aparecem) |
 
 ## Store
 
 - Estado global: `src/game/state/investigationStore.ts`
 - Tipos: `src/game/types/index.ts`
 - Persistência: `localStorage` chave `saturnus-investigation-v1`
-- Menu: Novo jogo / Continuar (`MainMenuOverlay`)
+- Menu: tela de título com Continuar / Novo jogo (`MainMenuOverlay`)
+- Estado só de interface (menu aberto, dicas já vistas): `src/app/uiStore.ts`, fora do save
 
 ## Story engine
 
@@ -28,7 +41,8 @@ Progresso via flags, evidências e relações — evite `storyStep` em component
 ## Telefones
 
 - **Mariana:** aparelho apreendido (`hubTarget: mariana-phone`)
-- **Augusto:** celular profissional (`hubTarget: augusto-phone` no objeto `landline`)
+- **Augusto:** celular profissional (`hubTarget: augusto-phone`, objeto próprio `augusto-phone`)
+- **Telefone fixo:** objeto `landline`, interface própria (`PoliceLandline`)
 - Apps visíveis: `src/lib/phoneApps.ts` + `assets/manifest` de apps em `seedApps.ts`
 
 Ver `docs/PHONE_SYSTEM.md`.

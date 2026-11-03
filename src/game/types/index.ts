@@ -40,6 +40,9 @@ export interface Location {
   relatedPersonIds: string[]
   relatedEvidenceIds: string[]
   sceneId?: string
+  /** Posição do marcador no mapa (0–1); locais sem posição não aparecem no mapa */
+  mapX?: number
+  mapY?: number
 }
 
 export interface Evidence {
@@ -283,5 +286,6 @@ export type HubPanel =
   | 'casebook'
   | 'map'
   | 'audio-lab'
+  | 'landline'
   | 'mariana-phone'
   | 'augusto-phone'

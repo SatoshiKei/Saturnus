@@ -1,0 +1,66 @@
+/**
+ * Design tokens de SATURNUS.
+ * Paleta: carvão, preto azulado, cinza institucional, marrom escuro, papel envelhecido,
+ * âmbar discreto e azul-petróleo dessaturado. Sem branco puro, sem azul "bootstrap".
+ */
+:root {
+  /* superfícies */
+  --bg-deep: #0a0d11;
+  --bg-panel: #11161b;
+  --bg-panel-raised: #1a2128;
+  --bg-inset: #0c1014;
+  --bg-wood: #17120e;
+
+  /* papel */
+  --paper: #d8d1bd;
+  --paper-light: #e4ddc9;
+  --paper-dark: #bdb59e;
+  --paper-ink: #2a2924;
+  --paper-muted: #6b665a;
+  --paper-line: rgba(60, 54, 40, 0.22);
+
+  /* texto */
+  --text-primary: #e2dfd5;
+  --text-muted: #8d979e;
+  --text-faint: #5b656c;
+
+  /* acentos */
+  --accent-saturn: #c8963e;
+  --accent-saturn-dim: #8f6a2c;
+  --accent-cold: #79c2bd;
+  --accent-cold-dim: #3d6663;
+  --danger: #a63a2e;
+
+  /* linhas e sombras */
+  --border-subtle: rgba(226, 223, 213, 0.12);
+  --border-strong: rgba(226, 223, 213, 0.26);
+  --shadow-heavy: 0 28px 70px rgba(0, 0, 0, 0.65), 0 2px 0 rgba(255, 255, 255, 0.03) inset;
+
+  /* tipografia */
+  --font-ui: 'Segoe UI', 'Helvetica Neue', Arial, system-ui, sans-serif;
+  --font-mono: 'Cascadia Mono', Consolas, 'Courier New', monospace;
+  --font-paper: Georgia, 'Times New Roman', serif;
+  --font-type: 'Courier New', Courier, monospace;
+
+  /* movimento: 100–250 ms, sem chamar atenção */
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --t-fast: 140ms;
+  --t-mid: 220ms;
+
+  /* escala da cena (sobrescrito pela Scene com a escala real do quadro 16:9) */
+  --u: 1;
+}
+
+/* barras de rolagem discretas dentro do jogo */
+.gp *::-webkit-scrollbar,
+.phone-shell *::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.gp *::-webkit-scrollbar-thumb {
+  background: rgba(226, 223, 213, 0.18);
+  border-radius: 8px;
+}
+.gp *::-webkit-scrollbar-track {
+  background: transparent;
+}

@@ -1,0 +1,147 @@
+/* Apps de sistema do celular (loja, configurações, gravador, WaveLab, diário).
+   Tema escuro de aparelho: tinta azul-petróleo, sem branco puro. */
+.device-app {
+  --da-bg: #10161c;
+  --da-card: rgba(255, 255, 255, 0.05);
+  --da-line: rgba(255, 255, 255, 0.1);
+  --da-text: #e2e6e4;
+  --da-muted: #8b979d;
+  --da-accent: #79c2bd;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  padding: calc(var(--phone-inset-top, 47px) + 6px) 16px 34px;
+  overflow: auto;
+  color: var(--da-text);
+  font-size: 14px;
+  background: linear-gradient(180deg, #17222b 0%, var(--da-bg) 40%);
+}
+
+.device-app h1,
+.device-app h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.device-app h3 {
+  margin: 8px 0 2px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--da-muted);
+}
+
+.device-app p {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.device-app .inv-muted {
+  color: var(--da-muted);
+  font-size: 12.5px;
+}
+
+.device-app > button:first-child:not([type='submit']),
+.device-app button.device-app__back {
+  align-self: flex-start;
+  padding: 2px 0;
+  font-size: 14px;
+  color: var(--da-accent);
+  cursor: pointer;
+}
+
+.device-app input,
+.device-app select {
+  width: 100%;
+  padding: 10px 12px;
+  font: inherit;
+  color: var(--da-text);
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--da-line);
+  border-radius: 10px;
+  outline: none;
+}
+
+.device-app input:focus {
+  border-color: var(--da-accent);
+}
+
+.device-app input::placeholder {
+  color: #566269;
+}
+
+.device-app button {
+  cursor: pointer;
+}
+
+.device-app button:not(:first-child),
+.device-app form button {
+  padding: 9px 14px;
+  color: #0c1514;
+  font-weight: 600;
+  background: var(--da-accent);
+  border-radius: 10px;
+}
+
+.device-app button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.device-app ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.device-app li {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  background: var(--da-card);
+  border: 1px solid var(--da-line);
+  border-radius: 12px;
+}
+
+.device-app li strong {
+  font-size: 15px;
+}
+
+.device-app audio {
+  width: 100%;
+}
+
+.device-app .inv-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 7px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #1a1308;
+  background: #c8963e;
+  border-radius: 99px;
+}
+
+.device-app form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.device-app label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--da-muted);
+}

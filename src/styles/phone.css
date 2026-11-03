@@ -13,15 +13,40 @@
   width: 320px;
   height: 680px;
   border-radius: 44px;
-  background: #0d0d0f;
+  background: #050506;
+  /* moldura fina de metal escovado + bordas de vidro finas */
   box-shadow:
-    0 0 0 2px #2a2a2e,
-    0 24px 80px rgba(0, 0, 0, 0.65),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    0 0 0 3px #3b3e43,
+    0 0 0 4.5px #14161a,
+    0 30px 80px rgba(0, 0, 0, 0.7),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.07);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   position: relative;
+}
+
+/* ilha da câmera frontal — sem logotipo de fabricante */
+.phone-shell__device::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  z-index: 40;
+  width: 86px;
+  height: 24px;
+  transform: translateX(-50%);
+  border-radius: 14px;
+  background: #020203;
+  pointer-events: none;
+}
+
+.phone-shell[data-device='augusto'] .phone-shell__device {
+  box-shadow:
+    0 0 0 3px #5b6168,
+    0 0 0 4.5px #1b1e22,
+    0 30px 80px rgba(0, 0, 0, 0.7),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.07);
 }
 
 .phone-shell__content {
@@ -51,16 +76,22 @@
 
 .phone-shell__close {
   pointer-events: auto;
-  padding: 8px 16px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
-  font-size: 13px;
+  padding: 6px 16px;
+  border-radius: 3px;
+  background: rgba(9, 12, 16, 0.7);
+  border: 1px solid rgba(226, 223, 213, 0.18);
+  color: rgba(226, 223, 213, 0.75);
+  font-size: 12px;
+  letter-spacing: 0.08em;
   cursor: pointer;
+  transition:
+    color 140ms,
+    background 140ms;
 }
 
 .phone-shell__close:hover {
-  background: rgba(255, 255, 255, 0.2);
+  color: #e2dfd5;
+  background: rgba(9, 12, 16, 0.92);
 }
 
 .phone-status {
@@ -232,6 +263,26 @@
 
 .app-icon--settings {
   background: linear-gradient(160deg, #dfe6e9, #636e72);
+}
+
+.app-icon--recorder {
+  background: linear-gradient(160deg, #3a3f46, #14171b);
+}
+
+.app-icon--browser {
+  background: linear-gradient(160deg, #5aa6d6, #27607f);
+}
+
+.app-icon--appstore {
+  background: linear-gradient(160deg, #4f93e0, #2457a8);
+}
+
+.app-icon--hidden-diary {
+  background: linear-gradient(160deg, #6b4a6e, #2e1d33);
+}
+
+.app-icon--wavelab-mobile {
+  background: linear-gradient(160deg, #2f6f6b, #0f2d33);
 }
 
 .phone-app-recents {

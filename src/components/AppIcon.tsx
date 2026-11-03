@@ -109,6 +109,51 @@ function AppGlyph({ appId }: { appId: PhoneAppId }) {
           />
         </svg>
       )
+    case 'recorder':
+      return (
+        <svg viewBox="0 0 48 48" className="app-icon__svg">
+          {[10, 15, 20, 25, 30, 35].map((x, i) => (
+            <rect
+              key={x}
+              x={x}
+              y={24 - [5, 11, 16, 9, 13, 6][i]}
+              width="2.6"
+              height={[10, 22, 32, 18, 26, 12][i]}
+              rx="1.3"
+              fill="#fff"
+            />
+          ))}
+        </svg>
+      )
+    case 'browser':
+      return (
+        <svg viewBox="0 0 48 48" className="app-icon__svg">
+          <circle cx="24" cy="24" r="15" fill="none" stroke="#fff" strokeWidth="2.6" />
+          <path d="M9 24h30M24 9c-6 5-6 25 0 30M24 9c6 5 6 25 0 30" fill="none" stroke="#fff" strokeWidth="2" />
+        </svg>
+      )
+    case 'appstore':
+      return (
+        <svg viewBox="0 0 48 48" className="app-icon__svg">
+          <path d="M15 36L31 12M24 36l-6-10M33 36l-4-7" fill="none" stroke="#fff" strokeWidth="4" strokeLinecap="round" />
+          <path d="M10 28h28" stroke="#fff" strokeWidth="4" strokeLinecap="round" />
+        </svg>
+      )
+    case 'hidden-diary':
+      return (
+        <svg viewBox="0 0 48 48" className="app-icon__svg">
+          <rect x="11" y="8" width="26" height="32" rx="3" fill="#fff" opacity="0.92" />
+          <rect x="11" y="8" width="5" height="32" rx="2" fill="currentColor" opacity="0.4" />
+          <circle cx="27" cy="22" r="4" fill="none" stroke="#7a3a32" strokeWidth="2" />
+          <rect x="23" y="25" width="8" height="7" rx="1.5" fill="#7a3a32" />
+        </svg>
+      )
+    case 'wavelab-mobile':
+      return (
+        <svg viewBox="0 0 48 48" className="app-icon__svg">
+          <path d="M6 24h6l3-10 5 22 5-28 4 20 3-8h10" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )
     default:
       return null
   }

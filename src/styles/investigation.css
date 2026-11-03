@@ -1,233 +1,136 @@
+/* Tela de título */
 .inv-main-menu {
   position: fixed;
   inset: 0;
   z-index: 2000;
-  display: grid;
-  place-items: center;
-  background: rgba(0, 0, 0, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: clamp(40px, 9vw, 200px);
+  font-family: var(--font-ui, 'Segoe UI', system-ui, sans-serif);
+  background:
+    linear-gradient(90deg, rgba(6, 8, 11, 0.94) 0%, rgba(6, 8, 11, 0.7) 45%, rgba(6, 8, 11, 0.35) 100%),
+    var(--menu-bg, #0a0d11) center / cover;
+  animation: menu-in 400ms ease both;
+}
+
+@keyframes menu-in {
+  from {
+    opacity: 0;
+  }
 }
 
 .inv-main-menu__card {
-  background: #1a1f2a;
-  color: #e8ecf4;
-  padding: 2rem 2.5rem;
-  border-radius: 12px;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  min-width: 280px;
+  align-items: flex-start;
+  gap: 0.35rem;
+  color: #e2dfd5;
+}
+
+.inv-main-menu__card h1 {
+  margin: 0;
+  font-size: clamp(2.6rem, 6vw, 5rem);
+  font-weight: 300;
+  letter-spacing: 0.42em;
+  line-height: 1;
+}
+
+.inv-main-menu__card p {
+  margin: 0.9rem 0 2.4rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #8d979e;
 }
 
 .inv-main-menu__card button {
-  padding: 0.6rem 1rem;
-  cursor: pointer;
-}
-
-.inv-hub {
-  position: fixed;
-  inset: 0;
-  z-index: 1500;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.inv-hub__backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-}
-
-.inv-hub__panel {
-  position: relative;
-  width: min(920px, 92vw);
-  max-height: 86vh;
-  background: #f4f1ea;
-  color: #1c1c1c;
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
-}
-
-.inv-hub__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid #ccc;
-}
-
-.inv-hub__body {
-  padding: 1rem 1.25rem 1.5rem;
-  overflow: auto;
-}
-
-.inv-hub__close {
-  cursor: pointer;
-}
-
-.inv-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.inv-list__item {
-  width: 100%;
-  text-align: left;
-  padding: 0.65rem 0;
-  border: none;
+  padding: 0.55rem 0;
+  font-size: 1.05rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #b7b3a6;
   background: none;
-  border-bottom: 1px solid #ddd;
+  border: 0;
+  border-left: 2px solid transparent;
+  padding-left: 0;
   cursor: pointer;
+  transition:
+    color 140ms,
+    padding-left 160ms,
+    border-color 140ms;
 }
 
-.inv-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  margin-bottom: 1rem;
+.inv-main-menu__card button:hover,
+.inv-main-menu__card button:focus-visible {
+  padding-left: 0.9rem;
+  color: #e2dfd5;
+  border-left-color: #c8963e;
+  outline: none;
 }
 
-.inv-tabs button {
-  cursor: pointer;
-  border: 1px solid #bbb;
-  background: #fff;
-  padding: 0.35rem 0.6rem;
-  border-radius: 4px;
-}
-
-.inv-tabs__active {
-  background: #2c3e50 !important;
-  color: #fff;
-  border-color: #2c3e50 !important;
-}
-
-.inv-doc__block {
-  margin: 0.75rem 0;
-  line-height: 1.5;
-}
-
-.inv-doc__extract {
-  display: block;
-  margin-top: 0.35rem;
-  font-size: 0.85rem;
-  cursor: pointer;
-}
-
-.inv-search-row {
-  display: flex;
-  gap: 0.5rem;
-  margin: 0.75rem 0;
-}
-
-.inv-search-row input {
-  flex: 1;
-  padding: 0.45rem 0.6rem;
-}
-
-.inv-muted {
-  color: #555;
-  font-size: 0.9rem;
-}
-
-.inv-badge {
-  display: inline-block;
-  margin-left: 0.5rem;
-  font-size: 0.8rem;
-  background: #ffe8cc;
-  padding: 0.15rem 0.4rem;
-  border-radius: 4px;
-}
-
+/* Aviso rápido (ex.: item obtido) */
 .inv-toast {
   position: fixed;
-  bottom: 1.25rem;
+  bottom: 1.4rem;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(20, 24, 32, 0.92);
-  color: #fff;
-  padding: 0.55rem 1rem;
-  border-radius: 999px;
-  font-size: 0.9rem;
+  max-width: min(520px, 86vw);
+  padding: 0.6rem 1.1rem;
+  font-family: var(--font-ui, 'Segoe UI', system-ui, sans-serif);
+  font-size: 0.88rem;
+  letter-spacing: 0.03em;
+  color: #e2dfd5;
+  background: rgba(9, 12, 16, 0.92);
+  border: 1px solid rgba(226, 223, 213, 0.16);
+  border-left: 3px solid #c8963e;
+  border-radius: 2px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
   z-index: 3000;
 }
 
+/* Ferramentas de desenvolvimento (só em dev / build e2e) */
 .inv-dev-toggle {
   position: fixed;
-  bottom: 1rem;
-  right: 1rem;
+  bottom: 0.5rem;
+  right: 0.5rem;
   z-index: 2500;
-  opacity: 0.65;
-  font-size: 0.7rem;
-  padding: 0.25rem 0.45rem;
+  opacity: 0.35;
+  font-size: 0.65rem;
+  padding: 0.2rem 0.4rem;
+  color: #9fd8cf;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+.inv-dev-toggle:hover {
+  opacity: 0.9;
 }
 
 .inv-dev {
   position: fixed;
-  bottom: 1rem;
-  right: 1rem;
+  bottom: 0.5rem;
+  right: 0.5rem;
   z-index: 2500;
-  background: #111;
-  color: #0f0;
+  background: #0a0e10;
+  color: #9fd8cf;
   padding: 0.5rem;
-  font-size: 0.75rem;
+  font-family: Consolas, monospace;
+  font-size: 0.72rem;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  max-width: 220px;
+  gap: 0.3rem;
+  max-width: 230px;
+  border: 1px solid rgba(121, 194, 189, 0.3);
 }
 
 .inv-dev button {
   cursor: pointer;
   text-align: left;
+  padding: 0.2rem 0.3rem;
+  border: 1px solid rgba(121, 194, 189, 0.2);
 }
 
-.inv-objectives {
-  position: fixed;
-  bottom: 1rem;
-  left: 1rem;
-  z-index: 110;
-  max-width: min(320px, 42vw);
-  padding: 0.55rem 0.85rem 0.65rem;
-  border-radius: 8px;
-  font-size: 0.82rem;
-  color: #e8ecf4;
-  background: rgba(12, 16, 24, 0.88);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
-}
-
-.inv-objectives__kicker {
-  display: block;
-  font-size: 0.65rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  opacity: 0.65;
-}
-
-.inv-objectives__title {
-  display: block;
-  margin-top: 0.15rem;
-  font-size: 0.88rem;
-}
-
-.inv-objectives ul {
-  margin: 0.35rem 0 0;
-  padding-left: 1.1rem;
-  line-height: 1.35;
-}
-
-.inv-provocation {
-  position: fixed;
-  top: 0.75rem;
-  right: 0.75rem;
-  z-index: 100;
-  background: #2a2a2a;
-  color: #fff;
-  padding: 0.6rem 0.8rem;
-  border-radius: 8px;
-  max-width: 300px;
-  font-size: 0.85rem;
+.inv-dev button:hover {
+  background: rgba(121, 194, 189, 0.12);
 }
