@@ -56,14 +56,14 @@ test('Bloco 1 — screenshots de revisão', async ({ page }) => {
     'Pasta guardada por Júlia',
     'Conversar com Camila a sós',
   ]
+  const { vnPlayTopic } = await import('./vnHelpers')
   for (const label of topics) {
-    await page.getByRole('button', { name: label }).click()
-    while (await page.getByRole('button', { name: 'Continuar' }).isVisible()) {
-      await page.getByRole('button', { name: 'Continuar' }).click()
-    }
+    await vnPlayTopic(page, label, 'hospital-scene')
   }
   await page.screenshot({ path: path.join(out, 'block01-hospital-julia.png'), fullPage: true })
-  await page.getByRole('button', { name: 'Voltar à delegacia' }).click()
+  const { vnLeaveScene } = await import('./vnHelpers')
+  await vnLeaveScene(page, 'hospital-scene')
+  await vnLeaveScene(page, 'hospital-scene')
 
   await page.getByTestId('scene-evidence-box').click()
   await page.getByTestId('case-files-list').getByRole('button').first().click()

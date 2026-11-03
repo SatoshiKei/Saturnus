@@ -1,0 +1,47 @@
+/**
+ * Tokens do sistema de diálogo VN (ADV / Choices / NVL / Backlog).
+ * Escala com --u (quadro 1920×1080).
+ */
+:root {
+  --font-dialogue: 'Lora', 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+  --font-ui: 'Source Sans 3', 'Segoe UI', system-ui, sans-serif;
+
+  --text-dialogue: calc(var(--u) * 30px);
+  --text-dialogue-small: calc(var(--u) * 27px);
+  --text-speaker: calc(var(--u) * 22px);
+  --text-choice: calc(var(--u) * 27px);
+  --text-location: calc(var(--u) * 17px);
+  --text-nvl-speaker: calc(var(--u) * 20px);
+  --text-choice-heading: calc(var(--u) * 15px);
+
+  --line-dialogue: 1.48;
+  --line-nvl: 1.58;
+
+  --vn-safe-x: calc(var(--u) * 48px);
+  --vn-safe-y: calc(var(--u) * 48px);
+  --vn-dialogue-width: min(90%, calc(var(--u) * 1600px));
+  --vn-dialogue-min-h: calc(var(--u) * 220px);
+  --vn-dialogue-max-h: calc(var(--u) * 270px);
+  --vn-dialogue-padding-x: calc(var(--u) * 56px);
+  --vn-dialogue-padding-y: calc(var(--u) * 38px);
+  --vn-dialogue-bottom: calc(var(--u) * 52px);
+  --vn-dialogue-radius: calc(var(--u) * 10px);
+
+  --vn-choice-width: min(calc(var(--u) * 820px), 88vw);
+  --vn-choice-min-h: calc(var(--u) * 76px);
+  --vn-choice-gap: calc(var(--u) * 18px);
+
+  --vn-nvl-width: min(calc(var(--u) * 1120px), 88vw);
+  --vn-nvl-margin-y: calc(var(--u) * 100px);
+  --vn-nvl-block-gap: calc(var(--u) * 30px);
+
+  --vn-panel-bg: rgba(28, 14, 18, 0.88);
+  --vn-panel-border: rgba(143, 106, 44, 0.42);
+  --vn-panel-shadow: 0 calc(var(--u) * 24px) calc(var(--u) * 64px) rgba(0, 0, 0, 0.55);
+  --vn-speaker-color: #d4b06a;
+  --vn-text-color: #ebe4d6;
+
+  --vn-t-adv: 160ms;
+  --vn-t-choice: 200ms;
+  --vn-t-nvl: 180ms;
+}

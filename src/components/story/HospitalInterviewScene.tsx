@@ -10,7 +10,8 @@ import { portraitSrcForStory } from '../../lib/characterSprites'
 import { assetPath } from '../../lib/assetPath'
 import { dispatchActions, setFlag } from '../../game/state/investigationStore'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
-import { VisualNovelDialog } from './VisualNovelDialog'
+import { vnLinesThrough } from '../../lib/vnBeatLog'
+import { VisualNovelDialog, VNSceneShell } from './VisualNovelDialog'
 import '../../styles/visual-novel.css'
 
 const portraits = {
@@ -71,36 +72,41 @@ export function HospitalInterviewScene({ onClose }: { onClose: () => void }) {
   const currentBeat =
     mode === 'play' && activeTopic ? hospitalBeats[activeTopic][beatIndex] : null
 
-  return (
-    <div
-      className="vn-scene"
-      data-testid="hospital-scene"
-      style={{ backgroundImage: `linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.65)), url(${bg})` }}
-    >
-      <header className="vn-scene__bar">
-        <span className="vn-scene__title">Hospital Municipal</span>
-        <button type="button" onClick={onClose}>
-          Sair
-        </button>
-      </header>
+  const playLogLines = useMemo(() => {
+    if (!activeTopic) return []
+    return vnLinesThrough(hospitalBeats[activeTopic], beatIndex, (k) => portraits[k as keyof typeof portraits])
+  }, [activeTopic, beatIndex])
 
+  return (
+    <VNSceneShell
+      title="Hospital Municipal"
+      onClose={onClose}
+      testId="hospital-scene"
+      backgroundStyle={{
+        backgroundImage: `linear-gradient(180deg, rgba(0,0,0,.28), rgba(0,0,0,.52)), url(${bg})`,
+      }}
+    >
       {mode === 'menu' ? (
-        <VisualNovelDialog
-          speaker="Augusto"
-          text={
-            pendingTopics.length
-              ? 'Preciso ouvir Júlia e Camila antes de decidir o próximo passo.'
-              : 'Nada mais a perguntar aqui por enquanto.'
-          }
-          choices={pendingTopics.map((id) => ({ id, label: hospitalTopicLabels[id] }))}
-          onChoice={(id) => {
-            setActiveTopic(id as HospitalTopicId)
-            setBeatIndex(0)
-            setMode('play')
-          }}
-          onContinue={pendingTopics.length === 0 ? finishHospital : undefined}
-          continueLabel="Encerrar visita"
-        />
+        pendingTopics.length ? (
+          <VisualNovelDialog
+            text=""
+            choiceVariant="topics"
+            choiceHint="Preciso ouvir Júlia e Camila antes de decidir o próximo passo."
+            choices={pendingTopics.map((id) => ({ id, label: hospitalTopicLabels[id] }))}
+            onChoice={(id) => {
+              setActiveTopic(id as HospitalTopicId)
+              setBeatIndex(0)
+              setMode('play')
+            }}
+          />
+        ) : (
+          <VisualNovelDialog
+            speaker="Augusto"
+            text="Nada mais a perguntar aqui por enquanto."
+            onContinue={finishHospital}
+            continueLabel="Encerrar visita"
+          />
+        )
       ) : null}
 
       {mode === 'play' && currentBeat ? (
@@ -108,6 +114,8 @@ export function HospitalInterviewScene({ onClose }: { onClose: () => void }) {
           speaker={currentBeat.speaker}
           text={currentBeat.text}
           portraitSrc={currentBeat.portrait ? portraits[currentBeat.portrait] : undefined}
+          logLines={playLogLines}
+          onRewind={() => setBeatIndex((i) => Math.max(0, i - 1))}
           onContinue={() => {
             const beats = activeTopic ? hospitalBeats[activeTopic] : []
             if (beatIndex + 1 < beats.length) setBeatIndex((i) => i + 1)
@@ -124,6 +132,6 @@ export function HospitalInterviewScene({ onClose }: { onClose: () => void }) {
           continueLabel="Voltar à delegacia"
         />
       ) : null}
-    </div>
+    </VNSceneShell>
   )
 }

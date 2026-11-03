@@ -11,7 +11,8 @@ import { assetPath } from '../../lib/assetPath'
 import { dispatchActions, setFlag } from '../../game/state/investigationStore'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { completeVerticeTopic, finishVerticeArchive } from '../../game/story/block02Handlers'
-import { VisualNovelDialog } from './VisualNovelDialog'
+import { vnLinesThrough } from '../../lib/vnBeatLog'
+import { VisualNovelDialog, VNSceneShell } from './VisualNovelDialog'
 import '../../styles/visual-novel.css'
 
 const portraits = {
@@ -84,36 +85,41 @@ export function VerticeInterviewScene({ onClose }: { onClose: () => void }) {
 
   const currentBeat = mode === 'play' && activeTopic ? verticeBeats[activeTopic][beatIndex] : null
 
-  return (
-    <div
-      className="vn-scene"
-      data-testid="vertice-scene"
-      style={{ backgroundImage: `linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,.72)), url(${bg})` }}
-    >
-      <header className="vn-scene__bar">
-        <span className="vn-scene__title">Boate Vértice</span>
-        <button type="button" onClick={finishVisit}>
-          Sair
-        </button>
-      </header>
+  const playLogLines = useMemo(() => {
+    if (!activeTopic) return []
+    return vnLinesThrough(verticeBeats[activeTopic], beatIndex, (k) => portraits[k as keyof typeof portraits])
+  }, [activeTopic, beatIndex])
 
+  return (
+    <VNSceneShell
+      title="Boate Vértice"
+      onClose={finishVisit}
+      testId="vertice-scene"
+      backgroundStyle={{
+        backgroundImage: `linear-gradient(180deg, rgba(0,0,0,.28), rgba(0,0,0,.55)), url(${bg})`,
+      }}
+    >
       {mode === 'menu' ? (
-        <VisualNovelDialog
-          speaker="Augusto"
-          text={
-            pendingTopics.length
-              ? 'Casa fechada — mas quem trabalha aqui ainda lembra de Mariana.'
-              : 'Já ouvi o que podiam dizer por hoje.'
-          }
-          choices={pendingTopics.map((id) => ({ id, label: verticeTopicLabels[id] }))}
-          onChoice={(id) => {
-            setActiveTopic(id as VerticeTopicId)
-            setBeatIndex(0)
-            setMode('play')
-          }}
-          onContinue={pendingTopics.length === 0 ? finishVisit : undefined}
-          continueLabel="Encerrar visita"
-        />
+        pendingTopics.length ? (
+          <VisualNovelDialog
+            text=""
+            choiceVariant="topics"
+            choiceHint="Casa fechada — mas quem trabalha aqui ainda lembra de Mariana."
+            choices={pendingTopics.map((id) => ({ id, label: verticeTopicLabels[id] }))}
+            onChoice={(id) => {
+              setActiveTopic(id as VerticeTopicId)
+              setBeatIndex(0)
+              setMode('play')
+            }}
+          />
+        ) : (
+          <VisualNovelDialog
+            speaker="Augusto"
+            text="Já ouvi o que podiam dizer por hoje."
+            onContinue={finishVisit}
+            continueLabel="Encerrar visita"
+          />
+        )
       ) : null}
 
       {mode === 'play' && currentBeat ? (
@@ -121,6 +127,8 @@ export function VerticeInterviewScene({ onClose }: { onClose: () => void }) {
           speaker={currentBeat.speaker}
           text={currentBeat.text}
           portraitSrc={currentBeat.portrait ? portraits[currentBeat.portrait] : undefined}
+          logLines={playLogLines}
+          onRewind={() => setBeatIndex((i) => Math.max(0, i - 1))}
           onContinue={() => {
             const beats = activeTopic ? verticeBeats[activeTopic] : []
             if (beatIndex + 1 < beats.length) setBeatIndex((i) => i + 1)
@@ -128,6 +136,6 @@ export function VerticeInterviewScene({ onClose }: { onClose: () => void }) {
           }}
         />
       ) : null}
-    </div>
+    </VNSceneShell>
   )
 }

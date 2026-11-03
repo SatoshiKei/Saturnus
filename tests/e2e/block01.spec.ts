@@ -56,13 +56,12 @@ test('Bloco 1 — fluxo principal', async ({ page }) => {
     'Pasta guardada por Júlia',
     'Conversar com Camila a sós',
   ]
+  const { vnPlayTopic, vnLeaveScene } = await import('./vnHelpers')
   for (const label of topics) {
-    await page.getByRole('button', { name: label }).click()
-    while (await page.getByRole('button', { name: 'Continuar' }).isVisible()) {
-      await page.getByRole('button', { name: 'Continuar' }).click()
-    }
+    await vnPlayTopic(page, label, 'hospital-scene')
   }
-  await page.getByRole('button', { name: 'Voltar à delegacia' }).click()
+  await vnLeaveScene(page, 'hospital-scene')
+  await vnLeaveScene(page, 'hospital-scene')
 
   await page.getByTestId('scene-augusto-phone').click()
   await expect(page.getByTestId('phone-shell')).toBeVisible()

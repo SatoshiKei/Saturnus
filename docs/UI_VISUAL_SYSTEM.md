@@ -35,6 +35,7 @@ Sem branco puro, sem azul padrão e sem verde de dashboard. Animações de 100�
 | `LocationsMap` | `panels/LocationsPanel.tsx` | Mapa com pinos; card com VISITAR e pessoas relacionadas. |
 | `CaseNotepad` | `components/investigation/CaseNotepad.tsx` | Pendências de Augusto: aba pequena / folha lateral “CASO MARIANA SILVA”. |
 | `PhoneShell` / `PhoneObject` | `src/phone/` | Smartphone fino, sem logotipo; dois aparelhos distintos (`data-device`). |
+| Sistema VN | `components/story/vn/*`, `styles/vn-tokens.css` | **ADV** (Lora, caixa ~220–270px @1080), **Choices** (overlay central, tópicos), **NVL** (páginas, ↑/scroll up), **Backlog** (tecla L). Tokens compartilhados; barra superior `VNTopBar`. |
 
 CSS: `tokens.css`, `scene.css`, `game-ui.css`, `phone.css`, `device-apps.css`, `investigation.css` (título, aviso, ferramentas dev).
 
@@ -43,6 +44,7 @@ CSS: `tokens.css`, `scene.css`, `game-ui.css`, `phone.css`, `device-apps.css`, `
 - `npm test` (unitários), `npm run build`, `npm run test:e2e` (fluxo + `visual.spec.ts`).
 - `tests/e2e/visual.spec.ts`: 1920×1080, 1600×900 e 1366×768; confere que objetos e painéis ficam dentro do quadro e salva
   capturas em `artifacts/ui/<resolução>/`.
+- `tests/e2e/vn-dialogue-screenshots.spec.ts`: ADV, escolhas (3/5), NVL e fundos claro/escuro → `artifacts/ui/vn-dialogue-refactor/<resolução>/`.
 - `node scripts/capture-ui.mjs [url] [saída] [resoluções]`: capturas mais ricas (dev server), usadas em `docs/assets/ui-refactor/`.
 - `node scripts/audit-assets.mjs`: regenera `docs/assets/ui-asset-audit.md`.
 - Antes/depois: `docs/assets/ui-refactor/before-*.png` e `docs/assets/ui-refactor/<resolução>/`.

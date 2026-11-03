@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { vnLeaveScene, vnPlayTopic } from './vnHelpers'
 
 const block02Shots = path.join(path.dirname(fileURLToPath(import.meta.url)), '../../artifacts/ui/block02')
 
@@ -14,16 +15,6 @@ async function dismissMenu(page: Page) {
   const opening = page.getByTestId('block01-opening')
   if (await opening.isVisible()) {
     await expect(opening).toBeHidden({ timeout: 8000 })
-  }
-}
-
-async function vnPlayTopic(page: Page, label: string, sceneTestId: string) {
-  const scene = page.getByTestId(sceneTestId)
-  const btn = scene.getByRole('button', { name: label, exact: true })
-  await expect(btn).toBeVisible()
-  await btn.click()
-  while (await scene.getByRole('button', { name: 'Continuar' }).isVisible()) {
-    await scene.getByRole('button', { name: 'Continuar' }).click()
   }
 }
 
@@ -60,7 +51,7 @@ test('Bloco 2 — duas trilhas até convergência', async ({ page }) => {
     await vnPlayTopic(page, label, 'vertice-scene')
   }
   await vnPlayTopic(page, 'Consultar arquivos antigos', 'vertice-scene')
-  await page.getByTestId('vertice-scene').getByRole('button', { name: 'Encerrar visita' }).click()
+  await vnLeaveScene(page, 'vertice-scene')
 
   await page.getByTestId('scene-mariana-phone').click()
   await page.getByTestId('app-notes').click()
@@ -88,7 +79,8 @@ test('Bloco 2 — duas trilhas até convergência', async ({ page }) => {
   ]) {
     await vnPlayTopic(page, label, 'lucas-scene')
   }
-  await page.getByTestId('lucas-scene').getByRole('button', { name: 'Voltar à delegacia' }).click()
+  await vnLeaveScene(page, 'lucas-scene')
+  await vnLeaveScene(page, 'lucas-scene')
 
   await page.getByTestId('scene-monitor').click()
   await page.getByRole('button', { name: 'Busca' }).click()

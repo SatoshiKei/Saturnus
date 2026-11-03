@@ -11,7 +11,8 @@ import { assetPath } from '../../lib/assetPath'
 import { setFlag } from '../../game/state/investigationStore'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { finishLucasInterview } from '../../game/story/block02Handlers'
-import { VisualNovelDialog } from './VisualNovelDialog'
+import { vnLinesThrough } from '../../lib/vnBeatLog'
+import { VisualNovelDialog, VNSceneShell } from './VisualNovelDialog'
 import '../../styles/visual-novel.css'
 
 const lucasPortrait = portraitSrcForStory('lucas')
@@ -55,36 +56,41 @@ export function LucasInterviewScene({ onClose }: { onClose: () => void }) {
   const pendingTopics = LUCAS_TOPIC_IDS.filter((id) => !doneTopics.has(id))
   const currentBeat = mode === 'play' && activeTopic ? lucasBeats[activeTopic][beatIndex] : null
 
-  return (
-    <div
-      className="vn-scene"
-      data-testid="lucas-scene"
-      style={{ backgroundImage: `linear-gradient(180deg, rgba(0,0,0,.4), rgba(0,0,0,.68)), url(${bg})` }}
-    >
-      <header className="vn-scene__bar">
-        <span className="vn-scene__title">Entrevista — Lucas Moreira</span>
-        <button type="button" onClick={onClose}>
-          Sair
-        </button>
-      </header>
+  const playLogLines = useMemo(() => {
+    if (!activeTopic) return []
+    return vnLinesThrough(lucasBeats[activeTopic], beatIndex, () => lucasPortrait)
+  }, [activeTopic, beatIndex])
 
+  return (
+    <VNSceneShell
+      title="Entrevista — Lucas Moreira"
+      onClose={onClose}
+      testId="lucas-scene"
+      backgroundStyle={{
+        backgroundImage: `linear-gradient(180deg, rgba(0,0,0,.28), rgba(0,0,0,.55)), url(${bg})`,
+      }}
+    >
       {mode === 'menu' ? (
-        <VisualNovelDialog
-          speaker="Augusto"
-          text={
-            pendingTopics.length
-              ? 'Lucas está tenso — mas disposto a falar.'
-              : 'Nada mais a perguntar por enquanto.'
-          }
-          choices={pendingTopics.map((id) => ({ id, label: lucasTopicLabels[id] }))}
-          onChoice={(id) => {
-            setActiveTopic(id as LucasTopicId)
-            setBeatIndex(0)
-            setMode('play')
-          }}
-          onContinue={pendingTopics.length === 0 && inv.flags.block02_lucas_interview_done ? onClose : undefined}
-          continueLabel="Encerrar entrevista"
-        />
+        pendingTopics.length ? (
+          <VisualNovelDialog
+            text=""
+            choiceVariant="topics"
+            choiceHint="Lucas está tenso — mas disposto a falar."
+            choices={pendingTopics.map((id) => ({ id, label: lucasTopicLabels[id] }))}
+            onChoice={(id) => {
+              setActiveTopic(id as LucasTopicId)
+              setBeatIndex(0)
+              setMode('play')
+            }}
+          />
+        ) : (
+          <VisualNovelDialog
+            speaker="Augusto"
+            text="Nada mais a perguntar por enquanto."
+            onContinue={onClose}
+            continueLabel="Encerrar entrevista"
+          />
+        )
       ) : null}
 
       {mode === 'play' && currentBeat ? (
@@ -92,6 +98,8 @@ export function LucasInterviewScene({ onClose }: { onClose: () => void }) {
           speaker={currentBeat.speaker}
           text={currentBeat.text}
           portraitSrc={currentBeat.portrait ? lucasPortrait : undefined}
+          logLines={playLogLines}
+          onRewind={() => setBeatIndex((i) => Math.max(0, i - 1))}
           onContinue={() => {
             const beats = activeTopic ? lucasBeats[activeTopic] : []
             if (beatIndex + 1 < beats.length) setBeatIndex((i) => i + 1)
@@ -108,6 +116,6 @@ export function LucasInterviewScene({ onClose }: { onClose: () => void }) {
           continueLabel="Voltar à delegacia"
         />
       ) : null}
-    </div>
+    </VNSceneShell>
   )
 }
