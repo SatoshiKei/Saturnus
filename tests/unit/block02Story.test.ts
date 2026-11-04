@@ -6,15 +6,14 @@ import { runPoliceSearch } from '../../src/game/search/runSearch'
 import {
   __setStateForTests,
   getInvestigationState,
+  openDocument,
   resetGame,
 } from '../../src/game/state/investigationStore'
 import {
-  applyPoliceSearchHit,
   finishLucasInterview,
   finishVerticeArchive,
   onRafaelForwardAudioPlayed,
   runProvisionalRafaelForwardAnalysis,
-  tryRegisterConvergence,
 } from '../../src/game/story/block02Handlers'
 
 describe('Bloco 2 — progressão', () => {
@@ -46,8 +45,8 @@ describe('Bloco 2 — progressão', () => {
     let s = createInitialState()
     s = applyStoryActions(s, [{ type: 'setFlag', id: 'block02_elisa_search_unlocked', value: true }])
     const { hits } = runPoliceSearch('Elisa Duarte', s)
-    expect(hits.some((h) => h.evidenceId === 'elisa_case_summary')).toBe(true)
-    expect(hits.some((h) => h.evidenceId === 'nico_elisa_witness')).toBe(true)
+    expect(hits.some((h) => h.documentId === 'doc-elisa-resumo')).toBe(true)
+    expect(hits.some((h) => h.documentId === 'doc-elisa-testemunhas')).toBe(true)
 
     s = createInitialState()
     const blocked = runPoliceSearch('elisa', s)
@@ -62,12 +61,11 @@ describe('Bloco 2 — progressão', () => {
         { type: 'addEvidence', id: 'paula_leads_lucas' },
       ]),
     )
-    tryRegisterConvergence()
     expect(getInvestigationState().flags.block02_convergence_done).toBeFalsy()
 
-    applyPoliceSearchHit('elisa_case_summary')
-    applyPoliceSearchHit('nico_elisa_witness')
-    tryRegisterConvergence()
+    openDocument('doc-elisa-resumo')
+    expect(getInvestigationState().flags.block02_convergence_done).toBeFalsy()
+    openDocument('doc-elisa-testemunhas')
     const s = getInvestigationState()
     expect(s.flags.block02_convergence_done).toBe(true)
     expect(s.flags.block02_complete).toBe(true)

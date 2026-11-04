@@ -138,9 +138,9 @@ export const seedPeople: Person[] = [
   },
   {
     id: 'samuel',
-    name: 'Samuel',
+    name: 'Samuel Teixeira',
     status: 'mentioned',
-    notes: ['Citado em cobertura dos protestos'],
+    notes: ['Nome citado em material sobre os protestos'],
     relatedEvidenceIds: [],
     relatedPersonIds: [],
   },

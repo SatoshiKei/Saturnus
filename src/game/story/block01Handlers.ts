@@ -21,6 +21,10 @@ export function registerInitialPoliceReport() {
     { type: 'linkHypothesis', hypothesisId: 'hyp_kidnapping', evidenceId: 'emergency_call_raw', role: 'support' },
     { type: 'linkHypothesis', hypothesisId: 'hyp_kidnapping', evidenceId: 'mariana_phone', role: 'support' },
     { type: 'completeTask', id: 'task_review_bo' },
+    { type: 'addDocument', id: 'doc-central-chamada' },
+    { type: 'addDocument', id: 'doc-entrada-apartamento' },
+    { type: 'addDocument', id: 'doc-apreensao-celular' },
+    { type: 'addDocument', id: 'doc-extracao-inicial' },
   ]
   dispatchActions(actions)
 }

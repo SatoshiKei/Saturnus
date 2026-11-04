@@ -1,11 +1,15 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { contactById } from '../../data/mockContacts'
 import { getChatById } from '../../data/mockChats'
+import { chatScripts, formatClock } from '../../data/chatScripts'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
-import { onPaulaAugustoChatOpened, onRafaelForwardAudioPlayed } from '../../game/story/block02Handlers'
+import { appendChatMessages, dispatchActions } from '../../game/state/investigationStore'
+import { onRafaelForwardAudioPlayed } from '../../game/story/block02Handlers'
 import { phoneFeatureLocks } from '../../data/phoneFeatures'
 import { onJuliaChatReviewed, onRafaelAudioPlayed } from '../../game/story/block01Handlers'
 import { Avatar } from '../../components/Avatar'
+import { playSfx } from '../../lib/sfx'
+import type { ChatMessage } from '../../types/messaging'
 import { ChatComposer } from './ChatComposer'
 import { ImageLightbox } from './ImageLightbox'
 import { MessageBubble } from './MessageBubble'
@@ -18,23 +22,102 @@ interface ChatViewProps {
 export function ChatView({ chatId, onBack }: ChatViewProps) {
   const inv = useInvestigation()
   const chat = getChatById(chatId, inv)
+  const script = chatScripts[chatId]
+  const scriptChat = Boolean(script) && inv.phones.augusto.unlockedChatIds.includes(chatId)
+  const progress = inv.chatProgress[chatId] ?? { step: 0, done: false, messages: [] }
   const [lightbox, setLightbox] = useState<{ src: string; alt: string; caption?: string } | null>(
     null,
   )
   const [composerHint, setComposerHint] = useState<string | null>(null)
+  /** Quantas respostas ainda estão “sendo digitadas” (ocultas até o fim do atraso). */
+  const [pendingReplies, setPendingReplies] = useState(0)
   const messagesRef = useRef<HTMLDivElement>(null)
+  const timers = useRef<number[]>([])
 
   useEffect(() => {
     if (!chat) return
     if (chatId === 'chat-julia') onJuliaChatReviewed()
-    if (chatId === 'chat-paula-augusto') onPaulaAugustoChatOpened()
   }, [chatId, chat])
+
+  useEffect(
+    () => () => {
+      timers.current.forEach((t) => window.clearTimeout(t))
+    },
+    [],
+  )
+
+  // Fim do roteiro: só conclui depois que todas as respostas foram exibidas.
+  useEffect(() => {
+    if (!scriptChat || !script) return
+    if (pendingReplies > 0) return
+    if (progress.step >= script.steps.length && !progress.done) {
+      appendChatMessages(chatId, [], progress.step, true)
+      dispatchActions(script.onComplete)
+    }
+  }, [scriptChat, script, pendingReplies, progress.step, progress.done, chatId])
+
+  const visibleMessages = chat
+    ? pendingReplies > 0
+      ? chat.messages.slice(0, Math.max(0, chat.messages.length - pendingReplies))
+      : chat.messages
+    : []
 
   useEffect(() => {
     const el = messagesRef.current
     if (!el) return
     el.scrollTop = el.scrollHeight
-  }, [chatId, chat?.messages.length])
+  }, [chatId, visibleMessages.length, pendingReplies])
+
+  const choose = useCallback(
+    (optionIndex: number) => {
+      if (!script || pendingReplies > 0) return
+      const step = script.steps[progress.step]
+      if (!step) return
+      const text = step.options[optionIndex]
+      const stamp = (n: number) => formatClock(script.startTime, progress.step * 2 + n)
+      const mine: ChatMessage = {
+        id: `${chatId}-s${progress.step}-me`,
+        kind: 'text',
+        from: 'me',
+        text,
+        timestamp: stamp(0),
+        status: 'read',
+      }
+      const replies: ChatMessage[] = step.replies.map((r, j) =>
+        r.kind === 'text'
+          ? {
+              id: `${chatId}-s${progress.step}-r${j}`,
+              kind: 'text',
+              from: 'them',
+              text: r.text,
+              timestamp: stamp(1),
+            }
+          : {
+              id: r.id,
+              kind: 'audio',
+              from: 'them',
+              audioSrc: r.audioSrc,
+              durationSec: r.durationSec,
+              timestamp: stamp(1),
+              showAvatar: true,
+            },
+      )
+      playSfx('msg-out')
+      appendChatMessages(chatId, [mine, ...replies], progress.step + 1, false)
+      setPendingReplies(replies.length)
+      replies.forEach((r, j) => {
+        const len = r.kind === 'text' ? r.text.length : 30
+        const delay = 900 + j * 1100 + Math.min(1400, len * 14)
+        timers.current.push(
+          window.setTimeout(() => {
+            playSfx('msg-in')
+            setPendingReplies((n) => Math.max(0, n - 1))
+          }, delay),
+        )
+      })
+    },
+    [chatId, pendingReplies, progress.step, script],
+  )
 
   if (!chat) {
     return (
@@ -45,6 +128,9 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
   }
   const contact = contactById[chat.contactId]
   const title = chat.isGroup ? (chat.groupTitle ?? contact.name) : contact.name
+  const currentStep = scriptChat && script && !progress.done ? script.steps[progress.step] : undefined
+  const showOptions = Boolean(currentStep) && pendingReplies === 0
+  const typing = pendingReplies > 0
 
   return (
     <div className="wa-chat-view" data-testid="whatsapp-chat-view">
@@ -58,7 +144,9 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
           {chat.isGroup ? (
             <span className="wa-chat-header__sub">toque para info do grupo</span>
           ) : (
-            <span className="wa-chat-header__sub">online</span>
+            <span className="wa-chat-header__sub" data-testid="chat-presence">
+              {typing ? 'digitando…' : 'online'}
+            </span>
           )}
         </div>
         <div className="wa-chat-header__actions">
@@ -94,7 +182,12 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
       </header>
 
       <div className="wa-messages" ref={messagesRef}>
-        {chat.messages.map((message) => (
+        {scriptChat && visibleMessages.length === 0 && !typing ? (
+          <p className="wa-empty-thread" data-testid="chat-empty-thread">
+            {script?.emptyHint}
+          </p>
+        ) : null}
+        {visibleMessages.map((message) => (
           <MessageBubble
             key={message.id}
             message={message}
@@ -110,11 +203,46 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
             }
           />
         ))}
+        {typing ? (
+          <div className="wa-row wa-row--in" data-testid="chat-typing">
+            <span className="wa-row__avatar-spacer" />
+            <div className="wa-bubble wa-bubble--text wa-bubble--tail-in wa-typing" aria-label="digitando">
+              <span />
+              <span />
+              <span />
+            </div>
+          </div>
+        ) : null}
       </div>
 
       <footer className="wa-chat-view__footer">
+        {showOptions && currentStep ? (
+          <div className="wa-script-options" data-testid="chat-script-options" role="group" aria-label="Escrever mensagem">
+            {currentStep.options.map((opt, i) => (
+              <button
+                key={opt}
+                type="button"
+                className="wa-script-options__btn"
+                data-testid={`chat-option-${i}`}
+                onClick={() => choose(i)}
+              >
+                {opt}
+              </button>
+            ))}
+          </div>
+        ) : null}
         {composerHint ? <p className="wa-composer-hint">{composerHint}</p> : null}
-        <ChatComposer onBlockedAction={() => setComposerHint('Envio indisponível nesta fase da investigação.')} />
+        <ChatComposer
+          onBlockedAction={() =>
+            setComposerHint(
+              !scriptChat
+                ? 'Envio indisponível nesta fase da investigação.'
+                : showOptions
+                  ? 'Escolha como escrever a mensagem acima.'
+                  : 'Aguarde a resposta…',
+            )
+          }
+        />
       </footer>
 
       {lightbox ? (

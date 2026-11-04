@@ -1,9 +1,32 @@
-import { extraTimelineOnContradiction, hypothesisCatalog } from '../../data/game/seedStory'
+﻿import { contradictionDefs, extraTimelineOnContradiction, hypothesisCatalog, seedProvocations } from '../../data/game/seedStory'
+import { seedDocuments } from '../../data/game/seedDocuments'
+import { evidenceSourceLabel } from '../../lib/labels'
 import { seedEvidenceCatalog } from '../../data/game/seedEvidence'
 import { block01MarianaChatIds } from '../../data/block01/marianaChats'
 import { appDefinitions } from '../../data/game/seedApps'
-import type { InvestigationState, StoryActionRef } from '../types'
+import type { DiscoveryEvent, InvestigationState, StoryActionRef } from '../types'
 import { maxPersonStatus } from '../state/personStatusOrder'
+
+/** Empilha um evento de descoberta (sem duplicar o mesmo id). */
+export function withDiscovery(state: InvestigationState, ev: DiscoveryEvent): InvestigationState {
+  if (state.discoveries.some((d) => d.id === ev.id)) return state
+  // Vários áudios seguidos (ex.: lote preservado pela central) viram um único aviso.
+  if (ev.kind === 'audio') {
+    const idx = state.discoveries.findIndex((d) => d.kind === 'audio')
+    if (idx >= 0) {
+      const prev = state.discoveries[idx]
+      const count = (prev.count ?? 1) + 1
+      const merged: DiscoveryEvent = {
+        ...prev,
+        title: 'Novos áudios na bancada',
+        subtitle: `${count} arquivos`,
+        count,
+      }
+      return { ...state, discoveries: state.discoveries.map((d, i) => (i === idx ? merged : d)) }
+    }
+  }
+  return { ...state, discoveries: [...state.discoveries, ev] }
+}
 
 function catalogEvidence(id: string) {
   return seedEvidenceCatalog.find((e) => e.id === id)
@@ -37,13 +60,41 @@ function applyOne(state: InvestigationState, action: StoryActionRef): Investigat
       if (state.evidenceOwned.includes(action.id)) return state
       const def = catalogEvidence(action.id)
       if (!def) return state
-      return {
-        ...state,
-        evidence: { ...state.evidence, [action.id]: def },
-        evidenceOwned: [...state.evidenceOwned, action.id],
-        toastQueue: [...state.toastQueue, 'Nova evidência adicionada'],
-      }
+      return withDiscovery(
+        {
+          ...state,
+          evidence: { ...state.evidence, [action.id]: def },
+          evidenceOwned: [...state.evidenceOwned, action.id],
+        },
+        {
+          id: `evidence:${action.id}`,
+          kind: def.type === 'audio' ? 'audio' : 'evidence',
+          title: def.type === 'audio' ? (def.displayFileName ?? def.title) : def.title,
+          subtitle: def.type === 'audio' ? 'Disponível na bancada de áudio' : undefined,
+          source: evidenceSourceLabel(def),
+          summary: def.description,
+          refId: action.id,
+        },
+      )
     }
+    case 'addDocument': {
+      if (state.documentsOwned.includes(action.id)) return state
+      const doc = seedDocuments.find((d) => d.id === action.id)
+      if (!doc) return state
+      return withDiscovery(
+        { ...state, documentsOwned: [...state.documentsOwned, action.id] },
+        {
+          id: `document:${action.id}`,
+          kind: 'document',
+          title: doc.title,
+          subtitle: doc.category,
+          refId: action.id,
+        },
+      )
+    }
+    case 'completeCall':
+      if (state.callsDone.includes(action.id)) return state
+      return { ...state, callsDone: [...state.callsDone, action.id] }
     case 'discoverPerson': {
       const p = state.people[action.id]
       if (!p) return state
@@ -59,18 +110,35 @@ function applyOne(state: InvestigationState, action: StoryActionRef): Investigat
     case 'unlockLocation': {
       const loc = state.locations[action.id]
       if (!loc) return state
-      return {
+      const nextStatus = action.status ?? 'known'
+      const moved = {
         ...state,
         locations: {
           ...state.locations,
-          [action.id]: { ...loc, status: action.status ?? 'known' },
+          [action.id]: { ...loc, status: nextStatus },
         },
       }
+      if (loc.status !== 'unknown' || nextStatus === 'unknown' || loc.mapX === undefined) return moved
+      return withDiscovery(moved, {
+        id: `location:${action.id}`,
+        kind: 'location',
+        title: loc.name,
+        subtitle: 'Marcado no mapa',
+        refId: action.id,
+      })
     }
     case 'unlockContact': {
       const c = state.contacts[action.contactId]
       if (!c) return state
-      return { ...state, contacts: { ...state.contacts, [action.contactId]: { ...c, unlocked: true } } }
+      const moved = { ...state, contacts: { ...state.contacts, [action.contactId]: { ...c, unlocked: true } } }
+      if (c.unlocked) return moved
+      return withDiscovery(moved, {
+        id: `contact:${action.contactId}`,
+        kind: 'contact',
+        title: c.displayName,
+        subtitle: c.phone ? `Número registrado: ${c.phone}` : 'Registrado na agenda',
+        refId: action.contactId,
+      })
     }
     case 'unlockTopic':
       if (state.interviewTopicsUnlocked.includes(action.id)) return state
@@ -80,15 +148,27 @@ function applyOne(state: InvestigationState, action: StoryActionRef): Investigat
       }
     case 'addTask': {
       if (state.tasks.some((t) => t.id === action.id)) return state
-      return {
-        ...state,
-        tasks: [...state.tasks, { id: action.id, label: action.label ?? action.id, completed: false }],
-      }
+      return withDiscovery(
+        {
+          ...state,
+          tasks: [...state.tasks, { id: action.id, label: action.label ?? action.id, completed: false }],
+        },
+        { id: `objective:${action.id}`, kind: 'objective', title: action.label ?? action.id, refId: action.id },
+      )
     }
     case 'removeTask':
       return { ...state, tasks: state.tasks.filter((t) => t.id !== action.id) }
-    case 'replaceTasks':
-      return { ...state, tasks: action.tasks.map((t) => ({ ...t })) }
+    case 'replaceTasks': {
+      const replaced = { ...state, tasks: action.tasks.map((t) => ({ ...t })) }
+      const fresh = action.tasks.find((t) => !t.completed && !state.tasks.some((o) => o.id === t.id))
+      if (!fresh) return replaced
+      return withDiscovery(replaced, {
+        id: `objective:${fresh.id}`,
+        kind: 'objective',
+        title: fresh.label,
+        refId: fresh.id,
+      })
+    }
     case 'completeTask':
       return {
         ...state,
@@ -117,14 +197,6 @@ function applyOne(state: InvestigationState, action: StoryActionRef): Investigat
         },
       }
     }
-    case 'revealHiddenApps':
-      return {
-        ...state,
-        phones: {
-          ...state.phones,
-          mariana: { ...state.phones.mariana, hiddenAppsRevealed: true },
-        },
-      }
     case 'discoverPassword':
       return {
         ...state,
@@ -145,17 +217,26 @@ function applyOne(state: InvestigationState, action: StoryActionRef): Investigat
             installedAppIds: [...phone.installedAppIds, action.appId],
           },
         },
-        toastQueue: [...state.toastQueue, 'Aplicativo instalado'],
       }
     }
     case 'addHypothesis': {
       if (state.hypotheses[action.id]) return state
       const def = hypothesisCatalog.find((h) => h.id === action.id)
       if (!def) return state
-      return {
-        ...state,
-        hypotheses: { ...state.hypotheses, [action.id]: { ...def, supportingEvidenceIds: [...def.supportingEvidenceIds], contradictingEvidenceIds: [...def.contradictingEvidenceIds] } },
-      }
+      return withDiscovery(
+        {
+          ...state,
+          hypotheses: {
+            ...state.hypotheses,
+            [action.id]: {
+              ...def,
+              supportingEvidenceIds: [...def.supportingEvidenceIds],
+              contradictingEvidenceIds: [...def.contradictingEvidenceIds],
+            },
+          },
+        },
+        { id: `hypothesis:${action.id}`, kind: 'hypothesis', title: def.title, refId: action.id },
+      )
     }
     case 'linkHypothesis': {
       const h = state.hypotheses[action.hypothesisId]
@@ -183,21 +264,36 @@ function applyOne(state: InvestigationState, action: StoryActionRef): Investigat
     }
     case 'confirmContradiction':
       if (state.contradictionsConfirmed.some((c) => c.id === action.id)) return state
-      return {
-        ...state,
-        contradictionsConfirmed: [
-          ...state.contradictionsConfirmed,
-          { id: action.id, confirmedAt: new Date().toISOString() },
-        ],
-        toastQueue: [...state.toastQueue, 'Contradição registrada'],
-      }
-    case 'pushProvocation':
+      return withDiscovery(
+        {
+          ...state,
+          contradictionsConfirmed: [
+            ...state.contradictionsConfirmed,
+            { id: action.id, confirmedAt: new Date().toISOString() },
+          ],
+        },
+        {
+          id: `contradiction:${action.id}`,
+          kind: 'contradiction',
+          title: 'CONTRADIÇÃO REGISTRADA',
+          summary: contradictionDefs.find((c) => c.id === action.id)?.summary,
+          refId: action.id,
+        },
+      )
+    case 'pushProvocation': {
       if (state.provocationsPending.includes(action.id)) return state
-      return {
-        ...state,
-        provocationsPending: [...state.provocationsPending, action.id],
-        toastQueue: [...state.toastQueue, 'Nova mensagem recebida'],
-      }
+      const prov = seedProvocations.find((p) => p.id === action.id)
+      return withDiscovery(
+        { ...state, provocationsPending: [...state.provocationsPending, action.id] },
+        {
+          id: `message:${action.id}`,
+          kind: 'message',
+          title: 'Nova mensagem',
+          subtitle: prov?.preview,
+          refId: action.id,
+        },
+      )
+    }
     case 'discoverSearchTerm': {
       const term = action.term.toLowerCase()
       if (state.searchTermsDiscovered.includes(term)) return state
@@ -226,3 +322,4 @@ export function createInitialPhoneState(device: 'mariana' | 'augusto') {
     readMessageIds: [] as string[],
   }
 }
+

@@ -158,7 +158,11 @@
   z-index: 1;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 18px 8px;
+  gap: 12px 6px;
+  align-content: start;
+  max-height: calc(100% - 210px);
+  overflow-y: auto;
+  scrollbar-width: none;
 }
 
 .phone-home__app {
@@ -277,6 +281,34 @@
   background: linear-gradient(160deg, #4f93e0, #2457a8);
 }
 
+.app-icon--messages {
+  background: linear-gradient(160deg, #7be495, #1fb85c);
+}
+
+.app-icon--camera {
+  background: linear-gradient(160deg, #9aa5ad, #4b555c);
+}
+
+.app-icon--mail {
+  background: linear-gradient(160deg, #6ab7ff, #1f6fd1);
+}
+
+.app-icon--maps {
+  background: linear-gradient(160deg, #8fd694, #3b9b5a);
+}
+
+.app-icon--clock {
+  background: linear-gradient(160deg, #3b3f45, #101216);
+}
+
+.app-icon--calculator {
+  background: linear-gradient(160deg, #ffb35c, #e0701a);
+}
+
+.app-icon--weather {
+  background: linear-gradient(160deg, #6fb8ff, #2f6fd6);
+}
+
 .app-icon--hidden-diary {
   background: linear-gradient(160deg, #6b4a6e, #2e1d33);
 }
@@ -347,4 +379,73 @@
 
 .ios-app-header--calendar {
   background: #fff;
+}
+
+/* Contatos do celular de Augusto */
+.phone-app-recents__seg-item {
+  font: inherit;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.phone-contacts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+.phone-contacts__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.phone-contacts__row[data-new='true'] {
+  background: rgba(200, 150, 62, 0.1);
+}
+.phone-contacts__who {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.phone-contacts__name {
+  overflow-wrap: anywhere;
+  font-size: 14px;
+}
+.phone-contacts__num {
+  font-size: 11px;
+  opacity: 0.6;
+}
+.phone-contacts__call {
+  padding: 5px 12px;
+  font-size: 12px;
+  color: #0d1a14;
+  background: #6fa883;
+  border: 0;
+  border-radius: 12px;
+  cursor: pointer;
+}
+.phone-home__app,
+.phone-home__dock-app {
+  position: relative;
+}
+.phone-home__badge {
+  position: absolute;
+  top: -4px;
+  right: 2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  background: #d33b2c;
+  border-radius: 999px;
 }

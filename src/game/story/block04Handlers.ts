@@ -2,22 +2,6 @@ import { HEX_EVIDENCE_IDS } from '../../data/block04/hexagonPuzzle'
 import { dispatchActions, getInvestigationState } from '../state/investigationStore'
 import type { StoryActionRef } from '../types'
 
-export function onSamuelCurrentRecordFound() {
-  const s = getInvestigationState()
-  if (s.flags.block04_samuel_located) return
-  dispatchActions([
-    { type: 'setFlag', id: 'block04_samuel_located', value: true },
-    { type: 'discoverPerson', id: 'samuel', status: 'located' },
-    { type: 'discoverPerson', id: 'samuel', status: 'contactable' },
-    { type: 'completeTask', id: 'task_identify_morsa' },
-    {
-      type: 'addTask',
-      id: 'task_interview_samuel',
-      label: 'Ouvir Samuel sobre Morsa e os protestos',
-    },
-  ])
-}
-
 export function finishSamuelInterview() {
   const s = getInvestigationState()
   if (s.flags.block04_samuel_interview_done) return
@@ -27,34 +11,17 @@ export function finishSamuelInterview() {
     { type: 'addEvidence', id: 'samuel_confirms_morsa' },
     { type: 'addEvidence', id: 'mariana_sought_samuel' },
     { type: 'addEvidence', id: 'mariana_morsa_timing' },
-    { type: 'completeTask', id: 'task_interview_samuel' },
-    { type: 'setFlag', id: 'block04_andre_records_unlocked', value: true },
+    { type: 'completeTask', id: 'task_identify_morsa' },
     {
       type: 'addTask',
       id: 'task_andre_visits',
-      label: 'Verificar registros de visita Mariana × André',
+      label: 'Conferir os registros de visita de Mariana a André',
     },
     {
       type: 'linkHypothesis',
       hypothesisId: 'hyp_morsa_key',
       evidenceId: 'samuel_confirms_morsa',
       role: 'support',
-    },
-  ])
-}
-
-export function onMarianaAndreVisitRecordFound() {
-  const s = getInvestigationState()
-  if (s.flags.block04_andre_visit_found) return
-  dispatchActions([
-    { type: 'setFlag', id: 'block04_andre_visit_found', value: true },
-    { type: 'completeTask', id: 'task_andre_visits' },
-    { type: 'unlockLocation', id: 'presidio', status: 'visitAvailable' },
-    { type: 'discoverPerson', id: 'andre', status: 'contactable' },
-    {
-      type: 'addTask',
-      id: 'task_interview_andre',
-      label: 'Visitar André na unidade prisional',
     },
   ])
 }
@@ -68,6 +35,7 @@ export function finishAndreInterview() {
     { type: 'addEvidence', id: 'andre_confirms_shift' },
     { type: 'addEvidence', id: 'andre_told_her_to_stop' },
     { type: 'addEvidence', id: 'andre_no_maralto_link' },
+    { type: 'completeTask', id: 'task_andre_visits' },
     { type: 'completeTask', id: 'task_interview_andre' },
     { type: 'unlockLocation', id: 'presidio', status: 'visited' },
     { type: 'addHypothesis', id: 'hyp_andre_manipulating' },
@@ -87,26 +55,27 @@ export function finishAndreInterview() {
     {
       type: 'addTask',
       id: 'task_check_andre_chronology',
-      label: 'Cruzar cronologia: André × contato desconhecido',
+      label: 'Comparar os horários dos contatos com os registros da unidade',
     },
   ])
 }
 
-export function onAndreChronologyMismatchFound() {
+/** A ligação anônima foi atendida: um áudio tocou, a linha caiu. */
+export function onHexCallAnswered() {
   const s = getInvestigationState()
-  if (s.flags.block04_andre_chronology_done) return
+  if (s.flags.block04_hex_call_answered) return
+  dispatchActions([
+    { type: 'setFlag', id: 'block04_hex_call_answered', value: true },
+    { type: 'setFlag', id: 'block04_hex_call_pending', value: false },
+  ])
+}
+
+/** Depois da cena de reflexão: os seis áudios chegam à bancada. */
+export function onHexCallsPreserved() {
+  const s = getInvestigationState()
+  if (s.flags.block04_hex_received) return
   const actions: StoryActionRef[] = [
-    { type: 'setFlag', id: 'block04_andre_chronology_done', value: true },
-    { type: 'completeTask', id: 'task_check_andre_chronology' },
-    { type: 'updateHypothesis', id: 'hyp_andre_manipulating', state: 'weakened' },
-    {
-      type: 'linkHypothesis',
-      hypothesisId: 'hyp_andre_manipulating',
-      evidenceId: 'andre_contact_chronology_mismatch',
-      role: 'contradict',
-    },
     { type: 'setFlag', id: 'block04_hex_received', value: true },
-    { type: 'pushProvocation', id: 'prov_hex_six' },
     ...HEX_EVIDENCE_IDS.map((id) => ({ type: 'addEvidence' as const, id })),
     { type: 'setFlag', id: 'block04_hexagon_available', value: true },
     {
@@ -118,11 +87,8 @@ export function onAndreChronologyMismatchFound() {
   dispatchActions(actions)
 }
 
-/**
- * Puzzle 6 — Hexágono (placeholder).
- * TODO(puzzle-06): inspeção de metadata + grafo A→D→B→F→C→E→A.
- */
-export function runProvisionalHexagonSolve() {
+/** Puzzle 6 resolvido pelo jogador na bancada (sequência A→D→B→F→C→E). */
+export function onHexagonSolved() {
   const s = getInvestigationState()
   if (s.flags.block04_hexagon_done) return
   if (!HEX_EVIDENCE_IDS.every((id) => s.evidenceOwned.includes(id))) return
@@ -134,27 +100,7 @@ export function runProvisionalHexagonSolve() {
     {
       type: 'addTask',
       id: 'task_phone_forensics',
-      label: 'Perícia: procurar o que a tela omite no celular de Mariana',
-    },
-  ])
-}
-
-/** Perícia direcionada — não é exploração aleatória do launcher. */
-export function runPhoneHiddenAppForensics() {
-  const s = getInvestigationState()
-  if (s.flags.block04_forensics_done) return
-  if (!s.flags.block04_forensics_unlocked) return
-  dispatchActions([
-    { type: 'setFlag', id: 'block04_forensics_done', value: true },
-    { type: 'addEvidence', id: 'hidden_app_detected' },
-    { type: 'addEvidence', id: 'hidden_diary_recovered' },
-    { type: 'revealHiddenApps', device: 'mariana' },
-    { type: 'discoverPassword', which: 'diary' },
-    { type: 'completeTask', id: 'task_phone_forensics' },
-    {
-      type: 'addTask',
-      id: 'task_read_diary',
-      label: 'Consultar o diário oculto de Mariana',
+      label: 'Pedir à Perícia uma análise do aparelho de Mariana',
     },
   ])
 }
@@ -189,7 +135,7 @@ export function onDiaryEntryRead(entryId: string, unlocksUnknown: boolean) {
       {
         type: 'addTask',
         id: 'task_unknown_recording',
-        label: 'Localizar e ouvir CHK_UNK (Downloads)',
+        label: 'Localizar a gravação citada no diário',
       },
     )
   }
@@ -247,17 +193,10 @@ export function onUnknownRecordingAnalyzed() {
       tasks: [
         {
           id: 'task_press_nico',
-          label: 'Pressionar Nico sobre o que omitiu da Noite X',
+          label: 'Voltar a falar com Nico sobre a Noite X',
           completed: false,
         },
       ],
     },
   ])
-}
-
-export function applyBlock04SearchHit(evidenceId: string) {
-  if (!evidenceId) return
-  if (evidenceId === 'samuel_current_record') onSamuelCurrentRecordFound()
-  if (evidenceId === 'mariana_andre_visit_record') onMarianaAndreVisitRecordFound()
-  if (evidenceId === 'andre_contact_chronology_mismatch') onAndreChronologyMismatchFound()
 }

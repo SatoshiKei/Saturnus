@@ -2,7 +2,7 @@ import { useEffect, type ReactNode } from 'react'
 import { loadGame } from '../game/state/investigationStore'
 import { MainMenuOverlay } from '../components/investigation/MainMenuOverlay'
 import { DevStoryPanel } from '../components/investigation/DevStoryPanel'
-import { ToastHost } from '../components/investigation/ToastHost'
+import { DiscoveryHost } from '../components/investigation/DiscoveryHost'
 
 export function InvestigationBootstrap({ children }: { children: ReactNode }) {
   useEffect(() => {
@@ -13,7 +13,7 @@ export function InvestigationBootstrap({ children }: { children: ReactNode }) {
     <>
       {children}
       <MainMenuOverlay />
-      <ToastHost />
+      <DiscoveryHost />
       {import.meta.env.DEV || import.meta.env.VITE_ENABLE_DEV_PANEL === 'true' ? (
         <DevStoryPanel />
       ) : null}

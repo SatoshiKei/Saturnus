@@ -1,19 +1,40 @@
-import { revealHiddenApps } from '../../game/state/investigationStore'
-
 interface DeviceSettingsAppProps {
   onBack: () => void
 }
 
+const rows: { label: string; value?: string; icon: string }[] = [
+  { icon: '📶', label: 'Wi-Fi', value: 'Rede_Casa_5G' },
+  { icon: '🔵', label: 'Bluetooth', value: 'Ativado' },
+  { icon: '🔔', label: 'Notificações' },
+  { icon: '⚙️', label: 'Geral' },
+  { icon: '🌗', label: 'Tela e brilho' },
+  { icon: '🔒', label: 'Privacidade' },
+  { icon: '🔋', label: 'Bateria', value: '63%' },
+  { icon: '💾', label: 'Armazenamento', value: '41 GB de 128 GB' },
+]
+
+/** Ajustes comuns: nenhuma linha leva a lugar nenhum. O diário não está aqui nem em nenhum fluxo normal. */
 export function DeviceSettingsApp({ onBack }: DeviceSettingsAppProps) {
   return (
-    <div className="device-app" data-testid="device-settings">
-      <button type="button" onClick={onBack}>
+    <div className="device-app device-settings" data-testid="device-settings">
+      <button type="button" className="device-settings__back" onClick={onBack}>
         ‹ Início
       </button>
       <h2>Ajustes</h2>
-      <button type="button" data-testid="settings-show-hidden-apps" onClick={() => revealHiddenApps()}>
-        Armazenamento — mostrar apps ocultos
-      </button>
+      <ul className="device-settings__list">
+        {rows.map((r) => (
+          <li key={r.label} className="device-settings__row">
+            <span className="device-settings__icon" aria-hidden>
+              {r.icon}
+            </span>
+            <span className="device-settings__label">{r.label}</span>
+            {r.value ? <span className="device-settings__value">{r.value}</span> : null}
+            <span className="device-settings__chev" aria-hidden>
+              ›
+            </span>
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }

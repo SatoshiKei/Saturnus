@@ -3,7 +3,7 @@ import { contradictionDefs } from '../../../data/game/seedStory'
 import { seedDocuments } from '../../../data/game/seedDocuments'
 import { useInvestigation } from '../../../game/hooks/useInvestigation'
 import { isPersonVisibleInRegistry } from '../../../game/personRegistryGates'
-import { tryConfirmContradiction } from '../../../game/state/investigationStore'
+import { takeNotebookFocus } from '../../../app/uiStore'
 import type { Evidence, InvestigationState, Location, Person } from '../../../game/types'
 import {
   confidenceLabel,
@@ -35,16 +35,24 @@ function titleOf(inv: InvestigationState, id: string) {
   return owned ? (inv.evidence[id]?.title ?? 'Registro sem título') : 'Evidência ainda não reunida'
 }
 
-function Chips({ items, empty }: { items: string[]; empty: string }) {
+function Chips({ items, empty, limit = 5 }: { items: string[]; empty: string; limit?: number }) {
+  const [open, setOpen] = useState(false)
   if (!items.length) return <p className="nb-muted">{empty}</p>
+  const shown = open ? items : items.slice(0, limit)
+  const hidden = items.length - shown.length
   return (
-    <p className="nb-chips">
-      {items.map((i) => (
-        <span key={i} className="nb-chip">
+    <div className="nb-chips">
+      {shown.map((i, n) => (
+        <span key={`${i}-${n}`} className="nb-chip">
           {i}
         </span>
       ))}
-    </p>
+      {hidden > 0 ? (
+        <button type="button" className="nb-chip nb-chip--more" onClick={() => setOpen(true)}>
+          +{hidden}
+        </button>
+      ) : null}
+    </div>
   )
 }
 
@@ -120,9 +128,9 @@ function PeopleTab({ inv }: { inv: InvestigationState }) {
 }
 
 /* ---------------- Evidências ---------------- */
-function EvidenceTab({ inv }: { inv: InvestigationState }) {
+function EvidenceTab({ inv, focusId }: { inv: InvestigationState; focusId: string | null }) {
   const items = inv.evidenceOwned.map((id) => inv.evidence[id]).filter((e): e is Evidence => Boolean(e))
-  const [sel, setSel] = useState<string | null>(null)
+  const [sel, setSel] = useState<string | null>(focusId)
   const ev = items.find((e) => e.id === sel) ?? items[0]
   if (!ev) return <p className="nb-muted">Nenhuma evidência reunida ainda.</p>
 
@@ -230,10 +238,10 @@ function LocationsTab({ inv }: { inv: InvestigationState }) {
         <h4>Visitas</h4>
         <p className="nb-muted">
           {place.status === 'visitAvailable'
-            ? 'Visita disponível — use o mapa.'
+            ? 'Endereço anotado. Para ir até lá, abra o mapa.'
             : place.status === 'visited'
               ? 'Local já visitado.'
-              : 'Ainda sem visita planejada.'}
+              : 'Anotado no caderno.'}
         </p>
       </article>
     </div>
@@ -298,85 +306,42 @@ function HypothesesTab({ inv }: { inv: InvestigationState }) {
 }
 
 /* ---------------- Contradições ---------------- */
+/** As contradições são detectadas pelo caderno ao reunir as duas evidências (sem seleção manual). */
 function ContradictionsTab({ inv }: { inv: InvestigationState }) {
-  const [a, setA] = useState('')
-  const [b, setB] = useState('')
-  const [note, setNote] = useState<string | null>(null)
-  const options = inv.evidenceOwned.map((id) => ({ id, title: titleOf(inv, id) }))
-
-  const submit = () => {
-    const ok = tryConfirmContradiction(a, b)
-    setNote(ok ? null : 'Estas duas evidências, por si só, não se contradizem.')
-  }
-
+  const list = inv.contradictionsConfirmed
   return (
     <div className="nb-contra" data-testid="contradiction-panel">
-      <p className="nb-muted">Cruze duas evidências que você possui e veja se uma desmente a outra.</p>
-      <div className="nb-contra__pair">
-        <label className="nb-field">
-          <span>Evidência A</span>
-          <select value={a} onChange={(e) => { setA(e.target.value); setNote(null) }} aria-label="Evidência A">
-            <option value="">—</option>
-            {options.map((o) => (
-              <option key={o.id} value={o.id}>
-                {o.title}
-              </option>
-            ))}
-          </select>
-        </label>
-        <span className="nb-contra__plus" aria-hidden>
-          +
-        </span>
-        <label className="nb-field">
-          <span>Evidência B</span>
-          <select value={b} onChange={(e) => { setB(e.target.value); setNote(null) }} aria-label="Evidência B">
-            <option value="">—</option>
-            {options.map((o) => (
-              <option key={o.id} value={o.id}>
-                {o.title}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
-      <button
-        type="button"
-        className="nb-action"
-        data-testid="contradiction-submit"
-        disabled={!a || !b || a === b}
-        onClick={submit}
-      >
-        Marcar como contradição
-      </button>
-      {note ? <p className="nb-note" role="status">{note}</p> : null}
-
-      {inv.contradictionsConfirmed.length ? (
-        <>
-          <h4>Contradições confirmadas</h4>
-          <ul className="nb-confirmed">
-            {inv.contradictionsConfirmed.map((c) => {
-              const def = contradictionDefs.find((d) => d.id === c.id)
-              return (
-                <li key={c.id}>
-                  <strong>{def?.summary ?? c.id}</strong>
-                  {def ? (
-                    <small>
-                      {titleOf(inv, def.evidenceAId)} × {titleOf(inv, def.evidenceBId)}
-                    </small>
-                  ) : null}
-                </li>
-              )
-            })}
-          </ul>
-        </>
-      ) : null}
+      {list.length ? (
+        <ul className="nb-confirmed" data-testid="contradiction-list">
+          {list.map((c) => {
+            const def = contradictionDefs.find((d) => d.id === c.id)
+            return (
+              <li key={c.id} data-testid={`contradiction-${c.id}`}>
+                <span className="nb-badge nb-badge--stamp">Contradição registrada</span>
+                <strong>{def?.summary ?? 'Registro sem descrição'}</strong>
+                {def ? (
+                  <small>
+                    {titleOf(inv, def.evidenceAId)} × {titleOf(inv, def.evidenceBId)}
+                  </small>
+                ) : null}
+              </li>
+            )
+          })}
+        </ul>
+      ) : (
+        <p className="nb-muted">
+          Nenhuma contradição registrada. O caderno confronta as evidências automaticamente à medida que são
+          reunidas.
+        </p>
+      )}
     </div>
   )
 }
 
 export function InvestigationNotebook({ onClose }: { onClose: () => void }) {
   const inv = useInvestigation()
-  const [tab, setTab] = useState<Tab>('people')
+  const [focus] = useState(() => takeNotebookFocus())
+  const [tab, setTab] = useState<Tab>((focus?.tab as Tab | undefined) ?? 'people')
   const current = useMemo(() => tabs.find((t) => t.id === tab)!, [tab])
 
   return (
@@ -404,11 +369,23 @@ export function InvestigationNotebook({ onClose }: { onClose: () => void }) {
         </nav>
         <div className="nb-sheet" style={{ '--tab-hue': current.hue } as CSSProperties}>
           {tab === 'people' ? <PeopleTab inv={inv} /> : null}
-          {tab === 'evidence' ? <EvidenceTab inv={inv} /> : null}
+          {tab === 'evidence' ? <EvidenceTab inv={inv} focusId={focus?.id ?? null} /> : null}
           {tab === 'locations' ? <LocationsTab inv={inv} /> : null}
-          {tab === 'timeline' ? <TimelineTab inv={inv} /> : null}
-          {tab === 'hypotheses' ? <HypothesesTab inv={inv} /> : null}
-          {tab === 'contradictions' ? <ContradictionsTab inv={inv} /> : null}
+          {tab === 'timeline' ? (
+            <div className="nb-scroll">
+              <TimelineTab inv={inv} />
+            </div>
+          ) : null}
+          {tab === 'hypotheses' ? (
+            <div className="nb-scroll">
+              <HypothesesTab inv={inv} />
+            </div>
+          ) : null}
+          {tab === 'contradictions' ? (
+            <div className="nb-scroll">
+              <ContradictionsTab inv={inv} />
+            </div>
+          ) : null}
         </div>
       </div>
     </GamePanel>

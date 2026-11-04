@@ -1,18 +1,18 @@
 import { useState } from 'react'
-import { seedDocuments } from '../../../data/game/seedDocuments'
+import { getDocument } from '../../../data/game/seedDocuments'
 import { useInvestigation } from '../../../game/hooks/useInvestigation'
-import { registerInitialPoliceReport } from '../../../game/story/block01Handlers'
-import { extractFromDocument, markDocumentRead } from '../../../game/state/investigationStore'
 import { GamePanel } from '../../ui/GamePanel'
+import { DocumentSheet, PHYSICAL_DOC_IDS } from '../DocumentSheet'
 
 /**
- * Pasta do caso (CaseFiles): índice de documentos como fichas e leitura em folha de papel.
- * Trechos extraíveis exibem um marcador na margem — o jogador escolhe o que extrair.
+ * Pasta do caso (CaseFiles): documentos físicos entregues na passagem do caso.
+ * Documentos obtidos depois (consultas, autos, laudos) ficam no computador, não aqui.
  */
 export function CaseFiles({ onClose }: { onClose: () => void }) {
   const inv = useInvestigation()
   const [activeDoc, setActiveDoc] = useState<string | null>(null)
-  const doc = activeDoc ? seedDocuments.find((d) => d.id === activeDoc) : null
+  const doc = activeDoc ? getDocument(activeDoc) : null
+  const owned = PHYSICAL_DOC_IDS.filter((id) => inv.documentsOwned.includes(id))
 
   return (
     <GamePanel
@@ -23,52 +23,22 @@ export function CaseFiles({ onClose }: { onClose: () => void }) {
       onClose={onClose}
     >
       {doc ? (
-        <article className="cf-sheet" data-testid="case-document-view">
-          <button type="button" className="cf-back" onClick={() => setActiveDoc(null)}>
-            ‹ Índice da pasta
-          </button>
-          <p className="cf-stamp">{doc.category}</p>
-          <h3 className="cf-title">{doc.title}</h3>
-          {doc.blocks.map((block) => {
-            const progress = inv.documents[doc.id]
-            const extractable = block.id === 'b5' || block.extractableEvidenceId || block.extractAction
-            const done = progress?.highlightedBlockIds.includes(block.id)
-            return (
-              <p key={block.id} className="cf-block" data-marked={done}>
-                <span className="cf-block__text">{block.text}</span>
-                {extractable ? (
-                  <button
-                    type="button"
-                    className="cf-mark"
-                    data-testid={block.id === 'b5' ? 'extract-b1' : `extract-${block.id}`}
-                    disabled={done}
-                    onClick={() => {
-                      markDocumentRead(doc.id)
-                      const actions: Parameters<typeof extractFromDocument>[2] = []
-                      if (block.extractableEvidenceId) {
-                        actions.push({ type: 'addEvidence', id: block.extractableEvidenceId })
-                      }
-                      if (block.extractAction) actions.push(block.extractAction)
-                      if (doc.id === 'doc-bo-inicial' && block.id === 'b5') {
-                        registerInitialPoliceReport()
-                      }
-                      extractFromDocument(block.id, doc.id, actions)
-                    }}
-                  >
-                    {done ? 'Registrado' : 'Registrar ocorrência no caderno'}
-                  </button>
-                ) : null}
-              </p>
-            )
-          })}
-        </article>
+        <DocumentSheet docId={doc.id} onBack={() => setActiveDoc(null)} backLabel="‹ Índice da pasta" />
       ) : (
         <ul className="cf-index" data-testid="case-files-list">
-          {seedDocuments.map((d) => {
+          {owned.map((id) => {
+            const d = getDocument(id)
+            if (!d) return null
             const read = inv.documents[d.id]?.read
             return (
               <li key={d.id}>
-                <button type="button" className="cf-card" data-read={read} onClick={() => setActiveDoc(d.id)}>
+                <button
+                  type="button"
+                  className="cf-card"
+                  data-read={read}
+                  data-testid={`case-file-${d.id}`}
+                  onClick={() => setActiveDoc(d.id)}
+                >
                   <span className="cf-card__type">{d.category}</span>
                   <span className="cf-card__title">{d.title}</span>
                   <span className="cf-card__state">{read ? 'lido' : 'novo'}</span>

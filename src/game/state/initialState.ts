@@ -7,6 +7,8 @@ import type { InvestigationState } from '../types'
 import { createInitialPhoneState } from '../story/actions'
 
 export const SAVE_KEY = 'saturnus-investigation-v1'
+/** v2: revisão transversal (documentos, descobertas, conversas e ligações com progresso). */
+export const STATE_VERSION = 2
 
 const block01PreOwned = ['emergency_call_raw', 'mariana_phone'] as const
 
@@ -19,7 +21,7 @@ export function createInitialState(): InvestigationState {
   )
 
   return {
-    version: 1,
+    version: STATE_VERSION,
     flags: {
       block01_started: true,
     },
@@ -44,5 +46,10 @@ export function createInitialState(): InvestigationState {
     provocationsSeen: [],
     triggersFired: [],
     toastQueue: [],
+    documentsOwned: ['doc-bo-inicial'],
+    discoveries: [],
+    audioSeen: [],
+    chatProgress: {},
+    callsDone: [],
   }
 }

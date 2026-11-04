@@ -1,68 +1,28 @@
 import { useState } from 'react'
 import { block04DiaryEntries } from '../../data/block04/diaryEntries'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
-import { setFlag, tryDiaryPassword } from '../../game/state/investigationStore'
+import { setFlag } from '../../game/state/investigationStore'
 import { onDiaryEntryRead } from '../../game/story/block04Handlers'
 
-interface HiddenDiaryAppProps {
-  onBack: () => void
-}
-
-export function HiddenDiaryApp({ onBack }: HiddenDiaryAppProps) {
+/**
+ * Leitor do diário recuperado. Não é um app do launcher: só é montado pelo módulo Perícia do
+ * computador, depois do acesso forense e do PIN digitado pelo jogador.
+ */
+export function DiaryReader({ onBack }: { onBack?: () => void }) {
   const inv = useInvestigation()
-  const phone = inv.phones.mariana
-  const [password, setPassword] = useState('')
   const [openId, setOpenId] = useState<string | null>(null)
-
-  if (!inv.flags.block04_forensics_done) {
-    return (
-      <div className="device-app" data-testid="hidden-diary-locked-story">
-        <button type="button" onClick={onBack}>
-          ‹ Início
-        </button>
-        <h2>Diário</h2>
-        <p className="inv-muted">Aplicativo não listado no launcher comum.</p>
-      </div>
-    )
-  }
-
-  if (!phone.diaryUnlocked) {
-    return (
-      <div className="device-app" data-testid="hidden-diary-lock">
-        <button type="button" onClick={onBack}>
-          ‹ Início
-        </button>
-        <h2>Diário</h2>
-        <p>Protegido por senha. Chave obtida na perícia digital.</p>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          data-testid="diary-password-input"
-          placeholder="Senha"
-        />
-        <button
-          type="button"
-          data-testid="diary-password-submit"
-          onClick={() => tryDiaryPassword(password)}
-        >
-          Desbloquear
-        </button>
-        {phone.diaryPasswordAttempts > 0 ? (
-          <p className="inv-muted">Tentativas: {phone.diaryPasswordAttempts}</p>
-        ) : null}
-      </div>
-    )
-  }
-
   const open = block04DiaryEntries.find((e) => e.id === openId)
 
   return (
-    <div className="device-app" data-testid="hidden-diary-unlocked">
-      <button type="button" onClick={onBack}>
-        ‹ Início
-      </button>
-      <h2>Diário</h2>
+    <div className="diary-reader" data-testid="hidden-diary-unlocked">
+      <header className="diary-reader__head">
+        {onBack ? (
+          <button type="button" className="diary-reader__back" onClick={onBack}>
+            ‹ Voltar ao laudo
+          </button>
+        ) : null}
+        <h3>Diário — pacote local.priv.journal</h3>
+      </header>
       {!open ? (
         <ul className="diary-list" data-testid="diary-entry-list">
           {block04DiaryEntries.map((e) => (
@@ -71,6 +31,7 @@ export function HiddenDiaryApp({ onBack }: HiddenDiaryAppProps) {
                 type="button"
                 className="diary-list__row"
                 data-testid={`diary-entry-${e.id}`}
+                data-read={Boolean(inv.flags[e.readFlag]) || undefined}
                 onClick={() => {
                   setOpenId(e.id)
                   if (!inv.flags[e.readFlag]) {
@@ -86,13 +47,13 @@ export function HiddenDiaryApp({ onBack }: HiddenDiaryAppProps) {
           ))}
         </ul>
       ) : (
-        <article data-testid="diary-entry-view">
-          <button type="button" onClick={() => setOpenId(null)}>
+        <article className="diary-reader__entry" data-testid="diary-entry-view">
+          <button type="button" className="diary-reader__back" onClick={() => setOpenId(null)}>
             ‹ Entradas
           </button>
-          <h3>{open.title}</h3>
-          <p className="inv-muted">{open.dateLabel}</p>
-          <p>{open.body}</p>
+          <h4>{open.title}</h4>
+          <p className="diary-reader__date">{open.dateLabel}</p>
+          <p className="diary-reader__body">{open.body}</p>
         </article>
       )}
     </div>

@@ -1,10 +1,22 @@
 import type { Document } from '../../game/types'
 
+/**
+ * Catálogo de documentos do caso.
+ *
+ * Regras de escrita:
+ *  - o texto só contém o que o documento real conteria (nada de “conclusões” do roteiro);
+ *  - telefone/endereço entram em `leads` e são registrados ao ler (nunca viram botão de entrevista);
+ *  - `onOpen` roda uma vez, na primeira leitura.
+ */
 export const seedDocuments: Document[] = [
+  // ───────────────────────── Bloco 1 ─────────────────────────
   {
     id: 'doc-bo-inicial',
     title: 'Boletim de ocorrência — desaparecimento',
     category: 'BO',
+    issuer: 'Delegacia — plantão',
+    dateLabel: '03/11/2026',
+    system: 'ocorrencias',
     blocks: [
       {
         id: 'b1',
@@ -28,4 +40,491 @@ export const seedDocuments: Document[] = [
       },
     ],
   },
+  {
+    id: 'doc-central-chamada',
+    title: 'Registro da central — chamada das 08:03',
+    category: 'Central de emergência',
+    issuer: 'Central de atendimento',
+    dateLabel: '03/11/2026',
+    system: 'ocorrencias',
+    blocks: [
+      {
+        id: 'b1',
+        text: '08:03:12 — Chamada recebida, linha de entrada 3. Identificador de origem: terminal móvel registrado em nome de Mariana Silva.',
+      },
+      {
+        id: 'b2',
+        text: 'Duração registrada: 22 segundos. Áudio arquivado sob o protocolo da central. Qualidade da gravação: degradada.',
+      },
+      {
+        id: 'b3',
+        text: 'Anotação do operador: pedido de ajuda parcialmente compreendido; ruído intenso ao fundo; interrupção abrupta. Viatura despachada às 08:04.',
+      },
+    ],
+  },
+  {
+    id: 'doc-entrada-apartamento',
+    title: 'Relatório de entrada — apartamento de Mariana',
+    category: 'Relatório de ocorrência',
+    issuer: 'Equipe de viatura',
+    dateLabel: '03/11/2026',
+    system: 'ocorrencias',
+    blocks: [
+      {
+        id: 'b1',
+        text: '08:21 — Equipe no endereço. Campainha e chamados sem resposta. Vizinho Diego Azevedo acompanha a equipe.',
+      },
+      {
+        id: 'b2',
+        text: '08:26 — Entrada forçada pela porta principal. Luz da sala acesa; bolsa sobre a mesa; chaves no gancho da entrada. Nenhum sinal evidente de luta.',
+      },
+      {
+        id: 'b3',
+        text: 'Aparelho celular localizado sobre o sofá, ligado e sem bloqueio de tela. Recolhido pela equipe e entregue à delegacia.',
+      },
+    ],
+  },
+  {
+    id: 'doc-apreensao-celular',
+    title: 'Termo de apreensão — aparelho celular',
+    category: 'Termo',
+    issuer: 'Delegacia',
+    dateLabel: '03/11/2026',
+    system: 'documentos',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Item 1: smartphone, tela desbloqueada ao ser localizado. Lacre nº 0412. Apreensão determinada pela autoridade policial responsável.',
+      },
+      {
+        id: 'b2',
+        text: 'O aparelho foi entregue à delegacia e permanece sob guarda do delegado Augusto Nogueira.',
+      },
+    ],
+  },
+  {
+    id: 'doc-extracao-inicial',
+    title: 'Relatório de extração inicial — aparelho de Mariana',
+    category: 'Relatório',
+    issuer: 'Delegacia — extração superficial',
+    dateLabel: '03/11/2026',
+    system: 'documentos',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Extração superficial feita na própria delegacia, sem recursos periciais. Itens listados: conversas de mensagens, notas, calendário, fotos, arquivos e registro de chamadas.',
+      },
+      {
+        id: 'b2',
+        text: 'Registro de chamadas: últimos eventos em 02/11 (21:48, chamada perdida). Nenhum evento registrado em 03/11.',
+      },
+      {
+        id: 'b3',
+        text: 'A extração superficial não substitui análise pericial do aparelho.',
+      },
+    ],
+  },
+
+  // ───────────────────────── Bloco 2 ─────────────────────────
+  {
+    id: 'doc-lucas-cadastro',
+    title: 'Consulta cadastral — Lucas Moreira',
+    category: 'Cadastro (pessoas)',
+    issuer: 'Sistema de consulta policial',
+    system: 'consultas',
+    blocks: [
+      { id: 'b1', text: 'Nome: Lucas Moreira. Idade: 27 anos. Sem antecedentes.' },
+      {
+        id: 'b2',
+        text: 'Vínculo atual: Universidade — Faculdade de Comunicação, secretaria acadêmica.',
+      },
+      {
+        id: 'b3',
+        text: 'Em 2020 constou em lista de alunos da instituição, no mesmo período em que Elisa Duarte frequentou atividades do campus.',
+      },
+    ],
+    leads: [
+      {
+        type: 'address',
+        label: 'Local de trabalho',
+        value: 'Campus Central — Bloco B, secretaria acadêmica',
+      },
+    ],
+    onOpen: [
+      { type: 'discoverPerson', id: 'lucas', status: 'located' },
+      { type: 'unlockLocation', id: 'universidade', status: 'visitAvailable' },
+    ],
+  },
+  {
+    id: 'doc-elisa-resumo',
+    title: 'Processo criminal — resumo (Elisa Duarte)',
+    category: 'Autos',
+    issuer: 'Vara Criminal — consulta processual',
+    dateLabel: 'Proc. 2020',
+    system: 'autos',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Vítima: Elisa Duarte, 17 anos. Réu: André Silva. Imputação: homicídio doloso.',
+      },
+      {
+        id: 'b2',
+        text: 'Sentença de 1ª instância: condenação. Recurso pendente.',
+      },
+      {
+        id: 'b3',
+        text: 'Peças principais: boletim inicial, depoimentos (volume II) e cronologia da noite (fls. 41). Cópias simples disponíveis; cópias autenticadas somente pelo cartório da vara.',
+      },
+    ],
+    leads: [{ type: 'institution', label: 'Cópias autenticadas', value: 'Cartório — ramal 204' }],
+    onOpen: [
+      { type: 'addEvidence', id: 'elisa_case_summary' },
+      { type: 'discoverPerson', id: 'elisa', status: 'identified' },
+      { type: 'discoverPerson', id: 'andre', status: 'identified' },
+    ],
+  },
+  {
+    id: 'doc-elisa-testemunhas',
+    title: 'Testemunhas arquivadas — processo Elisa Duarte',
+    category: 'Autos',
+    issuer: 'Vara Criminal — volume II (resumo)',
+    dateLabel: 'Proc. 2020',
+    system: 'autos',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Ouvidos na fase policial: três amigos da vítima, dois funcionários da Boate Vértice e o DJ de cabine, Nicolas Prado Reis (“Nico”).',
+      },
+      {
+        id: 'b2',
+        text: 'Nicolas Prado Reis — registro sumário: esteve na cabine durante a noite. Confirma ter visto o casal no salão.',
+      },
+      {
+        id: 'b3',
+        text: 'Endereço e contato constantes no volume são da época e estão desatualizados.',
+      },
+    ],
+    onOpen: [{ type: 'addEvidence', id: 'nico_elisa_witness' }],
+  },
+  {
+    id: 'doc-elisa-cronologia',
+    title: 'Cronologia da noite — cópia autenticada (fls. 41)',
+    category: 'Autos',
+    issuer: 'Cartório da vara',
+    dateLabel: 'Proc. 2020',
+    system: 'autos',
+    blocks: [
+      { id: 'b1', text: 'Chegada de Elisa e André ao Vértice: por volta das 23h (depoimentos concordantes).' },
+      { id: 'b2', text: 'Discussão entre os dois próxima ao bar: entre 00h30 e 01h (duas testemunhas).' },
+      {
+        id: 'b3',
+        text: 'Elisa deixa o salão: entre 01h e 01h30. Horário de referência: registro sonoro da cabine.',
+      },
+      { id: 'b4', text: 'André reaparece na entrada: 01h40 (câmera da portaria).' },
+    ],
+    onOpen: [{ type: 'addEvidence', id: 'elisa_original_chronology' }],
+  },
+  {
+    id: 'doc-vertice-escala',
+    title: 'Escala de DJs e equipe — arquivo antigo do Vértice',
+    category: 'Arquivo privado',
+    issuer: 'Boate Vértice — administração',
+    system: 'documentos',
+    blocks: [
+      { id: 'b1', text: 'Escala semanal (modelo impresso, anos anteriores). Cabine principal: “Nico”.' },
+      {
+        id: 'b2',
+        text: 'Cadastro de funcionários: Nicolas Prado Reis — técnico de som e DJ residente. Telefone e endereço da época: ilegíveis (papel danificado).',
+      },
+    ],
+  },
+
+  // ───────────────────────── Bloco 3 ─────────────────────────
+  {
+    id: 'doc-nico-cadastro',
+    title: 'Consulta cadastral — Nicolas Prado Reis',
+    category: 'Cadastro (pessoas)',
+    issuer: 'Sistema de consulta policial',
+    system: 'consultas',
+    blocks: [
+      { id: 'b1', text: 'Nome: Nicolas Prado Reis (“Nico”). Idade: 31 anos. Sem antecedentes.' },
+      {
+        id: 'b2',
+        text: 'Vínculo profissional atual: casa noturna Titã Club — técnico de som e DJ residente.',
+      },
+      {
+        id: 'b3',
+        text: 'Cruzamento com o arquivo do Vértice (escala antiga): mesma pessoa, mesmo nome profissional.',
+      },
+    ],
+    leads: [{ type: 'phone', label: 'Telefone de contato', value: '21 9xxxx-0731' }],
+    onOpen: [
+      { type: 'addEvidence', id: 'nico_current_record' },
+      { type: 'discoverPerson', id: 'nico', status: 'located' },
+      { type: 'unlockContact', contactId: 'contact-nico' },
+      { type: 'completeTask', id: 'task_locate_nico' },
+      { type: 'addTask', id: 'task_talk_nico', label: 'Falar com Nico' },
+    ],
+  },
+  {
+    id: 'doc-maralto-cadastro',
+    title: 'Consulta cadastral — Maralto Granéis',
+    category: 'Cadastro (empresas)',
+    issuer: 'Sistema de consulta policial',
+    system: 'consultas',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Maralto Granéis S.A. — operação portuária de granéis sólidos, consolidada na região há cerca de dez anos.',
+      },
+      {
+        id: 'b2',
+        text: 'Histórico público: protestos e confrontos durante a implantação do terminal. Cobertura jornalística da época. Arquivos oficiais da ocorrência incompletos.',
+      },
+    ],
+    onOpen: [
+      { type: 'addEvidence', id: 'maralto_public_record' },
+      { type: 'setFlag', id: 'block03_maralto_researched', value: true },
+      { type: 'completeTask', id: 'task_research_maralto' },
+      { type: 'addHypothesis', id: 'hyp_maralto_disappearance' },
+      {
+        type: 'linkHypothesis',
+        hypothesisId: 'hyp_maralto_disappearance',
+        evidenceId: 'mariana_maralto_recording',
+        role: 'support',
+      },
+      { type: 'addHypothesis', id: 'hyp_elisa_maralto_open' },
+    ],
+  },
+  {
+    id: 'doc-maralto-clipping',
+    title: 'Reportagem — “Porto em conflito” (arquivo de imprensa)',
+    category: 'Recorte de imprensa',
+    issuer: 'Rádio Costeira FM — arquivo digital',
+    dateLabel: 'Reprodução',
+    system: 'documentos',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Moradores e manifestantes se reúnem diante do canteiro do terminal; a empresa nega irregularidades. Reportagem: Lívia Serrano.',
+      },
+      {
+        id: 'b2',
+        text: 'Segundo a reportagem, a mobilização reuniu famílias, estudantes e grupos organizados; houve confronto com a polícia ao fim da tarde.',
+      },
+      {
+        id: 'b3',
+        text: 'Rodapé do arquivo: “Redação — Rádio Costeira FM. Atendimento ao ouvinte e à imprensa.”',
+      },
+    ],
+    leads: [{ type: 'phone', label: 'Redação — Rádio Costeira FM', value: '21 3xxx-4410' }],
+    onOpen: [
+      { type: 'addEvidence', id: 'livia_sought_by_mariana' },
+      { type: 'discoverPerson', id: 'livia', status: 'identified' },
+      { type: 'unlockContact', contactId: 'contact-livia' },
+      { type: 'addTask', id: 'task_talk_livia', label: 'Falar com Lívia Serrano' },
+    ],
+  },
+  {
+    id: 'doc-cruzamento-maralto-elisa',
+    title: 'Pesquisa cruzada — autos Elisa / Maralto Granéis',
+    category: 'Consulta',
+    issuer: 'Sistema de consulta policial',
+    system: 'consultas',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Termos pesquisados: “Maralto Granéis”, “Elisa Duarte”, “André Silva”. Bases: processos, ocorrências e cadastros disponíveis ao sistema.',
+      },
+      {
+        id: 'b2',
+        text: 'Resultado: nenhum registro compartilha nomes, endereços ou números de processo entre os dois conjuntos.',
+      },
+    ],
+    onOpen: [
+      { type: 'addEvidence', id: 'maralto_no_elisa_link' },
+      { type: 'setFlag', id: 'block03_maralto_no_link', value: true },
+      {
+        type: 'linkHypothesis',
+        hypothesisId: 'hyp_elisa_maralto_open',
+        evidenceId: 'maralto_no_elisa_link',
+        role: 'contradict',
+      },
+    ],
+  },
+
+  // ───────────────────────── Bloco 4 ─────────────────────────
+  {
+    id: 'doc-protesto-ocorrencia',
+    title: 'Ocorrência — confronto durante manifestação (terminal Maralto)',
+    category: 'Ocorrência',
+    issuer: 'Delegacia regional — arquivo morto',
+    dateLabel: 'Registro antigo',
+    system: 'ocorrencias',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Manifestação contra a implantação do terminal. Intervenção da tropa de choque ao fim da tarde; confronto na entrada do canteiro.',
+      },
+      {
+        id: 'b2',
+        text: 'Um veículo da obra foi incendiado por um pequeno grupo encapuzado. Catorze pessoas foram detidas no local e conduzidas à delegacia regional.',
+      },
+      {
+        id: 'b3',
+        text: 'A relação nominal dos detidos consta em anexo separado.',
+      },
+    ],
+    onOpen: [{ type: 'addEvidence', id: 'protest_incident_report' }],
+  },
+  {
+    id: 'doc-protesto-detidos',
+    title: 'Relação de detidos — ocorrência do terminal Maralto',
+    category: 'Ocorrência',
+    issuer: 'Delegacia regional — anexo',
+    dateLabel: 'Registro antigo',
+    system: 'ocorrencias',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Detidos (14): relação por nome, enquadramento e situação. Enquadramentos mais frequentes: desobediência e resistência.',
+      },
+      {
+        id: 'b2',
+        text: 'Item 9 — Samuel Teixeira, 24 anos: resistência à ação policial. Liberado após quatro dias.',
+      },
+      {
+        id: 'b3',
+        text: 'Nenhum dos detidos foi indiciado pelo incêndio do veículo.',
+      },
+    ],
+    onOpen: [
+      { type: 'addEvidence', id: 'samuel_detainee_record' },
+      { type: 'discoverPerson', id: 'samuel', status: 'identified' },
+      { type: 'setFlag', id: 'block04_samuel_search_unlocked', value: true },
+    ],
+  },
+  {
+    id: 'doc-samuel-ficha',
+    title: 'Ficha — Samuel Teixeira',
+    category: 'Cadastro (pessoas)',
+    issuer: 'Sistema de consulta policial',
+    system: 'consultas',
+    blocks: [
+      { id: 'b1', text: 'Nome: Samuel Teixeira. Idade: 30 anos. Registro único: detenção por resistência (ocorrência do terminal Maralto).' },
+      { id: 'b2', text: 'Situação: liberado; sem condenação. Sem outros antecedentes.' },
+      { id: 'b3', text: 'Endereço atualizado na última renovação de documentos.' },
+    ],
+    leads: [{ type: 'address', label: 'Endereço residencial', value: 'Rua das Acácias, 118 — ap. 21' }],
+    onOpen: [
+      { type: 'addEvidence', id: 'samuel_current_record' },
+      { type: 'discoverPerson', id: 'samuel', status: 'located' },
+      { type: 'unlockLocation', id: 'samuel-casa', status: 'visitAvailable' },
+    ],
+  },
+  {
+    id: 'doc-andre-ficha',
+    title: 'Ficha de execução penal — André Silva',
+    category: 'Execução penal',
+    issuer: 'Vara de Execuções — consulta',
+    system: 'autos',
+    blocks: [
+      { id: 'b1', text: 'André Silva, regime fechado. Unidade prisional estadual. Condenação em 1ª instância (homicídio doloso).' },
+      { id: 'b2', text: 'Visitas: agendamento obrigatório pelo setor de visitas da unidade. Advogado constituído: sim.' },
+    ],
+  },
+  {
+    id: 'doc-andre-visitas',
+    title: 'Registro de visitas — André Silva',
+    category: 'Execução penal',
+    issuer: 'Unidade prisional — setor de visitas',
+    system: 'autos',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Visitantes cadastrados: advogado; Mariana Silva (irmã). Sem registro de visita de Mariana por vários anos.',
+      },
+      {
+        id: 'b2',
+        text: 'Última movimentação: Mariana Silva solicitou reativação do cadastro de visitante nas últimas semanas.',
+      },
+      {
+        id: 'b3',
+        text: 'Agendamento de visitas de autoridades: setor de visitas da unidade, por telefone.',
+      },
+    ],
+    leads: [{ type: 'phone', label: 'Setor de visitas — Unidade prisional', value: '21 3xxx-9100' }],
+    onOpen: [
+      { type: 'addEvidence', id: 'mariana_andre_visit_record' },
+      { type: 'unlockContact', contactId: 'contact-presidio' },
+      { type: 'discoverPerson', id: 'andre', status: 'located' },
+    ],
+  },
+  {
+    id: 'doc-andre-ligacoes',
+    title: 'Registro de ligações autorizadas — André Silva',
+    category: 'Execução penal',
+    issuer: 'Unidade prisional — central de ligações',
+    system: 'autos',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Ligações autorizadas a André Silva (últimas semanas): sempre entre 14h e 17h, em dias úteis, para dois números cadastrados (advogado e familiar).',
+      },
+      {
+        id: 'b2',
+        text: 'Nenhuma ligação em horário noturno. Uso de aparelho celular na unidade: sem ocorrências no período.',
+      },
+    ],
+    onOpen: [{ type: 'addEvidence', id: 'andre_authorized_calls' }],
+  },
+  {
+    id: 'doc-numero-sem-nome',
+    title: 'Log de interações — número sem nome (aparelho de Mariana)',
+    category: 'Relatório',
+    issuer: 'Extração do aparelho de Mariana',
+    system: 'documentos',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Número sem nome na agenda. Interações registradas nos últimos dois meses: 9 mensagens de voz e 4 chamadas.',
+      },
+      {
+        id: 'b2',
+        text: 'Faixas de horário das interações: madrugada (entre 00h30 e 03h) e fim de noite (após 22h).',
+      },
+    ],
+    onOpen: [{ type: 'addEvidence', id: 'unknown_number_log' }],
+  },
+  {
+    id: 'doc-laudo-forense',
+    title: 'Laudo pericial — aparelho de Mariana (análise de pacotes)',
+    category: 'Perícia',
+    issuer: 'Perícia — setor de dispositivos móveis',
+    dateLabel: 'Solicitação do delegado',
+    system: 'pericia',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Análise de pacotes instalados. Aplicativos listados pelo launcher: 14. Pacotes presentes no sistema: 15.',
+      },
+      {
+        id: 'b2',
+        text: 'Pacote não apresentado pelo launcher: local.priv.journal — base local própria, protegida por código numérico de 6 dígitos. Último acesso: recente.',
+      },
+      {
+        id: 'b3',
+        text: 'Acesso forense ao pacote pode ser liberado neste terminal, mediante o código.',
+      },
+    ],
+    onOpen: [
+      { type: 'addEvidence', id: 'hidden_app_detected' },
+      { type: 'setFlag', id: 'block04_forensics_access', value: true },
+      { type: 'completeTask', id: 'task_phone_forensics' },
+    ],
+  },
 ]
+
+export function getDocument(id: string): Document | undefined {
+  return seedDocuments.find((d) => d.id === id)
+}

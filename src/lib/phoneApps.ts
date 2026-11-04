@@ -11,7 +11,8 @@ export function visibleAppsForDevice(
     const def = appDefinitions.find((a) => a.id === id)
     if (!def) return true
     if (def.device !== 'both' && def.device !== device) return false
-    if (def.hiddenByDefault && !phone.hiddenAppsRevealed && id === 'hidden-diary') return false
+    // O diário nunca aparece no launcher: só existe via acesso forense (Perícia).
+    if (id === 'hidden-diary') return false
     return true
   })
   return ids as PhoneAppId[]

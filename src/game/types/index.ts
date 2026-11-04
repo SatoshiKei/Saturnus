@@ -1,3 +1,5 @@
+import type { ChatMessage } from '../../types/messaging'
+
 export type PersonStatus =
   | 'mentioned'
   | 'identified'
@@ -102,11 +104,29 @@ export interface DocumentBlock {
   extractAction?: StoryActionRef
 }
 
+export type DocumentLeadType = 'phone' | 'address' | 'institution'
+
+/** Pista operacional contida no documento (registrada ao ler, nunca como botão de entrevista). */
+export interface DocumentLead {
+  type: DocumentLeadType
+  label: string
+  value: string
+}
+
 export interface Document {
   id: string
   title: string
   category: string
+  /** Quem emitiu / sistema de origem (cabeçalho do documento). */
+  issuer?: string
+  dateLabel?: string
+  /** Módulo do computador onde o documento é listado. */
+  system?: 'consultas' | 'ocorrencias' | 'autos' | 'documentos' | 'pericia'
   blocks: DocumentBlock[]
+  /** Pistas (telefone/endereço) listadas ao ler. */
+  leads?: DocumentLead[]
+  /** Executado uma única vez, na primeira leitura. */
+  onOpen?: StoryActionRef[]
 }
 
 export interface DocumentProgress {
@@ -119,6 +139,8 @@ export interface Contact {
   personId?: string
   displayName: string
   phone?: string
+  /** Contato institucional (setor / unidade): aparece na agenda do fixo. */
+  institution?: boolean
   unlocked: boolean
 }
 
@@ -235,12 +257,13 @@ export type StoryActionRef =
   | { type: 'addTimelineEvent'; id: string }
   | { type: 'updateTimelineEvent'; id: string }
   | { type: 'unlockChat'; chatId: string; device: 'mariana' | 'augusto' }
-  | { type: 'revealHiddenApps'; device: 'mariana' }
   | { type: 'discoverPassword'; which: 'marianaAccount' | 'diary' }
   | { type: 'installApp'; device: 'mariana' | 'augusto'; appId: string }
   | { type: 'addHypothesis'; id: string }
   | { type: 'updateHypothesis'; id: string; state: HypothesisStateKind }
   | { type: 'confirmContradiction'; id: string }
+  | { type: 'addDocument'; id: string }
+  | { type: 'completeCall'; id: string }
   | { type: 'pushProvocation'; id: string }
   | { type: 'discoverSearchTerm'; term: string }
   /** Marca triggers `once` como já disparados (checkpoints DEV / save repair). */
@@ -260,7 +283,7 @@ export interface SearchRule {
   optionalTerms?: string[]
   /** Todas as flags devem estar ativas para a regra valer. */
   requiredFlags?: string[]
-  results: { title: string; snippet: string; documentId?: string; evidenceId?: string }[]
+  results: { title: string; snippet: string; documentId?: string }[]
   discoverTerms?: string[]
 }
 
@@ -293,7 +316,47 @@ export interface InvestigationState {
   provocationsPending: string[]
   provocationsSeen: string[]
   triggersFired: string[]
+  /** @deprecated substituído por `discoveries`; mantido para saves antigos. */
   toastQueue: string[]
+  /** Documentos que o jogador possui (pasta física e sistema). */
+  documentsOwned: string[]
+  /** Fila de eventos de descoberta (cartões e avisos). */
+  discoveries: DiscoveryEvent[]
+  /** Áudios (ids de evidência) já abertos na bancada. */
+  audioSeen: string[]
+  /** Conversas iniciadas pelo jogador (Paula, Rafael…). */
+  chatProgress: Record<string, ChatProgress>
+  /** Ligações já concluídas (ids de CallScript). */
+  callsDone: string[]
+}
+
+export type DiscoveryKind =
+  | 'evidence'
+  | 'document'
+  | 'contact'
+  | 'location'
+  | 'audio'
+  | 'hypothesis'
+  | 'objective'
+  | 'contradiction'
+  | 'message'
+
+export interface DiscoveryEvent {
+  id: string
+  kind: DiscoveryKind
+  title: string
+  subtitle?: string
+  source?: string
+  summary?: string
+  refId?: string
+  /** Quantos itens do mesmo tipo foram agrupados (áudios em lote). */
+  count?: number
+}
+
+export interface ChatProgress {
+  step: number
+  done: boolean
+  messages: ChatMessage[]
 }
 
 export type HubPanel =

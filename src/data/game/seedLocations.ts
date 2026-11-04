@@ -1,5 +1,9 @@
 import type { Location } from '../../game/types'
 
+/**
+ * `sceneId` aponta para uma cena visual (LocationSceneId). Locais só aparecem no mapa depois de
+ * descobertos (documento, ligação ou conversa) e o jogador precisa escolher viajar até eles.
+ */
 export const seedLocations: Location[] = [
   {
     id: 'delegacia',
@@ -18,7 +22,7 @@ export const seedLocations: Location[] = [
     status: 'unknown',
     relatedPersonIds: ['julia', 'camila', 'mariana'],
     relatedEvidenceIds: [],
-    sceneId: 'hospital-corridor',
+    sceneId: 'hospital',
     mapX: 0.38,
     mapY: 0.52,
   },
@@ -29,9 +33,53 @@ export const seedLocations: Location[] = [
     status: 'unknown',
     relatedPersonIds: ['iara', 'sandro', 'caio'],
     relatedEvidenceIds: [],
-    sceneId: 'vertice-floor',
+    sceneId: 'vertice',
     mapX: 0.74,
     mapY: 0.62,
+  },
+  {
+    id: 'universidade',
+    name: 'Universidade — Campus Central',
+    description: 'Faculdade de Comunicação, Bloco B.',
+    status: 'unknown',
+    relatedPersonIds: ['lucas'],
+    relatedEvidenceIds: [],
+    sceneId: 'lucas',
+    mapX: 0.6,
+    mapY: 0.24,
+  },
+  {
+    id: 'titan',
+    name: 'Titã Club',
+    description: 'Casa noturna. Local de trabalho de Nico.',
+    status: 'unknown',
+    relatedPersonIds: ['nico'],
+    relatedEvidenceIds: [],
+    sceneId: 'nico',
+    mapX: 0.84,
+    mapY: 0.4,
+  },
+  {
+    id: 'radio',
+    name: 'Rádio Costeira FM',
+    description: 'Redação e arquivo da emissora.',
+    status: 'unknown',
+    relatedPersonIds: ['livia'],
+    relatedEvidenceIds: [],
+    sceneId: 'livia',
+    mapX: 0.5,
+    mapY: 0.76,
+  },
+  {
+    id: 'samuel-casa',
+    name: 'Rua das Acácias, 118',
+    description: 'Endereço residencial de Samuel Teixeira.',
+    status: 'unknown',
+    relatedPersonIds: ['samuel'],
+    relatedEvidenceIds: [],
+    sceneId: 'samuel',
+    mapX: 0.3,
+    mapY: 0.36,
   },
   {
     id: 'presidio',
@@ -40,7 +88,7 @@ export const seedLocations: Location[] = [
     status: 'unknown',
     relatedPersonIds: ['andre'],
     relatedEvidenceIds: [],
-    sceneId: 'prison-visit',
+    sceneId: 'andre',
     mapX: 0.22,
     mapY: 0.68,
   },

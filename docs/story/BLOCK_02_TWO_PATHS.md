@@ -16,7 +16,7 @@ Fonte narrativa: `docs/assets/screenplay/section 2.md`.
 | Vértice (Iara, Sandro, Caio, arquivo) | `VerticeInterviewScene.tsx` | `nightclub-01-lights-haze.jpg` |
 | Entrevista Lucas | `LucasInterviewScene.tsx` | `university-03-classroom-empty.jpg` |
 
-Mapa: visita Vértice via `LocationsMap` → `openLocationScene('vertice')`. Lucas via **Sistema de consulta → Pessoas → Entrevistar**.
+Mapa: visita Vértice via `LocationsMap` → `openLocationScene('vertice')`. Lucas (fluxo real): nota “quarta” no celular de Mariana → contato Paula → o jogador escreve a conversa (9 trocas, começa vazia) → “Lucas” na Consulta → `doc-lucas-cadastro` (endereço) → pino no mapa (Universidade) → viagem. Depois: “Elisa Duarte” → `doc-elisa-resumo` + `doc-elisa-testemunhas` → Cartório (ramal 204) → `doc-elisa-cronologia`. Ver `docs/gameplay/INVESTIGATION_FLOW.md`.
 
 ## Personagens (Bloco 2)
 
@@ -24,7 +24,7 @@ Mapa: visita Vértice via `LocationsMap` → `openLocationScene('vertice')`. Luc
 - **Iara, Sandro, Caio** — Vértice; Nico só via arquivo.
 - **Paula** — contato no celular de Mariana; indica Lucas.
 - **Lucas** — Elisa, André, visita de Mariana.
-- **Nico** — `identified` após arquivo; **não** `contactable`.
+- **Nico** — `identified` após arquivo; sem telefone utilizável até o Bloco 3 (o cadastro antigo “não funciona mais”).
 - **Elisa / André** — aparecem após busca policial pós-Lucas.
 
 ## Evidências

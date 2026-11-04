@@ -11,6 +11,13 @@ export type PhoneAppId =
   | 'appstore'
   | 'hidden-diary'
   | 'wavelab-mobile'
+  | 'messages'
+  | 'camera'
+  | 'mail'
+  | 'maps'
+  | 'clock'
+  | 'calculator'
+  | 'weather'
 
 export type WhatsAppTab = 'chats' | 'updates' | 'communities' | 'calls' | 'settings'
 
@@ -25,7 +32,6 @@ export type PhoneRoute =
   | { screen: 'appstore' }
   | { screen: 'recorder' }
   | { screen: 'wavelab' }
-  | { screen: 'hidden-diary' }
   | { screen: 'device-settings' }
   | { screen: 'photos' }
   | { screen: 'files' }

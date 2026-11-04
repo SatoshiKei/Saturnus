@@ -1,9 +1,26 @@
 /**
- * Puzzle 6 — Hexágono (estrutura definitiva).
- * TODO(puzzle-06): substituir o placeholder por inspeção real de metadata + grafo.
+ * Puzzle 6 — Hexágono.
  *
- * Sequência cíclica: A → D → B → F → C → E → A
- * Palavras na ordem do ciclo: PROCURE / O / QUE / A / TELA / OMITE
+ * Seis arquivos de áudio formam um ciclo: cada metadata aponta para o próximo.
+ * Cada arquivo carrega UM fragmento de texto e UM dígito (ambos só aparecem ao inspecionar os
+ * metadados). Ordem do ciclo (começando pelo arquivo mais antigo):
+ *
+ *   A → D → B → F → C → E → (A)
+ *
+ * | Arquivo | Aponta para | Fragmento    | Dígito |
+ * |---------|-------------|--------------|--------|
+ * | A       | D           | NO TELEFONE  | 4      |
+ * | D       | B           | HÁ           | 8      |
+ * | B       | F           | UM DIÁRIO    | 1      |
+ * | F       | C           | QUE          | 5      |
+ * | C       | E           | A TELA       | 2      |
+ * | E       | A           | OMITE        | 6      |
+ *
+ * Frase final: NO TELEFONE HÁ UM DIÁRIO QUE A TELA OMITE
+ * Código (PIN do diário): 481526 — nunca exibido antes de o puzzle ser resolvido.
+ *
+ * A mecânica de DSP/metadata continua simplificada (inspeção de campos), mas o resultado narrativo
+ * é definitivo. TODO(puzzle-06): análise real de espectro/embedded tags.
  */
 
 export type HexNodeId = 'A' | 'B' | 'C' | 'D' | 'E' | 'F'
@@ -16,13 +33,18 @@ export interface HexNodeDef {
   sampleRate: number
   channels: string
   codec: string
-  anomaly: string
+  /** Ordem de criação (1 = mais antigo): marca o começo do ciclo. */
+  createdRank: number
+  /** Campo de metadata que aponta para o próximo arquivo. */
+  pointerField: string
   pointsTo: HexNodeId
-  hiddenWord: string
+  /** Fragmento de texto embutido (só aparece ao inspecionar). */
+  fragment: string
+  /** Dígito embutido (só aparece ao inspecionar). */
+  digit: string
   audioSrc: string
 }
 
-/** Ordem alfabética ≠ ordem do ciclo. */
 export const HEX_NODES: HexNodeDef[] = [
   {
     id: 'A',
@@ -32,9 +54,11 @@ export const HEX_NODES: HexNodeDef[] = [
     sampleRate: 44100,
     channels: 'mono',
     codec: 'pcm',
-    anomaly: 'sampleRate declarado aponta 22050 → nó D',
+    createdRank: 1,
+    pointerField: 'sampleRate declarado: 22050',
     pointsTo: 'D',
-    hiddenWord: 'PROCURE',
+    fragment: 'NO TELEFONE',
+    digit: '4',
     audioSrc: '/assets/audio/hex-a.wav',
   },
   {
@@ -45,9 +69,11 @@ export const HEX_NODES: HexNodeDef[] = [
     sampleRate: 48000,
     channels: 'stereo',
     codec: 'pcm',
-    anomaly: 'checksum parcial → nó F',
+    createdRank: 3,
+    pointerField: 'checksum parcial: …F',
     pointsTo: 'F',
-    hiddenWord: 'QUE',
+    fragment: 'UM DIÁRIO',
+    digit: '1',
     audioSrc: '/assets/audio/hex-b.wav',
   },
   {
@@ -58,9 +84,11 @@ export const HEX_NODES: HexNodeDef[] = [
     sampleRate: 32000,
     channels: 'mono',
     codec: 'adpcm',
-    anomaly: 'duração registrada → nó E',
+    createdRank: 5,
+    pointerField: 'duração registrada: 00:08 (arquivo E)',
     pointsTo: 'E',
-    hiddenWord: 'TELA',
+    fragment: 'A TELA',
+    digit: '2',
     audioSrc: '/assets/audio/hex-c.wav',
   },
   {
@@ -71,9 +99,11 @@ export const HEX_NODES: HexNodeDef[] = [
     sampleRate: 22050,
     channels: 'mono',
     codec: 'pcm',
-    anomaly: 'canais declarados stereo → nó B',
+    createdRank: 2,
+    pointerField: 'canais declarados: stereo (arquivo B)',
     pointsTo: 'B',
-    hiddenWord: 'O',
+    fragment: 'HÁ',
+    digit: '8',
     audioSrc: '/assets/audio/hex-d.wav',
   },
   {
@@ -84,9 +114,11 @@ export const HEX_NODES: HexNodeDef[] = [
     sampleRate: 44100,
     channels: 'stereo',
     codec: 'pcm',
-    anomaly: 'container aponta de volta → nó A',
+    createdRank: 6,
+    pointerField: 'container aponta de volta ao primeiro arquivo',
     pointsTo: 'A',
-    hiddenWord: 'OMITE',
+    fragment: 'OMITE',
+    digit: '6',
     audioSrc: '/assets/audio/hex-e.wav',
   },
   {
@@ -97,15 +129,37 @@ export const HEX_NODES: HexNodeDef[] = [
     sampleRate: 16000,
     channels: 'mono',
     codec: 'opus',
-    anomaly: 'codec tag → nó C',
+    createdRank: 4,
+    pointerField: 'tag de codec: …C',
     pointsTo: 'C',
-    hiddenWord: 'A',
+    fragment: 'QUE',
+    digit: '5',
     audioSrc: '/assets/audio/hex-f.wav',
   },
 ]
 
+/** Ordem alfabética ≠ ordem do ciclo. */
 export const HEX_CYCLE: HexNodeId[] = ['A', 'D', 'B', 'F', 'C', 'E']
 
-export const HEX_PHRASE = 'PROCURE O QUE A TELA OMITE'
+export const HEX_PHRASE = 'NO TELEFONE HÁ UM DIÁRIO QUE A TELA OMITE'
+
+/** PIN canônico do diário. Só é revelado depois da resolução do Hexágono. */
+export const HEX_PIN = '481526'
 
 export const HEX_EVIDENCE_IDS = HEX_NODES.map((n) => n.evidenceId)
+
+export function hexNode(id: HexNodeId): HexNodeDef {
+  return HEX_NODES.find((n) => n.id === id)!
+}
+
+/** Frase e código montados a partir de uma sequência escolhida pelo jogador. */
+export function assembleHex(sequence: HexNodeId[]): { phrase: string; code: string } {
+  return {
+    phrase: sequence.map((id) => hexNode(id).fragment).join(' '),
+    code: sequence.map((id) => hexNode(id).digit).join(''),
+  }
+}
+
+export function isHexSolved(sequence: HexNodeId[]): boolean {
+  return sequence.length === HEX_CYCLE.length && sequence.every((id, i) => id === HEX_CYCLE[i])
+}

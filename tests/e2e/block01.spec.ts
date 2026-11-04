@@ -1,71 +1,74 @@
-import { expect, test, type Page } from '@playwright/test'
+import { expect, test } from '@playwright/test'
+import {
+  closeHub,
+  closePhone,
+  dismissEvidenceCards,
+  leaveScene,
+  newGame,
+  openAugustoPhone,
+  openHubObject,
+  playTopic,
+  readSave,
+  travelTo,
+  waitForNotice,
+} from './helpers'
 
 test.use({ viewport: { width: 1920, height: 1080 } })
 
-async function dismissMenu(page: Page) {
-  const menu = page.getByTestId('main-menu')
-  if (await menu.isVisible()) {
-    await page.getByTestId('main-menu-new').click()
-  }
-  const opening = page.getByTestId('block01-opening')
-  if (await opening.isVisible()) {
-    await expect(opening).toBeHidden({ timeout: 8000 })
-  }
-}
+test('Bloco 1 — fluxo principal por ferramentas físicas', async ({ page }) => {
+  test.setTimeout(180_000)
+  await newGame(page)
 
-test('Bloco 1 — fluxo principal', async ({ page }) => {
-  await page.goto('/')
-  await dismissMenu(page)
-  await expect(page.getByTestId('investigation-scene')).toBeVisible()
-
-  await page.getByTestId('scene-evidence-box').click()
+  // Pasta do caso: o jogador abre o BO e extrai o que importa.
+  await openHubObject(page, 'evidence-box')
   await expect(page.getByTestId('hub-case-files')).toBeVisible()
-  await page.getByTestId('case-files-list').getByRole('button').first().click()
+  await page.getByTestId('case-file-doc-bo-inicial').click()
   await page.getByTestId('extract-b1').click()
-  await page.getByTestId('hub-close').click()
+  await closeHub(page)
+  await dismissEvidenceCards(page)
 
-  await page.getByTestId('scene-audio-station').click()
-  await expect(page.getByTestId('hub-audio-lab')).toBeVisible()
+  // Bancada: restauração é operação do jogador.
+  await openHubObject(page, 'audio-station')
+  await page.getByTestId('audio-file-emergency_call_raw').click()
   await page.getByTestId('emergency-provisional-analysis').click()
-  await page.getByTestId('hub-close').click()
+  await closeHub(page)
+  await dismissEvidenceCards(page)
 
-  await page.getByTestId('scene-mariana-phone').click()
+  // Celular de Mariana: conversas e o áudio de Rafael.
+  await openHubObject(page, 'mariana-phone')
   await page.getByTestId('app-whatsapp').click()
   await page.getByTestId('chat-row-julia').click()
   await page.getByRole('button', { name: 'Voltar à lista' }).click()
   await page.getByTestId('chat-row-rafael').click()
   await page.getByRole('button', { name: 'Reproduzir áudio' }).click()
-  await page.getByTestId('phone-close').click()
+  await closePhone(page)
 
-  await page.getByTestId('scene-notebook').click()
-  await page.getByRole('button', { name: 'Contradições' }).click()
-  await page.getByLabel('Evidência A').selectOption('mariana_memory_lapses')
-  await page.getByLabel('Evidência B').selectOption('rafael_call_memory')
-  await page.getByTestId('contradiction-submit').click()
-  await page.getByTestId('hub-close').click()
+  // A contradição é registrada sozinha quando as duas evidências estão no caderno.
+  await waitForNotice(page, 'discovery-contradiction')
+  let save = await readSave(page)
+  expect(save.contradictionsConfirmed.some((c: { id: string }) => c.id === 'contra_selective_memory')).toBe(true)
 
-  await page.getByTestId('scene-wall-map').click()
-  await page.getByTestId('map-pin-hospital').click()
-  await page.getByTestId('visit-hospital').click()
-  await expect(page.getByTestId('hospital-scene')).toBeVisible()
-
-  const topics = [
+  // O hospital entra no mapa como local; o jogador abre o mapa e decide ir.
+  await waitForNotice(page, 'discovery-location')
+  await travelTo(page, 'hospital', 'hospital-scene')
+  for (const label of [
     'Última vez que viram Mariana',
     'Comportamento recente',
     'Falhas de memória',
     'Pasta guardada por Júlia',
     'Conversar com Camila a sós',
-  ]
-  const { vnPlayTopic, vnLeaveScene } = await import('./vnHelpers')
-  for (const label of topics) {
-    await vnPlayTopic(page, label, 'hospital-scene')
+  ]) {
+    await playTopic(page, label, 'hospital-scene')
   }
-  await vnLeaveScene(page, 'hospital-scene')
-  await vnLeaveScene(page, 'hospital-scene')
+  await leaveScene(page, 'hospital-scene')
+  await dismissEvidenceCards(page)
 
-  await page.getByTestId('scene-augusto-phone').click()
-  await expect(page.getByTestId('phone-shell')).toBeVisible()
+  save = await readSave(page)
+  expect(save.flags.block01_hospital_done).toBe(true)
+  expect(save.flags.block01_complete).toBe(true)
+
+  await openAugustoPhone(page)
   await page.getByTestId('app-whatsapp').click()
   await expect(page.getByTestId('chat-row-rafael')).toBeVisible()
-  await page.getByTestId('phone-close').click()
+  await closePhone(page)
 })

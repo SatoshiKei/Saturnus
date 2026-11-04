@@ -4,7 +4,7 @@ import { useInvestigation } from '../../../game/hooks/useInvestigation'
 import type { Evidence, Location } from '../../../game/types'
 import { assetPath } from '../../../lib/assetPath'
 import { locationStatusLabel } from '../../../lib/labels'
-import { useGameHub } from '../../../app/GameHubContext'
+import { useGameHub, type LocationSceneId } from '../../../app/GameHubContext'
 import { GamePanel } from '../../ui/GamePanel'
 
 /** posição do marcador: usa o estado salvo ou, em saves antigos, o seed */
@@ -15,10 +15,14 @@ function markerPos(l: Location) {
   return x === undefined || y === undefined ? null : { x, y }
 }
 
+/** Cena de visita do local (hospital, universidade, boate…). */
+function sceneOf(l: Location): NonNullable<LocationSceneId> | undefined {
+  return (l.sceneId ?? seedLocations.find((s) => s.id === l.id)?.sceneId) as NonNullable<LocationSceneId> | undefined
+}
+
 /**
- * Mapa da cidade (LocationsMap). Locais desconhecidos simplesmente não aparecem.
- * Cada local pode abrir uma Scene no futuro — hoje o botão informa que a visita ainda
- * não está disponível nesta versão.
+ * Mapa da cidade (LocationsMap). Locais desconhecidos não aparecem. Um endereço descoberto ganha um
+ * pino; o jogador abre o mapa e escolhe ir até lá — nada acontece sozinho.
  */
 export function LocationsMap({ onClose }: { onClose: () => void }) {
   const inv = useInvestigation()
@@ -28,7 +32,7 @@ export function LocationsMap({ onClose }: { onClose: () => void }) {
     [inv.locations],
   )
   const [sel, setSel] = useState<string | null>(null)
-  const [note, setNote] = useState<string | null>(null)
+  const [note] = useState<string | null>(null)
   const place = places.find((l) => l.id === sel) ?? null
 
   const people = place
@@ -65,7 +69,6 @@ export function LocationsMap({ onClose }: { onClose: () => void }) {
                 aria-label={l.name}
                 onClick={() => {
                   setSel(l.id)
-                  setNote(null)
                 }}
               >
                 <span className="lm-pin__dot" />
@@ -93,50 +96,23 @@ export function LocationsMap({ onClose }: { onClose: () => void }) {
 
               {place.id === 'delegacia' ? (
                 <p className="lm-card__here">Você está aqui.</p>
-              ) : (
+              ) : sceneOf(place) && (place.status === 'visitAvailable' || place.status === 'visited') ? (
                 <button
                   type="button"
                   className="lm-visit"
                   data-testid={`visit-${place.id}`}
-                  disabled={place.status !== 'visitAvailable'}
                   onClick={() => {
-                    if (place.id === 'hospital') {
-                      onClose()
-                      openLocationScene('hospital')
-                      return
-                    }
-                    if (place.id === 'vertice') {
-                      onClose()
-                      openLocationScene('vertice')
-                      return
-                    }
-                    if (place.id === 'presidio') {
-                      onClose()
-                      openLocationScene('andre')
-                      return
-                    }
-                    setNote('A cena deste local ainda não está disponível nesta versão.')
-                  }}
-                >
-                  {place.status === 'visited' ? 'Revisitar' : 'Visitar'}
-                </button>
-              )}
-              {place.id === 'presidio' && place.status === 'visited' && !inv.flags.block04_andre_interview_done ? (
-                <button
-                  type="button"
-                  className="lm-visit"
-                  data-testid="visit-presidio-retry"
-                  onClick={() => {
+                    const scene = sceneOf(place)
+                    if (!scene) return
                     onClose()
-                    openLocationScene('andre')
+                    openLocationScene(scene)
                   }}
                 >
-                  Continuar visita
+                  {place.status === 'visited' ? 'Voltar até lá' : 'Ir até lá'}
                 </button>
-              ) : null}
-              {place.id !== 'delegacia' && place.status === 'known' ? (
-                <p className="lm-card__hint">Ainda não há motivo para ir até lá.</p>
-              ) : null}
+              ) : (
+                <p className="lm-card__hint">Local anotado. Ainda não há motivo para ir até lá.</p>
+              )}
               {note ? <p className="lm-card__hint">{note}</p> : null}
             </>
           ) : (

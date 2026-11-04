@@ -3,14 +3,22 @@ import { useSyncExternalStore } from 'react'
 /** Estado puramente de interface (não faz parte do save da investigação). */
 interface UiState {
   menuOpen: boolean
+  /** Cena narrativa em tela cheia (ligação das seis gravações etc.): avisos de descoberta esperam. */
+  fullscreenScene: boolean
 }
 
-let state: UiState = { menuOpen: false }
+let state: UiState = { menuOpen: false, fullscreenScene: false }
 const listeners = new Set<() => void>()
 
 export function setMenuOpen(menuOpen: boolean) {
   if (state.menuOpen === menuOpen) return
   state = { ...state, menuOpen }
+  listeners.forEach((l) => l())
+}
+
+export function setFullscreenScene(fullscreenScene: boolean) {
+  if (state.fullscreenScene === fullscreenScene) return
+  state = { ...state, fullscreenScene }
   listeners.forEach((l) => l())
 }
 
@@ -48,4 +56,17 @@ export function resetHints() {
   } catch {
     /* ignore */
   }
+}
+
+/** Pedido de foco do caderno (ex.: "Ver no caderno" no cartão de evidência). Consumido uma vez. */
+let notebookFocus: { tab: string; id?: string } | null = null
+
+export function focusNotebook(tab: string, id?: string) {
+  notebookFocus = { tab, id }
+}
+
+export function takeNotebookFocus() {
+  const f = notebookFocus
+  notebookFocus = null
+  return f
 }

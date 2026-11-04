@@ -4,24 +4,38 @@ import { useGameHub } from '../app/GameHubContext'
 import { useInvestigation } from '../game/hooks/useInvestigation'
 import { visibleAppsForDevice } from '../lib/phoneApps'
 import { openApp } from '../lib/phoneRouter'
+import { newContactIds } from '../lib/contactsSeen'
 import type { PhoneAppId } from '../types/phone'
 
-const placeholders = new Set<PhoneAppId>(['browser'])
+/** Apps comuns sem função no caso: tocar não faz nada (sem “bloqueado”). */
+const COMMON_INERT = new Set<PhoneAppId>([
+  'browser',
+  'messages',
+  'camera',
+  'mail',
+  'maps',
+  'clock',
+  'calculator',
+  'weather',
+])
+
+/** No celular de Augusto só WhatsApp, Telefone e Ajustes têm função; o resto é cenário. */
+const AUGUSTO_INERT = new Set<PhoneAppId>(['notes', 'photos', 'files', 'calendar'])
 
 export function PhoneHome() {
   const { push } = usePhoneSession()
   const { phoneDevice } = useGameHub()
   const inv = useInvestigation()
   const gridApps = visibleAppsForDevice(phoneDevice, inv)
+  const phoneBadge = phoneDevice === 'augusto' ? newContactIds(inv).length : 0
+
+  const inert = (id: PhoneAppId) =>
+    COMMON_INERT.has(id) || (phoneDevice === 'augusto' && AUGUSTO_INERT.has(id))
 
   const launch = (id: PhoneAppId) => {
-    if (placeholders.has(id)) return
+    if (inert(id)) return
     if (id === 'appstore') {
       push({ screen: 'appstore' })
-      return
-    }
-    if (id === 'hidden-diary') {
-      push({ screen: 'hidden-diary' })
       return
     }
     if (id === 'wavelab-mobile') {
@@ -62,18 +76,23 @@ export function PhoneHome() {
             key={id}
             type="button"
             className="phone-home__app"
-            disabled={placeholders.has(id)}
             aria-label={appLabel(id)}
             data-testid={`app-${id}`}
+            data-inert={inert(id) || undefined}
             onClick={() => launch(id)}
           >
             <AppIcon appId={id} />
+            {id === 'phone' && phoneBadge > 0 ? (
+              <span className="phone-home__badge" data-testid="phone-badge">
+                {phoneBadge}
+              </span>
+            ) : null}
             <span className="phone-home__app-label">{appLabel(id)}</span>
           </button>
         ))}
       </div>
       <div className="phone-home__dock">
-        {(['whatsapp', 'notes', 'calendar'] as const)
+        {(['phone', 'whatsapp', 'messages', 'settings'] as const)
           .filter((id) => gridApps.includes(id))
           .map((id) => (
             <button
@@ -84,6 +103,7 @@ export function PhoneHome() {
               onClick={() => launch(id)}
             >
               <AppIcon appId={id} size="dock" />
+              {id === 'phone' && phoneBadge > 0 ? <span className="phone-home__badge">{phoneBadge}</span> : null}
             </button>
           ))}
       </div>

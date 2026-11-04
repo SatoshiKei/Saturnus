@@ -170,3 +170,307 @@
     transform: translateY(8px);
   }
 }
+
+/* ===== Descobertas (fila central) ===== */
+.disc-layer {
+  position: fixed;
+  top: 1.2rem;
+  right: 1.4rem;
+  z-index: 3100;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  max-width: min(380px, 92vw);
+  pointer-events: none;
+}
+.disc-layer > * {
+  pointer-events: auto;
+}
+
+.disc-card {
+  position: relative;
+  width: min(360px, 92vw);
+  min-width: 0;
+  padding: 0.9rem 1rem 0.8rem;
+  font-family: var(--font-paper);
+  color: var(--paper-ink);
+  background:
+    repeating-linear-gradient(0deg, transparent 0 22px, rgba(60, 54, 40, 0.06) 22px 23px),
+    var(--paper-light);
+  border: 1px solid var(--paper-dark);
+  border-radius: 2px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(0, 0, 0, 0.3);
+  transform-origin: top right;
+  animation: disc-card-in 520ms var(--ease) both;
+  overflow: hidden;
+}
+.disc-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--accent-saturn);
+}
+@keyframes disc-card-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-24px) rotate(2.4deg) scale(0.92);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(4px) rotate(-0.6deg) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotate(-0.4deg) scale(1);
+  }
+}
+.disc-card__close {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.45rem;
+  width: 1.7rem;
+  height: 1.7rem;
+  font-size: 1.2rem;
+  line-height: 1;
+  color: var(--paper-muted);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.disc-card__close:hover {
+  color: var(--danger);
+}
+.disc-card__stamp {
+  display: inline-block;
+  margin: 0.15rem 0 0.5rem;
+  padding: 0.1rem 0.45rem;
+  font-family: var(--font-type);
+  font-size: 0.64rem;
+  letter-spacing: 0.18em;
+  color: var(--danger);
+  border: 1.5px solid var(--danger);
+  transform: rotate(-2deg);
+  opacity: 0.85;
+}
+.disc-card__head {
+  display: flex;
+  gap: 0.55rem;
+  align-items: flex-start;
+  min-width: 0;
+  padding-right: 1.4rem;
+}
+.disc-card__icon {
+  flex: none;
+  color: var(--paper-muted);
+  margin-top: 0.1rem;
+}
+.disc-card__title {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.disc-card__source {
+  margin: 0.35rem 0 0;
+  font-family: var(--font-type);
+  font-size: 0.72rem;
+  color: var(--paper-muted);
+  overflow-wrap: anywhere;
+}
+.disc-card__summary {
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.disc-card__filed {
+  margin: 0.55rem 0 0;
+  font-family: var(--font-type);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  color: var(--paper-muted);
+}
+.disc-card__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.6rem;
+}
+.disc-card__btn {
+  padding: 0.3rem 0.7rem;
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--paper-ink);
+  background: transparent;
+  border: 1px solid var(--paper-ink);
+  cursor: pointer;
+}
+.disc-card__btn:hover {
+  background: var(--paper-ink);
+  color: var(--paper-light);
+}
+
+.disc-notice {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  width: min(360px, 92vw);
+  min-width: 0;
+  padding: 0.65rem 0.8rem;
+  font-family: var(--font-ui);
+  color: var(--text-primary);
+  background: rgba(9, 12, 16, 0.94);
+  border: 1px solid var(--border-strong);
+  border-left: 3px solid var(--accent-saturn);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
+  animation: disc-notice-in 320ms var(--ease) both;
+}
+@keyframes disc-notice-in {
+  from {
+    opacity: 0;
+    transform: translateX(26px);
+  }
+}
+.disc-notice--contact,
+.disc-notice--audio {
+  border-left-color: var(--accent-cold);
+}
+.disc-notice--contradiction {
+  border-left-color: var(--danger);
+  animation: disc-notice-in 320ms var(--ease) both, disc-shake 420ms 320ms;
+}
+@keyframes disc-shake {
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+.disc-notice--contact .disc-notice__icon {
+  animation: disc-vibrate 520ms 2;
+}
+@keyframes disc-vibrate {
+  20% {
+    transform: rotate(-14deg);
+  }
+  40% {
+    transform: rotate(12deg);
+  }
+  60% {
+    transform: rotate(-8deg);
+  }
+  80% {
+    transform: rotate(6deg);
+  }
+}
+.disc-notice__icon {
+  flex: none;
+  color: var(--accent-saturn);
+  margin-top: 0.1rem;
+}
+.disc-notice--contact .disc-notice__icon,
+.disc-notice--audio .disc-notice__icon {
+  color: var(--accent-cold);
+}
+.disc-notice__body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.disc-notice__body p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.disc-notice__label {
+  font-size: 0.64rem;
+  letter-spacing: 0.2em;
+  color: var(--accent-saturn);
+}
+.disc-notice__title {
+  margin-top: 0.15rem !important;
+  font-size: 0.9rem;
+  line-height: 1.3;
+}
+.disc-notice__sub {
+  margin-top: 0.2rem !important;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+.disc-notice__btn {
+  flex: none;
+  align-self: center;
+  padding: 0.25rem 0.55rem;
+  font-size: 0.72rem;
+  color: var(--text-primary);
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  cursor: pointer;
+}
+.disc-notice__btn:hover {
+  border-color: var(--accent-saturn);
+}
+.disc-notice__x {
+  flex: none;
+  color: var(--text-faint);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+/* selo "NOVO" genérico */
+.new-badge {
+  display: inline-block;
+  padding: 0.05rem 0.4rem;
+  font-family: var(--font-ui);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #1b1408;
+  background: var(--accent-saturn);
+  border-radius: 8px;
+}
+.hub-badge {
+  position: absolute;
+  z-index: 5;
+  min-width: 1.3rem;
+  height: 1.3rem;
+  padding: 0 0.35rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--danger);
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  animation: hub-badge-pulse 1.6s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes hub-badge-pulse {
+  50% {
+    transform: scale(1.18);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .disc-card,
+  .disc-notice,
+  .disc-notice__icon,
+  .hub-badge {
+    animation: none !important;
+  }
+}

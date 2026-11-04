@@ -1,6 +1,10 @@
 import type { InvestigationState } from './types'
 
-/** Flags that must be set before a person appears in Caderno / terminal (Pessoas). */
+/**
+ * Flags que precisam estar ativas antes de uma pessoa aparecer no caderno / terminal (Pessoas).
+ * (A visibilidade no caderno NÃO libera conversa: chegar até a pessoa depende de telefone,
+ * endereço ou instituição descobertos por documentos.)
+ */
 export const personRegistryFlag: Record<string, string> = {
   elisa: 'block02_elisa_search_unlocked',
   andre: 'block02_elisa_search_unlocked',
@@ -9,7 +13,7 @@ export const personRegistryFlag: Record<string, string> = {
   iara: 'block02_vertice_iara',
   sandro: 'block02_vertice_sandro',
   caio: 'block02_vertice_caio',
-  livia: 'block03_livia_search_unlocked',
+  livia: 'block03_maralto_researched',
   morsa: 'block03_saturnalia_done',
   samuel: 'block03_saturnalia_done',
 }
@@ -23,68 +27,24 @@ export function isPersonVisibleInRegistry(personId: string, inv: InvestigationSt
   if (personId === 'lucas') {
     return (
       inv.evidenceOwned.includes('paula_leads_lucas') ||
-      Boolean(inv.flags.block02_lucas_available) ||
       inv.people.lucas?.status === 'contactable' ||
       inv.people.lucas?.status === 'interviewed'
     )
   }
+  // Lívia pode já ter sido identificada em saves antigos.
+  if (personId === 'livia') return inv.people.livia?.status !== 'mentioned'
   return false
-}
-
-export function canInterviewLucas(inv: InvestigationState): boolean {
-  return (
-    Boolean(inv.flags.block02_lucas_available) ||
-    inv.evidenceOwned.includes('paula_leads_lucas') ||
-    inv.people.lucas?.status === 'contactable'
-  )
-}
-
-export function canInterviewNico(inv: InvestigationState): boolean {
-  return (
-    Boolean(inv.flags.block03_nico_located) ||
-    inv.people.nico?.status === 'contactable' ||
-    inv.people.nico?.status === 'located'
-  )
-}
-
-export function canInterviewLivia(inv: InvestigationState): boolean {
-  return (
-    Boolean(inv.flags.block03_livia_located) ||
-    inv.people.livia?.status === 'contactable' ||
-    inv.people.livia?.status === 'located'
-  )
-}
-
-export function canInterviewSamuel(inv: InvestigationState): boolean {
-  return (
-    Boolean(inv.flags.block04_samuel_located) ||
-    inv.people.samuel?.status === 'contactable' ||
-    inv.people.samuel?.status === 'located'
-  )
-}
-
-export function canInterviewAndre(inv: InvestigationState): boolean {
-  return (
-    Boolean(inv.flags.block04_andre_visit_found) ||
-    inv.people.andre?.status === 'contactable' ||
-    inv.locations.presidio?.status === 'visitAvailable' ||
-    inv.locations.presidio?.status === 'visited'
-  )
 }
 
 /** Corrige estado quando a evidência existe mas flags de Bloco 2 não foram gravadas. */
 export function repairInvestigationState(state: InvestigationState): InvestigationState {
   if (!state.evidenceOwned.includes('paula_leads_lucas')) return state
-  if (state.flags.block02_paula_chat_done && state.flags.block02_lucas_available) return state
+  if (state.flags.block02_paula_chat_done) return state
 
   const lucas = state.people.lucas
   return {
     ...state,
-    flags: {
-      ...state.flags,
-      block02_paula_chat_done: true,
-      block02_lucas_available: true,
-    },
+    flags: { ...state.flags, block02_paula_chat_done: true },
     people: lucas
       ? {
           ...state.people,

@@ -2,8 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { createInitialState } from '../../src/game/state/initialState'
 import { applyStoryActions } from '../../src/game/story/actions'
 import { runStoryEngine } from '../../src/game/story/engine'
-import { tryConfirmContradiction } from '../../src/game/state/investigationStore'
-import { __setStateForTests, getInvestigationState, resetGame } from '../../src/game/state/investigationStore'
+import { dispatchActions, getInvestigationState, resetGame } from '../../src/game/state/investigationStore'
 
 describe('story engine', () => {
   it('completes mariana phone task when julia and rafael chats reviewed', () => {
@@ -18,17 +17,26 @@ describe('story engine', () => {
     expect(task?.completed).toBe(true)
   })
 
-  it('confirms configured contradiction only', () => {
+  it('registers a configured contradiction automatically, only for the right pair', () => {
     resetGame()
-    __setStateForTests(
-      applyStoryActions(getInvestigationState(), [
-        { type: 'addEvidence', id: 'mariana_memory_lapses' },
-        { type: 'addEvidence', id: 'rafael_call_memory' },
-        { type: 'addHypothesis', id: 'hyp_memory' },
-      ]),
-    )
-    expect(tryConfirmContradiction('mariana_memory_lapses', 'rafael_call_memory')).toBe(true)
+    dispatchActions([
+      { type: 'addEvidence', id: 'initial_police_report' },
+      { type: 'addEvidence', id: 'rafael_call_memory' },
+    ])
+    expect(getInvestigationState().contradictionsConfirmed.length).toBe(0)
+    dispatchActions([{ type: 'addEvidence', id: 'mariana_memory_lapses' }])
+    const s = getInvestigationState()
+    expect(s.contradictionsConfirmed.length).toBe(1)
+    expect(s.contradictionsConfirmed[0].id).toBe('contra_selective_memory')
+  })
+
+  it('does not register the same contradiction twice', () => {
+    resetGame()
+    dispatchActions([
+      { type: 'addEvidence', id: 'mariana_memory_lapses' },
+      { type: 'addEvidence', id: 'rafael_call_memory' },
+    ])
+    dispatchActions([{ type: 'addEvidence', id: 'initial_police_report' }])
     expect(getInvestigationState().contradictionsConfirmed.length).toBe(1)
-    expect(tryConfirmContradiction('initial_police_report', 'rafael_call_memory')).toBe(false)
   })
 })

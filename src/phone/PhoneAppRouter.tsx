@@ -5,7 +5,6 @@ import { AppStoreView } from '../apps/device/AppStoreView'
 import { DeviceSettingsApp } from '../apps/device/DeviceSettingsApp'
 import { FilesApp } from '../apps/device/FilesApp'
 import { PhotosApp } from '../apps/device/PhotosApp'
-import { HiddenDiaryApp } from '../apps/device/HiddenDiaryApp'
 import { RecorderApp } from '../apps/device/RecorderApp'
 import { WaveLabApp } from '../apps/device/WaveLabApp'
 import { NoteView } from '../apps/notes/NoteView'
@@ -44,8 +43,6 @@ export function PhoneAppRouter() {
       return <RecorderApp onBack={back} />
     case 'wavelab':
       return <WaveLabApp onBack={back} />
-    case 'hidden-diary':
-      return <HiddenDiaryApp onBack={back} />
     case 'device-settings':
       return <DeviceSettingsApp onBack={back} />
     case 'photos':

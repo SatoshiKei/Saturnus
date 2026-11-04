@@ -6,11 +6,10 @@ import { runPoliceSearch } from '../../src/game/search/runSearch'
 import {
   __setStateForTests,
   getInvestigationState,
+  openDocument,
   resetGame,
 } from '../../src/game/state/investigationStore'
-import { applyPoliceSearchHit } from '../../src/game/story/block02Handlers'
 import {
-  applyBlock03SearchHit,
   finishLiviaInterview,
   finishNicoInterview,
   onMarianaMaraltoRecordingFound,
@@ -56,19 +55,20 @@ describe('Bloco 3 — progressão', () => {
 
     const s = getInvestigationState()
     const { hits } = runPoliceSearch('Nicolas Nico', s)
-    expect(hits.some((h) => h.evidenceId === 'nico_current_record')).toBe(true)
+    expect(hits.some((h) => h.documentId === 'doc-nico-cadastro')).toBe(true)
 
-    applyPoliceSearchHit('nico_current_record')
-    applyBlock03SearchHit('nico_current_record')
+    expect(getInvestigationState().contacts['contact-nico']?.unlocked).toBeFalsy()
+    openDocument('doc-nico-cadastro')
     const after = getInvestigationState()
-    expect(after.flags.block03_nico_located).toBe(true)
-    expect(after.people.nico.status).toBe('contactable')
+    expect(after.evidenceOwned).toContain('nico_current_record')
+    expect(after.people.nico.status).toBe('located')
+    expect(after.contacts['contact-nico']?.unlocked).toBe(true)
     expect(after.tasks.some((t) => t.id === 'task_locate_nico' && t.completed)).toBe(true)
   })
 
   it('entrevista Nico entrega gravações Janus', () => {
     seedBlock03Start()
-    applyBlock03SearchHit('nico_current_record')
+    openDocument('doc-nico-cadastro')
     finishNicoInterview()
     finishNicoInterview()
     const s = getInvestigationState()
@@ -122,19 +122,16 @@ describe('Bloco 3 — progressão', () => {
         { type: 'addEvidence', id: 'mariana_maralto_recording' },
       ]),
     )
-    applyPoliceSearchHit('maralto_public_record')
-    applyBlock03SearchHit('maralto_public_record')
-    applyPoliceSearchHit('livia_sought_by_mariana')
-    applyBlock03SearchHit('livia_sought_by_mariana')
+    openDocument('doc-maralto-cadastro')
+    openDocument('doc-maralto-clipping')
     let s = getInvestigationState()
     expect(s.flags.block03_maralto_researched).toBe(true)
     expect(s.people.livia.status).toBe('identified')
-    expect(s.flags.block03_livia_search_unlocked).toBe(true)
+    expect(s.contacts['contact-livia']?.unlocked).toBe(true)
 
     const cross = runPoliceSearch('maralto elisa', s)
-    expect(cross.hits.some((h) => h.evidenceId === 'maralto_no_elisa_link')).toBe(true)
-    applyPoliceSearchHit('maralto_no_elisa_link')
-    applyBlock03SearchHit('maralto_no_elisa_link')
+    expect(cross.hits.some((h) => h.documentId === 'doc-cruzamento-maralto-elisa')).toBe(true)
+    openDocument('doc-cruzamento-maralto-elisa')
     s = getInvestigationState()
     expect(s.flags.block03_maralto_no_link).toBe(true)
   })
@@ -160,7 +157,6 @@ describe('Bloco 3 — progressão', () => {
 
   it('entrevista Lívia entrega arquivo Saturnalia', () => {
     seedBlock03Start()
-    applyBlock03SearchHit('livia_contact_record')
     finishLiviaInterview()
     const s = getInvestigationState()
     expect(s.evidenceOwned).toContain('livia_radio_archive_raw')

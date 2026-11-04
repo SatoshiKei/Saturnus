@@ -1,6 +1,5 @@
 import { block01MarianaChats } from './block01/marianaChats'
-import { paulaAugustoBlock02Thread } from './block02/paulaAugustoChat'
-import { rafaelAugustoBlock02Thread } from './block02/rafaelAugustoChat'
+import { chatScripts } from './chatScripts'
 import type { InvestigationState } from '../game/types'
 import type { ChatThread } from '../types/messaging'
 
@@ -50,12 +49,18 @@ export const activeChats = mockChats.filter((c) => !c.archived)
 export const archivedChats = mockChats.filter((c) => c.archived)
 
 export function getChatById(id: string, state?: InvestigationState): ChatThread | undefined {
-  const augustoUnlocked = state?.phones.augusto.unlockedChatIds ?? []
-  if (augustoUnlocked.includes('chat-rafael-augusto') && id === 'chat-rafael-augusto') {
-    return rafaelAugustoBlock02Thread
-  }
-  if (augustoUnlocked.includes('chat-paula-augusto') && id === 'chat-paula-augusto') {
-    return paulaAugustoBlock02Thread
+  const script = chatScripts[id]
+  if (script && state?.phones.augusto.unlockedChatIds.includes(id)) {
+    // Conversas iniciadas pelo jogador: o fio vem do progresso salvo (começa vazio).
+    const messages = state.chatProgress[id]?.messages ?? []
+    const last = [...messages].reverse().find((m) => m.kind === 'text' || m.kind === 'audio')
+    return {
+      id,
+      contactId: script.contactId,
+      lastPreview: !last ? 'Toque para iniciar conversa' : last.kind === 'text' ? last.text.split('\n')[0] : 'Áudio',
+      lastTime: last && 'timestamp' in last ? last.timestamp : '—',
+      messages,
+    }
   }
   return mockChats.find((c) => c.id === id)
 }

@@ -10,12 +10,11 @@ import {
   runProvisionalJanusSync,
   runProvisionalSaturnaliaReconstruct,
 } from '../../../game/story/block03Handlers'
-import {
-  onUnknownRecordingAnalyzed,
-  runProvisionalHexagonSolve,
-} from '../../../game/story/block04Handlers'
-import { HEX_CYCLE, HEX_NODES, HEX_PHRASE } from '../../../data/block04/hexagonPuzzle'
+import { onUnknownRecordingAnalyzed } from '../../../game/story/block04Handlers'
+import { markAudioSeen } from '../../../game/state/investigationStore'
+import { HEX_NODES, type HexNodeId } from '../../../data/block04/hexagonPuzzle'
 import { GamePanel } from '../../ui/GamePanel'
+import { HexagonSession } from './HexagonSession'
 
 /** PRNG determinístico a partir do id — a forma de onda é estável entre sessões. */
 function seeded(id: string) {
@@ -71,6 +70,27 @@ function Spectrogram({ id }: { id: string }) {
   )
 }
 
+type AnalysisState = 'none' | 'pending' | 'done'
+type Filter = 'all' | 'new' | 'pending' | 'done'
+
+const filters: { id: Filter; label: string }[] = [
+  { id: 'all', label: 'Todos' },
+  { id: 'new', label: 'Novos' },
+  { id: 'pending', label: 'Em análise' },
+  { id: 'done', label: 'Analisados' },
+]
+
+function analysisState(id: string, flags: Record<string, boolean>): AnalysisState {
+  if (id === 'emergency_call_raw') return flags.block01_emergency_provisional ? 'done' : 'pending'
+  if (id === 'rafael_forward_from_mariana') return flags.block02_rafael_forward_provisional ? 'done' : 'pending'
+  if (id === 'nico_recording_booth' || id === 'nico_recording_portable')
+    return flags.block03_janus_done ? 'done' : 'pending'
+  if (id === 'livia_radio_archive_raw') return flags.block03_saturnalia_done ? 'done' : 'pending'
+  if (HEX_NODES.some((n) => n.evidenceId === id)) return flags.block04_hexagon_done ? 'done' : 'pending'
+  if (id === 'unknown_contact_recording') return flags.block04_unknown_analyzed ? 'done' : 'pending'
+  return 'none'
+}
+
 function fmt(sec?: number) {
   if (!sec) return '—'
   return `${Math.floor(sec / 60)}:${String(Math.round(sec % 60)).padStart(2, '0')}`
@@ -86,14 +106,24 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
   const rafaelForwardProvisionalDone = inv.flags.block02_rafael_forward_provisional
   const janusDone = inv.flags.block03_janus_done
   const saturnaliaDone = inv.flags.block03_saturnalia_done
-  const hexagonDone = inv.flags.block04_hexagon_done
   const hasJanusPair =
     inv.evidenceOwned.includes('nico_recording_booth') &&
     inv.evidenceOwned.includes('nico_recording_portable')
   const hasHexSet = HEX_NODES.every((n) => inv.evidenceOwned.includes(n.evidenceId))
-  const files = inv.evidenceOwned
+  // Mais recente primeiro (ordem de aquisição invertida).
+  const allFiles = [...inv.evidenceOwned]
+    .reverse()
     .map((id) => inv.evidence[id])
     .filter((e): e is Evidence => Boolean(e) && (e.type === 'audio' || e.type === 'derived'))
+  const [filter, setFilter] = useState<Filter>('all')
+  const isNew = (id: string) => !inv.audioSeen.includes(id)
+  const files = allFiles.filter((f) => {
+    if (filter === 'new') return isNew(f.id)
+    if (filter === 'pending') return analysisState(f.id, inv.flags) === 'pending'
+    if (filter === 'done') return analysisState(f.id, inv.flags) === 'done'
+    return true
+  })
+  const newCount = allFiles.filter((f) => isNew(f.id)).length
 
   const [sel, setSel] = useState<string | null>(null)
   const [moduleId, setModuleId] = useState('metadata')
@@ -102,13 +132,13 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
   const [progress, setProgress] = useState(0)
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
-  const current = files.find((f) => f.id === sel) ?? files[0]
+  const current = allFiles.find((f) => f.id === sel)
   const showJanus =
     hasJanusPair &&
     (current?.id === 'nico_recording_booth' || current?.id === 'nico_recording_portable')
   const showSaturnalia = current?.id === 'livia_radio_archive_raw'
-  const showHexagon =
-    hasHexSet && HEX_NODES.some((n) => n.evidenceId === current?.id)
+  const hexCurrent = HEX_NODES.find((n) => n.evidenceId === current?.id)
+  const showHexagon = hasHexSet && Boolean(hexCurrent)
   const showUnknownAnalyze = current?.id === 'unknown_contact_recording'
   const blocked = Boolean(current && (current.exportable === false || current.deviceLocked))
   const playable = Boolean(current?.audioSrc) && !blocked
@@ -147,6 +177,7 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
     audioRef.current?.pause()
     audioRef.current = null
     setSel(id)
+    markAudioSeen(id)
   }
 
   const modules = seedAnalysisModules
@@ -163,21 +194,55 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
     >
       <div className="aw" data-testid="audio-lab">
         <aside className="aw-files" aria-label="Arquivos">
-          <h3 className="aw-h">Arquivos</h3>
-          {files.length === 0 ? <p className="aw-empty">Nenhum áudio reunido.</p> : null}
-          <ul>
+          <h3 className="aw-h">
+            Arquivos
+            {newCount > 0 ? (
+              <span className="new-badge aw-h__new" data-testid="audio-new-count">
+                {newCount} novo{newCount > 1 ? 's' : ''}
+              </span>
+            ) : null}
+          </h3>
+          <div className="aw-filters" role="tablist" aria-label="Filtro de arquivos">
+            {filters.map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                role="tab"
+                aria-selected={filter === f.id}
+                className="aw-filter"
+                data-active={filter === f.id}
+                data-testid={`audio-filter-${f.id}`}
+                onClick={() => setFilter(f.id)}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+          {allFiles.length === 0 ? <p className="aw-empty">Nenhum áudio reunido.</p> : null}
+          {allFiles.length > 0 && files.length === 0 ? (
+            <p className="aw-empty">Nenhum arquivo neste filtro.</p>
+          ) : null}
+          <ul data-testid="audio-file-list">
             {files.map((f) => {
               const lock = f.exportable === false || f.deviceLocked
+              const st = analysisState(f.id, inv.flags)
               return (
                 <li key={f.id}>
                   <button
                     type="button"
                     className="aw-file"
                     data-active={f.id === current?.id}
+                    data-new={isNew(f.id)}
+                    data-testid={`audio-file-${f.id}`}
                     onClick={() => select(f.id)}
                   >
                     <span className="aw-file__name">
                       {f.displayFileName ?? f.title}
+                      {isNew(f.id) ? (
+                        <span className="new-badge" data-testid={`audio-new-${f.id}`}>
+                          NOVO
+                        </span>
+                      ) : null}
                     </span>
                     <span className="aw-file__meta">
                       {fmt(f.durationSec)} ·{' '}
@@ -185,6 +250,10 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                         <b className="aw-lock" data-testid={`export-blocked-${f.id}`}>
                           protegido no aparelho
                         </b>
+                      ) : st === 'pending' ? (
+                        'em análise'
+                      ) : st === 'done' ? (
+                        'analisado'
                       ) : (
                         'disponível'
                       )}
@@ -244,7 +313,7 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
               {current.id === 'emergency_call_raw' && current.puzzleMeta?.implementation === 'placeholder' ? (
                 <div className="aw-provisional" data-testid="emergency-provisional-panel">
                   <p className="aw-provisional__note">
-                    Restauração automática provisória — a análise forense definitiva substituirá este fluxo.
+                    Gravação degradada. Filtros de ruído e restauração automática disponíveis.
                   </p>
                   <button
                     type="button"
@@ -253,7 +322,7 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                     disabled={emergencyProvisionalDone}
                     onClick={() => runProvisionalEmergencyAnalysis()}
                   >
-                    {emergencyProvisionalDone ? 'Análise provisória concluída' : 'Análise provisória'}
+                    {emergencyProvisionalDone ? 'Restauração concluída' : 'Restaurar gravação'}
                   </button>
                   {inv.evidenceOwned.includes('emergency_call_restored') ? (
                     <blockquote className="aw-provisional__transcript">
@@ -267,8 +336,8 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
               current.puzzleMeta?.implementation === 'placeholder' ? (
                 <div className="aw-provisional" data-testid="rafael-forward-provisional-panel">
                   <p className="aw-provisional__note">
-                    Análise provisória (puzzle-03 placeholder) — substituída pelo fluxo forense definitivo
-                    depois.
+                    Áudio encaminhado, com perda de qualidade. Há um trecho inicial que o filtro de ruído pode
+                    recuperar.
                   </p>
                   <button
                     type="button"
@@ -277,9 +346,7 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                     disabled={rafaelForwardProvisionalDone}
                     onClick={() => runProvisionalRafaelForwardAnalysis()}
                   >
-                    {rafaelForwardProvisionalDone
-                      ? 'Análise provisória concluída'
-                      : 'Análise provisória (vinheta Vértice)'}
+                    {rafaelForwardProvisionalDone ? 'Trecho inicial recuperado' : 'Recuperar trecho inicial'}
                   </button>
                   {inv.evidenceOwned.includes('rafael_recording_vertice_tag') ? (
                     <blockquote className="aw-provisional__transcript">
@@ -293,16 +360,16 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                 <div className="aw-orbit" data-testid="janus-provisional-panel">
                   <p className="aw-orbit__title">Sessão Janus / Epimetheus</p>
                   <p className="aw-provisional__note">
-                    Duas órbitas temporais da mesma noite. Relógios divergem; âncoras acústicas coincidem.
-                    Placeholder — a sincronização definitiva usará correlação de forma de onda.
+                    Duas gravações da mesma noite, cada uma com o relógio do seu aparelho. Os relógios
+                    divergem; as âncoras acústicas (batidas, vinhetas) podem ser alinhadas.
                   </p>
                   <div className="aw-orbit__tracks">
                     <div>
-                      <p className="aw-orbit__label">Fonte A — cabine · clock +00:00 (errado)</p>
+                      <p className="aw-orbit__label">Fonte A — cabine · relógio do aparelho</p>
                       <Waveform id="nico_recording_booth" progress={0.42} />
                     </div>
                     <div>
-                      <p className="aw-orbit__label">Fonte B — portátil · clock −00:00 (errado)</p>
+                      <p className="aw-orbit__label">Fonte B — portátil · relógio do aparelho</p>
                       <Waveform id="nico_recording_portable" progress={0.58} dim />
                     </div>
                   </div>
@@ -313,12 +380,12 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                     disabled={janusDone || !hasJanusPair}
                     onClick={() => runProvisionalJanusSync()}
                   >
-                    {janusDone ? 'Alinhamento provisório concluído' : 'Alinhar âncoras (provisório)'}
+                    {janusDone ? 'Âncoras alinhadas' : 'Alinhar âncoras'}
                   </button>
                   {janusDone ? (
                     <blockquote className="aw-provisional__transcript">
-                      Resultado: pelo menos um horário da cronologia original da Noite X veio de dispositivo
-                      não sincronizado. Inconsistência verificável — não absolvição.
+                      Alinhamento concluído: as âncoras coincidem com um deslocamento entre os relógios dos
+                      dois aparelhos.
                     </blockquote>
                   ) : null}
                 </div>
@@ -328,8 +395,8 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                 <div className="aw-orbit" data-testid="saturnalia-provisional-panel">
                   <p className="aw-orbit__title">Sessão Saturnalia</p>
                   <p className="aw-provisional__note">
-                    Buffer circular: batches escritos do mais recente ao mais antigo. Placeholder — a
-                    reconstrução definitiva inverterá a ordem interna de cada grupo.
+                    Arquivo de transmissão em buffer circular: os lotes foram gravados do mais recente ao mais
+                    antigo, e dentro de cada lote a ordem dos fragmentos está invertida.
                   </p>
                   <ul className="aw-orbit__batches" aria-label="Fragmentos">
                     <li>Batch 02 · frag C → B → A</li>
@@ -344,63 +411,25 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                     disabled={saturnaliaDone}
                     onClick={() => runProvisionalSaturnaliaReconstruct()}
                   >
-                    {saturnaliaDone
-                      ? 'Reconstrução provisória concluída'
-                      : 'Inverter batches (provisório)'}
+                    {saturnaliaDone ? 'Transmissão reconstruída' : 'Reordenar lotes'}
                   </button>
                   {saturnaliaDone ? (
                     <blockquote className="aw-provisional__transcript">
-                      Núcleo mascarado nos protestos. Apelido recorrente: “Morsa”. Identidade desconhecida.
+                      Trecho reconstruído: referência ao núcleo mascarado dos protestos e a um apelido recorrente,
+                      “Morsa”. Sem nome completo.
                     </blockquote>
                   ) : null}
                 </div>
               ) : null}
 
-              {showHexagon ? (
-                <div className="aw-hex" data-testid="hexagon-provisional-panel">
-                  <p className="aw-orbit__title">Sessão Hexágono</p>
-                  <p className="aw-provisional__note">
-                    Seis nós. Cada irregularidade aponta para outro arquivo. Ciclo definitivo:{' '}
-                    {HEX_CYCLE.join(' → ')} → A. Placeholder — a mecânica real usará metadata e
-                    relações técnicas.
-                  </p>
-                  <div className="aw-hex__graph" aria-hidden>
-                    {HEX_CYCLE.map((id, i) => (
-                      <span key={id} className="aw-hex__node">
-                        {id}
-                        {i < HEX_CYCLE.length - 1 ? <span className="aw-hex__edge">→</span> : null}
-                      </span>
-                    ))}
-                    <span className="aw-hex__edge">→ A</span>
-                  </div>
-                  <ul className="aw-orbit__batches">
-                    {HEX_NODES.map((n) => (
-                      <li key={n.id}>
-                        {n.id} · {n.displayName} · {n.anomaly}
-                      </li>
-                    ))}
-                  </ul>
-                  <button
-                    type="button"
-                    className="aw-provisional__go"
-                    data-testid="hexagon-provisional-solve"
-                    disabled={hexagonDone || !hasHexSet}
-                    onClick={() => runProvisionalHexagonSolve()}
-                  >
-                    {hexagonDone ? 'Ciclo fechado — frase recuperada' : 'Fechar ciclo (provisório)'}
-                  </button>
-                  {hexagonDone ? (
-                    <blockquote className="aw-provisional__transcript">{HEX_PHRASE}</blockquote>
-                  ) : null}
-                </div>
-              ) : null}
+              {showHexagon && hexCurrent ? <HexagonSession currentId={hexCurrent.id as HexNodeId} /> : null}
 
               {showUnknownAnalyze ? (
                 <div className="aw-orbit" data-testid="unknown-recording-panel">
                   <p className="aw-orbit__title">Contato sem nome</p>
                   <p className="aw-provisional__note">
-                    Voz tratada. Familiaridade excessiva. Não declarar vilania — apenas assimetria de
-                    memória.
+                    Gravação tratada. A voz usa referências da rotina de Mariana; não há identificação de
+                    falante.
                   </p>
                   <button
                     type="button"
@@ -426,7 +455,7 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                     data-locked={!m.unlocked}
                     disabled={!m.unlocked}
                     onClick={() => setModuleId(m.id)}
-                    title={m.unlocked ? m.description : 'Módulo ainda não disponível'}
+                    title={m.unlocked ? m.description : 'Módulo indisponível nesta estação'}
                   >
                     {m.title}
                   </button>
@@ -462,8 +491,10 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
               </div>
             </>
           ) : (
-            <p className="aw-empty aw-empty--big">
-              Sem material para analisar. Reúna áudios nos aparelhos e no caso.
+            <p className="aw-empty aw-empty--big" data-testid="audio-no-selection">
+              {allFiles.length
+                ? 'Selecione um arquivo na lista para ouvir e analisar.'
+                : 'Sem material para analisar. Reúna áudios nos aparelhos e no caso.'}
             </p>
           )}
         </section>

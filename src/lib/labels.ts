@@ -16,14 +16,14 @@ export const personStatusLabel: Record<PersonStatus, string> = {
   mentioned: 'Mencionado',
   identified: 'Identificado',
   located: 'Localizado',
-  contactable: 'Contato disponível',
-  interviewed: 'Entrevistado',
+  contactable: 'Localizado',
+  interviewed: 'Ouvido',
 }
 
 export const locationStatusLabel: Record<LocationStatus, string> = {
   unknown: 'Desconhecido',
-  known: 'Local conhecido',
-  visitAvailable: 'Visita disponível',
+  known: 'Local anotado',
+  visitAvailable: 'Local anotado',
   visited: 'Já visitado',
 }
 
@@ -58,7 +58,7 @@ const sourceLabels: Record<string, string> = {
   'augusto-whatsapp': 'WhatsApp — celular profissional',
   'unknown-channel': 'Canal sem identificação',
   'phone-forensics': 'Perícia digital — aparelho apreendido',
-  'hidden-diary': 'Diário oculto — celular de Mariana',
+  'hidden-diary': 'Diário — aparelho de Mariana (perícia)',
 }
 
 export function evidenceSourceLabel(e: Pick<Evidence, 'sourceType' | 'obtainedFrom'>): string {

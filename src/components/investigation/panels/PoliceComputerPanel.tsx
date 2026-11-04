@@ -1,34 +1,33 @@
-import { useEffect, useState, type FormEvent } from 'react'
-import { seedDocuments } from '../../../data/game/seedDocuments'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { getDocument } from '../../../data/game/seedDocuments'
 import { useInvestigation } from '../../../game/hooks/useInvestigation'
-import { runPoliceSearch } from '../../../game/search/runSearch'
-import { dispatchActions } from '../../../game/state/investigationStore'
-import { applyPoliceSearchHit } from '../../../game/story/block02Handlers'
-import { applyBlock03SearchHit } from '../../../game/story/block03Handlers'
-import {
-  applyBlock04SearchHit,
-  runPhoneHiddenAppForensics,
-} from '../../../game/story/block04Handlers'
-import { useGameHub } from '../../../app/GameHubContext'
-import {
-  canInterviewAndre,
-  canInterviewLivia,
-  canInterviewLucas,
-  canInterviewNico,
-  canInterviewSamuel,
-  isPersonVisibleInRegistry,
-} from '../../../game/personRegistryGates'
-import { personStatusLabel } from '../../../lib/labels'
+import { runPoliceSearch, type SearchHit } from '../../../game/search/runSearch'
+import { dispatchActions, tryDiaryPin } from '../../../game/state/investigationStore'
+import { isPersonVisibleInRegistry } from '../../../game/personRegistryGates'
+import { DiaryReader } from '../../../apps/device/HiddenDiaryApp'
+import { playSfx } from '../../../lib/sfx'
 import { GamePanel } from '../../ui/GamePanel'
+import { DocumentSheet } from '../DocumentSheet'
 
-type Section = 'busca' | 'caso' | 'pessoas' | 'veiculos' | 'arquivos'
+type Section = 'consultas' | 'ocorrencias' | 'autos' | 'documentos' | 'pericia' | 'caso'
 
 const sections: { id: Section; label: string }[] = [
+  { id: 'consultas', label: 'Consultas' },
+  { id: 'ocorrencias', label: 'Ocorrências' },
+  { id: 'autos', label: 'Processos / Autos' },
+  { id: 'documentos', label: 'Documentos' },
+  { id: 'pericia', label: 'Perícia' },
   { id: 'caso', label: 'Caso' },
-  { id: 'pessoas', label: 'Pessoas' },
-  { id: 'veiculos', label: 'Veículos' },
-  { id: 'arquivos', label: 'Arquivos' },
-  { id: 'busca', label: 'Busca' },
+]
+
+type Scope = 'geral' | 'pessoas' | 'empresas' | 'veiculos' | 'enderecos'
+
+const scopes: { id: Scope; label: string; placeholder: string }[] = [
+  { id: 'geral', label: 'Geral', placeholder: 'nome, razão social, placa, endereço ou termo' },
+  { id: 'pessoas', label: 'Pessoas', placeholder: 'nome completo ou apelido' },
+  { id: 'empresas', label: 'Empresas', placeholder: 'razão social ou nome fantasia' },
+  { id: 'veiculos', label: 'Veículos', placeholder: 'placa' },
+  { id: 'enderecos', label: 'Endereços', placeholder: 'logradouro e número' },
 ]
 
 function useClock() {
@@ -40,19 +39,27 @@ function useClock() {
   return now
 }
 
-interface SearchHit {
-  title: string
-  snippet: string
+function scopeAllows(scope: Scope, documentId: string | undefined): boolean {
+  if (scope === 'geral') return true
+  if (scope === 'veiculos' || scope === 'enderecos') return false
+  const doc = documentId ? getDocument(documentId) : undefined
+  if (!doc) return false
+  if (scope === 'pessoas') return doc.category.toLowerCase().includes('pessoas')
+  return doc.category.toLowerCase().includes('empresas')
 }
 
 export function PoliceComputer({ onClose }: { onClose: () => void }) {
   const inv = useInvestigation()
-  const { openLocationScene } = useGameHub()
-  const [section, setSection] = useState<Section>('busca')
+  const [section, setSection] = useState<Section>('consultas')
+  const [scope, setScope] = useState<Scope>('geral')
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<SearchHit[]>([])
   const [searched, setSearched] = useState(false)
   const [recent, setRecent] = useState<string[]>([])
+  const [openDoc, setOpenDoc] = useState<string | null>(null)
+  const [pin, setPin] = useState('')
+  const [pinError, setPinError] = useState<string | null>(null)
+  const [pkgOpen, setPkgOpen] = useState(false)
   const clock = useClock()
 
   const search = (e?: FormEvent) => {
@@ -60,23 +67,77 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
     const q = query.trim()
     if (!q) return
     const { hits, newTerms } = runPoliceSearch(q, inv)
-    setResults(hits.map(({ title, snippet }) => ({ title, snippet })))
-    for (const h of hits) {
-      if (h.evidenceId) {
-        applyPoliceSearchHit(h.evidenceId)
-        applyBlock03SearchHit(h.evidenceId)
-        applyBlock04SearchHit(h.evidenceId)
-      }
-    }
+    setResults(hits.filter((h) => scopeAllows(scope, h.documentId)))
     setSearched(true)
+    playSfx('keyboard')
     setRecent((r) => [q, ...r.filter((x) => x !== q)].slice(0, 5))
     if (newTerms.length) {
       dispatchActions(newTerms.map((term) => ({ type: 'discoverSearchTerm', term })))
     }
   }
 
-  const people = Object.values(inv.people).filter((p) => isPersonVisibleInRegistry(p.id, inv))
+  const docsFor = (system: string) =>
+    inv.documentsOwned
+      .map((id) => getDocument(id))
+      .filter((d): d is NonNullable<typeof d> => Boolean(d) && d!.system === system)
+
+  const people = useMemo(
+    () => Object.values(inv.people).filter((p) => isPersonVisibleInRegistry(p.id, inv)),
+    [inv],
+  )
   const pending = inv.tasks.filter((t) => !t.completed)
+  const mariana = inv.phones.mariana
+  const scopeDef = scopes.find((s) => s.id === scope) ?? scopes[0]
+
+  const go = (s: Section) => {
+    setSection(s)
+    setOpenDoc(null)
+  }
+
+  const submitPin = (e: FormEvent) => {
+    e.preventDefault()
+    const res = tryDiaryPin(pin)
+    if (res === 'wrong') {
+      playSfx('error')
+      setPinError('Código incorreto.')
+    } else if (res === 'unlocked') {
+      playSfx('unlock')
+      setPinError(null)
+      setPin('')
+    } else {
+      setPinError('Acesso forense não liberado.')
+    }
+  }
+
+  const docList = (system: string, emptyText: string) => {
+    const list = docsFor(system)
+    return list.length ? (
+      <table className="pc-table" data-testid={`pc-docs-${system}`}>
+        <thead>
+          <tr>
+            <th>Documento</th>
+            <th>Origem</th>
+            <th />
+          </tr>
+        </thead>
+        <tbody>
+          {list.map((d) => (
+            <tr key={d.id}>
+              <td>{d.title}</td>
+              <td>{d.issuer ?? d.category}</td>
+              <td>
+                <button type="button" className="pc-inline" data-testid={`pc-open-${d.id}`} onClick={() => setOpenDoc(d.id)}>
+                  Abrir
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    ) : (
+      <p className="pc-empty">{emptyText}</p>
+    )
+  }
 
   return (
     <GamePanel
@@ -101,18 +162,42 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
               type="button"
               className="pc-nav__item"
               data-active={section === s.id}
-              onClick={() => setSection(s.id)}
+              data-testid={`pc-nav-${s.id}`}
+              onClick={() => go(s.id)}
             >
               {s.label}
             </button>
           ))}
-          <p className="pc-nav__foot">Acesso restrito.<br />Consultas são registradas.</p>
+          <p className="pc-nav__foot">
+            Acesso restrito.
+            <br />
+            Consultas são registradas.
+          </p>
         </nav>
 
         <div className="pc-main">
-          {section === 'busca' ? (
+          {openDoc ? (
+            <DocumentSheet docId={openDoc} onBack={() => setOpenDoc(null)} backLabel="‹ Voltar ao sistema" />
+          ) : null}
+
+          {!openDoc && section === 'consultas' ? (
             <>
-              <h3 className="pc-h">Consulta geral</h3>
+              <h3 className="pc-h">Consultas</h3>
+              <div className="pc-scope" role="tablist" aria-label="Tipo de consulta">
+                {scopes.map((s) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={scope === s.id}
+                    className="pc-scope__item"
+                    data-active={scope === s.id}
+                    onClick={() => setScope(s.id)}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
               <form className="pc-term" onSubmit={search}>
                 <span className="pc-term__prompt" aria-hidden>
                   ›
@@ -121,7 +206,7 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
                   className="pc-term__input"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="nome, apelido, placa ou termo do caso"
+                  placeholder={scopeDef.placeholder}
                   data-testid="police-search-input"
                   spellCheck={false}
                   autoComplete="off"
@@ -142,9 +227,19 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
               ) : null}
               <div className="pc-results" aria-live="polite">
                 {results.map((r) => (
-                  <article key={r.title} className="pc-record" data-testid={`search-hit-${r.title}`}>
+                  <article key={r.ruleId + r.title} className="pc-record" data-testid={`search-hit-${r.title}`}>
                     <h4>{r.title}</h4>
                     <p>{r.snippet}</p>
+                    {r.documentId ? (
+                      <button
+                        type="button"
+                        className="pc-inline"
+                        data-testid={`search-open-${r.documentId}`}
+                        onClick={() => setOpenDoc(r.documentId!)}
+                      >
+                        Abrir registro
+                      </button>
+                    ) : null}
                   </article>
                 ))}
                 {searched && results.length === 0 ? (
@@ -152,15 +247,97 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
                 ) : null}
                 {!searched ? (
                   <p className="pc-empty">
-                    A consulta só retorna registros que combinem com os termos digitados. Combine
-                    nomes e palavras conhecidas.
+                    A consulta só retorna registros que combinem com os termos digitados.
                   </p>
                 ) : null}
               </div>
+              {docsFor('consultas').length ? (
+                <>
+                  <h4 className="pc-sub">Consultas já realizadas</h4>
+                  {docList('consultas', '')}
+                </>
+              ) : null}
             </>
           ) : null}
 
-          {section === 'caso' ? (
+          {!openDoc && section === 'ocorrencias' ? (
+            <>
+              <h3 className="pc-h">Ocorrências</h3>
+              {docList('ocorrencias', 'Nenhuma ocorrência arquivada neste terminal.')}
+            </>
+          ) : null}
+
+          {!openDoc && section === 'autos' ? (
+            <>
+              <h3 className="pc-h">Processos / Autos</h3>
+              {docList('autos', 'Nenhum processo ou autos consultado até agora.')}
+            </>
+          ) : null}
+
+          {!openDoc && section === 'documentos' ? (
+            <>
+              <h3 className="pc-h">Documentos</h3>
+              {docList('documentos', 'Nenhum documento arquivado neste terminal.')}
+            </>
+          ) : null}
+
+          {!openDoc && section === 'pericia' ? (
+            <>
+              <h3 className="pc-h">Perícia</h3>
+              {docList('pericia', 'Nenhum laudo recebido.')}
+              {inv.flags.block04_forensics_access ? (
+                <div className="pc-forensics" data-testid="forensic-access-panel">
+                  <h4 className="pc-sub">Acesso forense — aparelho de Mariana</h4>
+                  <p className="pc-empty">
+                    Pacote <code>local.priv.journal</code> · base local protegida por código numérico de 6
+                    dígitos.
+                  </p>
+                  {mariana.diaryUnlocked ? (
+                    <DiaryReader />
+                  ) : pkgOpen ? (
+                    <form className="pc-pin" onSubmit={submitPin} data-testid="forensic-pin-screen">
+                      <label htmlFor="forensic-pin" className="pc-pin__label">
+                        Código de acesso
+                      </label>
+                      <input
+                        id="forensic-pin"
+                        className="pc-term__input pc-pin__input"
+                        value={pin}
+                        onChange={(e) => {
+                          setPin(e.target.value.replace(/\D/g, '').slice(0, 6))
+                          setPinError(null)
+                        }}
+                        inputMode="numeric"
+                        autoComplete="off"
+                        maxLength={6}
+                        placeholder="••••••"
+                        data-testid="forensic-pin-input"
+                      />
+                      <button type="submit" className="pc-term__go" data-testid="forensic-pin-submit">
+                        Acessar
+                      </button>
+                      {pinError ? (
+                        <p className="pc-pin__error" role="alert" data-testid="forensic-pin-error">
+                          {pinError}
+                        </p>
+                      ) : null}
+                    </form>
+                  ) : (
+                    <button
+                      type="button"
+                      className="pc-inline"
+                      data-testid="forensic-open-package"
+                      onClick={() => setPkgOpen(true)}
+                    >
+                      Abrir pacote
+                    </button>
+                  )}
+                </div>
+              ) : null}
+            </>
+          ) : null}
+
+          {!openDoc && section === 'caso' ? (
             <>
               <h3 className="pc-h">Caso 0001/2026</h3>
               <dl className="pc-dl">
@@ -174,9 +351,27 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
                 <dd>Augusto Nogueira (designação interina)</dd>
                 <dt>Elementos reunidos</dt>
                 <dd>
-                  {inv.evidenceOwned.length} evidência(s) · {Object.values(inv.documents).filter((d) => d.read).length} documento(s) lido(s)
+                  {inv.evidenceOwned.length} evidência(s) ·{' '}
+                  {Object.values(inv.documents).filter((d) => d.read).length} documento(s) lido(s)
                 </dd>
               </dl>
+              <h4 className="pc-sub">Pessoas citadas nos autos</h4>
+              <table className="pc-table">
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Ocupação</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {people.map((p) => (
+                    <tr key={p.id}>
+                      <td>{p.name}</td>
+                      <td>{p.occupation ?? '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
               <h4 className="pc-sub">Pendências do responsável</h4>
               {pending.length ? (
                 <ul className="pc-ul">
@@ -187,161 +382,6 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
               ) : (
                 <p className="pc-empty">Sem pendências registradas.</p>
               )}
-            </>
-          ) : null}
-
-          {section === 'pessoas' ? (
-            <>
-              <h3 className="pc-h">Pessoas vinculadas</h3>
-              <table className="pc-table">
-                <thead>
-                  <tr>
-                    <th>Nome</th>
-                    <th>Ocupação</th>
-                    <th>Situação no caso</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {people.map((p) => (
-                    <tr key={p.id}>
-                      <td>{p.name}</td>
-                      <td>{p.occupation ?? '—'}</td>
-                      <td>
-                        <div className="pc-status">
-                          <span>{personStatusLabel[p.status]}</span>
-                          {p.id === 'lucas' &&
-                          canInterviewLucas(inv) &&
-                          !inv.flags.block02_lucas_interview_done ? (
-                            <button
-                              type="button"
-                              className="pc-inline"
-                              data-testid="lucas-interview-open"
-                              onClick={() => {
-                                onClose()
-                                openLocationScene('lucas')
-                              }}
-                            >
-                              Entrevistar
-                            </button>
-                          ) : null}
-                          {p.id === 'nico' &&
-                          canInterviewNico(inv) &&
-                          !inv.flags.block03_nico_interview_done ? (
-                            <button
-                              type="button"
-                              className="pc-inline"
-                              data-testid="nico-interview-open"
-                              onClick={() => {
-                                onClose()
-                                openLocationScene('nico')
-                              }}
-                            >
-                              Entrevistar
-                            </button>
-                          ) : null}
-                          {p.id === 'livia' &&
-                          canInterviewLivia(inv) &&
-                          !inv.flags.block03_livia_interview_done ? (
-                            <button
-                              type="button"
-                              className="pc-inline"
-                              data-testid="livia-interview-open"
-                              onClick={() => {
-                                onClose()
-                                openLocationScene('livia')
-                              }}
-                            >
-                              Entrevistar
-                            </button>
-                          ) : null}
-                          {p.id === 'samuel' &&
-                          canInterviewSamuel(inv) &&
-                          !inv.flags.block04_samuel_interview_done ? (
-                            <button
-                              type="button"
-                              className="pc-inline"
-                              data-testid="samuel-interview-open"
-                              onClick={() => {
-                                onClose()
-                                openLocationScene('samuel')
-                              }}
-                            >
-                              Entrevistar
-                            </button>
-                          ) : null}
-                          {p.id === 'andre' &&
-                          canInterviewAndre(inv) &&
-                          !inv.flags.block04_andre_interview_done ? (
-                            <button
-                              type="button"
-                              className="pc-inline"
-                              data-testid="andre-interview-open"
-                              onClick={() => {
-                                onClose()
-                                openLocationScene('andre')
-                              }}
-                            >
-                              Entrevistar
-                            </button>
-                          ) : null}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </>
-          ) : null}
-
-          {section === 'veiculos' ? (
-            <>
-              <h3 className="pc-h">Veículos</h3>
-              <p className="pc-empty">Nenhum veículo vinculado ao caso até o momento.</p>
-            </>
-          ) : null}
-
-          {section === 'arquivos' ? (
-            <>
-              <h3 className="pc-h">Arquivos do caso</h3>
-              <table className="pc-table">
-                <thead>
-                  <tr>
-                    <th>Documento</th>
-                    <th>Tipo</th>
-                    <th>Leitura</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {seedDocuments.map((d) => (
-                    <tr key={d.id}>
-                      <td>{d.title}</td>
-                      <td>{d.category}</td>
-                      <td>{inv.documents[d.id]?.read ? 'Lido' : 'Não lido'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <p className="pc-empty">Para ler e extrair trechos, abra a pasta do caso na mesa.</p>
-              {inv.flags.block04_forensics_unlocked ? (
-                <div className="pc-forensics" data-testid="phone-forensics-panel">
-                  <h4 className="pc-sub">Perícia digital — aparelho apreendido</h4>
-                  <p className="pc-empty">
-                    Instrução recuperada: procurar o que a interface comum não lista. Varredura de
-                    packages / diretórios privados / bases locais.
-                  </p>
-                  <button
-                    type="button"
-                    className="pc-inline"
-                    data-testid="phone-forensics-run"
-                    disabled={Boolean(inv.flags.block04_forensics_done)}
-                    onClick={() => runPhoneHiddenAppForensics()}
-                  >
-                    {inv.flags.block04_forensics_done
-                      ? 'Varredura concluída — app oculto listado'
-                      : 'Executar varredura (launcher omitido)'}
-                  </button>
-                </div>
-              ) : null}
             </>
           ) : null}
         </div>

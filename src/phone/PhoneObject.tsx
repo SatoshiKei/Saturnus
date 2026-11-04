@@ -1,9 +1,11 @@
 import type { SceneObjectDef } from '../types/scene'
+import type { ObjectFx } from '../scene/SceneObject'
 
 interface PhoneObjectProps {
   def: SceneObjectDef
   onActivate?: (def: SceneObjectDef) => void
   onHover?: (id: string | null) => void
+  fx?: ObjectFx
 }
 
 /**
@@ -12,11 +14,11 @@ interface PhoneObjectProps {
  *  - augusto: capa grafite, tela de bloqueio com hora
  * O corpo é desenhado em CSS (tela digital); sombra e rotação seguem a mesma luz da cena.
  */
-export function PhoneObject({ def, onActivate, onHover }: PhoneObjectProps) {
+export function PhoneObject({ def, onActivate, onHover, fx }: PhoneObjectProps) {
   const device = def.phoneDevice ?? 'mariana'
   return (
     <div
-      className="scene-object scene-object--phone scene-object--interactive"
+      className={`scene-object scene-object--phone scene-object--interactive${fx?.ringing ? ' scene-object--vibrate' : ''}`}
       data-scene-id={def.id}
       style={{
         left: def.x,
@@ -27,6 +29,11 @@ export function PhoneObject({ def, onActivate, onHover }: PhoneObjectProps) {
         transform: def.rotation ? `rotate(${def.rotation}deg)` : undefined,
       }}
     >
+      {fx?.badge ? (
+        <span className="hub-badge" data-testid={`badge-${def.id}`}>
+          {fx.badge}
+        </span>
+      ) : null}
       <button
         type="button"
         className={`phone-object phone-object--${device}`}

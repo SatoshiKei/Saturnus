@@ -14,9 +14,9 @@ Implementação jogável a partir do estado final real do Bloco 2 (`docs/story/B
 | Cena | Componente | Background |
 |------|------------|------------|
 | Entrevista Nico | `NicoInterviewScene.tsx` | `nightclub-01-lights-haze.jpg` (reuso) |
-| Arquivo Lívia | `LiviaInterviewScene.tsx` | `university-03-classroom-empty.jpg` (reuso) |
+| Arquivo Lívia | `LiviaInterviewScene.tsx` | `radio-01-newsroom.jpg` |
 
-Abertura: **Sistema de consulta → Pessoas → Entrevistar** (Nico / Lívia), após localização via busca.
+Abertura (fluxo real, ver `docs/gameplay/INVESTIGATION_FLOW.md`): **Nico** — `doc-nico-cadastro` (telefone) → contato novo → ligação → local Titã no mapa → viagem → cena + Reflexão. **Lívia** — `doc-maralto-clipping` (Redação Rádio Costeira) → ligação → local Rádio → viagem → cena + Reflexão. Não há botão “Entrevistar” nem rótulo de contato disponível.
 
 ## Personagens
 
@@ -62,7 +62,7 @@ Handlers: `src/game/story/block03Handlers.ts`.
 ## Dependências
 
 1. Busca Nico ← fim Bloco 2 + identificação no Vértice.
-2. Entrevista Nico ← localizado/contactable.
+2. Entrevista Nico ← cadastro aberto (contato) + ligação + viagem ao Titã.
 3. Janus ← entrevista (duas gravações).
 4. Reanálise celular Mariana ← Puzzle 4.
 5. Maralto ← gravação `REC_1102.m4a`.

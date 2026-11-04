@@ -17,4 +17,25 @@ export const seedContacts: Contact[] = [
     phone: '21 9xxxx-2210',
     unlocked: false,
   },
+  {
+    id: 'contact-nico',
+    personId: 'nico',
+    displayName: 'Nicolas “Nico”',
+    phone: '21 9xxxx-0731',
+    unlocked: false,
+  },
+  {
+    id: 'contact-livia',
+    personId: 'livia',
+    displayName: 'Rádio Costeira FM — redação',
+    phone: '21 3xxx-4410',
+    unlocked: false,
+  },
+  {
+    id: 'contact-presidio',
+    displayName: 'Unidade prisional — setor de visitas',
+    phone: '21 3xxx-9100',
+    institution: true,
+    unlocked: false,
+  },
 ]

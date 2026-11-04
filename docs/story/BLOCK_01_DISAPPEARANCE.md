@@ -16,7 +16,8 @@ Implementação jogável conforme `docs/assets/screenplay/section 1.md`.
 - Pasta / BO: `CaseFiles` → `doc-bo-inicial`, registro em `b5` → `registerInitialPoliceReport`
 - Áudio: `AudioWorkbench` → `emergency_call_raw`, análise **ANÁLISE PROVISÓRIA**
 - Celular Mariana: WhatsApp (Júlia, Camila, Rafael, …), Notas, Telefone (sem 08:03)
-- Contradição: `contra_selective_memory` no caderno
+- Contradição: `contra_selective_memory` registrada **automaticamente** no caderno quando as duas evidências existem (aviso “CONTRADIÇÃO REGISTRADA”; sem formulário)
+- Evidências chegam por cartão de papel persistente (`DiscoveryHost`); eventos de descoberta: `docs/gameplay/INVESTIGATION_FLOW.md`
 - Hospital: mapa → `HospitalInterviewScene` (VN)
 - Celular Augusto: Rafael desbloqueado ao fim
 

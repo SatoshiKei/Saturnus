@@ -13,6 +13,13 @@ const labels: Record<PhoneAppId, string> = {
   appstore: 'Loja',
   'hidden-diary': 'Diário',
   'wavelab-mobile': 'WaveLab',
+  messages: 'Mensagens',
+  camera: 'Câmera',
+  mail: 'Mail',
+  maps: 'Mapas',
+  clock: 'Relógio',
+  calculator: 'Calculadora',
+  weather: 'Clima',
 }
 
 interface AppIconProps {
@@ -152,6 +159,60 @@ function AppGlyph({ appId }: { appId: PhoneAppId }) {
       return (
         <svg viewBox="0 0 48 48" className="app-icon__svg">
           <path d="M6 24h6l3-10 5 22 5-28 4 20 3-8h10" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )
+    case 'messages':
+      return (
+        <svg viewBox="0 0 48 48" className="app-icon__svg">
+          <path fill="#fff" d="M24 9c-9.4 0-17 6-17 13.5 0 3.3 1.5 6.3 4 8.6-.3 2.2-1.4 4.2-3 5.6 3.2-.1 6-1.2 8-2.9 1.9.5 4 .8 6 .8 9.4 0 17-6 17-13.5S33.400 9 24 9z" />
+        </svg>
+      )
+    case 'camera':
+      return (
+        <svg viewBox="0 0 48 48" className="app-icon__svg">
+          <path fill="#fff" d="M17 12l2-3h10l2 3h6a4 4 0 014 4v18a4 4 0 01-4 4H11a4 4 0 01-4-4V16a4 4 0 014-4h6z" />
+          <circle cx="24" cy="25" r="7.500" fill="#2d3436" />
+          <circle cx="24" cy="25" r="4" fill="#636e72" />
+        </svg>
+      )
+    case 'mail':
+      return (
+        <svg viewBox="0 0 48 48" className="app-icon__svg">
+          <rect x="8" y="12" width="32" height="24" rx="4" fill="#fff" />
+          <path d="M9 15l15 11 15-11" fill="none" stroke="#2f80ed" strokeWidth="2.500" strokeLinejoin="round" />
+        </svg>
+      )
+    case 'maps':
+      return (
+        <svg viewBox="0 0 48 48" className="app-icon__svg">
+          <path fill="#fff" d="M24 6c-6.600 0-12 5.200-12 11.700C12 27 24 42 24 42s12-15 12-24.300C36 11.200 30.600 6 24 6z" />
+          <circle cx="24" cy="18" r="4.500" fill="#e74c3c" />
+        </svg>
+      )
+    case 'clock':
+      return (
+        <svg viewBox="0 0 48 48" className="app-icon__svg">
+          <circle cx="24" cy="24" r="16" fill="#fff" />
+          <path d="M24 13v11l7 4" fill="none" stroke="#222" strokeWidth="2.800" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )
+    case 'calculator':
+      return (
+        <svg viewBox="0 0 48 48" className="app-icon__svg">
+          <rect x="11" y="7" width="26" height="34" rx="4" fill="#fff" />
+          <rect x="15" y="11" width="18" height="7" rx="1.500" fill="#2d3436" />
+          {[0, 1, 2].flatMap((r) =>
+            [0, 1, 2].map((c) => (
+              <rect key={`${r}${c}`} x={15 + c * 6.500} y={22 + r * 6} width="4.500" height="4" rx="1" fill="#b2bec3" />
+            )),
+          )}
+        </svg>
+      )
+    case 'weather':
+      return (
+        <svg viewBox="0 0 48 48" className="app-icon__svg">
+          <circle cx="19" cy="19" r="7" fill="#ffeaa7" />
+          <path fill="#fff" d="M17 36a7 7 0 010-14 9 9 0 0117 2 6 6 0 01-1 12H17z" />
         </svg>
       )
     default:

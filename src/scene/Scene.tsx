@@ -9,11 +9,14 @@ import { useGameHub } from '../app/GameHubContext'
 import { hintsAlreadySeen, markHintsSeen, useUiState } from '../app/uiStore'
 import { useInvestigation } from '../game/hooks/useInvestigation'
 import { PhoneShell } from '../phone/PhoneShell'
-import { SceneObject } from './SceneObject'
+import { SceneObject, type ObjectFx } from './SceneObject'
+import { newContactIds } from '../lib/contactsSeen'
+import { startRing, stopLoop } from '../lib/sfx'
 import { HubOverlay } from '../components/investigation/HubOverlay'
 import { CaseNotepad } from '../components/investigation/CaseNotepad'
-import { ProvocationBanner } from '../components/investigation/ProvocationBanner'
 import { Block01Opening } from '../components/story/Block01Opening'
+import { SceneRunner } from '../components/story/vn/SceneTransitions'
+import type { LocationSceneId } from '../app/GameHubContext'
 import { HospitalInterviewScene } from '../components/story/HospitalInterviewScene'
 import { VerticeInterviewScene } from '../components/story/VerticeInterviewScene'
 import { LucasInterviewScene } from '../components/story/LucasInterviewScene'
@@ -24,9 +27,29 @@ import { AndreInterviewScene } from '../components/story/AndreInterviewScene'
 import { onMarianaPhoneClosed, onMarianaPhoneOpened } from '../game/story/block01Handlers'
 import '../styles/tokens.css'
 import '../styles/scene.css'
+import '../styles/scene-transitions.css'
 
 /** Atraso entre o clique no objeto e a abertura do painel (tempo da aproximação de câmera). */
 const CAMERA_MS = 280
+
+function renderLocationScene(id: NonNullable<LocationSceneId>, close: () => void) {
+  switch (id) {
+    case 'hospital':
+      return <HospitalInterviewScene onClose={close} />
+    case 'vertice':
+      return <VerticeInterviewScene onClose={close} />
+    case 'lucas':
+      return <LucasInterviewScene onClose={close} />
+    case 'nico':
+      return <NicoInterviewScene onClose={close} />
+    case 'livia':
+      return <LiviaInterviewScene onClose={close} />
+    case 'samuel':
+      return <SamuelInterviewScene onClose={close} />
+    case 'andre':
+      return <AndreInterviewScene onClose={close} />
+  }
+}
 
 interface Camera {
   cx: number
@@ -53,6 +76,7 @@ export function Scene() {
   const [hoverId, setHoverId] = useState<string | null>(null)
   const [camera, setCamera] = useState<Camera | null>(null)
   const [hints, setHints] = useState(false)
+  const [returnFade, setReturnFade] = useState(false)
   const [openingDone, setOpeningDone] = useState(() => Boolean(inv.flags.block01_opening_seen))
   const pending = useRef<number | null>(null)
 
@@ -101,6 +125,29 @@ export function Scene() {
 
   const objects = useMemo(() => [...sceneObjects, ...deskEvidence], [deskEvidence])
 
+  // Eventos físicos: o fixo toca (ligação recebida), o celular vibra (novo contato), a bancada ganha selo.
+  const hexRinging = Boolean(inv.flags.block04_hex_call_pending) && !inv.flags.block04_hex_call_answered
+  const newContacts = newContactIds(inv).length
+  const unseenAudio = inv.evidenceOwned.filter(
+    (id) => inv.evidence[id]?.type === 'audio' && !inv.audioSeen.includes(id),
+  ).length
+  const phoneBuzz = inv.discoveries[0]?.kind === 'contact'
+
+  useEffect(() => {
+    if (hexRinging && !menuOpen && !locationScene) startRing('landline')
+    else stopLoop('landline')
+    return () => stopLoop('landline')
+  }, [hexRinging, menuOpen, locationScene])
+
+  const fxFor = (def: { id: string; hubTarget?: string }): ObjectFx | undefined => {
+    if (def.hubTarget === 'landline' && hexRinging) return { ringing: true, badge: 1 }
+    if (def.hubTarget === 'audio-lab' && unseenAudio > 0) return { badge: unseenAudio }
+    if (def.hubTarget === 'augusto-phone' && (newContacts > 0 || phoneBuzz)) {
+      return { ringing: phoneBuzz, badge: newContacts || undefined }
+    }
+    return undefined
+  }
+
   const focusOn = useCallback((def: SceneObjectDef) => {
     const zoom = def.focusZoom ?? 1
     if (zoom <= 1) return
@@ -133,6 +180,13 @@ export function Scene() {
     },
     [focusOn, openHub, openPhone, setPhoneDevice],
   )
+
+  /** Tela em preto: volta à mesa e clareia (nunca corta direto para a delegacia). */
+  const handleSceneReturn = useCallback(() => {
+    closeLocationScene()
+    setReturnFade(true)
+    window.setTimeout(() => setReturnFade(false), 950)
+  }, [closeLocationScene])
 
   const handleCloseHub = useCallback(() => {
     closeHub()
@@ -190,7 +244,7 @@ export function Scene() {
           }}
         >
           {objects.map((obj) => (
-            <SceneObject key={obj.id} def={obj} onActivate={handleActivate} onHover={setHoverId} />
+            <SceneObject key={obj.id} def={obj} onActivate={handleActivate} onHover={setHoverId} fx={fxFor(obj)} />
           ))}
 
           {/* legendas ficam fora dos elementos rotacionados para permanecer legíveis */}
@@ -221,7 +275,6 @@ export function Scene() {
             Caso 0001/2026
           </p>
           <CaseNotepad />
-          <ProvocationBanner />
         </div>
 
         {phoneOpen ? (
@@ -240,27 +293,15 @@ export function Scene() {
           <Block01Opening onDone={() => setOpeningDone(true)} />
         ) : null}
 
-        {locationScene === 'hospital' ? (
-          <HospitalInterviewScene onClose={closeLocationScene} />
+        {locationScene ? (
+          <SceneRunner
+            key={locationScene}
+            sceneId={locationScene}
+            onReturn={handleSceneReturn}
+            renderScene={(close) => renderLocationScene(locationScene, close)}
+          />
         ) : null}
-        {locationScene === 'vertice' ? (
-          <VerticeInterviewScene onClose={closeLocationScene} />
-        ) : null}
-        {locationScene === 'lucas' ? (
-          <LucasInterviewScene onClose={closeLocationScene} />
-        ) : null}
-        {locationScene === 'nico' ? (
-          <NicoInterviewScene onClose={closeLocationScene} />
-        ) : null}
-        {locationScene === 'livia' ? (
-          <LiviaInterviewScene onClose={closeLocationScene} />
-        ) : null}
-        {locationScene === 'samuel' ? (
-          <SamuelInterviewScene onClose={closeLocationScene} />
-        ) : null}
-        {locationScene === 'andre' ? (
-          <AndreInterviewScene onClose={closeLocationScene} />
-        ) : null}
+        {returnFade ? <div className="tr-return" data-testid="vn-return-fade" aria-hidden /> : null}
 
         <HubOverlay panel={hubPanel} onClose={handleCloseHub} />
       </div>

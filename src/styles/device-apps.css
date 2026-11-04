@@ -316,3 +316,38 @@
   color: #8e8e93;
   font-size: 13px;
 }
+
+/* Ajustes (aparência de celular comum) */
+.device-settings__list {
+  gap: 0 !important;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--da-line);
+}
+.device-settings__list .device-settings__row {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  border: 0;
+  border-radius: 0;
+  border-bottom: 1px solid var(--da-line);
+  padding: 13px 14px;
+}
+.device-settings__list .device-settings__row:last-child {
+  border-bottom: 0;
+}
+.device-settings__label {
+  flex: 1;
+  min-width: 0;
+}
+.device-settings__value {
+  color: var(--da-muted);
+  font-size: 12.5px;
+}
+.device-settings__chev {
+  color: var(--da-muted);
+}
+.device-settings__icon {
+  width: 24px;
+  text-align: center;
+}
