@@ -7,9 +7,9 @@ import paula from '../assets/sprites/paula.png'
 import rafael from '../assets/sprites/rafael.png'
 import lucas from '../assets/sprites/lucas.png'
 import nico from '../assets/sprites/nico.png'
-import bia from '../assets/sprites/bia.png'
-import geraldo from '../assets/sprites/geraldo.png'
-import rui from '../assets/sprites/rui.png'
+import iara from '../assets/sprites/iara.png'
+import sandro from '../assets/sprites/sandro.png'
+import caio from '../assets/sprites/caio.png'
 
 /** Retratos disponíveis — ids alinhados a `mockContacts` / personagens. */
 export const CHARACTER_SPRITE_URLS: Record<string, string> = {
@@ -21,9 +21,9 @@ export const CHARACTER_SPRITE_URLS: Record<string, string> = {
   rafael,
   lucas,
   nico,
-  iara: bia,
-  sandro: geraldo,
-  caio: rui,
+  iara,
+  sandro,
+  caio,
 }
 
 export function contactAvatarSrc(contactId: string): string | undefined {

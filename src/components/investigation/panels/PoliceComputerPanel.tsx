@@ -191,22 +191,24 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
                       <td>{p.name}</td>
                       <td>{p.occupation ?? '—'}</td>
                       <td>
-                        {personStatusLabel[p.status]}
-                        {p.id === 'lucas' &&
-                        canInterviewLucas(inv) &&
-                        !inv.flags.block02_lucas_interview_done ? (
-                          <button
-                            type="button"
-                            className="pc-inline"
-                            data-testid="lucas-interview-open"
-                            onClick={() => {
-                              onClose()
-                              openLocationScene('lucas')
-                            }}
-                          >
-                            Entrevistar
-                          </button>
-                        ) : null}
+                        <div className="pc-status">
+                          <span>{personStatusLabel[p.status]}</span>
+                          {p.id === 'lucas' &&
+                          canInterviewLucas(inv) &&
+                          !inv.flags.block02_lucas_interview_done ? (
+                            <button
+                              type="button"
+                              className="pc-inline"
+                              data-testid="lucas-interview-open"
+                              onClick={() => {
+                                onClose()
+                                openLocationScene('lucas')
+                              }}
+                            >
+                              Entrevistar
+                            </button>
+                          ) : null}
+                        </div>
                       </td>
                     </tr>
                   ))}

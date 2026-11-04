@@ -425,6 +425,31 @@
   border-bottom: 1px solid rgba(121, 194, 189, 0.1);
 }
 
+.pc-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65em 0.9em;
+}
+
+.pc-inline {
+  padding: 0.35em 0.85em;
+  font: inherit;
+  font-size: 0.82em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #79c2bd;
+  background: transparent;
+  border: 1px solid rgba(121, 194, 189, 0.5);
+  cursor: pointer;
+}
+
+.pc-inline:hover {
+  color: #050d0f;
+  background: #79c2bd;
+  text-shadow: none;
+}
+
 /* ═══════════════ Pasta do caso ═══════════════ */
 /* pasta manila aberta sobre a mesa */
 .cf-index {

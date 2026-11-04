@@ -94,4 +94,4 @@ Save com `block02_complete`, Nico **identificado mas não localizado**, pergunta
 
 ## Divergências técnicas
 
-Nenhuma alteração intencional ao roteiro em `section 2.md`. Retratos Vértice usam sprites provisórios (`iara`→`bia`, `sandro`→`geraldo`, `caio`→`rui`) até arte final.
+Nenhuma alteração intencional ao roteiro em `section 2.md`. Retratos Vértice usam `iara.png`, `sandro.png` e `caio.png`.
