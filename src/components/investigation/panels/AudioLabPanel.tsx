@@ -15,6 +15,7 @@ import { markAudioSeen } from '../../../game/state/investigationStore'
 import { HEX_NODES, type HexNodeId } from '../../../data/block04/hexagonPuzzle'
 import { GamePanel } from '../../ui/GamePanel'
 import { HexagonSession } from './HexagonSession'
+import { ShepherdMoonsSession } from './ShepherdMoonsSession'
 
 /** PRNG determinístico a partir do id — a forma de onda é estável entre sessões. */
 function seeded(id: string) {
@@ -88,6 +89,7 @@ function analysisState(id: string, flags: Record<string, boolean>): AnalysisStat
   if (id === 'livia_radio_archive_raw') return flags.block03_saturnalia_done ? 'done' : 'pending'
   if (HEX_NODES.some((n) => n.evidenceId === id)) return flags.block04_hexagon_done ? 'done' : 'pending'
   if (id === 'unknown_contact_recording') return flags.block04_unknown_analyzed ? 'done' : 'pending'
+  if (id === 'valter_group_active_intercepts') return flags.block06_pastor_done ? 'done' : 'pending'
   return 'none'
 }
 
@@ -139,6 +141,8 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
   const showSaturnalia = current?.id === 'livia_radio_archive_raw'
   const hexCurrent = HEX_NODES.find((n) => n.evidenceId === current?.id)
   const showHexagon = hasHexSet && Boolean(hexCurrent)
+  const showPastor =
+    Boolean(inv.flags.block06_pastor_available) && current?.id === 'valter_group_active_intercepts'
   const showUnknownAnalyze = current?.id === 'unknown_contact_recording'
   const blocked = Boolean(current && (current.exportable === false || current.deviceLocked))
   const playable = Boolean(current?.audioSrc) && !blocked
@@ -423,6 +427,7 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
               ) : null}
 
               {showHexagon && hexCurrent ? <HexagonSession currentId={hexCurrent.id as HexNodeId} /> : null}
+              {showPastor ? <ShepherdMoonsSession /> : null}
 
               {showUnknownAnalyze ? (
                 <div className="aw-orbit" data-testid="unknown-recording-panel">

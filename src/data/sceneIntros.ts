@@ -46,6 +46,18 @@ export const sceneIntros: Record<SceneId, SceneIntro> = {
     lines: ['05 NOV 2026', '10:15', 'RUA DO SOL, 47'],
     ambience: 'scene-in',
   },
+  geraldo: {
+    lines: ['05 NOV 2026', '15:40', 'TRAVESSA DAS PALMEIRAS, 9'],
+    ambience: 'scene-in',
+  },
+  operation: {
+    lines: ['06 NOV 2026', '03:12', 'GALPÃO 17 — PÁTIO NORTE'],
+    ambience: 'ambience-hush',
+  },
+  miro: {
+    lines: ['06 NOV 2026', '11:05', 'DETENÇÃO — SALA DE ENTREVISTA'],
+    ambience: 'ambience-hush',
+  },
 }
 
 /** Fundos (processados) usados em cada cena — auditoria de backgrounds. */
@@ -58,4 +70,7 @@ export const sceneBackgrounds: Record<SceneId, string> = {
   samuel: '/assets/backgrounds/processed/apartment/apartment-01-living-room.jpg',
   andre: '/assets/backgrounds/processed/prison/prison-01-visit-room.jpg',
   jana: '/assets/backgrounds/processed/apartment/apartment-01-living-room.jpg',
+  geraldo: '/assets/backgrounds/processed/apartment/apartment-01-living-room.jpg',
+  operation: '/assets/backgrounds/processed/nightclub/nightclub-01-lights-haze.jpg',
+  miro: '/assets/backgrounds/processed/prison/prison-01-visit-room.jpg',
 }

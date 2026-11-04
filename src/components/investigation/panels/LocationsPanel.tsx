@@ -19,6 +19,10 @@ const SCENE_DONE_LOCATION: { flag: string; locationId: string }[] = [
   { flag: 'block04_andre_interview_done', locationId: 'presidio' },
   { flag: 'block05_jana_interview_done', locationId: 'jana-casa' },
   { flag: 'block05_nico_followup_done', locationId: 'titan' },
+  { flag: 'block06_geraldo_interview_done', locationId: 'geraldo-casa' },
+  { flag: 'block06_jana_followup_done', locationId: 'jana-casa' },
+  { flag: 'block06_operation_done', locationId: 'galpao-17' },
+  { flag: 'block06_miro_interview_done', locationId: 'detencao-miro' },
 ]
 
 /** posição do marcador: usa o estado salvo ou, em saves antigos, o seed */
@@ -54,11 +58,18 @@ export function LocationsMap({ onClose }: { onClose: () => void }) {
     for (const row of SCENE_DONE_LOCATION) {
       if (!inv.flags[row.flag]) continue
       if (inv.locations[row.locationId]?.status !== 'visitAvailable') continue
-      // Bloco 5 reabre o Titã para a segunda conversa com Nico.
+      // Bloco 5 reabre o Titã; Bloco 6 reabre Jana após Geraldo.
       if (
         row.locationId === 'titan' &&
         inv.flags.block05_started &&
         !inv.flags.block05_nico_followup_done
+      ) {
+        continue
+      }
+      if (
+        row.locationId === 'jana-casa' &&
+        inv.flags.block06_geraldo_reflection_done &&
+        !inv.flags.block06_jana_followup_done
       ) {
         continue
       }

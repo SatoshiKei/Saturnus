@@ -25,6 +25,9 @@ import { LiviaInterviewScene } from '../components/story/LiviaInterviewScene'
 import { SamuelInterviewScene } from '../components/story/SamuelInterviewScene'
 import { AndreInterviewScene } from '../components/story/AndreInterviewScene'
 import { JanaInterviewScene } from '../components/story/JanaInterviewScene'
+import { GeraldoInterviewScene } from '../components/story/GeraldoInterviewScene'
+import { MiroInterviewScene } from '../components/story/MiroInterviewScene'
+import { OperationScene } from '../components/story/OperationScene'
 import { ReflectionView } from '../components/story/vn/SceneTransitions'
 import { reflectionById } from '../data/reflections'
 import { setFlag } from '../game/state/investigationStore'
@@ -34,6 +37,10 @@ import {
   onMaraltoReflectionDone,
   onPathReflectionDone,
 } from '../game/story/block05Handlers'
+import {
+  onGeraldoReflectionDone,
+  onMiroReflectionDone,
+} from '../game/story/block06Handlers'
 import { onMarianaPhoneClosed, onMarianaPhoneOpened } from '../game/story/block01Handlers'
 import '../styles/tokens.css'
 import '../styles/scene.css'
@@ -60,6 +67,12 @@ function renderLocationScene(id: NonNullable<LocationSceneId>, close: () => void
       return <AndreInterviewScene onClose={close} />
     case 'jana':
       return <JanaInterviewScene onClose={close} />
+    case 'geraldo':
+      return <GeraldoInterviewScene onClose={close} />
+    case 'operation':
+      return <OperationScene onClose={close} />
+    case 'miro':
+      return <MiroInterviewScene onClose={close} />
   }
 }
 
@@ -70,6 +83,8 @@ function pendingSoloReflection(flags: Record<string, boolean>): string | null {
     return 'refl-b05-coincidence'
   }
   if (flags.block05_refl_path_pending && !flags['refl-b05-path_seen']) return 'refl-b05-path'
+  if (flags.block06_refl_geraldo_pending && !flags['refl-b06-geraldo_seen']) return 'refl-b06-geraldo'
+  if (flags.block06_refl_miro_pending && !flags['refl-b06-miro_seen']) return 'refl-b06-miro'
   return null
 }
 
@@ -336,6 +351,8 @@ export function Scene() {
                 else if (soloReflectionId === 'refl-b05-maralto') onMaraltoReflectionDone()
                 else if (soloReflectionId === 'refl-b05-coincidence') onCoincidenceReflectionDone()
                 else if (soloReflectionId === 'refl-b05-path') onPathReflectionDone()
+                else if (soloReflectionId === 'refl-b06-geraldo') onGeraldoReflectionDone()
+                else if (soloReflectionId === 'refl-b06-miro') onMiroReflectionDone()
               }}
             />
           </div>

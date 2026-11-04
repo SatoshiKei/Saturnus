@@ -140,6 +140,35 @@ export const reflections: ReflectionDef[] = [
       'Seguir só o rastro dela não basta. Vou reconstruir o caso Elisa do zero.',
     ],
   },
+  {
+    id: 'refl-jana2',
+    sceneId: 'jana',
+    whenFlag: 'block06_jana_followup_done',
+    background: sceneBackgrounds.jana,
+    blocks: [
+      'Não foi empréstimo. Ela entregou a jaqueta e a bolsa de propósito, com medo de gente do Válter.',
+      'Surge uma hipótese: quem seguia a peça pode ter procurado Jana, não Elisa.',
+      'Isso não absolve André. Só abre outra trilha que a investigação original nunca tratou direito.',
+    ],
+  },
+  {
+    id: 'refl-b06-geraldo',
+    background: sceneBackgrounds.geraldo,
+    blocks: [
+      'Elisa estava mais alcoolizada. Isso muda percepção, equilíbrio, memória e o peso de alguns horários lembrados por terceiros.',
+      'Não aponta outro assassino. André continua sendo o suspeito mais econômico segundo o conjunto original.',
+      'Mas a jaqueta de Jana e essa reavaliação justificam voltar a ela — sem botão automático, pelo endereço que já tenho.',
+    ],
+  },
+  {
+    id: 'refl-b06-miro',
+    background: sceneBackgrounds.miro,
+    blocks: [
+      'Pela primeira vez há outro homem concreto na trajetória de Elisa naquela madrugada: Miro, seguindo pertences de Jana.',
+      'Ele nega tocar nela. Ainda não admitiu descer à região da queda. André continua oficialmente culpado.',
+      'Agora existe uma alternativa real — não uma solução. Preciso saber até onde Miro seguiu e o que ainda omite.',
+    ],
+  },
 ]
 
 export function reflectionForScene(sceneId: SceneId): ReflectionDef | undefined {

@@ -150,6 +150,48 @@ export const hypothesisCatalog: Hypothesis[] = [
     contradictingEvidenceIds: [],
     state: 'active',
   },
+  {
+    id: 'hyp_jana_hid_info',
+    title: 'Jana ocultou informação importante sobre a Noite X',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
+  {
+    id: 'hyp_follower_sought_jana',
+    title: 'O homem que seguia a jaqueta de Jana pode ter procurado Jana, não Elisa',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
+  {
+    id: 'hyp_miro_followed_to_fall',
+    title: 'Miro pode ter seguido Elisa até a região da queda',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
+  {
+    id: 'hyp_lookalike_may_not_be_andre',
+    title: 'O homem visto próximo à queda pode não ter sido André',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
+  {
+    id: 'hyp_andre_killed_elisa',
+    title: 'André matou Elisa',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
+  {
+    id: 'hyp_mariana_right_on_ignored_aspects',
+    title: 'Mariana estava reconstruindo corretamente aspectos ignorados do caso Elisa',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
 ]
 
 export const contradictionDefs: ContradictionDef[] = [
@@ -425,6 +467,65 @@ export const seedSearchRules: SearchRule[] = [
       },
     ],
   },
+  {
+    id: 'block06_geraldo',
+    category: 'police',
+    requiredFlags: ['block06_geraldo_search_unlocked'],
+    requiredTerms: ['geraldo'],
+    results: [
+      {
+        title: 'Depoimento arquivado — Geraldo Mota',
+        snippet: 'Volume II do processo Elisa Duarte.',
+        documentId: 'doc-elisa-geraldo-depoimento',
+      },
+      {
+        title: 'Ficha — Geraldo Mota',
+        snippet: 'Consulta cadastral. Endereço atual.',
+        documentId: 'doc-geraldo-ficha',
+      },
+      {
+        title: 'Comanda e fechamento — Vértice (Noite X)',
+        snippet: 'Cópia nos autos. Volume no horário da saída.',
+        documentId: 'doc-vertice-comanda-noitex',
+      },
+    ],
+  },
+  {
+    id: 'block06_valter',
+    category: 'police',
+    requiredFlags: ['block06_valter_search_unlocked'],
+    requiredTerms: ['valter'],
+    results: [
+      {
+        title: 'Válter — ocorrências e vínculos',
+        snippet: 'Consulta policial. Estrutura e associados.',
+        documentId: 'doc-valter-ocorrencias',
+      },
+      {
+        title: 'Relação de associados — núcleo Válter',
+        snippet: 'Monitoramento atual. Inclui Miro.',
+        documentId: 'doc-valter-associados',
+      },
+      {
+        title: 'Interceptação de rádio — operação contemporânea',
+        snippet: 'Captura multi-canal encaminhada à bancada.',
+        documentId: 'doc-valter-interceptacao',
+      },
+    ],
+  },
+  {
+    id: 'block06_miro_name',
+    category: 'police',
+    requiredFlags: ['block06_valter_search_unlocked'],
+    requiredTerms: ['miro'],
+    results: [
+      {
+        title: 'Relação de associados — núcleo Válter',
+        snippet: 'Miro listado como associado atual.',
+        documentId: 'doc-valter-associados',
+      },
+    ],
+  },
 ]
 
 
@@ -555,6 +656,37 @@ export const seedStoryTriggers: StoryTrigger[] = [
         id: 'task_weigh_maralto_line',
         label: 'Reavaliar o que a linha Maralto explica — e o que não explica',
       },
+    ],
+  },
+  {
+    id: 'block06_start',
+    once: true,
+    conditions: [{ type: 'flag', id: 'block05_complete', value: true }],
+    actions: [
+      { type: 'setFlag', id: 'block06_started', value: true },
+      { type: 'setFlag', id: 'block06_geraldo_search_unlocked', value: true },
+    ],
+  },
+  {
+    id: 'block06_valter_trail',
+    once: true,
+    conditions: [
+      { type: 'flag', id: 'block06_valter_search_unlocked', value: true },
+      { type: 'evidenceOwned', id: 'valter_criminal_structure' },
+      { type: 'evidenceOwned', id: 'miro_linked_to_valter_group' },
+      { type: 'evidenceOwned', id: 'valter_group_active_intercepts' },
+    ],
+    actions: [
+      { type: 'setFlag', id: 'block06_valter_trail_done', value: true },
+      { type: 'completeTask', id: 'task_investigate_valter' },
+      { type: 'discoverPerson', id: 'miro', status: 'identified' },
+      { type: 'setFlag', id: 'block06_pastor_available', value: true },
+      {
+        type: 'addTask',
+        id: 'task_pastor_moons',
+        label: 'Analisar as interceptações de rádio (bancada) — localizar a entrega',
+      },
+      { type: 'addDocument', id: 'doc-tabela-logistica-g17n' },
     ],
   },
 ]

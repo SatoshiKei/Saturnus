@@ -617,7 +617,7 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-elisa-geraldo-depoimento',
-    title: 'Depoimento arquivado — Geraldo (resumo)',
+    title: 'Depoimento arquivado — Geraldo Mota (resumo)',
     category: 'Autos',
     issuer: 'Vara Criminal — volume II',
     dateLabel: 'Proc. 2020',
@@ -625,14 +625,141 @@ export const seedDocuments: Document[] = [
     blocks: [
       {
         id: 'b1',
-        text: 'Geraldo — frequentador do Vértice na noite dos fatos. Ouvido sobre o estado de Elisa Duarte e o ambiente do salão.',
+        text: 'Geraldo Mota — barman do Vértice na noite dos fatos. Ouvido sobre o estado de Elisa Duarte e o ambiente do salão.',
       },
       {
         id: 'b2',
-        text: 'Depoimento resumido: descreveu consumo de álcool e a presença do casal. Peça marcada para reexame na reconstrução do caso.',
+        text: 'Declaração resumida: serviu “quase nada” de álcool a Elisa; descreveu discussão com André e a saída dela. Sem menção a menoridade.',
+      },
+      {
+        id: 'b3',
+        text: 'Peça marcada para reexame. Cadastro atualizado disponível em consulta nominal.',
       },
     ],
     onOpen: [{ type: 'discoverPerson', id: 'geraldo', status: 'identified' }],
+  },
+  {
+    id: 'doc-geraldo-ficha',
+    title: 'Ficha — Geraldo Mota',
+    category: 'Cadastro (pessoas)',
+    issuer: 'Sistema de consulta policial',
+    system: 'consultas',
+    blocks: [
+      { id: 'b1', text: 'Nome: Geraldo Mota. À época: barman no Vértice. Sem condenação criminal.' },
+      { id: 'b2', text: 'Endereço residencial atualizado na última renovação de documentos.' },
+    ],
+    leads: [{ type: 'address', label: 'Endereço residencial', value: 'Travessa das Palmeiras, 9' }],
+    onOpen: [
+      { type: 'discoverPerson', id: 'geraldo', status: 'located' },
+      { type: 'unlockLocation', id: 'geraldo-casa', status: 'visitAvailable' },
+      { type: 'completeTask', id: 'task_reexamine_elisa_from_scratch' },
+      {
+        type: 'addTask',
+        id: 'task_talk_geraldo',
+        label: 'Ir ao endereço de Geraldo Mota',
+      },
+    ],
+  },
+  {
+    id: 'doc-vertice-comanda-noitex',
+    title: 'Comanda e fechamento de caixa — Vértice (Noite X)',
+    category: 'Arquivo privado',
+    issuer: 'Boate Vértice — administração (cópia nos autos)',
+    dateLabel: 'Noite X',
+    system: 'documentos',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Comanda do bar principal no intervalo da saída de Elisa: volume de doses acima do declarado por Geraldo Mota no depoimento.',
+      },
+      {
+        id: 'b2',
+        text: 'Fechamento de caixa parcial: sequência de atendimento compatível com múltiplos serviços ao mesmo grupo. Não individualiza copo a pessoa.',
+      },
+      {
+        id: 'b3',
+        text: 'Anexo: registro de entrada com indício de menoridade em cartão associado ao grupo de Elisa (ilegível em parte).',
+      },
+    ],
+    onOpen: [{ type: 'addEvidence', id: 'vertice_comanda_night_x' }],
+  },
+  {
+    id: 'doc-valter-ocorrencias',
+    title: 'Válter — ocorrências e vínculos',
+    category: 'Consultas',
+    issuer: 'Sistema policial',
+    system: 'consultas',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Válter: múltiplas ocorrências arquivadas (extorsão, ameaça, associação). Nenhuma condenação definitiva listada no resumo.',
+      },
+      {
+        id: 'b2',
+        text: 'Vínculos: núcleo recorrente de associados. Atividade contemporânea sob monitoramento setorial.',
+      },
+    ],
+    onOpen: [
+      { type: 'addEvidence', id: 'valter_criminal_structure' },
+      { type: 'discoverPerson', id: 'valter', status: 'identified' },
+    ],
+  },
+  {
+    id: 'doc-valter-associados',
+    title: 'Relação de associados — núcleo Válter (atual)',
+    category: 'Consultas',
+    issuer: 'Delegacia especializada — resumo',
+    system: 'consultas',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Associados com movimentação recente. Entre nomes recorrentes: Miro (sem sobrenome operacional fixo nas fichas).',
+      },
+      {
+        id: 'b2',
+        text: 'Miro: envolvido em entregas e comunicação por rádio portátil. Sem menção a Jana ou ao caso Elisa neste relatório.',
+      },
+    ],
+    onOpen: [
+      { type: 'addEvidence', id: 'miro_linked_to_valter_group' },
+      { type: 'discoverPerson', id: 'miro', status: 'identified' },
+    ],
+  },
+  {
+    id: 'doc-valter-interceptacao',
+    title: 'Interceptação de rádio — operação contemporânea',
+    category: 'Perícia / interceptação',
+    issuer: 'Setor de interceptações',
+    dateLabel: '05/11/2026',
+    system: 'pericia',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Captura multi-canal (A/B/C) de rádios portáteis ligados ao núcleo. Timestamps, IDs e bursts digitais arquivados.',
+      },
+      {
+        id: 'b2',
+        text: 'Objetivo operacional: localizar ponto de entrega próxima. Material encaminhado à bancada de análise.',
+      },
+      {
+        id: 'b3',
+        text: 'Tabela logística parcial apreendida em operação anterior anexa (tokens → locais).',
+      },
+    ],
+    onOpen: [{ type: 'addEvidence', id: 'valter_group_active_intercepts' }],
+  },
+  {
+    id: 'doc-tabela-logistica-g17n',
+    title: 'Tabela logística apreendida (parcial)',
+    category: 'Documento apreendido',
+    issuer: 'Operação — núcleo Válter',
+    system: 'documentos',
+    blocks: [
+      { id: 'b1', text: 'K02S — Cais 02 — Sul' },
+      { id: 'b2', text: 'G17N — Galpão 17 — Pátio Norte' },
+      { id: 'b3', text: 'B08L — Box 08 — Leste' },
+    ],
+    onOpen: [{ type: 'addEvidence', id: 'galpao17_operational_site' }],
   },
   {
     id: 'doc-mariana-contact-chronology',
