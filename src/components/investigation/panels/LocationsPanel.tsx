@@ -17,6 +17,8 @@ const SCENE_DONE_LOCATION: { flag: string; locationId: string }[] = [
   { flag: 'block03_livia_interview_done', locationId: 'radio' },
   { flag: 'block04_samuel_interview_done', locationId: 'samuel-casa' },
   { flag: 'block04_andre_interview_done', locationId: 'presidio' },
+  { flag: 'block05_jana_interview_done', locationId: 'jana-casa' },
+  { flag: 'block05_nico_followup_done', locationId: 'titan' },
 ]
 
 /** posição do marcador: usa o estado salvo ou, em saves antigos, o seed */
@@ -52,6 +54,14 @@ export function LocationsMap({ onClose }: { onClose: () => void }) {
     for (const row of SCENE_DONE_LOCATION) {
       if (!inv.flags[row.flag]) continue
       if (inv.locations[row.locationId]?.status !== 'visitAvailable') continue
+      // Bloco 5 reabre o Titã para a segunda conversa com Nico.
+      if (
+        row.locationId === 'titan' &&
+        inv.flags.block05_started &&
+        !inv.flags.block05_nico_followup_done
+      ) {
+        continue
+      }
       fixes.push({ type: 'unlockLocation', id: row.locationId, status: 'visited' })
     }
     if (fixes.length) dispatchActions(fixes)

@@ -128,7 +128,8 @@ export function TopicInterviewScene<T extends string>({ config, onClose }: Props
           logLines={logLines}
           onRewind={() => setBeatIndex((i) => Math.max(0, i - 1))}
           onContinue={() => {
-            if (beatIndex + 1 < beats.length) setBeatIndex((i) => i + 1)
+            const next = beatIndex + 1
+            if (next < beats.length) setBeatIndex(next)
             else completeTopic(activeTopic)
           }}
         />

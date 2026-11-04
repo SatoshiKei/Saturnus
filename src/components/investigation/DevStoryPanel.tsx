@@ -3,6 +3,7 @@ import { block01DevCheckpoints } from '../../game/story/block01DevCheckpoints'
 import { block02DevCheckpoints } from '../../game/story/block02DevCheckpoints'
 import { block03DevCheckpoints } from '../../game/story/block03DevCheckpoints'
 import { block04DevCheckpoints } from '../../game/story/block04DevCheckpoints'
+import { block05DevCheckpoints } from '../../game/story/block05DevCheckpoints'
 import { devApply, resetGame } from '../../game/state/investigationStore'
 
 export function DevStoryPanel() {
@@ -82,6 +83,22 @@ export function DevStoryPanel() {
           data-testid={`dev-${cp.id}`}
           onClick={() => {
             if (cp.id === 'b04-start') {
+              resetGame()
+              devApply(cp.actions)
+            } else if (cp.actions.length) devApply(cp.actions)
+          }}
+        >
+          {cp.label}
+        </button>
+      ))}
+      <p className="inv-dev__section">Bloco 5 — O percurso deixado</p>
+      {block05DevCheckpoints.map((cp) => (
+        <button
+          key={cp.id}
+          type="button"
+          data-testid={`dev-${cp.id}`}
+          onClick={() => {
+            if (cp.id === 'b05-start') {
               resetGame()
               devApply(cp.actions)
             } else if (cp.actions.length) devApply(cp.actions)

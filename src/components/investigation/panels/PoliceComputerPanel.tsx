@@ -4,6 +4,12 @@ import { useInvestigation } from '../../../game/hooks/useInvestigation'
 import { runPoliceSearch, type SearchHit } from '../../../game/search/runSearch'
 import { dispatchActions, tryDiaryPin } from '../../../game/state/investigationStore'
 import { isPersonVisibleInRegistry } from '../../../game/personRegistryGates'
+import {
+  comparePhoneFilesSequence,
+  organizeMarianaContactChronology,
+  onMaraltoLineWeighed,
+  revisitEmergencyEntry,
+} from '../../../game/story/block05Handlers'
 import { DiaryReader } from '../../../apps/device/HiddenDiaryApp'
 import { playSfx } from '../../../lib/sfx'
 import { GamePanel } from '../../ui/GamePanel'
@@ -393,6 +399,125 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
               ) : (
                 <p className="pc-empty">Sem pendências registradas.</p>
               )}
+              {inv.flags.block05_maralto_review_unlocked && !inv.flags.block05_maralto_weighed ? (
+                <div className="pc-caso-actions">
+                  <h4 className="pc-sub">Ação investigativa</h4>
+                  <button
+                    type="button"
+                    className="pc-inline"
+                    data-testid="b05-weigh-maralto"
+                    onClick={() => onMaraltoLineWeighed()}
+                  >
+                    Reavaliar linha Maralto / protestos
+                  </button>
+                </div>
+              ) : null}
+              {inv.flags.block05_chronology_action_unlocked && !inv.flags.block05_chronology_done ? (
+                <div className="pc-caso-actions">
+                  <h4 className="pc-sub">Ação investigativa</h4>
+                  <button
+                    type="button"
+                    className="pc-inline"
+                    data-testid="b05-organize-chronology"
+                    onClick={() => {
+                      organizeMarianaContactChronology()
+                      setOpenDoc('doc-mariana-contact-chronology')
+                    }}
+                  >
+                    Organizar cronologia dos contatos recentes de Mariana
+                  </button>
+                </div>
+              ) : null}
+              {inv.flags.block05_compare_unlocked && !inv.flags.block05_compare_done ? (
+                <div className="pc-caso-actions">
+                  <h4 className="pc-sub">Ação investigativa</h4>
+                  <button
+                    type="button"
+                    className="pc-inline"
+                    data-testid="b05-compare-files"
+                    onClick={() => {
+                      comparePhoneFilesSequence()
+                      setOpenDoc('doc-phone-file-dependencies')
+                    }}
+                  >
+                    Comparar cronologia com arquivos do celular
+                  </button>
+                </div>
+              ) : null}
+              {inv.flags.block05_emergency_revisit_unlocked && !inv.flags.block05_emergency_revisited ? (
+                <div className="pc-caso-actions">
+                  <h4 className="pc-sub">Ação investigativa</h4>
+                  <button
+                    type="button"
+                    className="pc-inline"
+                    data-testid="b05-revisit-emergency"
+                    onClick={() => {
+                      revisitEmergencyEntry()
+                      setOpenDoc('doc-emergency-reassessment')
+                    }}
+                  >
+                    Reabrir chamada de emergência e entrada no apartamento
+                  </button>
+                </div>
+              ) : null}
+              {inv.flags.block05_chronology_done ? (
+                <div className="pc-caso-actions" data-testid="b05-chronology-notes">
+                  <h4 className="pc-sub">Notas montadas</h4>
+                  <ul className="pc-ul">
+                    <li>
+                      <button
+                        type="button"
+                        className="pc-inline"
+                        onClick={() => setOpenDoc('doc-mariana-contact-chronology')}
+                      >
+                        Cronologia dos contatos recentes
+                      </button>
+                    </li>
+                    {inv.flags.block05_compare_done ? (
+                      <li>
+                        <button
+                          type="button"
+                          className="pc-inline"
+                          onClick={() => setOpenDoc('doc-phone-file-dependencies')}
+                        >
+                          Dependências dos arquivos do celular
+                        </button>
+                      </li>
+                    ) : null}
+                    {inv.flags.block05_emergency_revisited ? (
+                      <li>
+                        <button
+                          type="button"
+                          className="pc-inline"
+                          onClick={() => setOpenDoc('doc-emergency-reassessment')}
+                        >
+                          Releitura da chamada / entrada / apreensão
+                        </button>
+                      </li>
+                    ) : null}
+                  </ul>
+                  {inv.flags.block05_emergency_revisited ? (
+                    <>
+                      <h4 className="pc-sub">Peças iniciais reabertas</h4>
+                      <ul className="pc-ul">
+                        {(
+                          [
+                            ['doc-central-chamada', 'Registro da central'],
+                            ['doc-entrada-apartamento', 'Entrada no apartamento'],
+                            ['doc-apreensao-celular', 'Termo de apreensão'],
+                          ] as const
+                        ).map(([id, label]) => (
+                          <li key={id}>
+                            <button type="button" className="pc-inline" onClick={() => setOpenDoc(id)}>
+                              {label}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  ) : null}
+                </div>
+              ) : null}
             </>
           ) : null}
         </div>

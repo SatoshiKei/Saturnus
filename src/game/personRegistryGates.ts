@@ -16,6 +16,8 @@ export const personRegistryFlag: Record<string, string> = {
   livia: 'block03_maralto_researched',
   morsa: 'block03_saturnalia_done',
   samuel: 'block03_saturnalia_done',
+  jana: 'block05_jana_search_unlocked',
+  geraldo: 'block05_complete',
 }
 
 export function isPersonVisibleInRegistry(personId: string, inv: InvestigationState): boolean {

@@ -92,4 +92,15 @@ export const seedLocations: Location[] = [
     mapX: 0.22,
     mapY: 0.68,
   },
+  {
+    id: 'jana-casa',
+    name: 'Rua do Sol, 47',
+    description: 'Endereço residencial de Jana Ribeiro.',
+    status: 'unknown',
+    relatedPersonIds: ['jana'],
+    relatedEvidenceIds: [],
+    sceneId: 'jana',
+    mapX: 0.42,
+    mapY: 0.3,
+  },
 ]

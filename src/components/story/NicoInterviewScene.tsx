@@ -6,9 +6,11 @@ import {
   type NicoTopicId,
 } from '../../data/block03/nicoInterview'
 import { sceneBackgrounds } from '../../data/sceneIntros'
+import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { portraitSrcForStory } from '../../lib/characterSprites'
 import { finishNicoInterview } from '../../game/story/block03Handlers'
 import { TopicInterviewScene, type TopicInterviewConfig } from './TopicInterviewScene'
+import { NicoFollowupScene } from './NicoFollowupScene'
 
 const config: TopicInterviewConfig<NicoTopicId> = {
   testId: 'nico-scene',
@@ -25,5 +27,9 @@ const config: TopicInterviewConfig<NicoTopicId> = {
 }
 
 export function NicoInterviewScene({ onClose }: { onClose: () => void }) {
+  const inv = useInvestigation()
+  if (inv.flags.block05_started && !inv.flags.block05_nico_followup_done) {
+    return <NicoFollowupScene onClose={onClose} />
+  }
   return <TopicInterviewScene config={config} onClose={onClose} />
 }

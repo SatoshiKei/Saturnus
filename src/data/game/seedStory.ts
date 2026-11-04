@@ -122,6 +122,34 @@ export const hypothesisCatalog: Hypothesis[] = [
     contradictingEvidenceIds: [],
     state: 'active',
   },
+  {
+    id: 'hyp_mariana_needed_brother',
+    title: 'Mariana pode ter tratado falhas reais como conspiração porque precisava acreditar no irmão',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
+  {
+    id: 'hyp_one_line_distraction',
+    title: 'Uma das duas linhas (Elisa ou Maralto) pode ter sido colocada no caminho para desorientar',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
+  {
+    id: 'hyp_call_to_seize_phone',
+    title: 'A chamada pode ter tido a função de colocar a polícia no apartamento e apreender o celular',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
+  {
+    id: 'hyp_deliberate_path',
+    title: 'O desaparecimento contém um percurso investigativo deliberado',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
 ]
 
 export const contradictionDefs: ContradictionDef[] = [
@@ -361,6 +389,42 @@ export const seedSearchRules: SearchRule[] = [
       },
     ],
   },
+  {
+    id: 'block05_jana_witness',
+    category: 'police',
+    requiredFlags: ['block05_jana_search_unlocked'],
+    requiredTerms: ['jana'],
+    results: [
+      {
+        title: 'Depoimento arquivado — Jana Ribeiro',
+        snippet: 'Volume II do processo Elisa Duarte. Amiga da vítima.',
+        documentId: 'doc-elisa-jana',
+      },
+    ],
+  },
+  {
+    id: 'block05_elisa_review_pieces',
+    category: 'police',
+    requiredFlags: ['block05_elisa_review_unlocked'],
+    requiredTerms: ['elisa'],
+    results: [
+      {
+        title: 'Peças — discussão e estado do relacionamento',
+        snippet: 'Autos do processo Elisa Duarte (resumo).',
+        documentId: 'doc-elisa-argumento',
+      },
+      {
+        title: 'Peças — álibi e inconsistências',
+        snippet: 'Autos do processo Elisa Duarte (resumo).',
+        documentId: 'doc-elisa-alibi',
+      },
+      {
+        title: 'Peças — testemunha próxima à região da queda',
+        snippet: 'Autos do processo Elisa Duarte (resumo).',
+        documentId: 'doc-elisa-testemunha-queda',
+      },
+    ],
+  },
 ]
 
 
@@ -461,6 +525,36 @@ export const seedStoryTriggers: StoryTrigger[] = [
       { type: 'setFlag', id: 'block04_started', value: true },
       { type: 'setFlag', id: 'block04_andre_records_unlocked', value: true },
       { type: 'addHypothesis', id: 'hyp_morsa_key' },
+    ],
+  },
+  {
+    id: 'block05_start',
+    once: true,
+    conditions: [{ type: 'flag', id: 'block04_complete', value: true }],
+    actions: [
+      { type: 'setFlag', id: 'block05_started', value: true },
+      { type: 'unlockLocation', id: 'titan', status: 'visitAvailable' },
+    ],
+  },
+  {
+    id: 'block05_elisa_review',
+    once: true,
+    conditions: [
+      { type: 'flag', id: 'block05_elisa_review_unlocked', value: true },
+      { type: 'evidenceOwned', id: 'elisa_argument_jealousy' },
+      { type: 'evidenceOwned', id: 'elisa_weak_alibi' },
+      { type: 'evidenceOwned', id: 'elisa_lookalike_near_fall' },
+    ],
+    actions: [
+      { type: 'setFlag', id: 'block05_elisa_review_done', value: true },
+      { type: 'completeTask', id: 'task_review_elisa_autos' },
+      { type: 'addHypothesis', id: 'hyp_mariana_needed_brother' },
+      { type: 'setFlag', id: 'block05_refl_andre_pending', value: true },
+      {
+        type: 'addTask',
+        id: 'task_weigh_maralto_line',
+        label: 'Reavaliar o que a linha Maralto explica — e o que não explica',
+      },
     ],
   },
 ]

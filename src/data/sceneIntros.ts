@@ -42,6 +42,10 @@ export const sceneIntros: Record<SceneId, SceneIntro> = {
     lines: ['04 NOV 2026', '21:37', 'PENITENCIÁRIA ESTADUAL — SALA DE VISITAS'],
     ambience: 'ambience-hush',
   },
+  jana: {
+    lines: ['05 NOV 2026', '10:15', 'RUA DO SOL, 47'],
+    ambience: 'scene-in',
+  },
 }
 
 /** Fundos (processados) usados em cada cena — auditoria de backgrounds. */
@@ -53,4 +57,5 @@ export const sceneBackgrounds: Record<SceneId, string> = {
   nico: '/assets/backgrounds/processed/nightclub/nightclub-01-lights-haze.jpg',
   samuel: '/assets/backgrounds/processed/apartment/apartment-01-living-room.jpg',
   andre: '/assets/backgrounds/processed/prison/prison-01-visit-room.jpg',
+  jana: '/assets/backgrounds/processed/apartment/apartment-01-living-room.jpg',
 }

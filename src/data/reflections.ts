@@ -1,3 +1,4 @@
+import { getInvestigationState } from '../game/state/investigationStore'
 import type { SceneId } from './sceneIntros'
 import { sceneBackgrounds } from './sceneIntros'
 
@@ -80,10 +81,73 @@ export const reflections: ReflectionDef[] = [
       'Seis ligações, todas sem identificação. A central guardou as gravações. Vou levar tudo para a bancada.',
     ],
   },
+  {
+    id: 'refl-nico2',
+    sceneId: 'nico',
+    whenFlag: 'block05_nico_followup_done',
+    background: sceneBackgrounds.nico,
+    blocks: [
+      'Nico não inventou um mistério. Só lembrou de uma peça que não parecia de Elisa.',
+      'Ele acha que era de Jana. Memória, não laudo.',
+      'Se Mariana insistia nisso, os autos devem ter o nome completo.',
+    ],
+  },
+  {
+    id: 'refl-jana',
+    sceneId: 'jana',
+    whenFlag: 'block05_jana_interview_done',
+    background: sceneBackgrounds.jana,
+    blocks: [
+      'A jaqueta era dela. Empréstimo na saída. Versão simples.',
+      'Ela quer encerrar o assunto. O desconforto não vira prova.',
+      'Preciso voltar ao que condenou André — não ao que me incomoda nela.',
+    ],
+  },
+  {
+    id: 'refl-b05-andre',
+    background: sceneBackgrounds.andre,
+    blocks: [
+      'Nico apontou uma inconsistência real. A jaqueta é outro detalhe estranho. Jana omitiu o óbvio até ser perguntada.',
+      'Nada disso dissolve o conjunto que condenou André: discussão, ciúmes, álibi fraco, alguém parecido perto da queda.',
+      'Talvez Mariana tenha achado falhas reais e as tratado como conspiração porque precisava acreditar no irmão. Hipótese. Só isso.',
+    ],
+  },
+  {
+    id: 'refl-b05-maralto',
+    background: sceneBackgrounds.livia,
+    blocks: [
+      'Lívia, a rádio, os protestos, o núcleo mascarado, Morsa, Samuel. Material suspeito. Pessoas que não falam. Crimes reais.',
+      'Nada disso explica por que Mariana desapareceu.',
+      'Duas possibilidades: Elisa era o alvo e Maralto veio para desorientar — ou o contrário. As duas linhas seguem sem ligação demonstrável.',
+    ],
+  },
+  {
+    id: 'refl-b05-coincidence',
+    background: sceneBackgrounds.hospital,
+    blocks: [
+      'Pode ser coincidência. Estou reconstruindo a mesma investigação que Mariana fez — naturalmente chego às mesmas pessoas e aos mesmos arquivos.',
+      'Mas a comparação incomoda: alguns materiais quase não servem fora da ordem em que os encontrei. Timestamps e seleção não parecem acidentais.',
+      'Se for só eco da mesma trilha, a chamada inicial não muda nada. Se não for… a chamada merece uma releitura.',
+    ],
+  },
+  {
+    id: 'refl-b05-path',
+    background: sceneBackgrounds.hospital,
+    blocks: [
+      'A chamada colocou a polícia no apartamento. O celular foi apreendido. Os arquivos só fazem sentido depois de certas pessoas. Mariana já tinha percorrido quase o mesmo caminho.',
+      'Isso não parece acidente de investigação. Parece um percurso deixado para alguém reconstruir.',
+      'Não sei se ela construiu sozinha. Não sei se o desconhecido ajudou. Não sei se o medo do diário é real e o planejamento também. Os dois sinais estão aí.',
+      'Seguir só o rastro dela não basta. Vou reconstruir o caso Elisa do zero.',
+    ],
+  },
 ]
 
 export function reflectionForScene(sceneId: SceneId): ReflectionDef | undefined {
-  return reflections.find((r) => r.sceneId === sceneId)
+  const s = getInvestigationState()
+  const matches = reflections.filter((r) => r.sceneId === sceneId)
+  return matches.find(
+    (r) => (!r.whenFlag || s.flags[r.whenFlag]) && !s.flags[`${r.id}_seen`],
+  )
 }
 
 export function reflectionById(id: string): ReflectionDef | undefined {

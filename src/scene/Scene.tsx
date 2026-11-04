@@ -24,6 +24,16 @@ import { NicoInterviewScene } from '../components/story/NicoInterviewScene'
 import { LiviaInterviewScene } from '../components/story/LiviaInterviewScene'
 import { SamuelInterviewScene } from '../components/story/SamuelInterviewScene'
 import { AndreInterviewScene } from '../components/story/AndreInterviewScene'
+import { JanaInterviewScene } from '../components/story/JanaInterviewScene'
+import { ReflectionView } from '../components/story/vn/SceneTransitions'
+import { reflectionById } from '../data/reflections'
+import { setFlag } from '../game/state/investigationStore'
+import {
+  onAndreStillGuiltyReflectionDone,
+  onCoincidenceReflectionDone,
+  onMaraltoReflectionDone,
+  onPathReflectionDone,
+} from '../game/story/block05Handlers'
 import { onMarianaPhoneClosed, onMarianaPhoneOpened } from '../game/story/block01Handlers'
 import '../styles/tokens.css'
 import '../styles/scene.css'
@@ -48,7 +58,19 @@ function renderLocationScene(id: NonNullable<LocationSceneId>, close: () => void
       return <SamuelInterviewScene onClose={close} />
     case 'andre':
       return <AndreInterviewScene onClose={close} />
+    case 'jana':
+      return <JanaInterviewScene onClose={close} />
   }
+}
+
+function pendingSoloReflection(flags: Record<string, boolean>): string | null {
+  if (flags.block05_refl_andre_pending && !flags['refl-b05-andre_seen']) return 'refl-b05-andre'
+  if (flags.block05_refl_maralto_pending && !flags['refl-b05-maralto_seen']) return 'refl-b05-maralto'
+  if (flags.block05_refl_coincidence_pending && !flags['refl-b05-coincidence_seen']) {
+    return 'refl-b05-coincidence'
+  }
+  if (flags.block05_refl_path_pending && !flags['refl-b05-path_seen']) return 'refl-b05-path'
+  return null
 }
 
 interface Camera {
@@ -72,6 +94,8 @@ export function Scene() {
   } = useGameHub()
   const inv = useInvestigation()
   const { menuOpen } = useUiState()
+  const soloReflectionId = pendingSoloReflection(inv.flags)
+  const soloReflectionDef = soloReflectionId ? reflectionById(soloReflectionId) : undefined
 
   const [hoverId, setHoverId] = useState<string | null>(null)
   const [camera, setCamera] = useState<Camera | null>(null)
@@ -300,6 +324,21 @@ export function Scene() {
             onReturn={handleSceneReturn}
             renderScene={(close) => renderLocationScene(locationScene, close)}
           />
+        ) : null}
+        {!locationScene && !hubPanel && !phoneOpen && soloReflectionId && soloReflectionDef ? (
+          <div className="tr-refl-layer" data-testid="block05-solo-reflection">
+            <ReflectionView
+              blocks={soloReflectionDef.blocks}
+              background={soloReflectionDef.background}
+              onDone={() => {
+                setFlag(`${soloReflectionId}_seen`, true)
+                if (soloReflectionId === 'refl-b05-andre') onAndreStillGuiltyReflectionDone()
+                else if (soloReflectionId === 'refl-b05-maralto') onMaraltoReflectionDone()
+                else if (soloReflectionId === 'refl-b05-coincidence') onCoincidenceReflectionDone()
+                else if (soloReflectionId === 'refl-b05-path') onPathReflectionDone()
+              }}
+            />
+          </div>
         ) : null}
         {returnFade ? <div className="tr-return" data-testid="vn-return-fade" aria-hidden /> : null}
 

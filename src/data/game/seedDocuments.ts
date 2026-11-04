@@ -523,6 +523,189 @@ export const seedDocuments: Document[] = [
       { type: 'completeTask', id: 'task_phone_forensics' },
     ],
   },
+  // ───────────────────────── Bloco 5 ─────────────────────────
+  {
+    id: 'doc-elisa-jana',
+    title: 'Depoimento arquivado — Jana Ribeiro',
+    category: 'Autos',
+    issuer: 'Vara Criminal — volume II (resumo)',
+    dateLabel: 'Proc. 2020',
+    system: 'autos',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Jana Ribeiro, amiga da vítima Elisa Duarte. Presente no Vértice na noite dos fatos. Ouvida na fase policial.',
+      },
+      {
+        id: 'b2',
+        text: 'Relatou discussão entre Elisa e André no salão. Confirmou ter visto Elisa sair. Sem menção detalhada a vestimentas no resumo arquivado.',
+      },
+      {
+        id: 'b3',
+        text: 'Cadastro atualizado na última renovação de documentos: endereço residencial válido.',
+      },
+    ],
+    leads: [{ type: 'address', label: 'Endereço residencial', value: 'Rua do Sol, 47' }],
+    onOpen: [
+      { type: 'addEvidence', id: 'jana_current_record' },
+      { type: 'discoverPerson', id: 'jana', status: 'located' },
+      { type: 'unlockLocation', id: 'jana-casa', status: 'visitAvailable' },
+      { type: 'completeTask', id: 'task_locate_jana' },
+      {
+        type: 'addTask',
+        id: 'task_talk_jana',
+        label: 'Ir ao endereço de Jana Ribeiro',
+      },
+    ],
+  },
+  {
+    id: 'doc-elisa-argumento',
+    title: 'Peças — discussão e estado do relacionamento',
+    category: 'Autos',
+    issuer: 'Vara Criminal — resumo',
+    dateLabel: 'Proc. 2020',
+    system: 'autos',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Duas testemunhas descrevem discussão entre André e Elisa junto ao bar, com troca de acusações e ciúmes.',
+      },
+      {
+        id: 'b2',
+        text: 'Amigos próximos afirmam que o relacionamento atravessava fase ruim nas semanas anteriores.',
+      },
+    ],
+    onOpen: [{ type: 'addEvidence', id: 'elisa_argument_jealousy' }],
+  },
+  {
+    id: 'doc-elisa-alibi',
+    title: 'Peças — álibi e inconsistências',
+    category: 'Autos',
+    issuer: 'Vara Criminal — resumo',
+    dateLabel: 'Proc. 2020',
+    system: 'autos',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'André não apresentou álibi considerado confiável para o intervalo entre a saída de Elisa e o próprio reaparecimento na portaria.',
+      },
+      {
+        id: 'b2',
+        text: 'Inconsistências pontuais entre depoimentos de frequentadores foram anotadas; a cronologia oficial prevaleceu na sentença.',
+      },
+    ],
+    onOpen: [{ type: 'addEvidence', id: 'elisa_weak_alibi' }],
+  },
+  {
+    id: 'doc-elisa-testemunha-queda',
+    title: 'Peças — testemunha próxima à região da queda',
+    category: 'Autos',
+    issuer: 'Vara Criminal — resumo',
+    dateLabel: 'Proc. 2020',
+    system: 'autos',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Uma testemunha afirmou ter visto, próximo à região da queda, alguém com porte semelhante ao de André Silva.',
+      },
+      {
+        id: 'b2',
+        text: 'A identificação visual não foi inequívoca; o conjunto probatório, contudo, sustentou a condenação.',
+      },
+    ],
+    onOpen: [{ type: 'addEvidence', id: 'elisa_lookalike_near_fall' }],
+  },
+  {
+    id: 'doc-elisa-geraldo-depoimento',
+    title: 'Depoimento arquivado — Geraldo (resumo)',
+    category: 'Autos',
+    issuer: 'Vara Criminal — volume II',
+    dateLabel: 'Proc. 2020',
+    system: 'autos',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Geraldo — frequentador do Vértice na noite dos fatos. Ouvido sobre o estado de Elisa Duarte e o ambiente do salão.',
+      },
+      {
+        id: 'b2',
+        text: 'Depoimento resumido: descreveu consumo de álcool e a presença do casal. Peça marcada para reexame na reconstrução do caso.',
+      },
+    ],
+    onOpen: [{ type: 'discoverPerson', id: 'geraldo', status: 'identified' }],
+  },
+  {
+    id: 'doc-mariana-contact-chronology',
+    title: 'Cronologia — contatos recentes de Mariana (montagem)',
+    category: 'Anotação de caso',
+    issuer: 'Delegacia — Augusto Nogueira',
+    dateLabel: '05/11/2026',
+    system: 'documentos',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Montagem a partir de chats, ligações, visitas e autos já reunidos. Ordem aproximada antes do desaparecimento:',
+      },
+      {
+        id: 'b2',
+        text: 'Rafael (hospital / áudio) → pessoas ligadas ao Vértice → Paula → Lucas Moreira → Nico → Lívia Serrano → Samuel Teixeira → Jana Ribeiro (autos) → André (unidade).',
+      },
+      {
+        id: 'b3',
+        text: 'Observação: essas pessoas não começaram a procurar Mariana depois do desaparecimento. Mariana já as havia procurado — ou as peças que levam a elas — antes.',
+      },
+    ],
+    onOpen: [{ type: 'addEvidence', id: 'mariana_sought_people_before' }],
+  },
+  {
+    id: 'doc-phone-file-dependencies',
+    title: 'Comparação — arquivos do celular × ordem de compreensão',
+    category: 'Anotação de caso',
+    issuer: 'Delegacia — Augusto Nogueira',
+    dateLabel: '05/11/2026',
+    system: 'documentos',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Alguns arquivos do aparelho só ganharam sentido depois que determinadas pessoas foram alcançadas (ex.: Nico → jaqueta/Jana; Lívia → material da rádio; Samuel → núcleo mascarado; diário → interlocutor).',
+      },
+      {
+        id: 'b2',
+        text: 'A seleção e os carimbos de tempo dos materiais deixados no aparelho têm pouca utilidade fora dessa ordem. Isolados, parecem ruído; em sequência, abrem a próxima etapa.',
+      },
+      {
+        id: 'b3',
+        text: 'Primeira leitura: pode ser coincidência — estou reconstruindo a mesma investigação que ela fez. Ainda assim, a utilidade condicionada à ordem merece um teste: voltar ao início do caso.',
+      },
+    ],
+    onOpen: [{ type: 'addEvidence', id: 'phone_files_depend_on_order' }],
+  },
+  {
+    id: 'doc-emergency-reassessment',
+    title: 'Releitura — chamada, entrada e apreensão do celular',
+    category: 'Anotação de caso',
+    issuer: 'Delegacia — Augusto Nogueira',
+    dateLabel: '05/11/2026',
+    system: 'documentos',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Elementos reabertos: registro da central (08:03), relatório de entrada no apartamento e termo de apreensão do aparelho. Conferir também a pasta física do caso.',
+      },
+      {
+        id: 'b2',
+        text: 'Fato estável: a chamada fez a polícia entrar. Como consequência direta, o celular de Mariana foi localizado e apreendido.',
+      },
+      {
+        id: 'b3',
+        text: 'Hipótese de trabalho (não conclusão): e se colocar a polícia dentro daquele apartamento fosse a função da chamada? Permanecem abertos voz, diário, autoria e se Mariana controlava o processo.',
+      },
+    ],
+    onOpen: [
+      { type: 'addEvidence', id: 'call_enabled_apartment_entry' },
+      { type: 'addEvidence', id: 'phone_seized_after_call' },
+    ],
+  },
 ]
 
 export function getDocument(id: string): Document | undefined {

@@ -144,4 +144,21 @@ export const seedPeople: Person[] = [
     relatedEvidenceIds: [],
     relatedPersonIds: [],
   },
+  {
+    id: 'jana',
+    name: 'Jana Ribeiro',
+    status: 'mentioned',
+    notes: ['Citada nos autos do caso Elisa'],
+    relatedEvidenceIds: [],
+    relatedPersonIds: ['elisa'],
+    locationId: 'jana-casa',
+  },
+  {
+    id: 'geraldo',
+    name: 'Geraldo',
+    status: 'mentioned',
+    notes: ['Depoente no processo Elisa'],
+    relatedEvidenceIds: [],
+    relatedPersonIds: ['elisa'],
+  },
 ]
