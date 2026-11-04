@@ -243,6 +243,8 @@ export type StoryActionRef =
   | { type: 'confirmContradiction'; id: string }
   | { type: 'pushProvocation'; id: string }
   | { type: 'discoverSearchTerm'; term: string }
+  /** Marca triggers `once` como já disparados (checkpoints DEV / save repair). */
+  | { type: 'markTriggersFired'; ids: string[] }
 
 export interface StoryTrigger {
   id: string

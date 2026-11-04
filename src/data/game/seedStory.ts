@@ -73,6 +73,27 @@ export const hypothesisCatalog: Hypothesis[] = [
     contradictingEvidenceIds: [],
     state: 'active',
   },
+  {
+    id: 'hyp_andre_imprecise_chronology',
+    title: 'André pode ter sido condenado com uma cronologia imprecisa',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
+  {
+    id: 'hyp_maralto_disappearance',
+    title: 'Maralto pode estar relacionada ao desaparecimento de Mariana',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
+  {
+    id: 'hyp_elisa_maralto_open',
+    title: 'Elisa e Maralto fazem parte da mesma investigação — pergunta em aberto',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
 ]
 
 export const contradictionDefs: ContradictionDef[] = [
@@ -112,6 +133,65 @@ export const seedSearchRules: SearchRule[] = [
         title: 'Testemunhas arquivadas',
         snippet: 'Nicolas “Nico” — DJ — consta como testemunha no mesmo processo.',
         evidenceId: 'nico_elisa_witness',
+      },
+    ],
+  },
+  {
+    id: 'block03_nico_cadastro',
+    category: 'police',
+    requiredFlags: ['block03_nico_search_unlocked'],
+    requiredTerms: ['nico'],
+    results: [
+      {
+        title: 'Cadastro atual — Nicolas (Nico)',
+        snippet:
+          'Cruzamento com dados históricos do Vértice: endereço residencial e vínculo profissional atualizados. Contato localizável.',
+        evidenceId: 'nico_current_record',
+      },
+    ],
+  },
+  {
+    id: 'block03_maralto_public',
+    category: 'police',
+    requiredFlags: ['block03_maralto_search_unlocked'],
+    requiredTerms: ['maralto'],
+    results: [
+      {
+        title: 'Maralto Granéis — fichário público',
+        snippet:
+          'Operação portuária consolidada na região; protestos e confrontos na época da implantação; cobertura jornalística (Lívia Serrano). Arquivos oficiais incompletos.',
+        evidenceId: 'maralto_public_record',
+      },
+      {
+        title: 'Cobertura histórica — Lívia Serrano',
+        snippet: 'Jornalista local citada nas matérias dos protestos. Mariana a teria procurado segundo anotações cruzadas.',
+        evidenceId: 'livia_sought_by_mariana',
+      },
+    ],
+  },
+  {
+    id: 'block03_maralto_elisa_cross',
+    category: 'police',
+    requiredFlags: ['block03_maralto_researched'],
+    requiredTerms: ['maralto', 'elisa'],
+    results: [
+      {
+        title: 'Cruzamento Maralto × processo Elisa',
+        snippet: 'Nenhum vínculo documental direto entre Maralto Granéis e Elisa Duarte / André Silva nos sistemas disponíveis.',
+        evidenceId: 'maralto_no_elisa_link',
+      },
+    ],
+  },
+  {
+    id: 'block03_livia_contact',
+    category: 'police',
+    requiredFlags: ['block03_livia_search_unlocked'],
+    requiredTerms: ['livia'],
+    results: [
+      {
+        title: 'Lívia Serrano — contato profissional',
+        snippet: 'Redação local. Aceita depoimento informal sobre cobertura histórica.',
+        evidenceId: 'livia_contact_record',
       },
     ],
   },
@@ -162,6 +242,15 @@ export const seedStoryTriggers: StoryTrigger[] = [
       { type: 'unlockContact', contactId: 'contact-paula' },
       { type: 'unlockChat', device: 'augusto', chatId: 'chat-paula-augusto' },
       { type: 'setFlag', id: 'block02_paula_chat_unlocked', value: true },
+    ],
+  },
+  {
+    id: 'block03_start',
+    once: true,
+    conditions: [{ type: 'flag', id: 'block02_complete', value: true }],
+    actions: [
+      { type: 'setFlag', id: 'block03_started', value: true },
+      { type: 'setFlag', id: 'block03_nico_search_unlocked', value: true },
     ],
   },
 ]

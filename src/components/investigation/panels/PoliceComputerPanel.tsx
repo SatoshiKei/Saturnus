@@ -4,8 +4,14 @@ import { useInvestigation } from '../../../game/hooks/useInvestigation'
 import { runPoliceSearch } from '../../../game/search/runSearch'
 import { dispatchActions } from '../../../game/state/investigationStore'
 import { applyPoliceSearchHit } from '../../../game/story/block02Handlers'
+import { applyBlock03SearchHit } from '../../../game/story/block03Handlers'
 import { useGameHub } from '../../../app/GameHubContext'
-import { canInterviewLucas, isPersonVisibleInRegistry } from '../../../game/personRegistryGates'
+import {
+  canInterviewLivia,
+  canInterviewLucas,
+  canInterviewNico,
+  isPersonVisibleInRegistry,
+} from '../../../game/personRegistryGates'
 import { personStatusLabel } from '../../../lib/labels'
 import { GamePanel } from '../../ui/GamePanel'
 
@@ -50,7 +56,10 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
     const { hits, newTerms } = runPoliceSearch(q, inv)
     setResults(hits.map(({ title, snippet }) => ({ title, snippet })))
     for (const h of hits) {
-      if (h.evidenceId) applyPoliceSearchHit(h.evidenceId)
+      if (h.evidenceId) {
+        applyPoliceSearchHit(h.evidenceId)
+        applyBlock03SearchHit(h.evidenceId)
+      }
     }
     setSearched(true)
     setRecent((r) => [q, ...r.filter((x) => x !== q)].slice(0, 5))
@@ -203,6 +212,36 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
                               onClick={() => {
                                 onClose()
                                 openLocationScene('lucas')
+                              }}
+                            >
+                              Entrevistar
+                            </button>
+                          ) : null}
+                          {p.id === 'nico' &&
+                          canInterviewNico(inv) &&
+                          !inv.flags.block03_nico_interview_done ? (
+                            <button
+                              type="button"
+                              className="pc-inline"
+                              data-testid="nico-interview-open"
+                              onClick={() => {
+                                onClose()
+                                openLocationScene('nico')
+                              }}
+                            >
+                              Entrevistar
+                            </button>
+                          ) : null}
+                          {p.id === 'livia' &&
+                          canInterviewLivia(inv) &&
+                          !inv.flags.block03_livia_interview_done ? (
+                            <button
+                              type="button"
+                              className="pc-inline"
+                              data-testid="livia-interview-open"
+                              onClick={() => {
+                                onClose()
+                                openLocationScene('livia')
                               }}
                             >
                               Entrevistar

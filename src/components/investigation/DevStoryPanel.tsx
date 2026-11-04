@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { block01DevCheckpoints } from '../../game/story/block01DevCheckpoints'
 import { block02DevCheckpoints } from '../../game/story/block02DevCheckpoints'
+import { block03DevCheckpoints } from '../../game/story/block03DevCheckpoints'
 import { devApply, resetGame } from '../../game/state/investigationStore'
 
 export function DevStoryPanel() {
@@ -48,6 +49,22 @@ export function DevStoryPanel() {
           data-testid={`dev-${cp.id}`}
           onClick={() => {
             if (cp.id === 'b02-start') {
+              resetGame()
+              devApply(cp.actions)
+            } else if (cp.actions.length) devApply(cp.actions)
+          }}
+        >
+          {cp.label}
+        </button>
+      ))}
+      <p className="inv-dev__section">Bloco 3 — Noites fora de ordem</p>
+      {block03DevCheckpoints.map((cp) => (
+        <button
+          key={cp.id}
+          type="button"
+          data-testid={`dev-${cp.id}`}
+          onClick={() => {
+            if (cp.id === 'b03-start') {
               resetGame()
               devApply(cp.actions)
             } else if (cp.actions.length) devApply(cp.actions)

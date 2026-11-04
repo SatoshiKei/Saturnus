@@ -9,6 +9,9 @@ export const personRegistryFlag: Record<string, string> = {
   iara: 'block02_vertice_iara',
   sandro: 'block02_vertice_sandro',
   caio: 'block02_vertice_caio',
+  livia: 'block03_livia_search_unlocked',
+  morsa: 'block03_saturnalia_done',
+  samuel: 'block03_saturnalia_done',
 }
 
 export function isPersonVisibleInRegistry(personId: string, inv: InvestigationState): boolean {
@@ -36,6 +39,22 @@ export function canInterviewLucas(inv: InvestigationState): boolean {
   )
 }
 
+export function canInterviewNico(inv: InvestigationState): boolean {
+  return (
+    Boolean(inv.flags.block03_nico_located) ||
+    inv.people.nico?.status === 'contactable' ||
+    inv.people.nico?.status === 'located'
+  )
+}
+
+export function canInterviewLivia(inv: InvestigationState): boolean {
+  return (
+    Boolean(inv.flags.block03_livia_located) ||
+    inv.people.livia?.status === 'contactable' ||
+    inv.people.livia?.status === 'located'
+  )
+}
+
 /** Corrige estado quando a evidência existe mas flags de Bloco 2 não foram gravadas. */
 export function repairInvestigationState(state: InvestigationState): InvestigationState {
   if (!state.evidenceOwned.includes('paula_leads_lucas')) return state
@@ -54,10 +73,7 @@ export function repairInvestigationState(state: InvestigationState): Investigati
           ...state.people,
           lucas: {
             ...lucas,
-            status:
-              lucas.status === 'mentioned' || lucas.status === 'unknown'
-                ? 'contactable'
-                : lucas.status,
+            status: lucas.status === 'mentioned' ? 'contactable' : lucas.status,
           },
         }
       : state.people,

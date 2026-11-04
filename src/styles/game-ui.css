@@ -1562,6 +1562,53 @@
   color: var(--text-primary);
 }
 
+.aw-orbit {
+  margin: 0 0 1.2em;
+  padding: 1em 1.1em;
+  border: 1px solid rgba(121, 194, 189, 0.35);
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(121, 194, 189, 0.08), transparent 55%),
+    rgba(8, 18, 20, 0.45);
+  border-radius: 3px;
+}
+
+.aw-orbit__title {
+  margin: 0 0 0.55em;
+  font-size: 0.78em;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #79c2bd;
+}
+
+.aw-orbit__tracks {
+  display: grid;
+  gap: 0.75em;
+  margin: 0.85em 0 1em;
+}
+
+.aw-orbit__label {
+  margin: 0 0 0.35em;
+  font-size: 0.78em;
+  letter-spacing: 0.06em;
+  color: #5f9892;
+}
+
+.aw-orbit__batches {
+  margin: 0.6em 0 0.8em;
+  padding-left: 1.2em;
+  font-size: 0.88em;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+.aw-orbit__log {
+  margin: 0 0 0.9em;
+  font-family: ui-monospace, monospace;
+  font-size: 0.75em;
+  letter-spacing: 0.04em;
+  color: #4f817c;
+}
+
 /* ═══════════════ Telefone fixo da delegacia ═══════════════ */
 .ll {
   display: grid;

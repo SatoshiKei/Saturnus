@@ -92,6 +92,8 @@ Ordem parcial livre entre trilhas Rafael/Vértice e Paula quando pré-requisitos
 
 Save com `block02_complete`, Nico **identificado mas não localizado**, perguntas abertas sobre o que Nico sabe e por que Mariana passou a defender André anos depois. Objetivo: **localizar Nico (testemunha Elisa)**.
 
+Implementação: `docs/story/BLOCK_03_OUT_OF_ORDER_NIGHTS.md`.
+
 ## Divergências técnicas
 
 Nenhuma alteração intencional ao roteiro em `section 2.md`. Retratos Vértice usam `iara.png`, `sandro.png` e `caio.png`.

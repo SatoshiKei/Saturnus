@@ -206,6 +206,11 @@ function applyOne(state: InvestigationState, action: StoryActionRef): Investigat
         searchTermsDiscovered: [...state.searchTermsDiscovered, term],
       }
     }
+    case 'markTriggersFired': {
+      const next = new Set(state.triggersFired)
+      for (const id of action.ids) next.add(id)
+      return { ...state, triggersFired: [...next] }
+    }
     default:
       return state
   }

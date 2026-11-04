@@ -91,4 +91,42 @@ writeWav(join(outDir, 'rafael-forward-block02-restored.wav'), 28, (t) => {
   return jingle + noise(t, 5) * 0.1
 })
 
+/** Bloco 3 — Fonte A (cabine) e Fonte B (portátil), mesma noite, relógios divergentes. */
+writeWav(join(outDir, 'nico-booth-night-x.wav'), 40, (t) => {
+  const bed = Math.sin(2 * Math.PI * 88 * t) * 0.07
+  const drop = t > 18 && t < 21 ? Math.sin(2 * Math.PI * 220 * t) * 0.35 : 0
+  const crowd = t > 28 && t < 30 ? noise(t, 7) * 0.45 : noise(t, 6) * 0.12
+  return bed + drop + crowd
+})
+
+writeWav(join(outDir, 'nico-portable-night-x.wav'), 22, (t) => {
+  const bed = Math.sin(2 * Math.PI * 95 * t) * 0.05
+  const drop = t > 6 && t < 9 ? Math.sin(2 * Math.PI * 220 * t) * 0.4 : 0
+  const crowd = t > 14 && t < 16 ? noise(t, 8) * 0.5 : noise(t, 9) * 0.15
+  return bed + drop + crowd
+})
+
+writeWav(join(outDir, 'nico-sync-session-note.wav'), 8, (t) => {
+  return Math.sin(2 * Math.PI * 160 * t) * 0.12 * Math.min(1, t * 4) + noise(t, 10) * 0.04
+})
+
+writeWav(join(outDir, 'mariana-maralto-clip.wav'), 26, (t) => {
+  const env = Math.min(1, t * 2) * Math.max(0, 1 - (t - 25) * 2)
+  const voice = Math.sin(2 * Math.PI * (170 + 25 * Math.sin(t * 0.9)) * t) * 0.22
+  return (voice + noise(t, 11) * 0.18) * env
+})
+
+writeWav(join(outDir, 'livia-radio-archive-raw.wav'), 48, (t) => {
+  const burst = Math.sin(2 * Math.PI * (300 + 40 * Math.sin(t * 3)) * t) * 0.2
+  const cut = Math.floor(t / 6) % 2 === 0 ? 1 : 0.35
+  return (burst + noise(t, 12) * 0.25) * cut
+})
+
+writeWav(join(outDir, 'livia-radio-reconstructed.wav'), 36, (t) => {
+  const env = Math.min(1, t * 2) * Math.max(0, 1 - (t - 35) * 2)
+  const bed = Math.sin(2 * Math.PI * 210 * t) * 0.18
+  const shout = t > 20 && t < 24 ? noise(t, 13) * 0.55 : 0
+  return (bed + shout + noise(t, 14) * 0.1) * env
+})
+
 console.log('Wrote placeholder audio to', outDir)

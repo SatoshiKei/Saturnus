@@ -6,6 +6,10 @@ import { assetPath } from '../../../lib/assetPath'
 import { evidenceOriginLabel, evidenceSourceLabel, evidenceTypeLabel } from '../../../lib/labels'
 import { runProvisionalEmergencyAnalysis } from '../../../game/story/block01Handlers'
 import { runProvisionalRafaelForwardAnalysis } from '../../../game/story/block02Handlers'
+import {
+  runProvisionalJanusSync,
+  runProvisionalSaturnaliaReconstruct,
+} from '../../../game/story/block03Handlers'
 import { GamePanel } from '../../ui/GamePanel'
 
 /** PRNG determinístico a partir do id — a forma de onda é estável entre sessões. */
@@ -75,6 +79,11 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
   const inv = useInvestigation()
   const emergencyProvisionalDone = inv.flags.block01_emergency_provisional
   const rafaelForwardProvisionalDone = inv.flags.block02_rafael_forward_provisional
+  const janusDone = inv.flags.block03_janus_done
+  const saturnaliaDone = inv.flags.block03_saturnalia_done
+  const hasJanusPair =
+    inv.evidenceOwned.includes('nico_recording_booth') &&
+    inv.evidenceOwned.includes('nico_recording_portable')
   const files = inv.evidenceOwned
     .map((id) => inv.evidence[id])
     .filter((e): e is Evidence => Boolean(e) && (e.type === 'audio' || e.type === 'derived'))
@@ -87,6 +96,10 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
   const current = files.find((f) => f.id === sel) ?? files[0]
+  const showJanus =
+    hasJanusPair &&
+    (current?.id === 'nico_recording_booth' || current?.id === 'nico_recording_portable')
+  const showSaturnalia = current?.id === 'livia_radio_archive_raw'
   const blocked = Boolean(current && (current.exportable === false || current.deviceLocked))
   const playable = Boolean(current?.audioSrc) && !blocked
 
@@ -261,6 +274,73 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                   {inv.evidenceOwned.includes('rafael_recording_vertice_tag') ? (
                     <blockquote className="aw-provisional__transcript">
                       Vinheta parcialmente recuperada: “…Vértice…”
+                    </blockquote>
+                  ) : null}
+                </div>
+              ) : null}
+
+              {showJanus ? (
+                <div className="aw-orbit" data-testid="janus-provisional-panel">
+                  <p className="aw-orbit__title">Sessão Janus / Epimetheus</p>
+                  <p className="aw-provisional__note">
+                    Duas órbitas temporais da mesma noite. Relógios divergem; âncoras acústicas coincidem.
+                    Placeholder — a sincronização definitiva usará correlação de forma de onda.
+                  </p>
+                  <div className="aw-orbit__tracks">
+                    <div>
+                      <p className="aw-orbit__label">Fonte A — cabine · clock +00:00 (errado)</p>
+                      <Waveform id="nico_recording_booth" progress={0.42} />
+                    </div>
+                    <div>
+                      <p className="aw-orbit__label">Fonte B — portátil · clock −00:00 (errado)</p>
+                      <Waveform id="nico_recording_portable" progress={0.58} dim />
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    className="aw-provisional__go"
+                    data-testid="janus-provisional-sync"
+                    disabled={janusDone || !hasJanusPair}
+                    onClick={() => runProvisionalJanusSync()}
+                  >
+                    {janusDone ? 'Alinhamento provisório concluído' : 'Alinhar âncoras (provisório)'}
+                  </button>
+                  {janusDone ? (
+                    <blockquote className="aw-provisional__transcript">
+                      Resultado: pelo menos um horário da cronologia original da Noite X veio de dispositivo
+                      não sincronizado. Inconsistência verificável — não absolvição.
+                    </blockquote>
+                  ) : null}
+                </div>
+              ) : null}
+
+              {showSaturnalia ? (
+                <div className="aw-orbit" data-testid="saturnalia-provisional-panel">
+                  <p className="aw-orbit__title">Sessão Saturnalia</p>
+                  <p className="aw-provisional__note">
+                    Buffer circular: batches escritos do mais recente ao mais antigo. Placeholder — a
+                    reconstrução definitiva inverterá a ordem interna de cada grupo.
+                  </p>
+                  <ul className="aw-orbit__batches" aria-label="Fragmentos">
+                    <li>Batch 02 · frag C → B → A</li>
+                    <li>Batch 01 · frag F → E → D</li>
+                    <li>Batch 03 · frag H → G</li>
+                  </ul>
+                  <p className="aw-orbit__log">log: WRITE_REV · group_id · ts_skew</p>
+                  <button
+                    type="button"
+                    className="aw-provisional__go"
+                    data-testid="saturnalia-provisional-rebuild"
+                    disabled={saturnaliaDone}
+                    onClick={() => runProvisionalSaturnaliaReconstruct()}
+                  >
+                    {saturnaliaDone
+                      ? 'Reconstrução provisória concluída'
+                      : 'Inverter batches (provisório)'}
+                  </button>
+                  {saturnaliaDone ? (
+                    <blockquote className="aw-provisional__transcript">
+                      Núcleo mascarado nos protestos. Apelido recorrente: “Morsa”. Identidade desconhecida.
                     </blockquote>
                   ) : null}
                 </div>

@@ -53,6 +53,9 @@ const sourceLabels: Record<string, string> = {
   'mariana-recorder-app': 'Gravador — celular de Mariana',
   'wavelab-mobile': 'Processado no aparelho (WaveLab Mobile)',
   witness: 'Depoimento de testemunha',
+  'police-computer': 'Sistema de consulta',
+  'audio-lab': 'Bancada de áudio',
+  'augusto-whatsapp': 'WhatsApp — celular profissional',
 }
 
 export function evidenceSourceLabel(e: Pick<Evidence, 'sourceType' | 'obtainedFrom'>): string {
