@@ -94,6 +94,34 @@ export const hypothesisCatalog: Hypothesis[] = [
     contradictingEvidenceIds: [],
     state: 'active',
   },
+  {
+    id: 'hyp_andre_manipulating',
+    title: 'André pode estar utilizando Mariana para desmontar a própria condenação',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
+  {
+    id: 'hyp_julia_manipulating',
+    title: 'Júlia pode estar influenciando Mariana',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
+  {
+    id: 'hyp_morsa_key',
+    title: 'Morsa é chave para entender os protestos',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
+  {
+    id: 'hyp_memory_interference',
+    title: 'Alguém estava fazendo Mariana duvidar da própria memória',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
 ]
 
 export const contradictionDefs: ContradictionDef[] = [
@@ -114,7 +142,14 @@ export const contradictionDefs: ContradictionDef[] = [
 
 export const seedInterviewTopics: InterviewTopic[] = []
 
-export const seedProvocations: ProvocationEvent[] = []
+export const seedProvocations: ProvocationEvent[] = [
+  {
+    id: 'prov_hex_six',
+    channel: 'audio',
+    preview: 'Seis arquivos sem remetente. Sem legenda. Só anexos.',
+    triggerFlag: 'block04_hex_received',
+  },
+]
 
 export const seedSearchRules: SearchRule[] = [
   {
@@ -195,6 +230,47 @@ export const seedSearchRules: SearchRule[] = [
       },
     ],
   },
+  {
+    id: 'block04_samuel_cadastro',
+    category: 'police',
+    requiredFlags: ['block04_samuel_search_unlocked'],
+    requiredTerms: ['samuel'],
+    results: [
+      {
+        title: 'Cadastro — Samuel',
+        snippet: 'Citado em cobertura dos protestos. Endereço atual localizável. Contato possível.',
+        evidenceId: 'samuel_current_record',
+      },
+    ],
+  },
+  {
+    id: 'block04_andre_visits',
+    category: 'police',
+    requiredFlags: ['block04_andre_records_unlocked'],
+    requiredTerms: ['andre'],
+    results: [
+      {
+        title: 'Visitas/contatos — Mariana Silva × André Silva',
+        snippet:
+          'Após anos sem registro, Mariana solicitou contato autorizado recentemente — período em que já investigava Elisa.',
+        evidenceId: 'mariana_andre_visit_record',
+      },
+    ],
+  },
+  {
+    id: 'block04_prison_chronology',
+    category: 'police',
+    requiredFlags: ['block04_chronology_search_unlocked'],
+    requiredTerms: ['cronologia'],
+    results: [
+      {
+        title: 'Cruzamento — meios autorizados × contato desconhecido',
+        snippet:
+          'Horários de interação com o número sem nome incompatíveis com janelas de comunicação autorizada de André.',
+        evidenceId: 'andre_contact_chronology_mismatch',
+      },
+    ],
+  },
 ]
 
 export const seedStoryTriggers: StoryTrigger[] = [
@@ -251,6 +327,16 @@ export const seedStoryTriggers: StoryTrigger[] = [
     actions: [
       { type: 'setFlag', id: 'block03_started', value: true },
       { type: 'setFlag', id: 'block03_nico_search_unlocked', value: true },
+    ],
+  },
+  {
+    id: 'block04_start',
+    once: true,
+    conditions: [{ type: 'flag', id: 'block03_complete', value: true }],
+    actions: [
+      { type: 'setFlag', id: 'block04_started', value: true },
+      { type: 'setFlag', id: 'block04_samuel_search_unlocked', value: true },
+      { type: 'addHypothesis', id: 'hyp_morsa_key' },
     ],
   },
 ]

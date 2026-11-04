@@ -33,4 +33,15 @@ export const seedLocations: Location[] = [
     mapX: 0.74,
     mapY: 0.62,
   },
+  {
+    id: 'presidio',
+    name: 'Unidade prisional — visita',
+    description: 'Sala de visita monitorada. André Silva cumpre pena.',
+    status: 'unknown',
+    relatedPersonIds: ['andre'],
+    relatedEvidenceIds: [],
+    sceneId: 'prison-visit',
+    mapX: 0.22,
+    mapY: 0.68,
+  },
 ]

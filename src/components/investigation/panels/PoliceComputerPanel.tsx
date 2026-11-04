@@ -5,11 +5,17 @@ import { runPoliceSearch } from '../../../game/search/runSearch'
 import { dispatchActions } from '../../../game/state/investigationStore'
 import { applyPoliceSearchHit } from '../../../game/story/block02Handlers'
 import { applyBlock03SearchHit } from '../../../game/story/block03Handlers'
+import {
+  applyBlock04SearchHit,
+  runPhoneHiddenAppForensics,
+} from '../../../game/story/block04Handlers'
 import { useGameHub } from '../../../app/GameHubContext'
 import {
+  canInterviewAndre,
   canInterviewLivia,
   canInterviewLucas,
   canInterviewNico,
+  canInterviewSamuel,
   isPersonVisibleInRegistry,
 } from '../../../game/personRegistryGates'
 import { personStatusLabel } from '../../../lib/labels'
@@ -59,6 +65,7 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
       if (h.evidenceId) {
         applyPoliceSearchHit(h.evidenceId)
         applyBlock03SearchHit(h.evidenceId)
+        applyBlock04SearchHit(h.evidenceId)
       }
     }
     setSearched(true)
@@ -247,6 +254,36 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
                               Entrevistar
                             </button>
                           ) : null}
+                          {p.id === 'samuel' &&
+                          canInterviewSamuel(inv) &&
+                          !inv.flags.block04_samuel_interview_done ? (
+                            <button
+                              type="button"
+                              className="pc-inline"
+                              data-testid="samuel-interview-open"
+                              onClick={() => {
+                                onClose()
+                                openLocationScene('samuel')
+                              }}
+                            >
+                              Entrevistar
+                            </button>
+                          ) : null}
+                          {p.id === 'andre' &&
+                          canInterviewAndre(inv) &&
+                          !inv.flags.block04_andre_interview_done ? (
+                            <button
+                              type="button"
+                              className="pc-inline"
+                              data-testid="andre-interview-open"
+                              onClick={() => {
+                                onClose()
+                                openLocationScene('andre')
+                              }}
+                            >
+                              Entrevistar
+                            </button>
+                          ) : null}
                         </div>
                       </td>
                     </tr>
@@ -285,6 +322,26 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
                 </tbody>
               </table>
               <p className="pc-empty">Para ler e extrair trechos, abra a pasta do caso na mesa.</p>
+              {inv.flags.block04_forensics_unlocked ? (
+                <div className="pc-forensics" data-testid="phone-forensics-panel">
+                  <h4 className="pc-sub">Perícia digital — aparelho apreendido</h4>
+                  <p className="pc-empty">
+                    Instrução recuperada: procurar o que a interface comum não lista. Varredura de
+                    packages / diretórios privados / bases locais.
+                  </p>
+                  <button
+                    type="button"
+                    className="pc-inline"
+                    data-testid="phone-forensics-run"
+                    disabled={Boolean(inv.flags.block04_forensics_done)}
+                    onClick={() => runPhoneHiddenAppForensics()}
+                  >
+                    {inv.flags.block04_forensics_done
+                      ? 'Varredura concluída — app oculto listado'
+                      : 'Executar varredura (launcher omitido)'}
+                  </button>
+                </div>
+              ) : null}
             </>
           ) : null}
         </div>

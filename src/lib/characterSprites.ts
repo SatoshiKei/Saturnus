@@ -11,6 +11,8 @@ import iara from '../assets/sprites/iara.png'
 import sandro from '../assets/sprites/sandro.png'
 import caio from '../assets/sprites/caio.png'
 import livia from '../assets/sprites/livia.png'
+import samuel from '../assets/sprites/samuel.png'
+import andre from '../assets/sprites/andre.png'
 
 /** Retratos disponíveis — ids alinhados a `mockContacts` / personagens. */
 export const CHARACTER_SPRITE_URLS: Record<string, string> = {
@@ -26,6 +28,8 @@ export const CHARACTER_SPRITE_URLS: Record<string, string> = {
   sandro,
   caio,
   livia,
+  samuel,
+  andre,
 }
 
 export function contactAvatarSrc(contactId: string): string | undefined {
@@ -42,7 +46,18 @@ export function resolveChatMediaSrc(src: string): string {
 }
 
 export function portraitSrcForStory(
-  id: 'julia' | 'camila' | 'augusto' | 'lucas' | 'iara' | 'sandro' | 'caio' | 'nico' | 'livia',
+  id:
+    | 'julia'
+    | 'camila'
+    | 'augusto'
+    | 'lucas'
+    | 'iara'
+    | 'sandro'
+    | 'caio'
+    | 'nico'
+    | 'livia'
+    | 'samuel'
+    | 'andre',
 ): string | undefined {
   return CHARACTER_SPRITE_URLS[id]
 }

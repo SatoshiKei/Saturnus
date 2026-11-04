@@ -129,4 +129,25 @@ writeWav(join(outDir, 'livia-radio-reconstructed.wav'), 36, (t) => {
   return (bed + shout + noise(t, 14) * 0.1) * env
 })
 
+/** Bloco 4 — seis fragmentos Hexágono + gravação do desconhecido. */
+;[
+  ['hex-a.wav', 6, 1],
+  ['hex-b.wav', 9, 2],
+  ['hex-c.wav', 7, 3],
+  ['hex-d.wav', 5, 4],
+  ['hex-e.wav', 8, 5],
+  ['hex-f.wav', 4, 6],
+].forEach(([name, dur, seed], idx) => {
+  writeWav(join(outDir, name), dur, (t) => {
+    const f = 180 + idx * 35
+    return Math.sin(2 * Math.PI * f * t) * 0.2 * Math.min(1, t * 5) + noise(t, seed) * 0.12
+  })
+})
+
+writeWav(join(outDir, 'unknown-contact-call.wav'), 32, (t) => {
+  const env = Math.min(1, t * 2) * Math.max(0, 1 - (t - 31) * 2)
+  const voice = Math.sin(2 * Math.PI * (155 + 18 * Math.sin(t * 0.55)) * t) * 0.24
+  return (voice + noise(t, 20) * 0.14) * env
+})
+
 console.log('Wrote placeholder audio to', outDir)

@@ -10,6 +10,11 @@ import {
   runProvisionalJanusSync,
   runProvisionalSaturnaliaReconstruct,
 } from '../../../game/story/block03Handlers'
+import {
+  onUnknownRecordingAnalyzed,
+  runProvisionalHexagonSolve,
+} from '../../../game/story/block04Handlers'
+import { HEX_CYCLE, HEX_NODES, HEX_PHRASE } from '../../../data/block04/hexagonPuzzle'
 import { GamePanel } from '../../ui/GamePanel'
 
 /** PRNG determinístico a partir do id — a forma de onda é estável entre sessões. */
@@ -81,9 +86,11 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
   const rafaelForwardProvisionalDone = inv.flags.block02_rafael_forward_provisional
   const janusDone = inv.flags.block03_janus_done
   const saturnaliaDone = inv.flags.block03_saturnalia_done
+  const hexagonDone = inv.flags.block04_hexagon_done
   const hasJanusPair =
     inv.evidenceOwned.includes('nico_recording_booth') &&
     inv.evidenceOwned.includes('nico_recording_portable')
+  const hasHexSet = HEX_NODES.every((n) => inv.evidenceOwned.includes(n.evidenceId))
   const files = inv.evidenceOwned
     .map((id) => inv.evidence[id])
     .filter((e): e is Evidence => Boolean(e) && (e.type === 'audio' || e.type === 'derived'))
@@ -100,6 +107,9 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
     hasJanusPair &&
     (current?.id === 'nico_recording_booth' || current?.id === 'nico_recording_portable')
   const showSaturnalia = current?.id === 'livia_radio_archive_raw'
+  const showHexagon =
+    hasHexSet && HEX_NODES.some((n) => n.evidenceId === current?.id)
+  const showUnknownAnalyze = current?.id === 'unknown_contact_recording'
   const blocked = Boolean(current && (current.exportable === false || current.deviceLocked))
   const playable = Boolean(current?.audioSrc) && !blocked
 
@@ -343,6 +353,66 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                       Núcleo mascarado nos protestos. Apelido recorrente: “Morsa”. Identidade desconhecida.
                     </blockquote>
                   ) : null}
+                </div>
+              ) : null}
+
+              {showHexagon ? (
+                <div className="aw-hex" data-testid="hexagon-provisional-panel">
+                  <p className="aw-orbit__title">Sessão Hexágono</p>
+                  <p className="aw-provisional__note">
+                    Seis nós. Cada irregularidade aponta para outro arquivo. Ciclo definitivo:{' '}
+                    {HEX_CYCLE.join(' → ')} → A. Placeholder — a mecânica real usará metadata e
+                    relações técnicas.
+                  </p>
+                  <div className="aw-hex__graph" aria-hidden>
+                    {HEX_CYCLE.map((id, i) => (
+                      <span key={id} className="aw-hex__node">
+                        {id}
+                        {i < HEX_CYCLE.length - 1 ? <span className="aw-hex__edge">→</span> : null}
+                      </span>
+                    ))}
+                    <span className="aw-hex__edge">→ A</span>
+                  </div>
+                  <ul className="aw-orbit__batches">
+                    {HEX_NODES.map((n) => (
+                      <li key={n.id}>
+                        {n.id} · {n.displayName} · {n.anomaly}
+                      </li>
+                    ))}
+                  </ul>
+                  <button
+                    type="button"
+                    className="aw-provisional__go"
+                    data-testid="hexagon-provisional-solve"
+                    disabled={hexagonDone || !hasHexSet}
+                    onClick={() => runProvisionalHexagonSolve()}
+                  >
+                    {hexagonDone ? 'Ciclo fechado — frase recuperada' : 'Fechar ciclo (provisório)'}
+                  </button>
+                  {hexagonDone ? (
+                    <blockquote className="aw-provisional__transcript">{HEX_PHRASE}</blockquote>
+                  ) : null}
+                </div>
+              ) : null}
+
+              {showUnknownAnalyze ? (
+                <div className="aw-orbit" data-testid="unknown-recording-panel">
+                  <p className="aw-orbit__title">Contato sem nome</p>
+                  <p className="aw-provisional__note">
+                    Voz tratada. Familiaridade excessiva. Não declarar vilania — apenas assimetria de
+                    memória.
+                  </p>
+                  <button
+                    type="button"
+                    className="aw-provisional__go"
+                    data-testid="unknown-recording-analyze"
+                    disabled={Boolean(inv.flags.block04_unknown_analyzed)}
+                    onClick={() => onUnknownRecordingAnalyzed()}
+                  >
+                    {inv.flags.block04_unknown_analyzed
+                      ? 'Análise registrada'
+                      : 'Registrar leitura forense'}
+                  </button>
                 </div>
               ) : null}
 

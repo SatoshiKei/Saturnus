@@ -8,7 +8,15 @@ import {
 } from 'react'
 import type { HubPanel } from '../game/types'
 
-export type LocationSceneId = 'hospital' | 'vertice' | 'lucas' | 'nico' | 'livia' | null
+export type LocationSceneId =
+  | 'hospital'
+  | 'vertice'
+  | 'lucas'
+  | 'nico'
+  | 'livia'
+  | 'samuel'
+  | 'andre'
+  | null
 
 interface GameHubContextValue {
   hubPanel: HubPanel

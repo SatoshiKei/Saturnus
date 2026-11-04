@@ -19,6 +19,8 @@ import { VerticeInterviewScene } from '../components/story/VerticeInterviewScene
 import { LucasInterviewScene } from '../components/story/LucasInterviewScene'
 import { NicoInterviewScene } from '../components/story/NicoInterviewScene'
 import { LiviaInterviewScene } from '../components/story/LiviaInterviewScene'
+import { SamuelInterviewScene } from '../components/story/SamuelInterviewScene'
+import { AndreInterviewScene } from '../components/story/AndreInterviewScene'
 import { onMarianaPhoneClosed, onMarianaPhoneOpened } from '../game/story/block01Handlers'
 import '../styles/tokens.css'
 import '../styles/scene.css'
@@ -252,6 +254,12 @@ export function Scene() {
         ) : null}
         {locationScene === 'livia' ? (
           <LiviaInterviewScene onClose={closeLocationScene} />
+        ) : null}
+        {locationScene === 'samuel' ? (
+          <SamuelInterviewScene onClose={closeLocationScene} />
+        ) : null}
+        {locationScene === 'andre' ? (
+          <AndreInterviewScene onClose={closeLocationScene} />
         ) : null}
 
         <HubOverlay panel={hubPanel} onClose={handleCloseHub} />

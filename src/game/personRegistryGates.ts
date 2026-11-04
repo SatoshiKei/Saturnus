@@ -55,6 +55,23 @@ export function canInterviewLivia(inv: InvestigationState): boolean {
   )
 }
 
+export function canInterviewSamuel(inv: InvestigationState): boolean {
+  return (
+    Boolean(inv.flags.block04_samuel_located) ||
+    inv.people.samuel?.status === 'contactable' ||
+    inv.people.samuel?.status === 'located'
+  )
+}
+
+export function canInterviewAndre(inv: InvestigationState): boolean {
+  return (
+    Boolean(inv.flags.block04_andre_visit_found) ||
+    inv.people.andre?.status === 'contactable' ||
+    inv.locations.presidio?.status === 'visitAvailable' ||
+    inv.locations.presidio?.status === 'visited'
+  )
+}
+
 /** Corrige estado quando a evidência existe mas flags de Bloco 2 não foram gravadas. */
 export function repairInvestigationState(state: InvestigationState): InvestigationState {
   if (!state.evidenceOwned.includes('paula_leads_lucas')) return state

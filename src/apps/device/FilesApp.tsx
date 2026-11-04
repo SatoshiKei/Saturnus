@@ -8,6 +8,7 @@ import {
 import { contactAvatarSrc } from '../../lib/characterSprites'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { onMarianaMaraltoRecordingFound } from '../../game/story/block03Handlers'
+import { onUnknownRecordingFound } from '../../game/story/block04Handlers'
 
 interface FilesAppProps {
   onBack: () => void
@@ -27,8 +28,20 @@ export function FilesApp({ onBack }: FilesAppProps) {
         folder: 'Downloads',
       })
     }
+    if (inv.flags.block04_unknown_recording_unlocked) {
+      extra.push({
+        id: 'mf-chk-unk',
+        label: 'CHK_UNK.m4a',
+        folder: 'Downloads',
+      })
+    }
     return [...base, ...extra]
-  }, [base, phoneDevice, inv.flags.block03_reanalysis_unlocked])
+  }, [
+    base,
+    phoneDevice,
+    inv.flags.block03_reanalysis_unlocked,
+    inv.flags.block04_unknown_recording_unlocked,
+  ])
 
   const folders = useMemo(() => {
     const set = new Set(items.map((i) => i.folder ?? 'Outros'))
@@ -70,10 +83,14 @@ export function FilesApp({ onBack }: FilesAppProps) {
 function FileRow({ item }: { item: PhoneMediaItem }) {
   const inv = useInvestigation()
   const src = item.spriteId ? contactAvatarSrc(item.spriteId) : undefined
-  const actionable =
+  const maraltoAction =
     item.id === 'mf-rec-maralto' &&
     inv.flags.block03_reanalysis_unlocked &&
     !inv.flags.block03_maralto_recording_found
+  const unkAction =
+    item.id === 'mf-chk-unk' &&
+    inv.flags.block04_unknown_recording_unlocked &&
+    !inv.flags.block04_unknown_recording_found
 
   return (
     <li className="ios-files__row">
@@ -84,7 +101,7 @@ function FileRow({ item }: { item: PhoneMediaItem }) {
           📄
         </span>
       )}
-      {actionable ? (
+      {maraltoAction ? (
         <button
           type="button"
           className="ios-files__action"
@@ -94,10 +111,23 @@ function FileRow({ item }: { item: PhoneMediaItem }) {
           {item.label}
           <span className="ios-files__hint">Reanalisar</span>
         </button>
+      ) : unkAction ? (
+        <button
+          type="button"
+          className="ios-files__action"
+          data-testid="mariana-unknown-file"
+          onClick={() => onUnknownRecordingFound()}
+        >
+          {item.label}
+          <span className="ios-files__hint">Exportar para bancada</span>
+        </button>
       ) : (
         <span className="ios-files__name">
           {item.label}
           {item.id === 'mf-rec-maralto' && inv.flags.block03_maralto_recording_found ? (
+            <span className="ios-files__hint">Exportado</span>
+          ) : null}
+          {item.id === 'mf-chk-unk' && inv.flags.block04_unknown_recording_found ? (
             <span className="ios-files__hint">Exportado</span>
           ) : null}
         </span>

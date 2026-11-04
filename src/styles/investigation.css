@@ -121,6 +121,8 @@
   flex-direction: column;
   gap: 0.3rem;
   max-width: 230px;
+  max-height: min(90vh, 42rem);
+  overflow-y: auto;
   border: 1px solid rgba(121, 194, 189, 0.3);
 }
 

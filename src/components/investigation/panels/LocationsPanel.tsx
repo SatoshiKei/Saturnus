@@ -110,12 +110,30 @@ export function LocationsMap({ onClose }: { onClose: () => void }) {
                       openLocationScene('vertice')
                       return
                     }
+                    if (place.id === 'presidio') {
+                      onClose()
+                      openLocationScene('andre')
+                      return
+                    }
                     setNote('A cena deste local ainda não está disponível nesta versão.')
                   }}
                 >
                   {place.status === 'visited' ? 'Revisitar' : 'Visitar'}
                 </button>
               )}
+              {place.id === 'presidio' && place.status === 'visited' && !inv.flags.block04_andre_interview_done ? (
+                <button
+                  type="button"
+                  className="lm-visit"
+                  data-testid="visit-presidio-retry"
+                  onClick={() => {
+                    onClose()
+                    openLocationScene('andre')
+                  }}
+                >
+                  Continuar visita
+                </button>
+              ) : null}
               {place.id !== 'delegacia' && place.status === 'known' ? (
                 <p className="lm-card__hint">Ainda não há motivo para ir até lá.</p>
               ) : null}

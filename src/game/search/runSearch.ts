@@ -2,7 +2,11 @@ import { seedSearchRules } from '../../data/game/seedStory'
 import type { InvestigationState } from '../types'
 
 function normalizeTerm(t: string) {
-  return t.trim().toLowerCase()
+  return t
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
 }
 
 export function runPoliceSearch(query: string, _state: InvestigationState) {
