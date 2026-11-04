@@ -34,8 +34,12 @@
   background: #000;
   font-family: var(--font-mono);
   color: #cfd8d2;
-  cursor: pointer;
-  animation: tr-in 360ms ease both;
+  animation: tr-in 420ms ease both;
+  transition: opacity 700ms ease;
+}
+.tr-intro--out {
+  opacity: 0;
+  pointer-events: none;
 }
 @keyframes tr-in {
   from {
@@ -96,78 +100,22 @@
   color: #e2dfd5;
 }
 
+/* Reflexão: reusa a casca NVL; fundo de cena sob o véu */
 .tr-refl {
-  position: absolute;
-  inset: 0;
   z-index: 110;
-  display: flex;
-  justify-content: center;
   background: #0b0e11 center / cover no-repeat;
-  animation: tr-in 500ms ease both;
 }
-.tr-refl__veil {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.84));
-}
-.tr-refl__column {
-  position: relative;
-  width: min(calc(var(--u) * 760px), 86%);
-  max-height: 100%;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: calc(var(--u) * 20px);
-  padding: calc(var(--u) * 60px) 0;
-  font-family: var(--font-paper);
-  color: #dcd8cc;
-}
-.tr-refl__who {
-  margin: 0;
-  font-family: var(--font-ui);
-  font-size: calc(var(--u) * 13px);
-  letter-spacing: 0.3em;
-  color: #c8963e;
+.tr-refl .vn-nvl__text {
+  font-style: italic;
 }
 .tr-refl__block {
-  margin: 0;
-  font-size: calc(var(--u) * 24px);
-  line-height: 1.55;
-  font-style: italic;
-  overflow-wrap: anywhere;
-  animation: tr-block 600ms ease both;
+  animation: tr-block 500ms ease both;
 }
 @keyframes tr-block {
   from {
     opacity: 0;
     transform: translateY(6px);
   }
-}
-.tr-refl__foot {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: calc(var(--u) * 12px);
-}
-.tr-refl__hint {
-  font-family: var(--font-ui);
-  font-size: calc(var(--u) * 12px);
-  letter-spacing: 0.1em;
-  color: #6f7a80;
-}
-.tr-refl__done {
-  padding: calc(var(--u) * 8px) calc(var(--u) * 20px);
-  font-family: var(--font-ui);
-  font-size: calc(var(--u) * 14px);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: #e2dfd5;
-  background: transparent;
-  border: 1px solid rgba(226, 223, 213, 0.35);
-  cursor: pointer;
-}
-.tr-refl__done:hover {
-  border-color: #c8963e;
 }
 
 /* fade de volta à mesa (preto → cena) */
@@ -193,7 +141,6 @@
     transition-duration: 1ms;
   }
   .tr-intro,
-  .tr-refl,
   .tr-refl__block,
   .tr-return {
     animation: none;

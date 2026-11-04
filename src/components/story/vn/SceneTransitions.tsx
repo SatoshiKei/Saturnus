@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useRef, useState, type ReactNode, type WheelEvent } from 'react'
 import { assetPath } from '../../../lib/assetPath'
 import { getInvestigationState, setFlag } from '../../../game/state/investigationStore'
 import { reflectionForScene, type ReflectionDef } from '../../../data/reflections'
 import { sceneIntros, type SceneId } from '../../../data/sceneIntros'
 import { playSfx } from '../../../lib/sfx'
 import '../../../styles/scene-transitions.css'
+import '../../../styles/visual-novel.css'
 
 function prefersReducedMotion() {
   return typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
@@ -12,71 +13,106 @@ function prefersReducedMotion() {
 
 /* ───────────────────────── Abertura: cabeçalho digitado ───────────────────────── */
 
-const CHAR_MS = 16
-const LINE_PAUSE_MS = 160
+const CHAR_MS = 55
+const LINE_PAUSE_MS = 480
+const INTRO_HOLD_MS = 900
+const INTRO_FADE_MS = 700
 
 export function TerminalIntro({
   lines,
   onDone,
+  onReveal,
   ambience,
 }: {
   lines: string[]
   onDone: () => void
+  /** Monta a cena sob o fade preto (transição intro → VN). */
+  onReveal?: () => void
   ambience?: 'scene-in' | 'ambience-hush'
 }) {
   const reduced = prefersReducedMotion()
-  const [typed, setTyped] = useState<string[]>(() => (reduced ? lines : []))
+  const [typed, setTyped] = useState<string[]>([])
+  const [fading, setFading] = useState(false)
   const doneRef = useRef(false)
+  // Ref estável: o efeito de digitação NÃO pode depender de onDone (senão re-render do pai
+  // cancela o timer final e a intro trava com o texto já completo, sem transição).
+  const onDoneRef = useRef(onDone)
+  const onRevealRef = useRef(onReveal)
+  onDoneRef.current = onDone
+  onRevealRef.current = onReveal
 
-  const finish = useCallback(() => {
+  const finish = useCallback((skipped = false) => {
     if (doneRef.current) return
     doneRef.current = true
-    onDone()
-  }, [onDone])
+    setTyped(lines)
+    setFading(true)
+    onRevealRef.current?.()
+    playSfx(skipped ? 'ui' : 'fade')
+    window.setTimeout(() => onDoneRef.current(), reduced ? 200 : INTRO_FADE_MS)
+  }, [lines, reduced])
 
   useEffect(() => {
     if (ambience) playSfx(ambience)
   }, [ambience])
 
   useEffect(() => {
-    if (reduced) {
-      const t = window.setTimeout(finish, 700)
-      return () => window.clearTimeout(t)
-    }
     let cancelled = false
     let timer = 0
+    doneRef.current = false
+    setFading(false)
+
+    if (reduced) {
+      setTyped(lines)
+      timer = window.setTimeout(() => {
+        if (!cancelled) finish(false)
+      }, 900)
+      return () => {
+        cancelled = true
+        window.clearTimeout(timer)
+      }
+    }
+
+    setTyped([])
     const run = (li: number, ci: number) => {
-      if (cancelled) return
+      if (cancelled || doneRef.current) return
       if (li >= lines.length) {
-        timer = window.setTimeout(finish, 420)
+        timer = window.setTimeout(() => {
+          if (!cancelled && !doneRef.current) finish(false)
+        }, INTRO_HOLD_MS)
         return
       }
-      const line = lines[li]
+      const line = lines[li] ?? ''
       if (ci > line.length) {
         timer = window.setTimeout(() => run(li + 1, 0), LINE_PAUSE_MS)
         return
       }
       setTyped((prev) => {
         const next = prev.slice(0, li)
+        while (next.length < li) next.push('')
         next[li] = line.slice(0, ci)
         return next
       })
-      if (ci > 0 && ci % 3 === 0) playSfx('keyboard')
+      // Clique a cada 2 letras — audível sem saturar o Web Audio.
+      if (ci > 0 && ci % 2 === 0) playSfx('keyboard')
       timer = window.setTimeout(() => run(li, ci + 1), CHAR_MS)
     }
-    run(0, 0)
+    // Pequeno atraso para o fade-in da tela preta antes da primeira letra.
+    timer = window.setTimeout(() => run(0, 1), 380)
+
     return () => {
       cancelled = true
       window.clearTimeout(timer)
     }
-  }, [lines, reduced, finish])
+    // Apenas o conteúdo das linhas; finish/onDone ficam fora de propósito.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lines.join('\n')])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape' || e.key === ' ' || e.key === 'Enter') {
         e.preventDefault()
         e.stopPropagation()
-        finish()
+        finish(true)
       }
     }
     window.addEventListener('keydown', onKey, true)
@@ -84,12 +120,16 @@ export function TerminalIntro({
   }, [finish])
 
   return (
-    <div className="tr-intro" data-testid="vn-intro" onClick={finish} role="presentation">
+    <div
+      className={`tr-intro${fading ? ' tr-intro--out' : ''}`}
+      data-testid="vn-intro"
+      role="presentation"
+    >
       <div className="tr-intro__lines" aria-label={lines.join(', ')}>
         {typed.map((l, i) => (
           <p key={i} className={`tr-intro__line tr-intro__line--${i === 0 ? 'date' : i === 1 ? 'time' : 'place'}`}>
             {l}
-            {i === typed.length - 1 ? <span className="tr-intro__caret" aria-hidden /> : null}
+            {!fading && i === typed.length - 1 ? <span className="tr-intro__caret" aria-hidden /> : null}
           </p>
         ))}
       </div>
@@ -97,10 +137,7 @@ export function TerminalIntro({
         type="button"
         className="tr-skip"
         data-testid="vn-intro-skip"
-        onClick={(e) => {
-          e.stopPropagation()
-          finish()
-        }}
+        onClick={() => finish(true)}
       >
         Pular
       </button>
@@ -108,7 +145,9 @@ export function TerminalIntro({
   )
 }
 
-/* ───────────────────────── Modo Reflexão (NVL interno de Augusto) ───────────────────────── */
+/* ───────────────────────── Modo Reflexão (mesmo padrão NVL das cenas VN) ───────────────────────── */
+
+const REFL_AUTO_MS = 1600
 
 export function ReflectionView({
   blocks,
@@ -121,80 +160,100 @@ export function ReflectionView({
 }) {
   const [shown, setShown] = useState(1)
   const atEnd = shown >= blocks.length
-  const scrollRef = useRef<HTMLDivElement>(null)
+  const wheelLock = useRef(0)
+  const doneRef = useRef(false)
+
+  const finish = useCallback(() => {
+    if (doneRef.current) return
+    doneRef.current = true
+    onDone()
+  }, [onDone])
 
   const advance = useCallback(() => {
+    if (doneRef.current) return
     if (shown < blocks.length) {
       playSfx('ui')
       setShown((n) => n + 1)
     }
   }, [shown, blocks.length])
 
+  const rewind = useCallback(() => {
+    if (doneRef.current) return
+    if (shown > 1) setShown((n) => Math.max(1, n - 1))
+  }, [shown])
+
+  // Último bloco: sem botão nem hint — fade automático de volta à mesa.
+  useEffect(() => {
+    if (!atEnd) return
+    const t = window.setTimeout(finish, REFL_AUTO_MS)
+    return () => window.clearTimeout(t)
+  }, [atEnd, finish])
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === ' ' || e.key === 'Enter' || e.key === 'ArrowDown') {
         e.preventDefault()
         e.stopPropagation()
-        if (atEnd) onDone()
+        if (atEnd) finish()
         else advance()
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault()
+        e.stopPropagation()
+        rewind()
       } else if (e.key === 'Escape') {
         e.preventDefault()
         e.stopPropagation()
-        onDone()
+        finish()
       }
     }
     window.addEventListener('keydown', onKey, true)
     return () => window.removeEventListener('keydown', onKey, true)
-  }, [advance, atEnd, onDone])
+  }, [advance, atEnd, finish, rewind])
 
-  useEffect(() => {
-    const el = scrollRef.current
-    if (el) el.scrollTop = el.scrollHeight
-  }, [shown])
+  const onWheel = (e: WheelEvent) => {
+    const now = Date.now()
+    if (now - wheelLock.current < 120) return
+    wheelLock.current = now
+    e.preventDefault()
+    if (e.deltaY > 0) {
+      if (atEnd) finish()
+      else advance()
+    } else if (e.deltaY < 0) {
+      rewind()
+    }
+  }
 
   return (
     <div
-      className="tr-refl"
+      className="vn-nvl tr-refl"
       data-testid="reflection-view"
       style={background ? { backgroundImage: `url(${assetPath(background)})` } : undefined}
-      onClick={() => (atEnd ? undefined : advance())}
+      onClick={() => {
+        if (!atEnd) advance()
+      }}
+      onWheel={onWheel}
       role="presentation"
     >
-      <div className="tr-refl__veil" aria-hidden />
+      <div className="vn-nvl__veil" aria-hidden />
       <button
         type="button"
         className="tr-skip"
         data-testid="reflection-skip"
         onClick={(e) => {
           e.stopPropagation()
-          onDone()
+          finish()
         }}
       >
         Pular
       </button>
-      <div className="tr-refl__column" ref={scrollRef}>
-        <p className="tr-refl__who">AUGUSTO</p>
-        {blocks.slice(0, shown).map((b, i) => (
-          <p key={i} className="tr-refl__block">
-            {b}
-          </p>
-        ))}
-        <div className="tr-refl__foot">
-          {atEnd ? (
-            <button
-              type="button"
-              className="tr-refl__done"
-              data-testid="reflection-done"
-              onClick={(e) => {
-                e.stopPropagation()
-                onDone()
-              }}
-            >
-              Continuar
-            </button>
-          ) : (
-            <span className="tr-refl__hint">Clique ou Espaço para continuar</span>
-          )}
+      <div className="vn-nvl__column">
+        <div className="vn-nvl__page">
+          {blocks.slice(0, shown).map((b, i) => (
+            <div key={i} className="vn-nvl__block tr-refl__block">
+              {i === 0 ? <p className="vn-nvl__speaker">AUGUSTO</p> : null}
+              <p className="vn-nvl__text">{b}</p>
+            </div>
+          ))}
         </div>
       </div>
     </div>
@@ -228,6 +287,8 @@ export function SceneRunner({
   const intro = sceneIntros[sceneId]
   const [phase, setPhase] = useState<Phase>('intro')
   const [black, setBlack] = useState(false)
+  /** Cena montada sob a intro durante o fade de saída. */
+  const [sceneReady, setSceneReady] = useState(false)
   const timers = useRef<number[]>([])
 
   useEffect(
@@ -238,10 +299,15 @@ export function SceneRunner({
   )
 
   const startOutro = useCallback(() => {
-    setPhase('outro')
     setBlack(true)
     playSfx('scene-out')
-    timers.current.push(window.setTimeout(onReturn, FADE_MS + HOLD_MS))
+    // Mantém a reflexão sob o fade preto; só troca a fase depois do escurecer.
+    timers.current.push(
+      window.setTimeout(() => {
+        setPhase('outro')
+        onReturn()
+      }, FADE_MS + HOLD_MS),
+    )
   }, [onReturn])
 
   const closeScene = useCallback(() => {
@@ -254,13 +320,21 @@ export function SceneRunner({
     startOutro()
   }, [reflection, sceneId, startOutro])
 
+  const revealScene = useCallback(() => setSceneReady(true), [])
+  const beginScene = useCallback(() => setPhase('scene'), [])
+
   const reflectionDef = reflection === undefined ? reflectionForScene(sceneId) : reflection
 
   return (
     <div className="tr-runner" data-testid="scene-runner" data-phase={phase}>
-      {phase !== 'intro' ? renderScene(closeScene) : null}
+      {phase !== 'intro' || sceneReady ? renderScene(closeScene) : null}
       {phase === 'intro' ? (
-        <TerminalIntro lines={intro.lines} ambience={intro.ambience} onDone={() => setPhase('scene')} />
+        <TerminalIntro
+          lines={intro.lines}
+          ambience={intro.ambience}
+          onReveal={revealScene}
+          onDone={beginScene}
+        />
       ) : null}
       {phase === 'reflection' && reflectionDef ? (
         <ReflectionView

@@ -67,7 +67,10 @@ const recipes: Record<SfxId, Note[]> = {
   ],
   steps: [0, 0.34, 0.68, 1.02].map((t) => ({ t, d: 0.09, noise: true, bp: 260, g: 0.22 })),
   paper: [{ t: 0, d: 0.22, noise: true, bp: 3200, g: 0.16 }],
-  keyboard: [0, 0.07, 0.15, 0.2, 0.31].map((t) => ({ t, d: 0.03, noise: true, bp: 2400, g: 0.14 })),
+  keyboard: [
+    { t: 0, d: 0.022, f: 2350, type: 'square', g: 0.055 },
+    { t: 0, d: 0.016, noise: true, bp: 3200, g: 0.1 },
+  ],
   chair: [{ t: 0, d: 0.28, noise: true, bp: 500, g: 0.22 }],
   pickup: [
     { t: 0, d: 0.05, noise: true, bp: 900, g: 0.3 },

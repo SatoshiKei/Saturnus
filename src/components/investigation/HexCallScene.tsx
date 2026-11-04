@@ -72,18 +72,25 @@ export function HexCallScene({ onFinish }: { onFinish: () => void }) {
     if (phase === 'reflection') startAmbientPhones()
   }, [phase])
 
+  const [fading, setFading] = useState(false)
+
   const done = () => {
     if (finished.current) return
     finished.current = true
-    stopLoop('ambient-phones')
-    onHexCallsPreserved()
-    onFinish()
+    setFading(true)
+    playSfx('scene-out')
+    window.setTimeout(() => {
+      stopLoop('ambient-phones')
+      onHexCallsPreserved()
+      onFinish()
+    }, 950)
   }
 
   if (phase === 'reflection' && refl) {
     return (
       <div className="hexcall-overlay" data-testid="hex-call-scene" data-phase="reflection">
         <ReflectionView blocks={refl.blocks} background={refl.background} onDone={done} />
+        <div className={`tr-fade${fading ? ' tr-fade--on' : ''}`} aria-hidden />
       </div>
     )
   }

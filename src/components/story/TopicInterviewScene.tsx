@@ -1,10 +1,13 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { assetPath } from '../../lib/assetPath'
-import { setFlag } from '../../game/state/investigationStore'
+import { getInvestigationState, setFlag } from '../../game/state/investigationStore'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { vnLinesThrough } from '../../lib/vnBeatLog'
 import { VisualNovelDialog, VNSceneShell } from './VisualNovelDialog'
 import '../../styles/visual-novel.css'
+
+/** Breve batida na fala final antes da reflexão / fade. */
+const IDLE_AUTO_MS = 1400
 
 export type TopicBeat = { speaker?: string; text: string; portrait?: string }
 
@@ -40,6 +43,13 @@ export function TopicInterviewScene<T extends string>({ config, onClose }: Props
   const inv = useInvestigation()
   const [activeTopic, setActiveTopic] = useState<T | null>(null)
   const [beatIndex, setBeatIndex] = useState(0)
+  const closedRef = useRef(false)
+
+  const leave = useCallback(() => {
+    if (closedRef.current) return
+    closedRef.current = true
+    onClose()
+  }, [onClose])
 
   const doneTopics = useMemo(() => {
     const s = new Set<T>()
@@ -55,19 +65,28 @@ export function TopicInterviewScene<T extends string>({ config, onClose }: Props
       setFlag(config.flags[topic], true)
       setActiveTopic(null)
       setBeatIndex(0)
-      const nextDone = new Set(doneTopics)
-      nextDone.add(topic)
-      if (config.topicIds.every((id) => nextDone.has(id))) {
-        if (!inv.flags[config.doneFlag]) config.finish()
-        onClose()
+      // Lê a store na hora — `doneTopics` do render pode estar defasado e impedir o fechamento.
+      const flags = getInvestigationState().flags
+      const allDone = config.topicIds.every((id) => flags[config.flags[id]])
+      if (allDone) {
+        if (!flags[config.doneFlag]) config.finish()
+        leave()
       }
     },
-    [config, doneTopics, inv.flags, onClose],
+    [config, leave],
   )
 
   const pending = config.topicIds.filter((id) => !doneTopics.has(id))
   const beats = activeTopic ? config.beats[activeTopic] : []
   const currentBeat = activeTopic ? beats[beatIndex] : null
+  const idle = !activeTopic && pending.length === 0
+
+  // Rede de segurança: sem assuntos, não fica preso pedindo clique — vai à reflexão / fade.
+  useEffect(() => {
+    if (!idle) return
+    const t = window.setTimeout(leave, IDLE_AUTO_MS)
+    return () => window.clearTimeout(t)
+  }, [idle, leave])
 
   const logLines = useMemo(
     () => (activeTopic ? vnLinesThrough(beats, beatIndex, () => config.portrait) : []),
@@ -77,7 +96,7 @@ export function TopicInterviewScene<T extends string>({ config, onClose }: Props
   return (
     <VNSceneShell
       title={config.title}
-      onClose={onClose}
+      onClose={leave}
       testId={config.testId}
       backgroundStyle={{
         backgroundImage: `linear-gradient(180deg, rgba(0,0,0,.28), rgba(0,0,0,${dark})), url(${bg})`,
@@ -95,12 +114,7 @@ export function TopicInterviewScene<T extends string>({ config, onClose }: Props
             }}
           />
         ) : (
-          <VisualNovelDialog
-            speaker="Augusto"
-            text={config.idleLine}
-            onContinue={onClose}
-            continueLabel="Encerrar"
-          />
+          <VisualNovelDialog speaker="Augusto" text={config.idleLine} />
         )
       ) : null}
 
