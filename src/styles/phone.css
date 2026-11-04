@@ -135,7 +135,17 @@
   width: 24px;
 }
 
-.phone-shell__device:has(.wa-shell, .wa-chat-view, .wa-app, .phone-app-recents, .notes-app, .calendar-app) .phone-status {
+.phone-shell__device:has(
+  .wa-shell,
+  .wa-chat-view,
+  .wa-app,
+  .phone-app-recents,
+  .notes-app,
+  .calendar-app,
+  .ios-files,
+  .ios-photos,
+  .diary-app
+) .phone-status {
   color: #111;
 }
 
@@ -385,7 +395,8 @@
 .ios-app-header--files {
   background: #f2f2f7;
   border-bottom: 0;
-  padding-bottom: 4px;
+  /* Espaço extra sob o Dynamic Island + respiro antes do seletor de pastas */
+  padding: calc(var(--phone-inset-top, 47px) + 14px) 16px 8px;
 }
 
 .ios-app-header--calendar {

@@ -63,15 +63,17 @@ export function TopicInterviewScene<T extends string>({ config, onClose }: Props
   const completeTopic = useCallback(
     (topic: T) => {
       setFlag(config.flags[topic], true)
-      setActiveTopic(null)
-      setBeatIndex(0)
       // Lê a store na hora — `doneTopics` do render pode estar defasado e impedir o fechamento.
       const flags = getInvestigationState().flags
       const allDone = config.topicIds.every((id) => flags[config.flags[id]])
       if (allDone) {
         if (!flags[config.doneFlag]) config.finish()
+        // Vai direto à Reflexão (NVL) — não passa pela fala idle que pedia clique.
         leave()
+        return
       }
+      setActiveTopic(null)
+      setBeatIndex(0)
     },
     [config, leave],
   )

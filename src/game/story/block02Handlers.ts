@@ -45,7 +45,12 @@ export function finishVerticeArchive() {
 
 export function finishLucasInterview() {
   const s = getInvestigationState()
-  if (s.flags.block02_lucas_interview_done) return
+  // Sempre marca o local como visitado (também repara save antigo com pino ainda visitável).
+  const markVisited = { type: 'unlockLocation' as const, id: 'universidade', status: 'visited' as const }
+  if (s.flags.block02_lucas_interview_done) {
+    if (s.locations.universidade?.status === 'visitAvailable') dispatchActions([markVisited])
+    return
+  }
   dispatchActions([
     { type: 'setFlag', id: 'block02_lucas_interview_done', value: true },
     { type: 'addEvidence', id: 'lucas_knew_elisa' },
@@ -59,5 +64,6 @@ export function finishLucasInterview() {
       evidenceId: 'mariana_andre_innocence',
       role: 'support',
     },
+    markVisited,
   ])
 }

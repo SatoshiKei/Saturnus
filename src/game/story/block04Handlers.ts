@@ -4,7 +4,11 @@ import type { StoryActionRef } from '../types'
 
 export function finishSamuelInterview() {
   const s = getInvestigationState()
-  if (s.flags.block04_samuel_interview_done) return
+  const markVisited = { type: 'unlockLocation' as const, id: 'samuel-casa', status: 'visited' as const }
+  if (s.flags.block04_samuel_interview_done) {
+    if (s.locations['samuel-casa']?.status === 'visitAvailable') dispatchActions([markVisited])
+    return
+  }
   dispatchActions([
     { type: 'setFlag', id: 'block04_samuel_interview_done', value: true },
     { type: 'discoverPerson', id: 'samuel', status: 'interviewed' },
@@ -23,6 +27,7 @@ export function finishSamuelInterview() {
       evidenceId: 'samuel_confirms_morsa',
       role: 'support',
     },
+    markVisited,
   ])
 }
 

@@ -100,9 +100,16 @@
   color: #e2dfd5;
 }
 
+/* Camada acima de .vn-scene (z-index 1) e do ADV (z-index 95) */
+.tr-refl-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 200;
+  pointer-events: auto;
+}
 /* Reflexão: reusa a casca NVL; fundo de cena sob o véu */
-.tr-refl {
-  z-index: 110;
+.tr-refl.vn-nvl {
+  z-index: 200;
   background: #0b0e11 center / cover no-repeat;
 }
 .tr-refl .vn-nvl__text {

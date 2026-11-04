@@ -1,11 +1,23 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { seedLocations } from '../../../data/game/seedLocations'
 import { useInvestigation } from '../../../game/hooks/useInvestigation'
-import type { Evidence, Location } from '../../../game/types'
+import { dispatchActions } from '../../../game/state/investigationStore'
+import type { Evidence, Location, StoryActionRef } from '../../../game/types'
 import { assetPath } from '../../../lib/assetPath'
 import { locationStatusLabel } from '../../../lib/labels'
 import { useGameHub, type LocationSceneId } from '../../../app/GameHubContext'
 import { GamePanel } from '../../ui/GamePanel'
+
+/** Cena concluída → pino deixa de ser visitável (repara saves antigos). */
+const SCENE_DONE_LOCATION: { flag: string; locationId: string }[] = [
+  { flag: 'block01_hospital_done', locationId: 'hospital' },
+  { flag: 'block02_vertice_visit_done', locationId: 'vertice' },
+  { flag: 'block02_lucas_interview_done', locationId: 'universidade' },
+  { flag: 'block03_nico_interview_done', locationId: 'titan' },
+  { flag: 'block03_livia_interview_done', locationId: 'radio' },
+  { flag: 'block04_samuel_interview_done', locationId: 'samuel-casa' },
+  { flag: 'block04_andre_interview_done', locationId: 'presidio' },
+]
 
 /** posição do marcador: usa o estado salvo ou, em saves antigos, o seed */
 function markerPos(l: Location) {
@@ -34,6 +46,16 @@ export function LocationsMap({ onClose }: { onClose: () => void }) {
   const [sel, setSel] = useState<string | null>(null)
   const [note] = useState<string | null>(null)
   const place = places.find((l) => l.id === sel) ?? null
+
+  useEffect(() => {
+    const fixes: StoryActionRef[] = []
+    for (const row of SCENE_DONE_LOCATION) {
+      if (!inv.flags[row.flag]) continue
+      if (inv.locations[row.locationId]?.status !== 'visitAvailable') continue
+      fixes.push({ type: 'unlockLocation', id: row.locationId, status: 'visited' })
+    }
+    if (fixes.length) dispatchActions(fixes)
+  }, [inv.flags, inv.locations])
 
   const people = place
     ? (place.relatedPersonIds.map((id) => inv.people[id]?.name).filter(Boolean) as string[])
@@ -96,7 +118,7 @@ export function LocationsMap({ onClose }: { onClose: () => void }) {
 
               {place.id === 'delegacia' ? (
                 <p className="lm-card__here">Você está aqui.</p>
-              ) : sceneOf(place) && (place.status === 'visitAvailable' || place.status === 'visited') ? (
+              ) : sceneOf(place) && place.status === 'visitAvailable' ? (
                 <button
                   type="button"
                   className="lm-visit"
@@ -108,8 +130,10 @@ export function LocationsMap({ onClose }: { onClose: () => void }) {
                     openLocationScene(scene)
                   }}
                 >
-                  {place.status === 'visited' ? 'Voltar até lá' : 'Ir até lá'}
+                  Ir até lá
                 </button>
+              ) : place.status === 'visited' ? (
+                <p className="lm-card__hint">Visita concluída. Não há motivo para voltar agora.</p>
               ) : (
                 <p className="lm-card__hint">Local anotado. Ainda não há motivo para ir até lá.</p>
               )}

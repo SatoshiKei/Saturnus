@@ -4,7 +4,11 @@ import type { StoryActionRef } from '../types'
 /** Fim da conversa com Nico (a localização acontece por documento + ligação, ver `callScripts`). */
 export function finishNicoInterview() {
   const s = getInvestigationState()
-  if (s.flags.block03_nico_interview_done) return
+  const markVisited = { type: 'unlockLocation' as const, id: 'titan', status: 'visited' as const }
+  if (s.flags.block03_nico_interview_done) {
+    if (s.locations.titan?.status === 'visitAvailable') dispatchActions([markVisited])
+    return
+  }
   dispatchActions([
     { type: 'setFlag', id: 'block03_nico_interview_done', value: true },
     { type: 'discoverPerson', id: 'nico', status: 'interviewed' },
@@ -19,6 +23,7 @@ export function finishNicoInterview() {
       label: 'Comparar as duas gravações da Noite X (bancada de áudio)',
     },
     { type: 'setFlag', id: 'block03_janus_available', value: true },
+    markVisited,
   ])
 }
 
@@ -80,7 +85,11 @@ export function onMarianaMaraltoRecordingFound() {
 
 export function finishLiviaInterview() {
   const s = getInvestigationState()
-  if (s.flags.block03_livia_interview_done) return
+  const markVisited = { type: 'unlockLocation' as const, id: 'radio', status: 'visited' as const }
+  if (s.flags.block03_livia_interview_done) {
+    if (s.locations.radio?.status === 'visitAvailable') dispatchActions([markVisited])
+    return
+  }
   dispatchActions([
     { type: 'setFlag', id: 'block03_livia_interview_done', value: true },
     { type: 'discoverPerson', id: 'livia', status: 'interviewed' },
@@ -94,6 +103,7 @@ export function finishLiviaInterview() {
       id: 'task_saturnalia',
       label: 'Reconstruir a transmissão radiofônica (bancada de áudio)',
     },
+    markVisited,
   ])
 }
 

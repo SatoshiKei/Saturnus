@@ -325,9 +325,12 @@ export function SceneRunner({
 
   const reflectionDef = reflection === undefined ? reflectionForScene(sceneId) : reflection
 
+  const showInterview = phase === 'scene' || (phase === 'intro' && sceneReady)
+
   return (
     <div className="tr-runner" data-testid="scene-runner" data-phase={phase}>
-      {phase !== 'intro' || sceneReady ? renderScene(closeScene) : null}
+      {/* Durante a reflexão a entrevista sai de cena — senão o ADV fica por cima do NVL. */}
+      {showInterview ? renderScene(closeScene) : null}
       {phase === 'intro' ? (
         <TerminalIntro
           lines={intro.lines}
@@ -337,14 +340,16 @@ export function SceneRunner({
         />
       ) : null}
       {phase === 'reflection' && reflectionDef ? (
-        <ReflectionView
-          blocks={reflectionDef.blocks}
-          background={reflectionDef.background}
-          onDone={() => {
-            setFlag(`${reflectionDef.id}_seen`, true)
-            startOutro()
-          }}
-        />
+        <div className="tr-refl-layer" data-testid="reflection-layer">
+          <ReflectionView
+            blocks={reflectionDef.blocks}
+            background={reflectionDef.background}
+            onDone={() => {
+              setFlag(`${reflectionDef.id}_seen`, true)
+              startOutro()
+            }}
+          />
+        </div>
       ) : null}
       <div className={`tr-fade${black ? ' tr-fade--on' : ''}`} data-testid="vn-fade" aria-hidden />
     </div>

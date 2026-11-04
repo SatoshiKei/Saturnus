@@ -215,10 +215,15 @@
   grid-auto-flow: column;
   grid-auto-columns: 1fr;
   gap: 2px;
-  margin: 0 16px 10px;
+  margin: 12px 16px 12px;
   padding: 3px;
   background: #e5e5ea;
   border-radius: 9px;
+  flex-shrink: 0;
+}
+
+.ios-app-header--files h1 {
+  margin-bottom: 2px;
 }
 
 .ios-files__folder {
