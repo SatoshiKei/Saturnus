@@ -24,11 +24,6 @@ export function CallList({ variant, device = 'augusto' }: CallListProps) {
 
   return (
     <div className={`wa-calls wa-calls--${variant}`} data-testid="call-history">
-      {locked ? (
-        <p className="wa-calls__banner" role="status">
-          Ligações bloqueadas nesta fase — histórico apenas para consulta.
-        </p>
-      ) : null}
       <ul className="wa-calls__list">
         {log.map((entry) => {
           const contact = contactFor(entry.contactId)

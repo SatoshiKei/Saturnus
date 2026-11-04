@@ -29,6 +29,10 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
     null,
   )
   const [composerHint, setComposerHint] = useState<string | null>(null)
+  /** Campo de mensagem aberto: só então as opções cosméticas aparecem. */
+  const [composing, setComposing] = useState(false)
+  /** Libera clique nas opções só após o mouseup do toque no campo (evita escolher no mesmo gesto). */
+  const [optionsReady, setOptionsReady] = useState(false)
   /** Quantas respostas ainda estão “sendo digitadas” (ocultas até o fim do atraso). */
   const [pendingReplies, setPendingReplies] = useState(0)
   const messagesRef = useRef<HTMLDivElement>(null)
@@ -38,6 +42,22 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
     if (!chat) return
     if (chatId === 'chat-julia') onJuliaChatReviewed()
   }, [chatId, chat])
+
+  useEffect(() => {
+    setComposing(false)
+    setOptionsReady(false)
+    setComposerHint(null)
+  }, [chatId])
+
+  useEffect(() => {
+    if (!composing) {
+      setOptionsReady(false)
+      return
+    }
+    // Espera o fim do gesto atual antes de aceitar clique nas opções.
+    const t = window.setTimeout(() => setOptionsReady(true), 180)
+    return () => window.clearTimeout(t)
+  }, [composing])
 
   useEffect(
     () => () => {
@@ -103,6 +123,8 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
             },
       )
       playSfx('msg-out')
+      setComposing(false)
+      setOptionsReady(false)
       appendChatMessages(chatId, [mine, ...replies], progress.step + 1, false)
       setPendingReplies(replies.length)
       replies.forEach((r, j) => {
@@ -129,7 +151,8 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
   const contact = contactById[chat.contactId]
   const title = chat.isGroup ? (chat.groupTitle ?? contact.name) : contact.name
   const currentStep = scriptChat && script && !progress.done ? script.steps[progress.step] : undefined
-  const showOptions = Boolean(currentStep) && pendingReplies === 0
+  const canCompose = Boolean(currentStep) && pendingReplies === 0
+  const showOptions = canCompose && composing
   const typing = pendingReplies > 0
 
   return (
@@ -217,13 +240,21 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
 
       <footer className="wa-chat-view__footer">
         {showOptions && currentStep ? (
-          <div className="wa-script-options" data-testid="chat-script-options" role="group" aria-label="Escrever mensagem">
+          <div
+            className="wa-script-options"
+            data-testid="chat-script-options"
+            data-ready={optionsReady}
+            role="group"
+            aria-label="Escrever mensagem"
+          >
+            <p className="wa-script-options__label">Escrever</p>
             {currentStep.options.map((opt, i) => (
               <button
                 key={opt}
                 type="button"
                 className="wa-script-options__btn"
                 data-testid={`chat-option-${i}`}
+                disabled={!optionsReady}
                 onClick={() => choose(i)}
               >
                 {opt}
@@ -233,13 +264,19 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
         ) : null}
         {composerHint ? <p className="wa-composer-hint">{composerHint}</p> : null}
         <ChatComposer
+          composeAvailable={canCompose}
+          composing={composing}
+          onComposeOpen={() => {
+            setComposerHint(null)
+            setComposing(true)
+          }}
           onBlockedAction={() =>
             setComposerHint(
               !scriptChat
                 ? 'Envio indisponível nesta fase da investigação.'
-                : showOptions
-                  ? 'Escolha como escrever a mensagem acima.'
-                  : 'Aguarde a resposta…',
+                : typing
+                  ? 'Aguarde a resposta…'
+                  : 'Toque em Mensagem para escrever.',
             )
           }
         />

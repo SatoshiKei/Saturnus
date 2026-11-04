@@ -54,9 +54,21 @@
   font-size: 22px;
 }
 
+.notes-view__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 28px;
+}
+
 .notes-view__date {
+  flex: 1;
+  margin: 0;
   font-size: 13px;
-  color: #888;
+  color: #8e8e93;
+  text-align: right;
+  letter-spacing: 0.01em;
 }
 
 .calendar-grid {

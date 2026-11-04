@@ -94,7 +94,7 @@ test('Diário oculto — nenhum atalho: seis áudios → Puzzle 6 → Perícia �
   await page.getByTestId('pc-nav-pericia').click()
   await page.getByTestId('pc-open-doc-laudo-forense').click()
   await expect(page.getByTestId('case-document-view')).toContainText(/não apresentado pelo launcher/i)
-  await page.getByRole('button', { name: /Voltar ao sistema/ }).click()
+  await page.getByTestId('pc-doc-back').click()
   await dismissEvidenceCards(page)
 
   // 12. Acesso forense → tela de PIN. Nada preenchido sozinho.

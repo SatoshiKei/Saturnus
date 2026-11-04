@@ -2,27 +2,43 @@ import type { SyntheticEvent } from 'react'
 import { phoneFeatureLocks } from '../../data/phoneFeatures'
 
 interface ChatComposerProps {
+  /** Campo de texto clicável para abrir opções de roteiro (conversas iniciadas pelo jogador). */
+  composeAvailable?: boolean
+  composing?: boolean
+  onComposeOpen?: () => void
   onBlockedAction?: () => void
 }
 
-export function ChatComposer({ onBlockedAction }: ChatComposerProps) {
-  const locked = phoneFeatureLocks.composerText
-
-  const guard = (e: SyntheticEvent) => {
-    if (!locked) return
+export function ChatComposer({
+  composeAvailable = false,
+  composing = false,
+  onComposeOpen,
+  onBlockedAction,
+}: ChatComposerProps) {
+  const openOrBlock = (e: SyntheticEvent) => {
     e.preventDefault()
+    e.stopPropagation()
+    if (composeAvailable) {
+      onComposeOpen?.()
+      return
+    }
     onBlockedAction?.()
   }
 
   return (
-    <footer className="wa-composer" data-testid="chat-composer">
+    <footer
+      className="wa-composer"
+      data-testid="chat-composer"
+      data-composing={composing}
+      data-compose-available={composeAvailable}
+    >
       <button
         type="button"
         className="wa-composer__icon wa-composer__icon--clip"
         aria-label="Anexar"
         aria-disabled={phoneFeatureLocks.attachmentClip}
         data-locked={phoneFeatureLocks.attachmentClip}
-        onClick={guard}
+        onClick={openOrBlock}
       >
         <svg viewBox="0 0 24 24" aria-hidden>
           <path
@@ -31,38 +47,37 @@ export function ChatComposer({ onBlockedAction }: ChatComposerProps) {
           />
         </svg>
       </button>
-      <div className="wa-composer__field">
-        <input
-          type="text"
-          className="wa-composer__input"
-          placeholder="Mensagem"
-          readOnly={locked}
-          aria-label="Mensagem"
-          onFocus={guard}
-          onClick={guard}
-          data-testid="composer-input"
-        />
-        <button
-          type="button"
-          className="wa-composer__icon wa-composer__icon--inline"
-          aria-label="Figurinhas"
-          aria-disabled={phoneFeatureLocks.stickerButton}
-          onClick={guard}
-        >
-          <svg viewBox="0 0 24 24" aria-hidden>
+      <button
+        type="button"
+        className="wa-composer__field"
+        data-active={composing || composeAvailable}
+        data-testid="composer-open"
+        aria-label={composing ? 'Escolher como escrever' : 'Mensagem'}
+        aria-expanded={composing}
+        onClick={openOrBlock}
+      >
+        <span className="wa-composer__input" data-testid="composer-input" aria-hidden={!composeAvailable}>
+          {composeAvailable
+            ? composing
+              ? 'Escolha como escrever…'
+              : 'Mensagem'
+            : 'Mensagem'}
+        </span>
+        <span className="wa-composer__icon wa-composer__icon--inline" aria-hidden>
+          <svg viewBox="0 0 24 24">
             <path
               fill="currentColor"
               d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-2 7a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm4 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm-5.2 5.8c1.2 1.8 3.2 2.9 5.2 2.9s4-1.1 5.2-2.9c.3-.5.1-1.2-.5-1.4-.5-.2-1.1 0-1.4.5-.8 1.2-2.1 1.9-3.3 1.9s-2.5-.7-3.3-1.9c-.3-.5-.9-.7-1.4-.5-.6.2-.8.9-.5 1.4z"
             />
           </svg>
-        </button>
-      </div>
+        </span>
+      </button>
       <button
         type="button"
         className="wa-composer__icon wa-composer__icon--camera"
         aria-label="Câmera"
         aria-disabled={phoneFeatureLocks.cameraButton}
-        onClick={guard}
+        onClick={openOrBlock}
       >
         <svg viewBox="0 0 24 24" aria-hidden>
           <path

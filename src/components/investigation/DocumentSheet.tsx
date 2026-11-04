@@ -22,7 +22,8 @@ const LEAD_NOTE: Record<string, string> = {
 
 interface DocumentSheetProps {
   docId: string
-  onBack: () => void
+  /** Se omitido, o documento não traz botão de voltar (o host do sistema cuida disso). */
+  onBack?: () => void
   backLabel?: string
 }
 
@@ -42,9 +43,11 @@ export function DocumentSheet({ docId, onBack, backLabel = '‹ Voltar' }: Docum
 
   return (
     <article className="cf-sheet" data-testid="case-document-view" data-doc-id={doc.id}>
-      <button type="button" className="cf-back" onClick={onBack}>
-        {backLabel}
-      </button>
+      {onBack ? (
+        <button type="button" className="cf-back" onClick={onBack}>
+          {backLabel}
+        </button>
+      ) : null}
       <p className="cf-stamp">{doc.category}</p>
       <h3 className="cf-title">{doc.title}</h3>
       {doc.issuer || doc.dateLabel ? (

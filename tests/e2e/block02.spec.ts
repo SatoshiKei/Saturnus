@@ -36,18 +36,26 @@ test('Bloco 2 — Paula começa vazia, o jogador escreve; Lucas e Elisa chegam p
   // Evento de descoberta: contato novo (fila: o cartão de evidência pendente vem antes).
   await dismissEvidenceCards(page)
   await expect(page.getByTestId('discovery-contact')).toBeVisible({ timeout: 8000 })
+  // Fecha o aviso para não interceptar cliques no celular.
+  await page.getByTestId('discovery-contact').getByRole('button', { name: 'Fechar' }).click()
 
   await openAugustoPhone(page)
   await page.getByTestId('app-whatsapp').click()
   await page.getByTestId('chat-row-paula').click()
   await expect(page.getByTestId('chat-empty-thread')).toBeVisible()
 
-  // Nove trocas; cada opção é cosmética, o estado final é o mesmo.
+  // Nove trocas; toca em Mensagem → escolhe uma opção cosmética (mesmo estado final).
   for (let i = 0; i < 9; i++) {
+    await expect(page.getByTestId('chat-composer')).toHaveAttribute('data-compose-available', 'true', {
+      timeout: 15_000,
+    })
+    await page.getByTestId('composer-open').click()
     const options = page.getByTestId('chat-script-options')
     await expect(options).toBeVisible({ timeout: 15_000 })
+    await expect(options).toHaveAttribute('data-ready', 'true')
     await page.getByTestId(`chat-option-${i % 2}`).click()
     await expect(page.getByTestId('chat-typing')).toBeVisible()
+    await expect(page.getByTestId('chat-typing')).toBeHidden({ timeout: 15_000 })
   }
   await expect(page.getByText('Moreira.', { exact: true })).toBeVisible({ timeout: 15_000 })
   await expect(page.getByText(/coisa antiga da família/)).toBeVisible({ timeout: 15_000 })

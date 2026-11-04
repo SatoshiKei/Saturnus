@@ -52,17 +52,19 @@ export function FilesApp({ onBack }: FilesAppProps) {
 
   return (
     <div className="ios-files" data-testid="files-app">
-      <header className="ios-app-header">
+      <header className="ios-app-header ios-app-header--files">
         <button type="button" className="ios-app-header__back" onClick={onBack}>
           ‹ Início
         </button>
         <h1>Arquivos</h1>
       </header>
-      <nav className="ios-files__folders" aria-label="Pastas">
+      <nav className="ios-files__folders" aria-label="Pastas" role="tablist">
         {folders.map((f) => (
           <button
             key={f}
             type="button"
+            role="tab"
+            aria-selected={f === folder}
             className="ios-files__folder"
             data-active={f === folder}
             onClick={() => setFolder(f)}

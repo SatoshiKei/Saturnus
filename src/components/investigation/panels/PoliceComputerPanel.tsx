@@ -177,7 +177,18 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
 
         <div className="pc-main">
           {openDoc ? (
-            <DocumentSheet docId={openDoc} onBack={() => setOpenDoc(null)} backLabel="‹ Voltar ao sistema" />
+            <div className="pc-doc" data-testid="pc-doc-view">
+              <button
+                type="button"
+                className="pc-back"
+                data-testid="pc-doc-back"
+                aria-label="Voltar"
+                onClick={() => setOpenDoc(null)}
+              >
+                ‹
+              </button>
+              <DocumentSheet docId={openDoc} />
+            </div>
           ) : null}
 
           {!openDoc && section === 'consultas' ? (
