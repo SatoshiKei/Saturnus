@@ -276,6 +276,20 @@ export const hypothesisCatalog: Hypothesis[] = [
     contradictingEvidenceIds: [],
     state: 'active',
   },
+  {
+    id: 'hyp_omitido_guided_mariana',
+    title: 'O Omitido guiou a investigação de Mariana sem entregar respostas prontas',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
+  {
+    id: 'hyp_augusto_was_placed',
+    title: 'Augusto foi colocado deliberadamente no comando do caso',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
 ]
 
 export const contradictionDefs: ContradictionDef[] = [
@@ -807,6 +821,45 @@ export const seedSearchRules: SearchRule[] = [
       },
     ],
   },
+  {
+    id: 'block09_roberto',
+    category: 'police',
+    requiredFlags: ['block09_roberto_search_unlocked'],
+    requiredTerms: ['roberto'],
+    results: [
+      {
+        title: 'Roberto Siqueira — afastamento e denúncia anônima',
+        snippet: 'Timing, metadata e material correlato.',
+        documentId: 'doc-roberto-denuncia',
+      },
+    ],
+  },
+  {
+    id: 'block09_siqueira',
+    category: 'police',
+    requiredFlags: ['block09_roberto_search_unlocked'],
+    requiredTerms: ['siqueira'],
+    results: [
+      {
+        title: 'Roberto Siqueira — afastamento e denúncia anônima',
+        snippet: 'Timing, metadata e material correlato.',
+        documentId: 'doc-roberto-denuncia',
+      },
+    ],
+  },
+  {
+    id: 'block09_omitido',
+    category: 'police',
+    requiredFlags: ['block09_omitido_named'],
+    requiredTerms: ['omitido'],
+    results: [
+      {
+        title: 'Interface — identificador O Omitido',
+        snippet: 'Registro presente no material cruzado.',
+        documentId: 'doc-omitido-interface',
+      },
+    ],
+  },
 ]
 
 
@@ -1013,6 +1066,20 @@ export const seedStoryTriggers: StoryTrigger[] = [
         type: 'addTask',
         id: 'task_rings_puzzle',
         label: 'Reconstruir a timeline dos protestos (bancada) — fontes dessincronizadas',
+      },
+    ],
+  },
+  {
+    id: 'block09_start',
+    once: true,
+    conditions: [{ type: 'flag', id: 'block08_complete', value: true }],
+    actions: [
+      { type: 'setFlag', id: 'block09_started', value: true },
+      { type: 'setFlag', id: 'block09_compare_unlocked', value: true },
+      {
+        type: 'addTask',
+        id: 'task_compare_omitido_system',
+        label: 'Reexaminar o sistema de Henrique cruzando com registros de Mariana',
       },
     ],
   },

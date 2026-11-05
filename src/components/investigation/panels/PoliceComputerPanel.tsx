@@ -17,6 +17,15 @@ import {
   unlockHenriqueDump,
 } from '../../../game/story/block07Handlers'
 import { requestGuardrailReexam } from '../../../game/story/block08Handlers'
+import {
+  compareHenriqueMarianaSystem,
+  findOtherDisappearances,
+  mapOmitidoAssistance,
+  reconstructPhysicalTrail,
+  registerAugustoAnomalies,
+  rereadDiaryOmitido,
+  weighMarianaMessageImpossibilities,
+} from '../../../game/story/block09Handlers'
 import { DiaryReader } from '../../../apps/device/HiddenDiaryApp'
 import { playSfx } from '../../../lib/sfx'
 import { GamePanel } from '../../ui/GamePanel'
@@ -600,6 +609,118 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
                     }}
                   >
                     Solicitar reanálise pericial do guardrail
+                  </button>
+                </div>
+              ) : null}
+              {inv.flags.block09_compare_unlocked && !inv.flags.block09_omitido_named ? (
+                <div className="pc-caso-actions">
+                  <h4 className="pc-sub">Ação investigativa</h4>
+                  <button
+                    type="button"
+                    className="pc-inline"
+                    data-testid="b09-compare-system"
+                    onClick={() => {
+                      compareHenriqueMarianaSystem()
+                      setOpenDoc('doc-omitido-interface')
+                    }}
+                  >
+                    Cruzar sistema de Henrique com registros de Mariana
+                  </button>
+                </div>
+              ) : null}
+              {inv.flags.block09_diary_reread_unlocked && !inv.flags.block09_diary_reread_done ? (
+                <div className="pc-caso-actions">
+                  <h4 className="pc-sub">Ação investigativa</h4>
+                  <button
+                    type="button"
+                    className="pc-inline"
+                    data-testid="b09-diary-reread"
+                    onClick={() => {
+                      rereadDiaryOmitido()
+                      setOpenDoc('doc-diario-releitura-omitido')
+                    }}
+                  >
+                    Revisitar diário à luz de O Omitido
+                  </button>
+                </div>
+              ) : null}
+              {inv.flags.block09_assistance_unlocked && !inv.flags.block09_assistance_done ? (
+                <div className="pc-caso-actions">
+                  <h4 className="pc-sub">Ação investigativa</h4>
+                  <button
+                    type="button"
+                    className="pc-inline"
+                    data-testid="b09-omitido-assist"
+                    onClick={() => {
+                      mapOmitidoAssistance()
+                      setOpenDoc('doc-omitido-assistencia')
+                    }}
+                  >
+                    Isolar assistência de O Omitido no desaparecimento
+                  </button>
+                </div>
+              ) : null}
+              {inv.flags.block09_messages_wave2 && !inv.flags.block09_messages_impossible_done ? (
+                <div className="pc-caso-actions">
+                  <h4 className="pc-sub">Ação investigativa</h4>
+                  <button
+                    type="button"
+                    className="pc-inline"
+                    data-testid="b09-weigh-messages"
+                    onClick={() => {
+                      weighMarianaMessageImpossibilities()
+                      setOpenDoc('doc-mensagens-impossiveis')
+                    }}
+                  >
+                    Conferir o que as mensagens sabem demais
+                  </button>
+                </div>
+              ) : null}
+              {inv.flags.block09_trail_unlocked && !inv.flags.block09_trail_ready ? (
+                <div className="pc-caso-actions">
+                  <h4 className="pc-sub">Ação investigativa</h4>
+                  <button
+                    type="button"
+                    className="pc-inline"
+                    data-testid="b09-physical-trail"
+                    onClick={() => {
+                      reconstructPhysicalTrail()
+                      setOpenDoc('doc-trilha-fisica-mariana')
+                    }}
+                  >
+                    Montar cadeia dos últimos deslocamentos físicos
+                  </button>
+                </div>
+              ) : null}
+              {inv.flags.block09_other_cases_unlocked && !inv.flags.block09_other_cases_done ? (
+                <div className="pc-caso-actions">
+                  <h4 className="pc-sub">Ação investigativa</h4>
+                  <button
+                    type="button"
+                    className="pc-inline"
+                    data-testid="b09-other-cases"
+                    onClick={() => {
+                      findOtherDisappearances()
+                      setOpenDoc('doc-outros-desaparecimentos')
+                    }}
+                  >
+                    Cruzar outros desaparecimentos semelhantes
+                  </button>
+                </div>
+              ) : null}
+              {inv.flags.block09_augusto_watched_unlocked && !inv.flags.block09_augusto_watched_done ? (
+                <div className="pc-caso-actions">
+                  <h4 className="pc-sub">Ação investigativa</h4>
+                  <button
+                    type="button"
+                    className="pc-inline"
+                    data-testid="b09-augusto-anomalies"
+                    onClick={() => {
+                      registerAugustoAnomalies()
+                      setOpenDoc('doc-anomalias-augusto')
+                    }}
+                  >
+                    Registrar anomalias que envolvem Augusto
                   </button>
                 </div>
               ) : null}

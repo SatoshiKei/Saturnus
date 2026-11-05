@@ -202,4 +202,15 @@ export const seedLocations: Location[] = [
     mapX: 0.36,
     mapY: 0.78,
   },
+  {
+    id: 'trilha-final',
+    name: 'Galpão desativado — setor norte',
+    description: 'Local indicado pela cadeia de registros dos últimos deslocamentos.',
+    status: 'unknown',
+    relatedPersonIds: ['mariana'],
+    relatedEvidenceIds: [],
+    sceneId: 'trail',
+    mapX: 0.2,
+    mapY: 0.28,
+  },
 ]

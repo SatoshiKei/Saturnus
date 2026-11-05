@@ -32,6 +32,7 @@ const SCENE_DONE_LOCATION: { flag: string; locationId: string }[] = [
   { flag: 'block08_denis_interview_done', locationId: 'oficina-denis' },
   { flag: 'block08_bia_interview_done', locationId: 'bia-casa' },
   { flag: 'block08_rui_interview_done', locationId: 'rui-casa' },
+  { flag: 'block09_mariana_dead', locationId: 'trilha-final' },
 ]
 
 /** posição do marcador: usa o estado salvo ou, em saves antigos, o seed */

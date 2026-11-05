@@ -57,6 +57,12 @@ import {
   onFinalReflectionDone,
   onMorsaReflectionDone,
 } from '../game/story/block08Handlers'
+import {
+  onDeathReflectionDone,
+  onSaturnusFinalReflectionDone,
+} from '../game/story/block09Handlers'
+import { TrailDiscoveryScene } from '../components/story/TrailDiscoveryScene'
+import { MemoryWordOverlay } from '../components/investigation/MemoryWordOverlay'
 import { onMarianaPhoneClosed, onMarianaPhoneOpened } from '../game/story/block01Handlers'
 import '../styles/tokens.css'
 import '../styles/scene.css'
@@ -101,6 +107,8 @@ function renderLocationScene(id: NonNullable<LocationSceneId>, close: () => void
       return <BiaInterviewScene onClose={close} />
     case 'rui':
       return <RuiInterviewScene onClose={close} />
+    case 'trail':
+      return <TrailDiscoveryScene onClose={close} />
   }
 }
 
@@ -119,6 +127,14 @@ function pendingSoloReflection(flags: Record<string, boolean>): string | null {
   if (flags.block08_refl_andre_pending && !flags['refl-b08-andre_seen']) return 'refl-b08-andre'
   if (flags.block08_refl_accident_pending && !flags['refl-b08-accident_seen']) return 'refl-b08-accident'
   if (flags.block08_refl_final_pending && !flags['refl-b08-final_seen']) return 'refl-b08-final'
+  if (flags.block09_refl_death_pending && !flags['refl-b09-death_seen']) return 'refl-b09-death'
+  if (
+    flags.block09_refl_final_pending &&
+    flags.block09_memory_word_dismissed &&
+    !flags['refl-b09-final_seen']
+  ) {
+    return 'refl-b09-final'
+  }
   return null
 }
 
@@ -393,10 +409,13 @@ export function Scene() {
                 else if (soloReflectionId === 'refl-b08-andre') onAndreWronglyReflectionDone()
                 else if (soloReflectionId === 'refl-b08-accident') onAccidentReflectionDone()
                 else if (soloReflectionId === 'refl-b08-final') onFinalReflectionDone()
+                else if (soloReflectionId === 'refl-b09-death') onDeathReflectionDone()
+                else if (soloReflectionId === 'refl-b09-final') onSaturnusFinalReflectionDone()
               }}
             />
           </div>
         ) : null}
+        {!locationScene && !hubPanel && !phoneOpen ? <MemoryWordOverlay /> : null}
         {returnFade ? <div className="tr-return" data-testid="vn-return-fade" aria-hidden /> : null}
 
         <HubOverlay panel={hubPanel} onClose={handleCloseHub} />

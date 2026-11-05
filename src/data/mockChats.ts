@@ -41,6 +41,13 @@ const augustoChats: ChatThread[] = [
       },
     ],
   },
+  {
+    id: 'chat-mariana-augusto',
+    contactId: 'mariana',
+    lastPreview: 'Toque para abrir',
+    lastTime: '—',
+    messages: [],
+  },
 ]
 
 export const mockChats: ChatThread[] = [...block01MarianaChats, ...augustoChats]
@@ -60,6 +67,25 @@ export function getChatById(id: string, state?: InvestigationState): ChatThread 
       lastPreview: !last ? 'Toque para iniciar conversa' : last.kind === 'text' ? last.text.split('\n')[0] : 'Áudio',
       lastTime: last && 'timestamp' in last ? last.timestamp : '—',
       messages,
+    }
+  }
+  // Fios com mensagens injetadas (ex.: Mariana → Augusto no Bloco 9).
+  if (state?.phones.augusto.unlockedChatIds.includes(id)) {
+    const base = mockChats.find((c) => c.id === id)
+    if (!base) return undefined
+    const messages = state.chatProgress[id]?.messages ?? base.messages
+    const last = [...messages].reverse().find((m) => m.kind === 'text' || m.kind === 'audio')
+    return {
+      id,
+      contactId: base.contactId ?? 'mariana',
+      lastPreview: !last
+        ? base.lastPreview ?? '—'
+        : last.kind === 'text'
+          ? last.text.split('\n')[0]
+          : 'Áudio',
+      lastTime: last && 'timestamp' in last ? last.timestamp : '—',
+      messages,
+      unreadCount: base.unreadCount,
     }
   }
   return mockChats.find((c) => c.id === id)

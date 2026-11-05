@@ -26,6 +26,7 @@ export type LocationSceneId =
   | 'denis'
   | 'bia'
   | 'rui'
+  | 'trail'
   | null
 
 interface GameHubContextValue {

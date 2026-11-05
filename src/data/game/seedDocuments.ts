@@ -1202,6 +1202,152 @@ export const seedDocuments: Document[] = [
       { type: 'setFlag', id: 'block08_refl_final_pending', value: true },
     ],
   },
+  {
+    id: 'doc-omitido-interface',
+    title: 'Interface — identificador O Omitido',
+    category: 'Extração forense',
+    issuer: 'Cruzamento Henrique × Mariana',
+    system: 'pericia',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Nos registros reconstruídos, o interlocutor aparece sob o identificador “O Omitido” — nome exibido pela própria interface, não inventado pela investigação.',
+      },
+      {
+        id: 'b2',
+        text: 'Mariana utilizava a mesma infraestrutura durante meses. O Omitido perguntava, apontava inconsistências e oferecia fragmentos verificáveis; Mariana executava a investigação.',
+      },
+    ],
+    onOpen: [],
+  },
+  {
+    id: 'doc-diario-releitura-omitido',
+    title: 'Releitura — diário à luz de O Omitido',
+    category: 'Anotação de caso',
+    issuer: 'Delegacia — Augusto Nogueira',
+    system: 'documentos',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Parte do comportamento estranho registrado no diário parece preparada para o percurso. Outra parte permanece ilegível: lapsos reais, encenação, influência — sem fronteira segura.',
+      },
+      {
+        id: 'b2',
+        text: 'Não se resolve aqui quanto da paranoia era dela e quanto foi induzido. A ambiguidade permanece.',
+      },
+    ],
+    onOpen: [],
+  },
+  {
+    id: 'doc-omitido-assistencia',
+    title: 'Nota — assistência técnica no desaparecimento',
+    category: 'Anotação de caso',
+    issuer: 'Delegacia — Augusto Nogueira',
+    system: 'documentos',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Ligação de emergência, arquivos manipulados, envio de áudios e timing de provocações exigem capacidades que Mariana sozinha dificilmente teria.',
+      },
+      {
+        id: 'b2',
+        text: 'Conclusão de trabalho: o desaparecimento era plano dela, com assistência externa de O Omitido. Nem marionete plena, nem controle absoluto.',
+      },
+    ],
+    onOpen: [],
+  },
+  {
+    id: 'doc-roberto-denuncia',
+    title: 'Roberto Siqueira — afastamento e denúncia anônima',
+    category: 'Consultas',
+    issuer: 'Corregedoria / arquivo interno',
+    system: 'consultas',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Denúncia anônima com material comprometedor real. Roberto tinha o que justificar investigação. Timing: imediatamente antes de Augusto assumir o caso Mariana.',
+      },
+      {
+        id: 'b2',
+        text: 'Metadata e origem compatíveis com o canal de O Omitido: descobriu, selecionou, enviou e escolheu o momento. Augusto não apenas resolveu o percurso — foi colocado nele.',
+      },
+    ],
+    /** Efeitos de Roberto + mensagens: `onRobertoExposed` (DocumentSheet). */
+    onOpen: [],
+  },
+  {
+    id: 'doc-mensagens-impossiveis',
+    title: 'Nota — o que as mensagens sabem demais',
+    category: 'Anotação de caso',
+    issuer: 'Delegacia — Augusto Nogueira',
+    system: 'documentos',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'As mensagens usam o vocabulário de Mariana e fatos pessoais. Também conhecem resultados de análises e descobertas posteriores ao desaparecimento.',
+      },
+      {
+        id: 'b2',
+        text: 'A pergunta deixa de ser “onde está Mariana?” e passa a ser “quem está falando — e desde quando?”.',
+      },
+    ],
+    onOpen: [],
+  },
+  {
+    id: 'doc-trilha-fisica-mariana',
+    title: 'Cadeia — últimos deslocamentos físicos',
+    category: 'Anotação de caso',
+    issuer: 'Delegacia — Augusto Nogueira',
+    system: 'documentos',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Transporte, câmera, compra e registro fecham um percurso até um galpão desativado no setor norte. Sem endereço ditado: só a cadeia.',
+      },
+      {
+        id: 'b2',
+        text: 'Há motivo suficiente para ir até lá. Ainda há chance — ou havia — de encontrá-la viva.',
+      },
+    ],
+    leads: [{ type: 'address', label: 'Local', value: 'Galpão desativado — setor norte' }],
+    onOpen: [],
+  },
+  {
+    id: 'doc-outros-desaparecimentos',
+    title: 'Cruzamento — outros desaparecimentos',
+    category: 'Consultas',
+    issuer: 'Sistema policial — resumo',
+    system: 'consultas',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Casos esparsos, cidades e métodos distintos. A semelhança é comportamental: conversa prolongada, aprendizado de identidade, depois o original parece deixar de ser necessário.',
+      },
+      {
+        id: 'b2',
+        text: 'Sem mapa completo da infraestrutura. Padrão suficiente para escala maior do que Henrique e Mariana.',
+      },
+    ],
+    onOpen: [],
+  },
+  {
+    id: 'doc-anomalias-augusto',
+    title: 'Nota — anomalias envolvendo Augusto',
+    category: 'Anotação de caso',
+    issuer: 'Delegacia — Augusto Nogueira',
+    system: 'documentos',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Frase enviada no tom exato de uma reflexão anterior. Resposta a algo que não lembra de ter dito. Poucos sinais — suficientes.',
+      },
+      {
+        id: 'b2',
+        text: 'Durante a investigação, culpa, raciocínio e medo ficaram expostos. O Omitido esteve presente. O processo pode ter se voltado para cá.',
+      },
+    ],
+    onOpen: [],
+  },
 ]
 
 export function getDocument(id: string): Document | undefined {

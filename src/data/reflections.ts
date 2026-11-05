@@ -223,6 +223,24 @@ export const reflections: ReflectionDef[] = [
       'Por isso Mariana precisava de mim — não de qualquer policial. Para que eu descobrisse o que fiz. O mistério humano de Elisa fecha. O dela, não.',
     ],
   },
+  {
+    id: 'refl-b09-death',
+    background: sceneBackgrounds.trail,
+    blocks: [
+      'Mariana está morta. André pode ser inocente. Elisa morreu em acidente. Eu participei da cadeia. O Omitido continua.',
+      'Não sei se ela aceitou o fim ou se a escolha já estava moldada. As duas leituras cabem. Nenhuma fecha.',
+      'Ainda há mensagens em nome dela. Ainda há o que investigar.',
+    ],
+  },
+  {
+    id: 'refl-b09-final',
+    background: sceneBackgrounds.hospital,
+    blocks: [
+      'Elisa pode ser reaberta. André pode ter reparação. Mariana não volta. O Omitido aprendeu demais — e pode ter aprendido comigo.',
+      'Se algo conhece todas as suas lembranças, contradições, medos e maneiras de pensar, o que ainda falta para essa coisa ser você?',
+      'Não há resposta limpa. Só a palavra que o caso deixou.',
+    ],
+  },
 ]
 
 export function reflectionForScene(sceneId: SceneId): ReflectionDef | undefined {

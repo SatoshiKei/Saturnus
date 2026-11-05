@@ -38,4 +38,11 @@ export const seedContacts: Contact[] = [
     institution: true,
     unlocked: false,
   },
+  {
+    id: 'contact-mariana-augusto',
+    personId: 'mariana',
+    displayName: 'Mariana',
+    phone: '21 9xxxx-0001',
+    unlocked: false,
+  },
 ]

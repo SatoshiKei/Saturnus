@@ -3,6 +3,7 @@ import { getDocument } from '../../data/game/seedDocuments'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { extractFromDocument, openDocument } from '../../game/state/investigationStore'
 import { registerInitialPoliceReport } from '../../game/story/block01Handlers'
+import { onRobertoExposed } from '../../game/story/block09Handlers'
 import { playSfx } from '../../lib/sfx'
 
 /** Documentos que ficam na pasta física da mesa (entregues na passagem do caso). */
@@ -36,6 +37,7 @@ export function DocumentSheet({ docId, onBack, backLabel = '‹ Voltar' }: Docum
     if (!doc) return
     openDocument(doc.id)
     playSfx('paper')
+    if (doc.id === 'doc-roberto-denuncia') onRobertoExposed()
   }, [doc])
 
   if (!doc) return null

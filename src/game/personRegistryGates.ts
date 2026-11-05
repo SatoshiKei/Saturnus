@@ -28,6 +28,8 @@ export const personRegistryFlag: Record<string, string> = {
   denis: 'block08_mauro_interview_done',
   bia: 'block08_bia_search_unlocked',
   rui: 'block08_rui_search_unlocked',
+  omitido: 'block09_omitido_named',
+  roberto: 'block09_roberto_search_unlocked',
 }
 
 export function isPersonVisibleInRegistry(personId: string, inv: InvestigationState): boolean {

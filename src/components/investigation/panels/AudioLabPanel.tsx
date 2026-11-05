@@ -20,6 +20,7 @@ import { EnceladusSession } from './EnceladusSession'
 import { CassiniSession } from './CassiniSession'
 import { RingsSession } from './RingsSession'
 import { RotationSession } from './RotationSession'
+import { MemorySession } from './MemorySession'
 
 /** PRNG determinístico a partir do id — a forma de onda é estável entre sessões. */
 function seeded(id: string) {
@@ -98,6 +99,7 @@ function analysisState(id: string, flags: Record<string, boolean>): AnalysisStat
   if (id === 'henrique_rtp_capture') return flags.block07_cassini_done ? 'done' : 'pending'
   if (id === 'protest_heterogeneous_sources') return flags.block08_rings_done ? 'done' : 'pending'
   if (id === 'police_clock_drift_logs') return flags.block08_rotation_done ? 'done' : 'pending'
+  if (id === 'mariana_recent_recording_claim') return flags.block09_memory_done ? 'done' : 'pending'
   return 'none'
 }
 
@@ -162,6 +164,8 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
     Boolean(inv.flags.block08_rings_available) && current?.id === 'protest_heterogeneous_sources'
   const showRotation =
     Boolean(inv.flags.block08_rotation_available) && current?.id === 'police_clock_drift_logs'
+  const showMemory =
+    Boolean(inv.flags.block09_memory_available) && current?.id === 'mariana_recent_recording_claim'
   const showUnknownAnalyze = current?.id === 'unknown_contact_recording'
   const blocked = Boolean(current && (current.exportable === false || current.deviceLocked))
   const playable = Boolean(current?.audioSrc) && !blocked
@@ -451,6 +455,7 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
               {showCassini ? <CassiniSession /> : null}
               {showRings ? <RingsSession /> : null}
               {showRotation ? <RotationSession /> : null}
+              {showMemory ? <MemorySession /> : null}
 
               {showUnknownAnalyze ? (
                 <div className="aw-orbit" data-testid="unknown-recording-panel">

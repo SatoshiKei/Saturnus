@@ -7,6 +7,8 @@ import { appendChatMessages, dispatchActions } from '../../game/state/investigat
 import { onRafaelForwardAudioPlayed } from '../../game/story/block02Handlers'
 import { phoneFeatureLocks } from '../../data/phoneFeatures'
 import { onJuliaChatReviewed, onRafaelAudioPlayed } from '../../game/story/block01Handlers'
+import { onMarianaChatOpened } from '../../game/story/block09Handlers'
+import { MARIANA_CHAT_ID } from '../../data/block09/marianaMessages'
 import { Avatar } from '../../components/Avatar'
 import { playSfx } from '../../lib/sfx'
 import type { ChatMessage } from '../../types/messaging'
@@ -42,6 +44,11 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
     if (!chat) return
     if (chatId === 'chat-julia') onJuliaChatReviewed()
   }, [chatId, chat])
+
+  useEffect(() => {
+    if (chatId !== MARIANA_CHAT_ID) return
+    onMarianaChatOpened()
+  }, [chatId])
 
   useEffect(() => {
     setComposing(false)

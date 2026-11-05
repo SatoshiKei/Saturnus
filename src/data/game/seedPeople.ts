@@ -253,4 +253,21 @@ export const seedPeople: Person[] = [
     relatedPersonIds: ['bia'],
     locationId: 'rui-casa',
   },
+  {
+    id: 'omitido',
+    name: 'O Omitido',
+    status: 'mentioned',
+    notes: ['Identificador presente nos registros do sistema'],
+    relatedEvidenceIds: [],
+    relatedPersonIds: ['mariana', 'henrique'],
+  },
+  {
+    id: 'roberto',
+    name: 'Roberto Siqueira',
+    status: 'mentioned',
+    occupation: 'Delegado (afastado)',
+    notes: ['Antecessor interino removido pouco antes do caso'],
+    relatedEvidenceIds: [],
+    relatedPersonIds: ['augusto'],
+  },
 ]
