@@ -7,8 +7,10 @@ import {
 } from '../../data/block04/andreInterview'
 import { sceneBackgrounds } from '../../data/sceneIntros'
 import { portraitSrcForStory } from '../../lib/characterSprites'
+import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { finishAndreInterview } from '../../game/story/block04Handlers'
 import { TopicInterviewScene, type TopicInterviewConfig } from './TopicInterviewScene'
+import { AndreFollowupScene } from './AndreFollowupScene'
 
 const config: TopicInterviewConfig<AndreTopicId> = {
   testId: 'andre-scene',
@@ -26,5 +28,9 @@ const config: TopicInterviewConfig<AndreTopicId> = {
 }
 
 export function AndreInterviewScene({ onClose }: { onClose: () => void }) {
+  const inv = useInvestigation()
+  if (inv.flags.block08_morsa_reflection_done && !inv.flags.block08_andre_followup_done) {
+    return <AndreFollowupScene onClose={onClose} />
+  }
   return <TopicInterviewScene config={config} onClose={onClose} />
 }

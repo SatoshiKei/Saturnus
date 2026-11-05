@@ -10,6 +10,7 @@ import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { finishMiroInterview } from '../../game/story/block06Handlers'
 import { TopicInterviewScene, type TopicInterviewConfig } from './TopicInterviewScene'
 import { MiroFollowupScene } from './MiroFollowupScene'
+import { MiroThirdScene } from './MiroThirdScene'
 
 const config: TopicInterviewConfig<MiroTopicId> = {
   testId: 'miro-scene',
@@ -27,6 +28,9 @@ const config: TopicInterviewConfig<MiroTopicId> = {
 
 export function MiroInterviewScene({ onClose }: { onClose: () => void }) {
   const inv = useInvestigation()
+  if (inv.flags.block08_andre_reflection_done && !inv.flags.block08_miro_third_done) {
+    return <MiroThirdScene onClose={onClose} />
+  }
   if (inv.flags.block07_started && !inv.flags.block07_miro_followup_done) {
     return <MiroFollowupScene onClose={onClose} />
   }

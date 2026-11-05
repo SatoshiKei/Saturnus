@@ -22,6 +22,10 @@ export type LocationSceneId =
   | 'miro'
   | 'sandra'
   | 'cecilia'
+  | 'mauro'
+  | 'denis'
+  | 'bia'
+  | 'rui'
   | null
 
 interface GameHubContextValue {

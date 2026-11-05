@@ -187,6 +187,42 @@ export const reflections: ReflectionDef[] = [
       'Pela primeira vez há uma explicação técnica plausível para parte das anomalias. Ainda não sei quem é Morsa. Ainda não sei se é o mesmo canal.',
     ],
   },
+  {
+    id: 'refl-b08-morsa',
+    background: sceneBackgrounds.andre,
+    blocks: [
+      'A timeline fecha: Morsa era André. Ele escondeu onde estava.',
+      'Maralto não precisava ser conspiração empresarial. Mariana reconstruía os protestos porque o irmão mentiu sobre o intervalo.',
+      'As duas linhas finalmente se conectam. Agora preciso confrontá-lo.',
+    ],
+  },
+  {
+    id: 'refl-b08-andre',
+    background: sceneBackgrounds.andre,
+    blocks: [
+      'Ele admite. Escondeu o núcleo e destruiu a própria defesa.',
+      'Pela primeira vez considero a sério: André pode ter sido condenado injustamente.',
+      'Ainda falta a morte de Elisa. Com o álibi, Miro fica no centro.',
+    ],
+  },
+  {
+    id: 'refl-b08-accident',
+    background: sceneBackgrounds.rui,
+    blocks: [
+      'Álcool, jaqueta, Miro seguindo, guardrail já comprometido, queda. Sem empurrão necessário.',
+      'Elisa provavelmente morreu em um acidente. André passou seis anos preso por um homicídio que provavelmente nunca aconteceu.',
+      'Rui foi parado antes. Os relógios da corporação discordam. Preciso achar a viatura.',
+    ],
+  },
+  {
+    id: 'refl-b08-final',
+    background: sceneBackgrounds.andre,
+    blocks: [
+      'Eu o parei. Jovem, nervoso, dizia ter bebido pouco, pedia a habilitação, prometia ir para casa. Eu vi o risco. Deixei seguir.',
+      'Não o matei. Mas minha decisão participou da cadeia. Rui bateu no guardrail. Elisa caiu depois.',
+      'Por isso Mariana precisava de mim — não de qualquer policial. Para que eu descobrisse o que fiz. O mistério humano de Elisa fecha. O dela, não.',
+    ],
+  },
 ]
 
 export function reflectionForScene(sceneId: SceneId): ReflectionDef | undefined {

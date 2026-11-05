@@ -66,6 +66,22 @@ export const sceneIntros: Record<SceneId, SceneIntro> = {
     lines: ['07 NOV 2026', '10:45', 'ALAMEDA NOVA, 88 — AP. 14'],
     ambience: 'scene-in',
   },
+  mauro: {
+    lines: ['07 NOV 2026', '15:10', 'RUA DO CEDRO, 55'],
+    ambience: 'scene-in',
+  },
+  denis: {
+    lines: ['07 NOV 2026', '16:40', 'OFICINA DÊNIS — PÁTIO'],
+    ambience: 'ambience-hush',
+  },
+  bia: {
+    lines: ['07 NOV 2026', '18:05', 'TRAVESSA LESTE, 19'],
+    ambience: 'scene-in',
+  },
+  rui: {
+    lines: ['07 NOV 2026', '19:30', 'RUA DAS FIGUEIRAS, 301'],
+    ambience: 'ambience-hush',
+  },
 }
 
 /** Fundos (processados) usados em cada cena — auditoria de backgrounds. */
@@ -83,4 +99,8 @@ export const sceneBackgrounds: Record<SceneId, string> = {
   miro: '/assets/backgrounds/processed/prison/prison-01-visit-room.jpg',
   sandra: '/assets/backgrounds/processed/apartment/apartment-01-living-room.jpg',
   cecilia: '/assets/backgrounds/processed/apartment/apartment-01-living-room.jpg',
+  mauro: '/assets/backgrounds/processed/apartment/apartment-01-living-room.jpg',
+  denis: '/assets/backgrounds/processed/nightclub/nightclub-01-lights-haze.jpg',
+  bia: '/assets/backgrounds/processed/apartment/apartment-01-living-room.jpg',
+  rui: '/assets/backgrounds/processed/apartment/apartment-01-living-room.jpg',
 }

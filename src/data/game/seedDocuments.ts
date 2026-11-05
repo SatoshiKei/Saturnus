@@ -1061,6 +1061,147 @@ export const seedDocuments: Document[] = [
     ],
     onOpen: [],
   },
+  {
+    id: 'doc-guardrail-reanalise',
+    title: 'Reanálise pericial — guardrail (fotos, medidas, fragmentos)',
+    category: 'Perícia / forense',
+    issuer: 'Perícia Criminal',
+    dateLabel: '07/11/2026',
+    system: 'pericia',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Reexame do material preservado: deformação localizada, transferência de tinta e pequeno fragmento incompatíveis com simples desgaste.',
+      },
+      {
+        id: 'b2',
+        text: 'Na época, os sinais foram tratados como dano antigo sem relação com a morte. A leitura atual sustenta impacto automotivo anterior.',
+      },
+    ],
+    onOpen: [{ type: 'addEvidence', id: 'guardrail_impact_signs' }],
+  },
+  {
+    id: 'doc-camera-veiculo-madrugada',
+    title: 'Câmera viária — veículo com dano lateral (madrugada)',
+    category: 'Consultas',
+    issuer: 'Registro municipal / imagem policial',
+    dateLabel: 'Noite X',
+    system: 'consultas',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Imagem na região e no período: veículo com dano compatível com as características do impacto no guardrail.',
+      },
+      {
+        id: 'b2',
+        text: 'Placa/registro: proprietário Mauro. Sem indicação de motorista na imagem.',
+      },
+    ],
+    leads: [{ type: 'address', label: 'Endereço do proprietário', value: 'Rua do Cedro, 55' }],
+    onOpen: [
+      { type: 'discoverPerson', id: 'mauro', status: 'located' },
+      { type: 'addEvidence', id: 'mauro_vehicle_compatible_damage' },
+      { type: 'unlockLocation', id: 'mauro-casa', status: 'visitAvailable' },
+      { type: 'setFlag', id: 'block08_mauro_located', value: true },
+      { type: 'completeTask', id: 'task_find_compatible_vehicle' },
+      {
+        type: 'addTask',
+        id: 'task_talk_mauro',
+        label: 'Falar com Mauro sobre o veículo',
+      },
+    ],
+  },
+  {
+    id: 'doc-mauro-transferencia',
+    title: 'Comprovante de transferência — reparo veicular',
+    category: 'Documento particular',
+    issuer: 'Mauro (arquivo pessoal)',
+    system: 'documentos',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Transferência bancária antiga para oficina/prestador identificado como Dênis — valor compatível com reparo de lateral.',
+      },
+      {
+        id: 'b2',
+        text: 'Endereço da oficina anotado no comprovante.',
+      },
+    ],
+    leads: [{ type: 'address', label: 'Oficina', value: 'Oficina Dênis — pátio' }],
+    onOpen: [{ type: 'addEvidence', id: 'mauro_repair_transfer_denis' }],
+  },
+  {
+    id: 'doc-bia-ficha',
+    title: 'Ficha — Bia (vínculo familiar)',
+    category: 'Cadastro (pessoas)',
+    issuer: 'Sistema de consulta policial',
+    system: 'consultas',
+    blocks: [
+      { id: 'b1', text: 'Bia: enteada de Mauro. Cadastro atualizado.' },
+      { id: 'b2', text: 'Endereço residencial disponível.' },
+    ],
+    leads: [{ type: 'address', label: 'Endereço', value: 'Travessa Leste, 19' }],
+    onOpen: [
+      { type: 'discoverPerson', id: 'bia', status: 'located' },
+      { type: 'unlockLocation', id: 'bia-casa', status: 'visitAvailable' },
+      { type: 'completeTask', id: 'task_locate_bia' },
+      {
+        type: 'addTask',
+        id: 'task_talk_bia',
+        label: 'Confrontar Bia com veículo, oficina e guardrail',
+      },
+    ],
+  },
+  {
+    id: 'doc-rui-ficha',
+    title: 'Ficha — Rui',
+    category: 'Cadastro (pessoas)',
+    issuer: 'Sistema de consulta policial',
+    system: 'consultas',
+    blocks: [
+      { id: 'b1', text: 'Rui: indicado por Bia. Cadastro atualizado.' },
+      { id: 'b2', text: 'Endereço residencial disponível.' },
+    ],
+    leads: [{ type: 'address', label: 'Endereço', value: 'Rua das Figueiras, 301' }],
+    onOpen: [
+      { type: 'discoverPerson', id: 'rui', status: 'located' },
+      { type: 'unlockLocation', id: 'rui-casa', status: 'visitAvailable' },
+      { type: 'completeTask', id: 'task_locate_rui' },
+      {
+        type: 'addTask',
+        id: 'task_talk_rui',
+        label: 'Ouvir Rui sobre a madrugada do impacto',
+      },
+    ],
+  },
+  {
+    id: 'doc-escala-vtr14',
+    title: 'Escala antiga — indicativo VTR-14',
+    category: 'Arquivo institucional',
+    issuer: 'Corporação — escala de equipes',
+    dateLabel: 'Noite X',
+    system: 'consultas',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Indicativo VTR-14 — equipe da abordagem na via auxiliar no intervalo reconstruído.',
+      },
+      {
+        id: 'b2',
+        text: 'Escala nominativa: Augusto Nogueira constava na equipe daquela viatura na data e local.',
+      },
+    ],
+    onOpen: [
+      { type: 'addEvidence', id: 'scale_links_callsign_to_augusto' },
+      { type: 'setFlag', id: 'block08_augusto_linked', value: true },
+      { type: 'completeTask', id: 'task_lookup_callsign_scale' },
+      { type: 'addHypothesis', id: 'hyp_augusto_causal_in_chain' },
+      { type: 'updateHypothesis', id: 'hyp_augusto_causal_in_chain', state: 'confirmed' },
+      { type: 'addHypothesis', id: 'hyp_mariana_chose_augusto' },
+      { type: 'updateHypothesis', id: 'hyp_mariana_chose_augusto', state: 'confirmed' },
+      { type: 'setFlag', id: 'block08_refl_final_pending', value: true },
+    ],
+  },
 ]
 
 export function getDocument(id: string): Document | undefined {

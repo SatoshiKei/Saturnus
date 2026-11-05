@@ -26,6 +26,12 @@ const SCENE_DONE_LOCATION: { flag: string; locationId: string }[] = [
   { flag: 'block07_miro_followup_done', locationId: 'detencao-miro' },
   { flag: 'block07_sandra_interview_done', locationId: 'sandra-casa' },
   { flag: 'block07_cecilia_interview_done', locationId: 'cecilia-casa' },
+  { flag: 'block08_andre_followup_done', locationId: 'presidio' },
+  { flag: 'block08_miro_third_done', locationId: 'detencao-miro' },
+  { flag: 'block08_mauro_interview_done', locationId: 'mauro-casa' },
+  { flag: 'block08_denis_interview_done', locationId: 'oficina-denis' },
+  { flag: 'block08_bia_interview_done', locationId: 'bia-casa' },
+  { flag: 'block08_rui_interview_done', locationId: 'rui-casa' },
 ]
 
 /** posição do marcador: usa o estado salvo ou, em saves antigos, o seed */
@@ -80,6 +86,20 @@ export function LocationsMap({ onClose }: { onClose: () => void }) {
         row.locationId === 'detencao-miro' &&
         inv.flags.block07_started &&
         !inv.flags.block07_miro_followup_done
+      ) {
+        continue
+      }
+      if (
+        row.locationId === 'presidio' &&
+        inv.flags.block08_morsa_reflection_done &&
+        !inv.flags.block08_andre_followup_done
+      ) {
+        continue
+      }
+      if (
+        row.locationId === 'detencao-miro' &&
+        inv.flags.block08_andre_reflection_done &&
+        !inv.flags.block08_miro_third_done
       ) {
         continue
       }

@@ -30,6 +30,10 @@ import { MiroInterviewScene } from '../components/story/MiroInterviewScene'
 import { OperationScene } from '../components/story/OperationScene'
 import { SandraInterviewScene } from '../components/story/SandraInterviewScene'
 import { CeciliaInterviewScene } from '../components/story/CeciliaInterviewScene'
+import { MauroInterviewScene } from '../components/story/MauroInterviewScene'
+import { DenisInterviewScene } from '../components/story/DenisInterviewScene'
+import { BiaInterviewScene } from '../components/story/BiaInterviewScene'
+import { RuiInterviewScene } from '../components/story/RuiInterviewScene'
 import { ReflectionView } from '../components/story/vn/SceneTransitions'
 import { reflectionById } from '../data/reflections'
 import { setFlag } from '../game/state/investigationStore'
@@ -47,6 +51,12 @@ import {
   onSandraReflectionDone,
   onTechReflectionDone,
 } from '../game/story/block07Handlers'
+import {
+  onAccidentReflectionDone,
+  onAndreWronglyReflectionDone,
+  onFinalReflectionDone,
+  onMorsaReflectionDone,
+} from '../game/story/block08Handlers'
 import { onMarianaPhoneClosed, onMarianaPhoneOpened } from '../game/story/block01Handlers'
 import '../styles/tokens.css'
 import '../styles/scene.css'
@@ -83,6 +93,14 @@ function renderLocationScene(id: NonNullable<LocationSceneId>, close: () => void
       return <SandraInterviewScene onClose={close} />
     case 'cecilia':
       return <CeciliaInterviewScene onClose={close} />
+    case 'mauro':
+      return <MauroInterviewScene onClose={close} />
+    case 'denis':
+      return <DenisInterviewScene onClose={close} />
+    case 'bia':
+      return <BiaInterviewScene onClose={close} />
+    case 'rui':
+      return <RuiInterviewScene onClose={close} />
   }
 }
 
@@ -97,6 +115,10 @@ function pendingSoloReflection(flags: Record<string, boolean>): string | null {
   if (flags.block06_refl_miro_pending && !flags['refl-b06-miro_seen']) return 'refl-b06-miro'
   if (flags.block07_refl_sandra_pending && !flags['refl-b07-sandra_seen']) return 'refl-b07-sandra'
   if (flags.block07_refl_tech_pending && !flags['refl-b07-tech_seen']) return 'refl-b07-tech'
+  if (flags.block08_refl_morsa_pending && !flags['refl-b08-morsa_seen']) return 'refl-b08-morsa'
+  if (flags.block08_refl_andre_pending && !flags['refl-b08-andre_seen']) return 'refl-b08-andre'
+  if (flags.block08_refl_accident_pending && !flags['refl-b08-accident_seen']) return 'refl-b08-accident'
+  if (flags.block08_refl_final_pending && !flags['refl-b08-final_seen']) return 'refl-b08-final'
   return null
 }
 
@@ -367,6 +389,10 @@ export function Scene() {
                 else if (soloReflectionId === 'refl-b06-miro') onMiroReflectionDone()
                 else if (soloReflectionId === 'refl-b07-sandra') onSandraReflectionDone()
                 else if (soloReflectionId === 'refl-b07-tech') onTechReflectionDone()
+                else if (soloReflectionId === 'refl-b08-morsa') onMorsaReflectionDone()
+                else if (soloReflectionId === 'refl-b08-andre') onAndreWronglyReflectionDone()
+                else if (soloReflectionId === 'refl-b08-accident') onAccidentReflectionDone()
+                else if (soloReflectionId === 'refl-b08-final') onFinalReflectionDone()
               }}
             />
           </div>

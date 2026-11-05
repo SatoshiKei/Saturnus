@@ -234,6 +234,48 @@ export const hypothesisCatalog: Hypothesis[] = [
     contradictingEvidenceIds: [],
     state: 'active',
   },
+  {
+    id: 'hyp_protests_needed_for_andre_alibi',
+    title: 'A linha dos protestos era necessária para descobrir o álibi de André',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
+  {
+    id: 'hyp_maralto_direct_elisa_death',
+    title: 'Maralto estava diretamente ligada à morte de Elisa',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
+  {
+    id: 'hyp_andre_wrongly_convicted',
+    title: 'André pode ter sido condenado injustamente',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
+  {
+    id: 'hyp_elisa_died_accident',
+    title: 'Elisa provavelmente morreu em um acidente',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
+  {
+    id: 'hyp_augusto_causal_in_chain',
+    title: 'Augusto participou causalmente da sequência que levou à morte de Elisa',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
+  {
+    id: 'hyp_mariana_chose_augusto',
+    title: 'Mariana escolheu Augusto deliberadamente para investigar',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
 ]
 
 export const contradictionDefs: ContradictionDef[] = [
@@ -648,6 +690,123 @@ export const seedSearchRules: SearchRule[] = [
       },
     ],
   },
+  {
+    id: 'block08_vehicle_guardrail',
+    category: 'police',
+    requiredFlags: ['block08_vehicle_search_unlocked'],
+    requiredTerms: ['guardrail'],
+    results: [
+      {
+        title: 'Câmera viária — veículo com dano lateral (madrugada)',
+        snippet: 'Registro municipal / imagem policial na região.',
+        documentId: 'doc-camera-veiculo-madrugada',
+      },
+    ],
+  },
+  {
+    id: 'block08_vehicle_veiculo',
+    category: 'police',
+    requiredFlags: ['block08_vehicle_search_unlocked'],
+    requiredTerms: ['veiculo'],
+    results: [
+      {
+        title: 'Câmera viária — veículo com dano lateral (madrugada)',
+        snippet: 'Registro municipal / imagem policial na região.',
+        documentId: 'doc-camera-veiculo-madrugada',
+      },
+    ],
+  },
+  {
+    id: 'block08_vehicle_impacto',
+    category: 'police',
+    requiredFlags: ['block08_vehicle_search_unlocked'],
+    requiredTerms: ['impacto'],
+    results: [
+      {
+        title: 'Câmera viária — veículo com dano lateral (madrugada)',
+        snippet: 'Registro municipal / imagem policial na região.',
+        documentId: 'doc-camera-veiculo-madrugada',
+      },
+    ],
+  },
+  {
+    id: 'block08_mauro',
+    category: 'police',
+    requiredFlags: ['block08_vehicle_search_unlocked'],
+    requiredTerms: ['mauro'],
+    results: [
+      {
+        title: 'Câmera viária — veículo com dano lateral (madrugada)',
+        snippet: 'Veículo registrado em nome de Mauro.',
+        documentId: 'doc-camera-veiculo-madrugada',
+      },
+    ],
+  },
+  {
+    id: 'block08_bia',
+    category: 'police',
+    requiredFlags: ['block08_bia_search_unlocked'],
+    requiredTerms: ['bia'],
+    results: [
+      {
+        title: 'Ficha — Bia (vínculo familiar)',
+        snippet: 'Cadastro. Endereço atual.',
+        documentId: 'doc-bia-ficha',
+      },
+    ],
+  },
+  {
+    id: 'block08_rui',
+    category: 'police',
+    requiredFlags: ['block08_rui_search_unlocked'],
+    requiredTerms: ['rui'],
+    results: [
+      {
+        title: 'Ficha — Rui',
+        snippet: 'Cadastro a partir de indicação documental.',
+        documentId: 'doc-rui-ficha',
+      },
+    ],
+  },
+  {
+    id: 'block08_callsign_vtr',
+    category: 'police',
+    requiredFlags: ['block08_scale_search_unlocked'],
+    requiredTerms: ['vtr-14'],
+    results: [
+      {
+        title: 'Escala antiga — indicativo VTR-14',
+        snippet: 'Arquivo institucional de equipes.',
+        documentId: 'doc-escala-vtr14',
+      },
+    ],
+  },
+  {
+    id: 'block08_callsign_escala',
+    category: 'police',
+    requiredFlags: ['block08_scale_search_unlocked'],
+    requiredTerms: ['escala'],
+    results: [
+      {
+        title: 'Escala antiga — indicativo VTR-14',
+        snippet: 'Arquivo institucional de equipes.',
+        documentId: 'doc-escala-vtr14',
+      },
+    ],
+  },
+  {
+    id: 'block08_callsign_indicativo',
+    category: 'police',
+    requiredFlags: ['block08_scale_search_unlocked'],
+    requiredTerms: ['indicativo'],
+    results: [
+      {
+        title: 'Escala antiga — indicativo VTR-14',
+        snippet: 'Arquivo institucional de equipes.',
+        documentId: 'doc-escala-vtr14',
+      },
+    ],
+  },
 ]
 
 
@@ -838,6 +997,22 @@ export const seedStoryTriggers: StoryTrigger[] = [
         type: 'addTask',
         id: 'task_talk_cecilia',
         label: 'Falar com Cecília Prado sobre Henrique',
+      },
+    ],
+  },
+  {
+    id: 'block08_start',
+    once: true,
+    conditions: [{ type: 'flag', id: 'block07_complete', value: true }],
+    actions: [
+      { type: 'setFlag', id: 'block08_started', value: true },
+      { type: 'setFlag', id: 'block08_rings_available', value: true },
+      { type: 'addEvidence', id: 'protest_heterogeneous_sources' },
+      { type: 'completeTask', id: 'task_compare_henrique_mariana_system' },
+      {
+        type: 'addTask',
+        id: 'task_rings_puzzle',
+        label: 'Reconstruir a timeline dos protestos (bancada) — fontes dessincronizadas',
       },
     ],
   },

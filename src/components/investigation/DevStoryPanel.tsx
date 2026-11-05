@@ -6,6 +6,7 @@ import { block04DevCheckpoints } from '../../game/story/block04DevCheckpoints'
 import { block05DevCheckpoints } from '../../game/story/block05DevCheckpoints'
 import { block06DevCheckpoints } from '../../game/story/block06DevCheckpoints'
 import { block07DevCheckpoints } from '../../game/story/block07DevCheckpoints'
+import { block08DevCheckpoints } from '../../game/story/block08DevCheckpoints'
 import { devApply, resetGame } from '../../game/state/investigationStore'
 
 export function DevStoryPanel() {
@@ -133,6 +134,22 @@ export function DevStoryPanel() {
           data-testid={`dev-${cp.id}`}
           onClick={() => {
             if (cp.id === 'b07-start') {
+              resetGame()
+              devApply(cp.actions)
+            } else if (cp.actions.length) devApply(cp.actions)
+          }}
+        >
+          {cp.label}
+        </button>
+      ))}
+      <p className="inv-dev__section">Bloco 8 — A noite sem assassinato</p>
+      {block08DevCheckpoints.map((cp) => (
+        <button
+          key={cp.id}
+          type="button"
+          data-testid={`dev-${cp.id}`}
+          onClick={() => {
+            if (cp.id === 'b08-start') {
               resetGame()
               devApply(cp.actions)
             } else if (cp.actions.length) devApply(cp.actions)

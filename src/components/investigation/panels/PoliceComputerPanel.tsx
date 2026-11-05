@@ -16,6 +16,7 @@ import {
   reviewMorsaDuration,
   unlockHenriqueDump,
 } from '../../../game/story/block07Handlers'
+import { requestGuardrailReexam } from '../../../game/story/block08Handlers'
 import { DiaryReader } from '../../../apps/device/HiddenDiaryApp'
 import { playSfx } from '../../../lib/sfx'
 import { GamePanel } from '../../ui/GamePanel'
@@ -583,6 +584,22 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
                     }}
                   >
                     Localizar material digital antigo de Henrique
+                  </button>
+                </div>
+              ) : null}
+              {inv.flags.block08_guardrail_reexam_unlocked && !inv.flags.block08_guardrail_done ? (
+                <div className="pc-caso-actions">
+                  <h4 className="pc-sub">Ação investigativa</h4>
+                  <button
+                    type="button"
+                    className="pc-inline"
+                    data-testid="b08-guardrail-reexam"
+                    onClick={() => {
+                      requestGuardrailReexam()
+                      setOpenDoc('doc-guardrail-reanalise')
+                    }}
+                  >
+                    Solicitar reanálise pericial do guardrail
                   </button>
                 </div>
               ) : null}

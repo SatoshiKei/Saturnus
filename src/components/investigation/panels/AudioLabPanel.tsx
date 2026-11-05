@@ -18,6 +18,8 @@ import { HexagonSession } from './HexagonSession'
 import { ShepherdMoonsSession } from './ShepherdMoonsSession'
 import { EnceladusSession } from './EnceladusSession'
 import { CassiniSession } from './CassiniSession'
+import { RingsSession } from './RingsSession'
+import { RotationSession } from './RotationSession'
 
 /** PRNG determinístico a partir do id — a forma de onda é estável entre sessões. */
 function seeded(id: string) {
@@ -94,6 +96,8 @@ function analysisState(id: string, flags: Record<string, boolean>): AnalysisStat
   if (id === 'valter_group_active_intercepts') return flags.block06_pastor_done ? 'done' : 'pending'
   if (id === 'anon_hospital_burst_audio') return flags.block07_enceladus_done ? 'done' : 'pending'
   if (id === 'henrique_rtp_capture') return flags.block07_cassini_done ? 'done' : 'pending'
+  if (id === 'protest_heterogeneous_sources') return flags.block08_rings_done ? 'done' : 'pending'
+  if (id === 'police_clock_drift_logs') return flags.block08_rotation_done ? 'done' : 'pending'
   return 'none'
 }
 
@@ -154,6 +158,10 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
     Boolean(inv.flags.block07_enceladus_available) && current?.id === 'anon_hospital_burst_audio'
   const showCassini =
     Boolean(inv.flags.block07_cassini_available) && current?.id === 'henrique_rtp_capture'
+  const showRings =
+    Boolean(inv.flags.block08_rings_available) && current?.id === 'protest_heterogeneous_sources'
+  const showRotation =
+    Boolean(inv.flags.block08_rotation_available) && current?.id === 'police_clock_drift_logs'
   const showUnknownAnalyze = current?.id === 'unknown_contact_recording'
   const blocked = Boolean(current && (current.exportable === false || current.deviceLocked))
   const playable = Boolean(current?.audioSrc) && !blocked
@@ -441,6 +449,8 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
               {showPastor ? <ShepherdMoonsSession /> : null}
               {showEnceladus ? <EnceladusSession /> : null}
               {showCassini ? <CassiniSession /> : null}
+              {showRings ? <RingsSession /> : null}
+              {showRotation ? <RotationSession /> : null}
 
               {showUnknownAnalyze ? (
                 <div className="aw-orbit" data-testid="unknown-recording-panel">
