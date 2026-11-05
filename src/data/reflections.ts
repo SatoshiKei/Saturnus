@@ -169,6 +169,24 @@ export const reflections: ReflectionDef[] = [
       'Agora existe uma alternativa real — não uma solução. Preciso saber até onde Miro seguiu e o que ainda omite.',
     ],
   },
+  {
+    id: 'refl-b07-sandra',
+    background: sceneBackgrounds.sandra,
+    blocks: [
+      'Sandra continua certa de que viu André. Seis anos de depoimento não se desfazem com outro nome.',
+      'Miro admite ter estado exatamente naquela região. Duas explicações incompatíveis para o homem visto retornando.',
+      'Hipótese: o homem visto perto da queda pode não ter sido André. Não é fato. Ainda não posso escolher a versão correta.',
+    ],
+  },
+  {
+    id: 'refl-b07-tech',
+    background: sceneBackgrounds.cecilia,
+    blocks: [
+      'Henrique falava com algo que respondia rápido, lembrava contexto e sabia demais. Parece sistema automatizado — bot, ferramenta, operador humano por trás.',
+      'Há similaridade suficiente com o interlocutor desconhecido de Mariana. Mesmo tipo de sistema ou mesmo operador: hipótese, não prova.',
+      'Pela primeira vez há uma explicação técnica plausível para parte das anomalias. Ainda não sei quem é Morsa. Ainda não sei se é o mesmo canal.',
+    ],
+  },
 ]
 
 export function reflectionForScene(sceneId: SceneId): ReflectionDef | undefined {

@@ -28,6 +28,8 @@ import { JanaInterviewScene } from '../components/story/JanaInterviewScene'
 import { GeraldoInterviewScene } from '../components/story/GeraldoInterviewScene'
 import { MiroInterviewScene } from '../components/story/MiroInterviewScene'
 import { OperationScene } from '../components/story/OperationScene'
+import { SandraInterviewScene } from '../components/story/SandraInterviewScene'
+import { CeciliaInterviewScene } from '../components/story/CeciliaInterviewScene'
 import { ReflectionView } from '../components/story/vn/SceneTransitions'
 import { reflectionById } from '../data/reflections'
 import { setFlag } from '../game/state/investigationStore'
@@ -41,6 +43,10 @@ import {
   onGeraldoReflectionDone,
   onMiroReflectionDone,
 } from '../game/story/block06Handlers'
+import {
+  onSandraReflectionDone,
+  onTechReflectionDone,
+} from '../game/story/block07Handlers'
 import { onMarianaPhoneClosed, onMarianaPhoneOpened } from '../game/story/block01Handlers'
 import '../styles/tokens.css'
 import '../styles/scene.css'
@@ -73,6 +79,10 @@ function renderLocationScene(id: NonNullable<LocationSceneId>, close: () => void
       return <OperationScene onClose={close} />
     case 'miro':
       return <MiroInterviewScene onClose={close} />
+    case 'sandra':
+      return <SandraInterviewScene onClose={close} />
+    case 'cecilia':
+      return <CeciliaInterviewScene onClose={close} />
   }
 }
 
@@ -85,6 +95,8 @@ function pendingSoloReflection(flags: Record<string, boolean>): string | null {
   if (flags.block05_refl_path_pending && !flags['refl-b05-path_seen']) return 'refl-b05-path'
   if (flags.block06_refl_geraldo_pending && !flags['refl-b06-geraldo_seen']) return 'refl-b06-geraldo'
   if (flags.block06_refl_miro_pending && !flags['refl-b06-miro_seen']) return 'refl-b06-miro'
+  if (flags.block07_refl_sandra_pending && !flags['refl-b07-sandra_seen']) return 'refl-b07-sandra'
+  if (flags.block07_refl_tech_pending && !flags['refl-b07-tech_seen']) return 'refl-b07-tech'
   return null
 }
 
@@ -353,6 +365,8 @@ export function Scene() {
                 else if (soloReflectionId === 'refl-b05-path') onPathReflectionDone()
                 else if (soloReflectionId === 'refl-b06-geraldo') onGeraldoReflectionDone()
                 else if (soloReflectionId === 'refl-b06-miro') onMiroReflectionDone()
+                else if (soloReflectionId === 'refl-b07-sandra') onSandraReflectionDone()
+                else if (soloReflectionId === 'refl-b07-tech') onTechReflectionDone()
               }}
             />
           </div>

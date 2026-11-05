@@ -156,7 +156,7 @@ export const callScripts: CallScript[] = [
     id: 'call-hospital',
     speaker: 'Hospital Municipal — recepção',
     ext: 'HOSP',
-    available: () => true,
+    available: (s) => !flag(s, 'block07_ricardo_search_unlocked'),
     lines: [
       { who: 'other', text: 'Hospital Municipal, recepção.' },
       { who: 'augusto', text: 'Augusto Nogueira, Polícia Civil. Sobre a funcionária Mariana Silva: houve algum contato dela com o setor?' },
@@ -164,6 +164,50 @@ export const callScripts: CallScript[] = [
     ],
     onComplete: [{ type: 'completeCall', id: 'call-hospital' }],
     repeat: [{ who: 'other', text: 'Sem novidades até agora, delegado.' }],
+  },
+  {
+    id: 'call-hospital-ricardo',
+    speaker: 'Hospital Municipal — arquivo de plantão',
+    ext: 'HOSP',
+    available: (s) => flag(s, 'block07_ricardo_search_unlocked'),
+    lines: [
+      { who: 'other', text: 'Hospital Municipal, arquivo de plantão.' },
+      {
+        who: 'augusto',
+        text: 'Augusto Nogueira, Polícia Civil. Preciso cruzar um nome — Ricardo — com o plantão noturno do período que estou isolando. Mariana Silva estava de plantão.',
+      },
+      {
+        who: 'other',
+        text: 'Há um atendimento/óbito naquela madrugada sob Ricardo Freitas. Documentação pobre. Posso encaminhar o resumo ao sistema de consulta.',
+      },
+    ],
+    result: {
+      label: 'Registro encaminhado',
+      detail: 'Atendimento/óbito — Ricardo Freitas (plantão correspondente).',
+    },
+    onComplete: [
+      { type: 'completeCall', id: 'call-hospital-ricardo' },
+      { type: 'addDocument', id: 'doc-hospital-ricardo-freitas' },
+      { type: 'discoverPerson', id: 'ricardo', status: 'identified' },
+      { type: 'addEvidence', id: 'ricardo_freitas_died_that_shift' },
+      { type: 'addEvidence', id: 'ricardo_record_poor_id' },
+      { type: 'setFlag', id: 'block07_ricardo_found', value: true },
+      { type: 'completeTask', id: 'task_find_ricardo' },
+      { type: 'addHypothesis', id: 'hyp_ricardo_linked_to_onset' },
+      {
+        type: 'addTask',
+        id: 'task_crosscheck_ricardo_mariana',
+        label: 'Cruzar “Ricardo” com os dados privados de Mariana',
+      },
+      { type: 'setFlag', id: 'block07_ricardo_crosscheck_unlocked', value: true },
+    ],
+    repeat: [
+      {
+        who: 'other',
+        text: 'O resumo de Ricardo Freitas já foi encaminhado ao sistema, delegado.',
+      },
+    ],
+    notYet: [{ who: 'other', text: 'Sem pedido específico de plantão neste momento.' }],
   },
   {
     id: 'call-central',
@@ -210,8 +254,14 @@ export function scriptByContact(contactId: string): CallScript | undefined {
   return callScripts.find((c) => c.contactId === contactId)
 }
 
-export function scriptByExt(ext: string): CallScript | undefined {
-  return callScripts.find((c) => c.ext === ext)
+export function scriptByExt(ext: string, state?: InvestigationState): CallScript | undefined {
+  const matches = callScripts.filter((c) => c.ext === ext)
+  if (!matches.length) return undefined
+  if (state) {
+    const available = matches.find((c) => c.available(state))
+    if (available) return available
+  }
+  return matches[0]
 }
 
 /** Ramais e setores sempre disponíveis na agenda do fixo. */

@@ -20,6 +20,10 @@ export const personRegistryFlag: Record<string, string> = {
   geraldo: 'block06_geraldo_search_unlocked',
   valter: 'block06_jana_followup_done',
   miro: 'block06_valter_trail_done',
+  sandra: 'block07_sandra_search_unlocked',
+  ricardo: 'block07_ricardo_found',
+  henrique: 'block07_henrique_identified',
+  cecilia: 'block07_henrique_trail_done',
 }
 
 export function isPersonVisibleInRegistry(personId: string, inv: InvestigationState): boolean {

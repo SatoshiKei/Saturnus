@@ -833,6 +833,234 @@ export const seedDocuments: Document[] = [
       { type: 'addEvidence', id: 'phone_seized_after_call' },
     ],
   },
+  {
+    id: 'doc-sandra-depoimento',
+    title: 'Depoimento — Sandra Almeida (região da queda)',
+    category: 'Autos',
+    issuer: 'Vara Criminal — volume III',
+    dateLabel: 'Proc. 2020',
+    system: 'autos',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Sandra Almeida: testemunha que afirmou ter visto, retornando da região da queda, alguém com porte semelhante ao de André Silva.',
+      },
+      {
+        id: 'b2',
+        text: 'Depoimento repetido no inquérito, na instrução e no júri. Sem retratação nos autos.',
+      },
+    ],
+    onOpen: [{ type: 'discoverPerson', id: 'sandra', status: 'identified' }],
+  },
+  {
+    id: 'doc-sandra-ficha',
+    title: 'Ficha — Sandra Almeida',
+    category: 'Cadastro (pessoas)',
+    issuer: 'Sistema de consulta policial',
+    system: 'consultas',
+    blocks: [
+      { id: 'b1', text: 'Nome: Sandra Almeida. Sem antecedentes relevantes.' },
+      { id: 'b2', text: 'Endereço residencial atualizado. Sem pedido de proteção ativo.' },
+    ],
+    leads: [{ type: 'address', label: 'Endereço residencial', value: 'Rua das Hortênsias, 212' }],
+    onOpen: [
+      { type: 'discoverPerson', id: 'sandra', status: 'located' },
+      { type: 'unlockLocation', id: 'sandra-casa', status: 'visitAvailable' },
+      { type: 'completeTask', id: 'task_locate_sandra' },
+      {
+        type: 'addTask',
+        id: 'task_talk_sandra',
+        label: 'Ouvir Sandra Almeida — testemunha da região da queda',
+      },
+    ],
+  },
+  {
+    id: 'doc-morsa-duration-note',
+    title: 'Nota — duração da atividade de Morsa (reconstrução)',
+    category: 'Anotação de caso',
+    issuer: 'Delegacia — Augusto Nogueira',
+    dateLabel: '06/11/2026',
+    system: 'documentos',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Cruzamento de arquivos de Lívia, transmissão reconstruída e material obtido via Samuel: Morsa permanece ativo por intervalo significativo naquela noite.',
+      },
+      {
+        id: 'b2',
+        text: 'Ainda sem identidade. Nos materiais de Mariana, o interesse especial recai justamente sobre essa duração — não só sobre o apelido.',
+      },
+      {
+        id: 'b3',
+        text: 'Hipótese de trabalho: a identidade de Morsa talvez seja a ponte entre o caso Elisa e a linha dos protestos. Sem apontar nomes.',
+      },
+    ],
+    onOpen: [],
+  },
+  {
+    id: 'doc-memory-onset-chronology',
+    title: 'Cronologia — primeiros registros anormais de memória',
+    category: 'Anotação de caso',
+    issuer: 'Delegacia — Augusto Nogueira',
+    dateLabel: '06/11/2026',
+    system: 'documentos',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Diário, Notas, mensagens e registros do celular: os primeiros apontamentos realmente anormais ligados à memória começam meses antes do desaparecimento.',
+      },
+      {
+        id: 'b2',
+        text: 'O período coincide com um conjunto específico de plantões no Hospital Municipal — não com um acidente, agressão ou colapso óbvio nos registros.',
+      },
+    ],
+    onOpen: [],
+  },
+  {
+    id: 'doc-hospital-ricardo-freitas',
+    title: 'Hospital Municipal — atendimento / óbito (plantão)',
+    category: 'Institucional',
+    issuer: 'Hospital Municipal — arquivo de plantão',
+    dateLabel: 'Plantão correspondente',
+    system: 'consultas',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Nome declarado: Ricardo Freitas. Atendido na madrugada do plantão cruzado com o período isolado. Óbito registrado na mesma madrugada.',
+      },
+      {
+        id: 'b2',
+        text: 'Documentação de identificação pobre. Descrição: desorientado, paranoico, difícil de identificar; falas desconexas. Nenhum profissional cita fato extraordinário.',
+      },
+      {
+        id: 'b3',
+        text: 'Pode não levar a lugar algum. Registro arquivado sem acompanhamento criminal.',
+      },
+    ],
+    onOpen: [
+      { type: 'discoverPerson', id: 'ricardo', status: 'identified' },
+      { type: 'addEvidence', id: 'ricardo_freitas_died_that_shift' },
+      { type: 'addEvidence', id: 'ricardo_record_poor_id' },
+      { type: 'setFlag', id: 'block07_ricardo_found', value: true },
+      { type: 'completeTask', id: 'task_find_ricardo' },
+      { type: 'addHypothesis', id: 'hyp_ricardo_linked_to_onset' },
+      {
+        type: 'addTask',
+        id: 'task_crosscheck_ricardo_mariana',
+        label: 'Cruzar “Ricardo” com os dados privados de Mariana',
+      },
+      { type: 'setFlag', id: 'block07_ricardo_crosscheck_unlocked', value: true },
+    ],
+  },
+  {
+    id: 'doc-mariana-ricardo-note',
+    title: 'Extração — anotação privada de Mariana (Ricardo)',
+    category: 'Extração forense',
+    issuer: 'Perícia / celular de Mariana',
+    system: 'pericia',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Fragmento sem contexto prévio: referência cruzada entre o nome usado no hospital e um identificador/contato interno.',
+      },
+      {
+        id: 'b2',
+        text: 'A peça é verificável: “Ricardo Freitas” não corresponde à identidade real daquele homem. Nome recuperado: Henrique Valença.',
+      },
+    ],
+    onOpen: [
+      { type: 'addEvidence', id: 'ricardo_identity_false' },
+      { type: 'addEvidence', id: 'ricardo_was_henrique_valenca' },
+      { type: 'discoverPerson', id: 'henrique', status: 'identified' },
+      { type: 'setFlag', id: 'block07_henrique_identified', value: true },
+      { type: 'completeTask', id: 'task_crosscheck_ricardo_mariana' },
+      { type: 'setFlag', id: 'block07_henrique_search_unlocked', value: true },
+      {
+        type: 'addTask',
+        id: 'task_investigate_henrique',
+        label: 'Investigar Henrique Valença',
+      },
+    ],
+  },
+  {
+    id: 'doc-henrique-empresa',
+    title: 'Henrique Valença — vínculo empresarial',
+    category: 'Consultas',
+    issuer: 'Sistema policial / juntas',
+    system: 'consultas',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Henrique Valença: vínculo profissional com antiga empresa de tecnologia (registro encerrado / reestruturado).',
+      },
+      {
+        id: 'b2',
+        text: 'Sem condenação listada. Histórico de demissão/afastamento após período de conflito interno.',
+      },
+    ],
+    onOpen: [
+      { type: 'addEvidence', id: 'henrique_tech_company' },
+      { type: 'discoverPerson', id: 'henrique', status: 'identified' },
+    ],
+  },
+  {
+    id: 'doc-henrique-incidente',
+    title: 'Incidente de segurança — relatório resumido',
+    category: 'Consultas',
+    issuer: 'Arquivo setorial',
+    system: 'consultas',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Henrique reportou incidente de segurança: acessos anômalos, sessões que não fechavam, suspeita de observação.',
+      },
+      {
+        id: 'b2',
+        text: 'A empresa tratou como problema pessoal / burnout. Alegações não comprovadas no relatório oficial.',
+      },
+    ],
+    onOpen: [{ type: 'addEvidence', id: 'henrique_security_incident' }],
+  },
+  {
+    id: 'doc-cecilia-contato',
+    title: 'Contato profissional — Cecília Prado',
+    category: 'Consultas',
+    issuer: 'Lista de colegas / depoentes',
+    system: 'consultas',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Cecília Prado: colega na época do incidente. Endereço residencial atualizado disponível.',
+      },
+      {
+        id: 'b2',
+        text: 'Indicada como quem melhor descreveu a deterioração comportamental de Henrique sem endossar as alegações técnicas.',
+      },
+    ],
+    leads: [{ type: 'address', label: 'Endereço', value: 'Alameda Nova, 88 — ap. 14' }],
+    onOpen: [
+      { type: 'addEvidence', id: 'cecilia_prado_contact' },
+      { type: 'discoverPerson', id: 'cecilia', status: 'located' },
+    ],
+  },
+  {
+    id: 'doc-henrique-pcap-note',
+    title: 'Material digital antigo — captura de rede (Henrique)',
+    category: 'Perícia / forense',
+    issuer: 'Backup / cache recuperado',
+    system: 'pericia',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Dump contendo sessão de voz fragmentada. Pacotes RTP com timestamps, sequence numbers e SSRCs misturados.',
+      },
+      {
+        id: 'b2',
+        text: 'Encaminhado à bancada. Parece uma transmissão corrompida; a análise deve verificar se há mais de um fluxo.',
+      },
+    ],
+    onOpen: [],
+  },
 ]
 
 export function getDocument(id: string): Document | undefined {

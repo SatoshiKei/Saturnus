@@ -16,6 +16,8 @@ import { HEX_NODES, type HexNodeId } from '../../../data/block04/hexagonPuzzle'
 import { GamePanel } from '../../ui/GamePanel'
 import { HexagonSession } from './HexagonSession'
 import { ShepherdMoonsSession } from './ShepherdMoonsSession'
+import { EnceladusSession } from './EnceladusSession'
+import { CassiniSession } from './CassiniSession'
 
 /** PRNG determinístico a partir do id — a forma de onda é estável entre sessões. */
 function seeded(id: string) {
@@ -90,6 +92,8 @@ function analysisState(id: string, flags: Record<string, boolean>): AnalysisStat
   if (HEX_NODES.some((n) => n.evidenceId === id)) return flags.block04_hexagon_done ? 'done' : 'pending'
   if (id === 'unknown_contact_recording') return flags.block04_unknown_analyzed ? 'done' : 'pending'
   if (id === 'valter_group_active_intercepts') return flags.block06_pastor_done ? 'done' : 'pending'
+  if (id === 'anon_hospital_burst_audio') return flags.block07_enceladus_done ? 'done' : 'pending'
+  if (id === 'henrique_rtp_capture') return flags.block07_cassini_done ? 'done' : 'pending'
   return 'none'
 }
 
@@ -116,7 +120,10 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
   const allFiles = [...inv.evidenceOwned]
     .reverse()
     .map((id) => inv.evidence[id])
-    .filter((e): e is Evidence => Boolean(e) && (e.type === 'audio' || e.type === 'derived'))
+    .filter(
+      (e): e is Evidence =>
+        Boolean(e) && (e.type === 'audio' || e.type === 'derived' || e.type === 'digital'),
+    )
   const [filter, setFilter] = useState<Filter>('all')
   const isNew = (id: string) => !inv.audioSeen.includes(id)
   const files = allFiles.filter((f) => {
@@ -143,6 +150,10 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
   const showHexagon = hasHexSet && Boolean(hexCurrent)
   const showPastor =
     Boolean(inv.flags.block06_pastor_available) && current?.id === 'valter_group_active_intercepts'
+  const showEnceladus =
+    Boolean(inv.flags.block07_enceladus_available) && current?.id === 'anon_hospital_burst_audio'
+  const showCassini =
+    Boolean(inv.flags.block07_cassini_available) && current?.id === 'henrique_rtp_capture'
   const showUnknownAnalyze = current?.id === 'unknown_contact_recording'
   const blocked = Boolean(current && (current.exportable === false || current.deviceLocked))
   const playable = Boolean(current?.audioSrc) && !blocked
@@ -428,6 +439,8 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
 
               {showHexagon && hexCurrent ? <HexagonSession currentId={hexCurrent.id as HexNodeId} /> : null}
               {showPastor ? <ShepherdMoonsSession /> : null}
+              {showEnceladus ? <EnceladusSession /> : null}
+              {showCassini ? <CassiniSession /> : null}
 
               {showUnknownAnalyze ? (
                 <div className="aw-orbit" data-testid="unknown-recording-panel">

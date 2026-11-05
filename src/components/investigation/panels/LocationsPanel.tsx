@@ -23,6 +23,9 @@ const SCENE_DONE_LOCATION: { flag: string; locationId: string }[] = [
   { flag: 'block06_jana_followup_done', locationId: 'jana-casa' },
   { flag: 'block06_operation_done', locationId: 'galpao-17' },
   { flag: 'block06_miro_interview_done', locationId: 'detencao-miro' },
+  { flag: 'block07_miro_followup_done', locationId: 'detencao-miro' },
+  { flag: 'block07_sandra_interview_done', locationId: 'sandra-casa' },
+  { flag: 'block07_cecilia_interview_done', locationId: 'cecilia-casa' },
 ]
 
 /** posição do marcador: usa o estado salvo ou, em saves antigos, o seed */
@@ -70,6 +73,13 @@ export function LocationsMap({ onClose }: { onClose: () => void }) {
         row.locationId === 'jana-casa' &&
         inv.flags.block06_geraldo_reflection_done &&
         !inv.flags.block06_jana_followup_done
+      ) {
+        continue
+      }
+      if (
+        row.locationId === 'detencao-miro' &&
+        inv.flags.block07_started &&
+        !inv.flags.block07_miro_followup_done
       ) {
         continue
       }

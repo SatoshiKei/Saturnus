@@ -70,7 +70,7 @@ export function PoliceLandline({ onClose }: { onClose: () => void }) {
 
   const dialNumber = () => {
     if (!number) return
-    const script = scriptByExt(number)
+    const script = scriptByExt(number, inv)
     if (script) return startCall(script)
     const known = landlineDirectory.find((d) => d.key === number)
     if (known) return startCall(idleScript(known.name))
@@ -160,7 +160,12 @@ export function PoliceLandline({ onClose }: { onClose: () => void }) {
                   data-testid={`landline-ext-${e.key}`}
                   disabled={Boolean(session)}
                   onClick={() => {
-                    const script = (e.scriptId && callScripts.find((s) => s.id === e.scriptId)) || idleScript(e.name)
+                    let script =
+                      (e.scriptId && callScripts.find((s) => s.id === e.scriptId)) || idleScript(e.name)
+                    if (e.key === 'HOSP' && inv.flags.block07_ricardo_search_unlocked) {
+                      const ricardo = callScripts.find((s) => s.id === 'call-hospital-ricardo')
+                      if (ricardo) script = ricardo
+                    }
                     setNumber(e.key.length <= 4 && /^\d+$/.test(e.key) ? e.key : '')
                     startCall(script)
                   }}

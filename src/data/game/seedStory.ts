@@ -192,6 +192,48 @@ export const hypothesisCatalog: Hypothesis[] = [
     contradictingEvidenceIds: [],
     state: 'active',
   },
+  {
+    id: 'hyp_miro_may_be_involved_elisa',
+    title: 'Miro pode estar envolvido na morte de Elisa',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
+  {
+    id: 'hyp_morsa_bridges_elisa_protests',
+    title: 'A identidade de Morsa talvez seja a ponte entre Elisa e os protestos',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
+  {
+    id: 'hyp_memory_after_specific_period',
+    title: 'Os problemas de memória de Mariana começaram depois de um período específico de plantões',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
+  {
+    id: 'hyp_ricardo_linked_to_onset',
+    title: 'Ricardo pode estar ligado ao início das anomalias de Mariana',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
+  {
+    id: 'hyp_unknown_tech_origin',
+    title: 'O interlocutor desconhecido pode ter origem tecnológica',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
+  {
+    id: 'hyp_henrique_mariana_same_system',
+    title: 'Henrique e Mariana podem ter sido expostos ao mesmo sistema ou operador',
+    supportingEvidenceIds: [],
+    contradictingEvidenceIds: [],
+    state: 'active',
+  },
 ]
 
 export const contradictionDefs: ContradictionDef[] = [
@@ -526,6 +568,86 @@ export const seedSearchRules: SearchRule[] = [
       },
     ],
   },
+  {
+    id: 'block07_sandra',
+    category: 'police',
+    requiredFlags: ['block07_sandra_search_unlocked'],
+    requiredTerms: ['sandra'],
+    results: [
+      {
+        title: 'Depoimento — Sandra Almeida (região da queda)',
+        snippet: 'Autos do processo Elisa Duarte.',
+        documentId: 'doc-sandra-depoimento',
+      },
+      {
+        title: 'Ficha — Sandra Almeida',
+        snippet: 'Cadastro. Endereço atual.',
+        documentId: 'doc-sandra-ficha',
+      },
+    ],
+  },
+  {
+    id: 'block07_ricardo',
+    category: 'police',
+    requiredFlags: ['block07_ricardo_search_unlocked'],
+    requiredTerms: ['ricardo'],
+    results: [
+      {
+        title: 'Hospital Municipal — atendimento / óbito (plantão)',
+        snippet: 'Cruzamento nominal com plantão no período indicado.',
+        documentId: 'doc-hospital-ricardo-freitas',
+      },
+    ],
+  },
+  {
+    id: 'block07_ricardo_cross',
+    category: 'police',
+    requiredFlags: ['block07_ricardo_crosscheck_unlocked'],
+    requiredTerms: ['ricardo'],
+    results: [
+      {
+        title: 'Extração — anotação privada de Mariana (Ricardo)',
+        snippet: 'Cruzamento com material do celular / diário.',
+        documentId: 'doc-mariana-ricardo-note',
+      },
+    ],
+  },
+  {
+    id: 'block07_henrique',
+    category: 'police',
+    requiredFlags: ['block07_henrique_search_unlocked'],
+    requiredTerms: ['henrique'],
+    results: [
+      {
+        title: 'Henrique Valença — vínculo empresarial',
+        snippet: 'Consulta cadastral / empresas.',
+        documentId: 'doc-henrique-empresa',
+      },
+      {
+        title: 'Incidente de segurança — relatório resumido',
+        snippet: 'Arquivo setorial. Alegações não comprovadas.',
+        documentId: 'doc-henrique-incidente',
+      },
+      {
+        title: 'Contato profissional — Cecília Prado',
+        snippet: 'Lista de colegas / depoentes da época.',
+        documentId: 'doc-cecilia-contato',
+      },
+    ],
+  },
+  {
+    id: 'block07_valenca',
+    category: 'police',
+    requiredFlags: ['block07_henrique_search_unlocked'],
+    requiredTerms: ['valença', 'valenca'],
+    results: [
+      {
+        title: 'Henrique Valença — vínculo empresarial',
+        snippet: 'Consulta cadastral / empresas.',
+        documentId: 'doc-henrique-empresa',
+      },
+    ],
+  },
 ]
 
 
@@ -687,6 +809,36 @@ export const seedStoryTriggers: StoryTrigger[] = [
         label: 'Analisar as interceptações de rádio (bancada) — localizar a entrega',
       },
       { type: 'addDocument', id: 'doc-tabela-logistica-g17n' },
+    ],
+  },
+  {
+    id: 'block07_start',
+    once: true,
+    conditions: [{ type: 'flag', id: 'block06_complete', value: true }],
+    actions: [
+      { type: 'setFlag', id: 'block07_started', value: true },
+      { type: 'unlockLocation', id: 'detencao-miro', status: 'visitAvailable' },
+    ],
+  },
+  {
+    id: 'block07_henrique_trail',
+    once: true,
+    conditions: [
+      { type: 'flag', id: 'block07_henrique_search_unlocked', value: true },
+      { type: 'evidenceOwned', id: 'henrique_tech_company' },
+      { type: 'evidenceOwned', id: 'henrique_security_incident' },
+      { type: 'evidenceOwned', id: 'cecilia_prado_contact' },
+    ],
+    actions: [
+      { type: 'setFlag', id: 'block07_henrique_trail_done', value: true },
+      { type: 'completeTask', id: 'task_investigate_henrique' },
+      { type: 'discoverPerson', id: 'cecilia', status: 'located' },
+      { type: 'unlockLocation', id: 'cecilia-casa', status: 'visitAvailable' },
+      {
+        type: 'addTask',
+        id: 'task_talk_cecilia',
+        label: 'Falar com Cecília Prado sobre Henrique',
+      },
     ],
   },
 ]

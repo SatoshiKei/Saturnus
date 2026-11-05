@@ -17,7 +17,11 @@ export async function newGame(page: Page) {
 /** Aplica um checkpoint do painel DEV (apenas atalho de teste para chegar ao estado de entrada). */
 export async function dev(page: Page, ...ids: string[]) {
   await page.getByTestId('dev-panel-open').click()
-  for (const id of ids) await page.getByTestId(`dev-${id}`).click()
+  for (const id of ids) {
+    const btn = page.getByTestId(`dev-${id}`)
+    await btn.scrollIntoViewIfNeeded()
+    await btn.click()
+  }
   await page.getByTestId('dev-panel-close').click()
 }
 

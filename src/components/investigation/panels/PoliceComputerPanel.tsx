@@ -10,6 +10,12 @@ import {
   onMaraltoLineWeighed,
   revisitEmergencyEntry,
 } from '../../../game/story/block05Handlers'
+import {
+  finishJuliaCamilaOnsetCheck,
+  organizeMemoryOnset,
+  reviewMorsaDuration,
+  unlockHenriqueDump,
+} from '../../../game/story/block07Handlers'
 import { DiaryReader } from '../../../apps/device/HiddenDiaryApp'
 import { playSfx } from '../../../lib/sfx'
 import { GamePanel } from '../../ui/GamePanel'
@@ -516,6 +522,68 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
                       </ul>
                     </>
                   ) : null}
+                </div>
+              ) : null}
+              {inv.flags.block07_morsa_review_unlocked && !inv.flags.block07_morsa_duration_done ? (
+                <div className="pc-caso-actions">
+                  <h4 className="pc-sub">Ação investigativa</h4>
+                  <button
+                    type="button"
+                    className="pc-inline"
+                    data-testid="b07-review-morsa-duration"
+                    onClick={() => {
+                      reviewMorsaDuration()
+                      setOpenDoc('doc-morsa-duration-note')
+                    }}
+                  >
+                    Reavaliar duração da atividade de Morsa (arquivos dos protestos)
+                  </button>
+                </div>
+              ) : null}
+              {inv.flags.block07_memory_onset_unlocked && !inv.flags.block07_memory_onset_done ? (
+                <div className="pc-caso-actions">
+                  <h4 className="pc-sub">Ação investigativa</h4>
+                  <button
+                    type="button"
+                    className="pc-inline"
+                    data-testid="b07-memory-onset"
+                    onClick={() => {
+                      organizeMemoryOnset()
+                      setOpenDoc('doc-memory-onset-chronology')
+                    }}
+                  >
+                    Organizar quando começaram os primeiros registros anormais de memória
+                  </button>
+                </div>
+              ) : null}
+              {inv.flags.block07_julia_camila_check_unlocked &&
+              !inv.flags.block07_julia_camila_checked ? (
+                <div className="pc-caso-actions">
+                  <h4 className="pc-sub">Ação investigativa</h4>
+                  <button
+                    type="button"
+                    className="pc-inline"
+                    data-testid="b07-julia-camila-onset"
+                    onClick={() => finishJuliaCamilaOnsetCheck()}
+                  >
+                    Conferir com Júlia/Camila o período dos plantões
+                  </button>
+                </div>
+              ) : null}
+              {inv.flags.block07_henrique_dump_unlocked && !inv.flags.block07_cassini_available ? (
+                <div className="pc-caso-actions">
+                  <h4 className="pc-sub">Ação investigativa</h4>
+                  <button
+                    type="button"
+                    className="pc-inline"
+                    data-testid="b07-henrique-dump"
+                    onClick={() => {
+                      unlockHenriqueDump()
+                      setOpenDoc('doc-henrique-pcap-note')
+                    }}
+                  >
+                    Localizar material digital antigo de Henrique
+                  </button>
                 </div>
               ) : null}
             </>
