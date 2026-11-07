@@ -79,6 +79,7 @@ export const callScripts: CallScript[] = [
   {
     id: 'call-presidio-visit',
     speaker: 'Unidade prisional — setor de visitas',
+    /** Institucional: agenda do telefone fixo (contact.institution), não o iPhone. */
     contactId: 'contact-presidio',
     available: () => true,
     lines: [
@@ -94,6 +95,54 @@ export const callScripts: CallScript[] = [
       { type: 'unlockLocation', id: 'presidio', status: 'visitAvailable' },
     ],
     repeat: [{ who: 'other', text: 'A autorização do senhor já está registrada. Basta se apresentar na portaria.' }],
+  },
+  {
+    id: 'call-julia-onset',
+    speaker: 'Júlia Martins',
+    contactId: 'contact-julia',
+    available: (s) => flag(s, 'block07_julia_camila_check_unlocked'),
+    lines: [
+      { who: 'other', text: 'Alô?' },
+      {
+        who: 'augusto',
+        text: 'Júlia, Augusto Nogueira. Preciso de um minuto sobre o período em que a Mariana começou a ficar estranha.',
+      },
+      { who: 'other', text: 'Pode falar.' },
+      {
+        who: 'augusto',
+        text: 'Naquele começo — meses antes do desaparecimento — aconteceu alguma coisa excepcional no hospital? Acidente, crise, agressão, algo fora do normal com ela?',
+      },
+      {
+        who: 'other',
+        text: 'Deixa eu pensar… Ela já vinha esquecendo coisa miúda. Parecia deslocada, às vezes. Mas um episódio marcante? Não. Nada que eu lembre.',
+      },
+      { who: 'augusto', text: 'Nenhum plantão que tenha saído do controle?' },
+      {
+        who: 'other',
+        text: 'Se tivesse, acho que a gente lembrava. Foi mais gradual. Estranho, mas sem um estouro.',
+      },
+    ],
+    result: {
+      label: 'Conferência concluída',
+      detail: 'Nenhum evento dramático conhecido no início dos lapsos.',
+    },
+    onComplete: [
+      { type: 'completeCall', id: 'call-julia-onset' },
+      { type: 'setFlag', id: 'block07_julia_camila_checked', value: true },
+      { type: 'addEvidence', id: 'no_dramatic_event_at_onset' },
+      { type: 'completeTask', id: 'task_check_julia_camila_onset' },
+    ],
+    repeat: [
+      {
+        who: 'other',
+        text: 'Já falamos disso. Eu não lembro de nenhum episódio grande naquele período.',
+      },
+    ],
+    notYet: [
+      { who: 'other', text: 'Alô?' },
+      { who: 'augusto', text: 'Júlia — ainda estou organizando umas datas. Te ligo em breve.' },
+      { who: 'other', text: 'Tudo bem.' },
+    ],
   },
   {
     id: 'call-cartorio-elisa',

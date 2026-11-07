@@ -11,7 +11,6 @@ import {
   revisitEmergencyEntry,
 } from '../../../game/story/block05Handlers'
 import {
-  finishJuliaCamilaOnsetCheck,
   organizeMemoryOnset,
   reviewMorsaDuration,
   unlockHenriqueDump,
@@ -563,20 +562,6 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
                     }}
                   >
                     Organizar quando começaram os primeiros registros anormais de memória
-                  </button>
-                </div>
-              ) : null}
-              {inv.flags.block07_julia_camila_check_unlocked &&
-              !inv.flags.block07_julia_camila_checked ? (
-                <div className="pc-caso-actions">
-                  <h4 className="pc-sub">Ação investigativa</h4>
-                  <button
-                    type="button"
-                    className="pc-inline"
-                    data-testid="b07-julia-camila-onset"
-                    onClick={() => finishJuliaCamilaOnsetCheck()}
-                  >
-                    Conferir com Júlia/Camila o período dos plantões
                   </button>
                 </div>
               ) : null}

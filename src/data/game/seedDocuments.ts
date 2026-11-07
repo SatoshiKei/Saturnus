@@ -453,7 +453,13 @@ export const seedDocuments: Document[] = [
         text: 'Agendamento de visitas de autoridades: setor de visitas da unidade, por telefone.',
       },
     ],
-    leads: [{ type: 'phone', label: 'Setor de visitas — Unidade prisional', value: '21 3xxx-9100' }],
+    leads: [
+      {
+        type: 'institution',
+        label: 'Setor de visitas — Unidade prisional',
+        value: '21 3xxx-9100 (telefone fixo da delegacia)',
+      },
+    ],
     onOpen: [
       { type: 'addEvidence', id: 'mariana_andre_visit_record' },
       { type: 'unlockContact', contactId: 'contact-presidio' },

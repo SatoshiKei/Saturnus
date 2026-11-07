@@ -1291,12 +1291,14 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'no_dramatic_event_at_onset',
-    title: 'Júlia/Camila não lembram evento dramático naquele período',
+    title: 'Sem evento dramático conhecido no início dos lapsos',
     type: 'document',
     sourceType: 'witness',
     originalOrDerived: 'original',
     integrity: 'unverified',
-    relatedPersonIds: ['mariana', 'julia'],
+    description:
+      'Júlia não lembra episódio marcante no período. Camila, no hospital, já descrevera lapsos sem apontar causa dramática.',
+    relatedPersonIds: ['mariana', 'julia', 'camila'],
     relatedLocationIds: ['hospital'],
     relatedEventIds: [],
   },
@@ -1307,7 +1309,8 @@ export const seedEvidenceCatalog: Evidence[] = [
     sourceType: 'unknown-channel',
     originalOrDerived: 'original',
     integrity: 'questionable',
-    description: 'Arquivo enviado por origem compatível com o interlocutor desconhecido. Quase inútil à escuta direta.',
+    description:
+      'Arquivo anônimo recebido de origem desconhecida. Quase inútil à escuta direta. Disponível na bancada.',
     relatedPersonIds: ['mariana'],
     relatedLocationIds: ['hospital'],
     relatedEventIds: [],

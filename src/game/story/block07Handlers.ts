@@ -120,30 +120,51 @@ export function organizeMemoryOnset() {
     { type: 'addHypothesis', id: 'hyp_memory_after_specific_period' },
     { type: 'completeTask', id: 'task_memory_onset_chronology' },
     { type: 'setFlag', id: 'block07_julia_camila_check_unlocked', value: true },
+    { type: 'unlockContact', contactId: 'contact-julia' },
     {
       type: 'addTask',
       id: 'task_check_julia_camila_onset',
-      label: 'Conferir com Júlia/Camila se houve evento marcante naquele período',
+      label: 'Falar com Júlia sobre o período em que começaram os lapsos de Mariana',
     },
   ])
 }
 
-export function finishJuliaCamilaOnsetCheck() {
+/** Fim da ligação com Júlia: conferência feita, sem evento dramático. O áudio anônimo vem depois. */
+export function finishJuliaOnsetCall() {
   const s = getInvestigationState()
   if (s.flags.block07_julia_camila_checked) return
   dispatchActions([
+    { type: 'completeCall', id: 'call-julia-onset' },
     { type: 'setFlag', id: 'block07_julia_camila_checked', value: true },
     { type: 'addEvidence', id: 'no_dramatic_event_at_onset' },
     { type: 'completeTask', id: 'task_check_julia_camila_onset' },
+  ])
+}
+
+/**
+ * Evento separado: arquivo anônimo chega à bancada e libera o Enceladus.
+ * Não é enviado por Júlia — origem desconhecida.
+ */
+export function receiveAnonHospitalAudio() {
+  const s = getInvestigationState()
+  if (s.flags.block07_anon_audio_received) return
+  if (!s.flags.block07_julia_camila_checked) return
+  dispatchActions([
     { type: 'setFlag', id: 'block07_anon_audio_received', value: true },
     { type: 'addEvidence', id: 'anon_hospital_burst_audio' },
     { type: 'setFlag', id: 'block07_enceladus_available', value: true },
     {
       type: 'addTask',
       id: 'task_anon_audio_enceladus',
-      label: 'Analisar o áudio anônimo recebido (bancada)',
+      label: 'Analisar o arquivo anônimo recebido',
     },
   ])
+}
+
+/** Compat (checkpoints / saves): checagem + áudio de uma vez. A UI usa a ligação + receiveAnonHospitalAudio. */
+export function finishJuliaCamilaOnsetCheck() {
+  finishJuliaOnsetCall()
+  receiveAnonHospitalAudio()
 }
 
 export function onEnceladusSolved() {

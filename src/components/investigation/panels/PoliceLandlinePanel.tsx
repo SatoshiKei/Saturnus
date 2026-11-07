@@ -40,10 +40,12 @@ export function PoliceLandline({ onClose }: { onClose: () => void }) {
   const [hexScene, setHexScene] = useState(false)
 
   const incoming = Boolean(inv.flags.block04_hex_call_pending) && !inv.flags.block04_hex_call_answered
+  // Agenda do fixo: só contatos institucionais (ex.: unidade prisional).
+  // Pessoas físicas ficam no iPhone de Augusto.
   const agenda = useMemo(
     () =>
       Object.values(inv.contacts)
-        .filter((c) => c.unlocked && scriptByContact(c.id))
+        .filter((c) => c.unlocked && c.institution && scriptByContact(c.id))
         .map((c) => ({ contact: c, script: scriptByContact(c.id)! })),
     [inv.contacts],
   )

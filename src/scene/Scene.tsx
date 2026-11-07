@@ -208,7 +208,10 @@ export function Scene() {
   const unseenAudio = inv.evidenceOwned.filter(
     (id) => inv.evidence[id]?.type === 'audio' && !inv.audioSeen.includes(id),
   ).length
-  const phoneBuzz = inv.discoveries[0]?.kind === 'contact'
+  const contactDiscovery = inv.discoveries[0]?.kind === 'contact' ? inv.discoveries[0] : null
+  const phoneBuzz = Boolean(
+    contactDiscovery && !inv.contacts[contactDiscovery.refId ?? '']?.institution,
+  )
 
   useEffect(() => {
     if (hexRinging && !menuOpen && !locationScene) startRing('landline')

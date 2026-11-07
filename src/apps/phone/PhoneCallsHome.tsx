@@ -3,6 +3,8 @@ import { useGameHub } from '../../app/GameHubContext'
 import { scriptByContact, type CallScript } from '../../data/calls'
 import { CallSession } from '../../components/investigation/CallSession'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
+import { dispatchActions } from '../../game/state/investigationStore'
+import { receiveAnonHospitalAudio } from '../../game/story/block07Handlers'
 import { markContactSeen, newContactIds } from '../../lib/contactsSeen'
 import { CallList } from '../whatsapp/CallList'
 
@@ -43,7 +45,24 @@ export function PhoneCallsHome({ onBack }: PhoneCallsHomeProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAugusto, tab, fresh.join('|')])
 
-  const contacts = Object.values(inv.contacts).filter((c) => c.unlocked)
+  // Compat: save antigo que concluiu a checagem pelo botão do Caso, sem a ligação.
+  useEffect(() => {
+    if (!isAugusto) return
+    if (inv.flags.block07_julia_camila_checked && !inv.callsDone.includes('call-julia-onset')) {
+      dispatchActions([{ type: 'completeCall', id: 'call-julia-onset' }])
+    }
+  }, [isAugusto, inv.flags.block07_julia_camila_checked, inv.callsDone])
+
+  // Se a checagem já passou e o áudio não chegou (save antigo / hangup a meio), entregar fora da chamada.
+  useEffect(() => {
+    if (!isAugusto || session) return
+    if (!inv.flags.block07_julia_camila_checked || inv.flags.block07_anon_audio_received) return
+    const t = window.setTimeout(() => receiveAnonHospitalAudio(), 900)
+    return () => window.clearTimeout(t)
+  }, [isAugusto, session, inv.flags.block07_julia_camila_checked, inv.flags.block07_anon_audio_received])
+
+  // Instituições ficam no telefone fixo — não na agenda pessoal.
+  const contacts = Object.values(inv.contacts).filter((c) => c.unlocked && !c.institution)
 
   return (
     <div
@@ -102,7 +121,19 @@ export function PhoneCallsHome({ onBack }: PhoneCallsHomeProps) {
 
       {isAugusto && tab === 'contacts' ? (
         session ? (
-          <CallSession key={session.id} script={session} compact onEnd={() => setSession(null)} />
+          <CallSession
+            key={session.id}
+            script={session}
+            compact
+            onEnd={() => {
+              const endedId = session.id
+              setSession(null)
+              // Áudio anônimo chega DEPOIS da conversa — não é Júlia quem envia.
+              if (endedId === 'call-julia-onset') {
+                window.setTimeout(() => receiveAnonHospitalAudio(), 700)
+              }
+            }}
+          />
         ) : (
           <ul className="phone-contacts" data-testid="phone-contacts">
             {contacts.map((c) => (

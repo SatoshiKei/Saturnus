@@ -69,8 +69,18 @@ function applyOne(state: InvestigationState, action: StoryActionRef): Investigat
         {
           id: `evidence:${action.id}`,
           kind: def.type === 'audio' ? 'audio' : 'evidence',
-          title: def.type === 'audio' ? (def.displayFileName ?? def.title) : def.title,
-          subtitle: def.type === 'audio' ? 'Disponível na bancada de áudio' : undefined,
+          title:
+            def.type === 'audio'
+              ? def.sourceType === 'unknown-channel'
+                ? 'Arquivo anônimo recebido'
+                : (def.displayFileName ?? def.title)
+              : def.title,
+          subtitle:
+            def.type === 'audio'
+              ? def.sourceType === 'unknown-channel'
+                ? 'Origem desconhecida · disponível na bancada'
+                : 'Disponível na bancada de áudio'
+              : undefined,
           source: evidenceSourceLabel(def),
           summary: def.description,
           refId: action.id,
@@ -136,7 +146,13 @@ function applyOne(state: InvestigationState, action: StoryActionRef): Investigat
         id: `contact:${action.contactId}`,
         kind: 'contact',
         title: c.displayName,
-        subtitle: c.phone ? `Número registrado: ${c.phone}` : 'Registrado na agenda',
+        subtitle: c.institution
+          ? c.phone
+            ? `Anotar no telefone fixo: ${c.phone}`
+            : 'Registrado na agenda do telefone fixo'
+          : c.phone
+            ? `Número registrado: ${c.phone}`
+            : 'Registrado na agenda',
         refId: action.contactId,
       })
     }
