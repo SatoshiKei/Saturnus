@@ -94,24 +94,50 @@ export const sceneIntros: Record<SceneId, SceneIntro> = {
  */
 export const HUB_REFLECTION_BACKGROUND = '/assets/scene/hub-office-bg.jpg'
 
-/** Fundos (processados) usados em cada cena — auditoria de backgrounds. */
+const BG = '/assets/backgrounds/processed'
+
+/**
+ * Fundos (processados) usados em cada cena — auditoria de backgrounds.
+ * Só arquivos em `public/assets/backgrounds/processed/` são servidos.
+ *
+ * ATENÇÃO: o nome de vários arquivos em `assets/backgrounds/` NÃO corresponde ao
+ * conteúdo (ex.: `misc-07-workshop-garage` = tela de código; `bar-01-…` = prato
+ * de comida; `port-03-warehouse-harbor` = centro logístico iluminado).
+ * Só usar um arquivo após conferir a imagem.
+ */
 export const sceneBackgrounds: Record<SceneId, string> = {
-  hospital: '/assets/backgrounds/processed/hospital/hospital-02-corridor-chairs.jpg',
-  vertice: '/assets/backgrounds/processed/nightclub/nightclub-01-lights-haze.jpg',
-  lucas: '/assets/backgrounds/processed/university/university-03-classroom-empty.jpg',
-  livia: '/assets/backgrounds/processed/radio/radio-01-newsroom.jpg',
-  nico: '/assets/backgrounds/processed/nightclub/nightclub-01-lights-haze.jpg',
-  samuel: '/assets/backgrounds/processed/apartment/apartment-01-living-room.jpg',
-  andre: '/assets/backgrounds/processed/prison/prison-01-visit-room.jpg',
-  jana: '/assets/backgrounds/processed/apartment/apartment-01-living-room.jpg',
-  geraldo: '/assets/backgrounds/processed/apartment/apartment-01-living-room.jpg',
-  operation: '/assets/backgrounds/processed/nightclub/nightclub-01-lights-haze.jpg',
-  miro: '/assets/backgrounds/processed/prison/prison-01-visit-room.jpg',
-  sandra: '/assets/backgrounds/processed/apartment/apartment-01-living-room.jpg',
-  cecilia: '/assets/backgrounds/processed/apartment/apartment-01-living-room.jpg',
-  mauro: '/assets/backgrounds/processed/apartment/apartment-01-living-room.jpg',
-  denis: '/assets/backgrounds/processed/nightclub/nightclub-01-lights-haze.jpg',
-  bia: '/assets/backgrounds/processed/apartment/apartment-01-living-room.jpg',
-  rui: '/assets/backgrounds/processed/apartment/apartment-01-living-room.jpg',
-  trail: '/assets/backgrounds/processed/nightclub/nightclub-01-lights-haze.jpg',
+  hospital: `${BG}/hospital/hospital-02-corridor-chairs.jpg`,
+  vertice: `${BG}/nightclub/nightclub-01-lights-haze.jpg`,
+  lucas: `${BG}/university/university-03-classroom-empty.jpg`,
+  livia: `${BG}/radio/radio-01-newsroom.jpg`,
+  // Titã Club ≠ Vértice: segunda variante de casa noturna (palco/fumaça vermelha).
+  nico: `${BG}/nightclub/nightclub-02-dj-booth.jpg`,
+  andre: `${BG}/prison/prison-01-visit-room.jpg`,
+  // Miro: sala de entrevista da detenção → ambiente policial (não a sala de visita do presídio).
+  miro: `${BG}/police/police-02-interrogation-tone.jpg`,
+
+  // Residências — 3 variantes reutilizáveis (escura / clara / hall de prédio).
+  samuel: `${BG}/apartment/apartment-01-living-room.jpg`,
+  geraldo: `${BG}/apartment/apartment-01-living-room.jpg`,
+  sandra: `${BG}/apartment/apartment-01-living-room.jpg`,
+  bia: `${BG}/apartment/apartment-01-living-room.jpg`,
+  jana: `${BG}/apartment/apartment-01-living-modest.jpg`,
+  mauro: `${BG}/apartment/apartment-01-living-modest.jpg`,
+  rui: `${BG}/apartment/apartment-01-living-modest.jpg`,
+  cecilia: `${BG}/apartment/apartment-04-hall-brazil-sp.jpg`,
+
+  // ── NOVO ASSET NECESSÁRIO (fallback técnico TEMPORÁRIO — NÃO é o fundo final) ──
+  // operation — galpão/armazém industrial (pátio norte, noite). Nenhum asset existente serve.
+  operation: `${BG}/nightclub/nightclub-01-lights-haze.jpg`,
+  // denis — oficina mecânica / pátio. Nenhum asset existente serve.
+  denis: `${BG}/nightclub/nightclub-01-lights-haze.jpg`,
+  // trail — galpão desativado, setor norte, madrugada, silencioso/vazio. Nenhum asset existente serve.
+  trail: `${BG}/nightclub/nightclub-01-lights-haze.jpg`,
+}
+
+/** Cenas cujo fundo atual é só fallback técnico (ver NOVO ASSET NECESSÁRIO acima). */
+export const sceneBackgroundsPending: Partial<Record<SceneId, string>> = {
+  operation: 'galpão/armazém industrial',
+  denis: 'oficina mecânica',
+  trail: 'galpão desativado, setor norte',
 }
