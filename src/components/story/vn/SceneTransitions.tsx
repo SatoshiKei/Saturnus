@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode, type WheelEvent } from 'react'
 import { assetPath } from '../../../lib/assetPath'
 import { getInvestigationState, setFlag } from '../../../game/state/investigationStore'
+import { afterReflectionComplete } from '../../../game/story/reflectionAftermath'
 import { reflectionForScene, type ReflectionDef } from '../../../data/reflections'
 import { sceneIntros, type SceneId } from '../../../data/sceneIntros'
 import { playSfx } from '../../../lib/sfx'
@@ -346,6 +347,7 @@ export function SceneRunner({
             background={reflectionDef.background}
             onDone={() => {
               setFlag(`${reflectionDef.id}_seen`, true)
+              afterReflectionComplete(reflectionDef.id)
               startOutro()
             }}
           />

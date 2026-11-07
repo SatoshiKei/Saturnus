@@ -1,9 +1,11 @@
 # Walkthrough — Saturnus (Blocos 1 a 9)
 
-Referência **técnica** (flags, ordem de sistemas, puzzles). Para leitura normal, use **[WALKTHROUGH_GUIA.md](WALKTHROUGH_GUIA.md)** ou **[WALKTHROUGH.txt](WALKTHROUGH.txt)**.
+Referência **técnica curta** (flags, ordem de sistemas, puzzles).  
+Para a **especificação completa** (interfaces, componentes, arquitetura + walkthrough robusto), use **[SATURNUS_SPEC_WALKTHROUGH.md](SATURNUS_SPEC_WALKTHROUGH.md)**.  
+Para leitura normal, use **[WALKTHROUGH_GUIA.md](WALKTHROUGH_GUIA.md)** ou **[WALKTHROUGH.txt](WALKTHROUGH.txt)**.
 
 Guia simplificado para zerar a investigação do início ao fim (`saturnus_complete`).  
-Detalhes técnicos e roteiro: `docs/story/BLOCK_0X_*.md` e `docs/gameplay/INVESTIGATION_FLOW.md`.
+Detalhes por bloco: `docs/story/BLOCK_0X_*.md` e `docs/gameplay/INVESTIGATION_FLOW.md`.
 
 ---
 

@@ -1,11 +1,22 @@
+import { useEffect } from 'react'
 import { MEMORY_WORD } from '../../data/block09/memoryPuzzle'
 import { dismissMemoryWordOverlay } from '../../game/story/block09Handlers'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
+import { setFullscreenScene } from '../../app/uiStore'
 
 /** Apresentação final da palavra — só após Puzzle 12. */
 export function MemoryWordOverlay() {
   const inv = useInvestigation()
-  if (!inv.flags.block09_memory_word_shown || inv.flags.block09_memory_word_dismissed) return null
+  const visible =
+    Boolean(inv.flags.block09_memory_word_shown) && !inv.flags.block09_memory_word_dismissed
+
+  useEffect(() => {
+    if (!visible) return
+    setFullscreenScene(true)
+    return () => setFullscreenScene(false)
+  }, [visible])
+
+  if (!visible) return null
 
   return (
     <div className="tr-refl-layer" data-testid="memory-word-overlay" role="dialog" aria-modal="true">

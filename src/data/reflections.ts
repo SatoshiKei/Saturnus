@@ -1,6 +1,6 @@
 import { getInvestigationState } from '../game/state/investigationStore'
 import type { SceneId } from './sceneIntros'
-import { sceneBackgrounds } from './sceneIntros'
+import { HUB_REFLECTION_BACKGROUND, sceneBackgrounds } from './sceneIntros'
 
 /**
  * Modo Reflexão: pensamento interno de Augusto (NVL, sem sprites). É aqui que ficam as sínteses —
@@ -74,7 +74,7 @@ export const reflections: ReflectionDef[] = [
   },
   {
     id: 'refl-hex-call',
-    background: sceneBackgrounds.hospital,
+    background: HUB_REFLECTION_BACKGROUND,
     blocks: [
       'Ninguém falou. Só o áudio, do começo ao fim, como se alguém quisesse que eu ouvisse sem responder.',
       'Lá fora, outros telefones tocam. A delegacia nunca fica em silêncio completo, e mesmo assim este silêncio chegou até a minha mesa.',
@@ -105,7 +105,7 @@ export const reflections: ReflectionDef[] = [
   },
   {
     id: 'refl-b05-andre',
-    background: sceneBackgrounds.andre,
+    background: HUB_REFLECTION_BACKGROUND,
     blocks: [
       'Nico apontou uma inconsistência real. A jaqueta é outro detalhe estranho. Jana omitiu o óbvio até ser perguntada.',
       'Nada disso dissolve o conjunto que condenou André: discussão, ciúmes, álibi fraco, alguém parecido perto da queda.',
@@ -114,7 +114,7 @@ export const reflections: ReflectionDef[] = [
   },
   {
     id: 'refl-b05-maralto',
-    background: sceneBackgrounds.livia,
+    background: HUB_REFLECTION_BACKGROUND,
     blocks: [
       'Lívia, a rádio, os protestos, o núcleo mascarado, Morsa, Samuel. Material suspeito. Pessoas que não falam. Crimes reais.',
       'Nada disso explica por que Mariana desapareceu.',
@@ -123,7 +123,7 @@ export const reflections: ReflectionDef[] = [
   },
   {
     id: 'refl-b05-coincidence',
-    background: sceneBackgrounds.hospital,
+    background: HUB_REFLECTION_BACKGROUND,
     blocks: [
       'Pode ser coincidência. Estou reconstruindo a mesma investigação que Mariana fez — naturalmente chego às mesmas pessoas e aos mesmos arquivos.',
       'Mas a comparação incomoda: alguns materiais quase não servem fora da ordem em que os encontrei. Timestamps e seleção não parecem acidentais.',
@@ -132,7 +132,7 @@ export const reflections: ReflectionDef[] = [
   },
   {
     id: 'refl-b05-path',
-    background: sceneBackgrounds.hospital,
+    background: HUB_REFLECTION_BACKGROUND,
     blocks: [
       'A chamada colocou a polícia no apartamento. O celular foi apreendido. Os arquivos só fazem sentido depois de certas pessoas. Mariana já tinha percorrido quase o mesmo caminho.',
       'Isso não parece acidente de investigação. Parece um percurso deixado para alguém reconstruir.',
@@ -152,7 +152,10 @@ export const reflections: ReflectionDef[] = [
     ],
   },
   {
+    /** Síntese imediata da entrevista — SceneRunner, local Geraldo. */
     id: 'refl-b06-geraldo',
+    sceneId: 'geraldo',
+    whenFlag: 'block06_refl_geraldo_pending',
     background: sceneBackgrounds.geraldo,
     blocks: [
       'Elisa estava mais alcoolizada. Isso muda percepção, equilíbrio, memória e o peso de alguns horários lembrados por terceiros.',
@@ -161,7 +164,10 @@ export const reflections: ReflectionDef[] = [
     ],
   },
   {
+    /** Síntese imediata do primeiro interrogatório — SceneRunner, detenção. */
     id: 'refl-b06-miro',
+    sceneId: 'miro',
+    whenFlag: 'block06_refl_miro_pending',
     background: sceneBackgrounds.miro,
     blocks: [
       'Pela primeira vez há outro homem concreto na trajetória de Elisa naquela madrugada: Miro, seguindo pertences de Jana.',
@@ -170,7 +176,10 @@ export const reflections: ReflectionDef[] = [
     ],
   },
   {
+    /** Síntese imediata da entrevista — SceneRunner, casa Sandra. */
     id: 'refl-b07-sandra',
+    sceneId: 'sandra',
+    whenFlag: 'block07_refl_sandra_pending',
     background: sceneBackgrounds.sandra,
     blocks: [
       'Sandra continua certa de que viu André. Seis anos de depoimento não se desfazem com outro nome.',
@@ -180,7 +189,7 @@ export const reflections: ReflectionDef[] = [
   },
   {
     id: 'refl-b07-tech',
-    background: sceneBackgrounds.cecilia,
+    background: HUB_REFLECTION_BACKGROUND,
     blocks: [
       'Henrique falava com algo que respondia rápido, lembrava contexto e sabia demais. Parece sistema automatizado — bot, ferramenta, operador humano por trás.',
       'Há similaridade suficiente com o interlocutor desconhecido de Mariana. Mesmo tipo de sistema ou mesmo operador: hipótese, não prova.',
@@ -188,8 +197,9 @@ export const reflections: ReflectionDef[] = [
     ],
   },
   {
+    /** Puzzle Rings na bancada → hub / delegacia. */
     id: 'refl-b08-morsa',
-    background: sceneBackgrounds.andre,
+    background: HUB_REFLECTION_BACKGROUND,
     blocks: [
       'A timeline fecha: Morsa era André. Ele escondeu onde estava.',
       'Maralto não precisava ser conspiração empresarial. Mariana reconstruía os protestos porque o irmão mentiu sobre o intervalo.',
@@ -197,7 +207,10 @@ export const reflections: ReflectionDef[] = [
     ],
   },
   {
+    /** Síntese imediata do confronto — SceneRunner, presídio (`andre`). */
     id: 'refl-b08-andre',
+    sceneId: 'andre',
+    whenFlag: 'block08_refl_andre_pending',
     background: sceneBackgrounds.andre,
     blocks: [
       'Ele admite. Escondeu o núcleo e destruiu a própria defesa.',
@@ -207,7 +220,7 @@ export const reflections: ReflectionDef[] = [
   },
   {
     id: 'refl-b08-accident',
-    background: sceneBackgrounds.rui,
+    background: HUB_REFLECTION_BACKGROUND,
     blocks: [
       'Álcool, jaqueta, Miro seguindo, guardrail já comprometido, queda. Sem empurrão necessário.',
       'Elisa provavelmente morreu em um acidente. André passou seis anos preso por um homicídio que provavelmente nunca aconteceu.',
@@ -215,8 +228,9 @@ export const reflections: ReflectionDef[] = [
     ],
   },
   {
+    /** VTR-14 / escala — descoberta na delegacia. */
     id: 'refl-b08-final',
-    background: sceneBackgrounds.andre,
+    background: HUB_REFLECTION_BACKGROUND,
     blocks: [
       'Eu o parei. Jovem, nervoso, dizia ter bebido pouco, pedia a habilitação, prometia ir para casa. Eu vi o risco. Deixei seguir.',
       'Não o matei. Mas minha decisão participou da cadeia. Rui bateu no guardrail. Elisa caiu depois.',
@@ -224,7 +238,10 @@ export const reflections: ReflectionDef[] = [
     ],
   },
   {
+    /** Imediata após achar o corpo — SceneRunner no local da trilha. */
     id: 'refl-b09-death',
+    sceneId: 'trail',
+    whenFlag: 'block09_refl_death_pending',
     background: sceneBackgrounds.trail,
     blocks: [
       'Mariana está morta. André pode ser inocente. Elisa morreu em acidente. Eu participei da cadeia. O Omitido continua.',
@@ -234,7 +251,7 @@ export const reflections: ReflectionDef[] = [
   },
   {
     id: 'refl-b09-final',
-    background: sceneBackgrounds.hospital,
+    background: HUB_REFLECTION_BACKGROUND,
     blocks: [
       'Elisa pode ser reaberta. André pode ter reparação. Mariana não volta. O Omitido aprendeu demais — e pode ter aprendido comigo.',
       'Se algo conhece todas as suas lembranças, contradições, medos e maneiras de pensar, o que ainda falta para essa coisa ser você?',

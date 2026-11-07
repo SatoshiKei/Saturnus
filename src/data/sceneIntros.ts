@@ -88,6 +88,12 @@ export const sceneIntros: Record<SceneId, SceneIntro> = {
   },
 }
 
+/**
+ * Fundo da mesa/delegacia para reflexões de hub (raciocínio após documentos, bancada, etc.).
+ * Mesmo asset da cena principal — não depende de `sceneBackgrounds` de visita.
+ */
+export const HUB_REFLECTION_BACKGROUND = '/assets/scene/hub-office-bg.jpg'
+
 /** Fundos (processados) usados em cada cena — auditoria de backgrounds. */
 export const sceneBackgrounds: Record<SceneId, string> = {
   hospital: '/assets/backgrounds/processed/hospital/hospital-02-corridor-chairs.jpg',

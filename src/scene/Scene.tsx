@@ -6,7 +6,7 @@ import { DESIGN_HEIGHT, DESIGN_WIDTH } from '../types/scene'
 import type { SceneObjectDef } from '../types/scene'
 import { usePhoneSession } from '../app/PhoneSessionContext'
 import { useGameHub } from '../app/GameHubContext'
-import { hintsAlreadySeen, markHintsSeen, useUiState } from '../app/uiStore'
+import { hintsAlreadySeen, markHintsSeen, setFullscreenScene, useUiState } from '../app/uiStore'
 import { useInvestigation } from '../game/hooks/useInvestigation'
 import { PhoneShell } from '../phone/PhoneShell'
 import { SceneObject, type ObjectFx } from './SceneObject'
@@ -36,31 +36,9 @@ import { BiaInterviewScene } from '../components/story/BiaInterviewScene'
 import { RuiInterviewScene } from '../components/story/RuiInterviewScene'
 import { ReflectionView } from '../components/story/vn/SceneTransitions'
 import { reflectionById } from '../data/reflections'
+import { HUB_REFLECTION_BACKGROUND } from '../data/sceneIntros'
 import { setFlag } from '../game/state/investigationStore'
-import {
-  onAndreStillGuiltyReflectionDone,
-  onCoincidenceReflectionDone,
-  onMaraltoReflectionDone,
-  onPathReflectionDone,
-} from '../game/story/block05Handlers'
-import {
-  onGeraldoReflectionDone,
-  onMiroReflectionDone,
-} from '../game/story/block06Handlers'
-import {
-  onSandraReflectionDone,
-  onTechReflectionDone,
-} from '../game/story/block07Handlers'
-import {
-  onAccidentReflectionDone,
-  onAndreWronglyReflectionDone,
-  onFinalReflectionDone,
-  onMorsaReflectionDone,
-} from '../game/story/block08Handlers'
-import {
-  onDeathReflectionDone,
-  onSaturnusFinalReflectionDone,
-} from '../game/story/block09Handlers'
+import { afterReflectionComplete } from '../game/story/reflectionAftermath'
 import { TrailDiscoveryScene } from '../components/story/TrailDiscoveryScene'
 import { MemoryWordOverlay } from '../components/investigation/MemoryWordOverlay'
 import { onMarianaPhoneClosed, onMarianaPhoneOpened } from '../game/story/block01Handlers'
@@ -161,6 +139,16 @@ export function Scene() {
   const { menuOpen } = useUiState()
   const soloReflectionId = pendingSoloReflection(inv.flags)
   const soloReflectionDef = soloReflectionId ? reflectionById(soloReflectionId) : undefined
+  const soloReflectionActive = Boolean(
+    !locationScene && !hubPanel && !phoneOpen && soloReflectionId && soloReflectionDef,
+  )
+
+  // Pausar discoveries enquanto a reflection solo cobre o hub.
+  useEffect(() => {
+    if (!soloReflectionActive) return
+    setFullscreenScene(true)
+    return () => setFullscreenScene(false)
+  }, [soloReflectionActive])
 
   const [hoverId, setHoverId] = useState<string | null>(null)
   const [camera, setCamera] = useState<Camera | null>(null)
@@ -390,32 +378,24 @@ export function Scene() {
             renderScene={(close) => renderLocationScene(locationScene, close)}
           />
         ) : null}
-        {!locationScene && !hubPanel && !phoneOpen && soloReflectionId && soloReflectionDef ? (
+        {soloReflectionActive && soloReflectionId && soloReflectionDef ? (
           <div className="tr-refl-layer" data-testid="block05-solo-reflection">
             <ReflectionView
               blocks={soloReflectionDef.blocks}
-              background={soloReflectionDef.background}
+              background={
+                // Fallback: reflection com sceneId já saiu do local → delegacia, nunca cenário antigo no hub.
+                soloReflectionDef.sceneId ? HUB_REFLECTION_BACKGROUND : soloReflectionDef.background
+              }
               onDone={() => {
                 setFlag(`${soloReflectionId}_seen`, true)
-                if (soloReflectionId === 'refl-b05-andre') onAndreStillGuiltyReflectionDone()
-                else if (soloReflectionId === 'refl-b05-maralto') onMaraltoReflectionDone()
-                else if (soloReflectionId === 'refl-b05-coincidence') onCoincidenceReflectionDone()
-                else if (soloReflectionId === 'refl-b05-path') onPathReflectionDone()
-                else if (soloReflectionId === 'refl-b06-geraldo') onGeraldoReflectionDone()
-                else if (soloReflectionId === 'refl-b06-miro') onMiroReflectionDone()
-                else if (soloReflectionId === 'refl-b07-sandra') onSandraReflectionDone()
-                else if (soloReflectionId === 'refl-b07-tech') onTechReflectionDone()
-                else if (soloReflectionId === 'refl-b08-morsa') onMorsaReflectionDone()
-                else if (soloReflectionId === 'refl-b08-andre') onAndreWronglyReflectionDone()
-                else if (soloReflectionId === 'refl-b08-accident') onAccidentReflectionDone()
-                else if (soloReflectionId === 'refl-b08-final') onFinalReflectionDone()
-                else if (soloReflectionId === 'refl-b09-death') onDeathReflectionDone()
-                else if (soloReflectionId === 'refl-b09-final') onSaturnusFinalReflectionDone()
+                afterReflectionComplete(soloReflectionId)
               }}
             />
           </div>
         ) : null}
-        {!locationScene && !hubPanel && !phoneOpen ? <MemoryWordOverlay /> : null}
+        {!soloReflectionActive && !locationScene && !hubPanel && !phoneOpen ? (
+          <MemoryWordOverlay />
+        ) : null}
         {returnFade ? <div className="tr-return" data-testid="vn-return-fade" aria-hidden /> : null}
 
         <HubOverlay panel={hubPanel} onClose={handleCloseHub} />
