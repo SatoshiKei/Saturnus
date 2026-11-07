@@ -1,0 +1,212 @@
+================================================================================
+  SATURNUS — Guia do jogador (do início ao fim)
+================================================================================
+
+Este arquivo é a versão em texto simples do guia humano (WALKTHROUGH_GUIA.md).
+Para referência técnica (flags, testes), use WALKTHROUGH.md na mesma pasta.
+
+
+COMO O JOGO FUNCIONA
+--------------------
+
+Você trabalha na mesa do delegado: pasta, bancada de áudio, dois celulares,
+telefone fixo, computador, mapa e caderno. Quando souber um endereço ou tiver
+motivo para ir a um lugar, abra o mapa e viaje.
+
+  Pasta ............... BO e documentos em papel
+  Bancada ............. gravações e quebra-cabeças de som
+  Celular Mariana ..... aparelho apreendido (WhatsApp, notas, arquivos)
+  Celular Augusto ..... contatos e conversas dele
+  Telefone fixo ....... ramais (cartório, perícia, hospital...)
+  Monitor ............. consultas policiais
+  Mapa ................ só lugares já descobertos
+  Caderno ............. provas, pessoas, hipóteses
+
+As pendências (bloco de notas) listam o que falta. Feche avisos e cartões de
+evidência na tela para não bloquear cliques.
+
+Quando um documento mostra telefone, endereço ou ramal, você liga ou vai ao
+mapa — não espere botão "entrevistar" no computador.
+
+Salvar: menu → Continuar ou Novo jogo.
+
+
+PARTE 1 — O DESAPARECIMENTO (Bloco 1)
+-------------------------------------
+
+No fim, Rafael aparece no WhatsApp do Augusto.
+
+  1. Pasta → BO → registrar ocorrência no trecho final.
+  2. Bancada → ligação de emergência → análise provisória.
+  3. Celular Mariana → WhatsApp → abrir Júlia.
+  4. Mesmo celular → Rafael → reproduzir áudio.
+  5. Contradição dos lapsos se registra sozinha; hospital entra no mapa.
+  6. Mapa → Hospital → falar sobre:
+       - última vez que viram Mariana
+       - comportamento recente
+       - falhas de memória
+       - pasta da Júlia
+       - Camila a sós
+  7. Encerrar visita.
+
+
+PARTE 2 — DUAS TRILHAS (Bloco 2)
+--------------------------------
+
+Faça as duas trilhas (ordem livre). Só avança de verdade quando as duas
+fecharem. Pendência seguinte: localizar Nico.
+
+TRILHA DO VÉRTICE
+  1. Celular Augusto → Rafael → áudio encaminhado.
+  2. Bancada → análise provisória desse áudio → Vértice no mapa.
+  3. Mapa → Vértice → Iara, Sandro, Caio, interesse de Mariana, arquivos
+     antigos (Nico).
+
+TRILHA PAULA → LUCAS → ELISA
+  1. Celular Mariana → Notas → quarta → libera Paula no Augusto.
+  2. Celular Augusto → WhatsApp → Paula (conversa VAZIA) → Mensagem →
+     nove trocas até Moreira / "coisa antiga da família".
+     (Paula no celular da Mariana, só plantão, NÃO conta.)
+  3. Monitor → Lucas → cadastro → mapa → Universidade → todos os assuntos.
+  4. Monitor → Elisa Duarte → resumo do processo + testemunhas.
+
+CONVERGÊNCIA
+  Com Nico no Vértice, pista Paula/Lucas, resumo Elisa e Nico testemunha,
+  o jogo amarra sozinho e pede para localizar Nico.
+
+
+PARTE 3 — NOITES FORA DE ORDEM (Bloco 3)
+----------------------------------------
+
+Pendência seguinte: quem era Morsa.
+
+  1. Monitor → cadastro de Nico → ligar → Titã no mapa.
+  2. Mapa → Titã → entrevista completa.
+  3. Bancada → duas gravações Noite X → Janus.
+  4. Celular Mariana → Arquivos → REC_1102.m4a (após reanálise liberada).
+  5. Monitor → Maralto (empresa, reportagem).
+  6. Opcional: cruzar Maralto + Elisa na consulta.
+  7. Reportagem → ligar Rádio Costeira → mapa → Lívia → áudio na bancada.
+  8. Bancada → Saturnalia → Morsa (apelido) + pista Samuel.
+
+Extra: fixo ramal 204 (cartório) → cronologia Elisa → ler em Processos/Autos
+(registra contradição relógio da boate; não encerra o bloco sozinha).
+
+
+PARTE 4 — MEMÓRIAS EMPRESTADAS (Bloco 4)
+----------------------------------------
+
+Pendência seguinte: voltar a falar com Nico.
+
+SAMUEL
+  Monitor → Maralto ou protesto → ocorrência + detidos → Samuel → endereço
+  → mapa → entrevista.
+
+ANDRÉ
+  Monitor → André → visitas → ligar presídio → mapa → entrevista.
+
+DIÁRIO SECRETO
+  1. Monitor → ligações autorizadas de André + log "desconhecido" ou
+     "sem nome" → contradição de horários.
+  2. Fixo toca → atender → seis áudios na bancada.
+  3. Bancada → hexágono A-D-B-F-C-E-A (mais antigo primeiro) → frase do
+     diário → PIN 481526.
+  4. Fixo 212 Perícia → laudo → monitor Perícia → PIN 481526 → diário.
+  5. Ler diário → gravação do desconhecido → analisar na bancada.
+
+
+PARTE 5 — O PERCURSO DEIXADO (Bloco 5)
+--------------------------------------
+
+Próximo foco: recomeçar Elisa por Geraldo.
+
+  1. Mapa → Titã → Nico (jaqueta / Jana).
+  2. Monitor → Jana → mapa → entrevista.
+  3. Monitor → peças Elisa → revisão → reflexão André.
+  4. Monitor, aba Caso (botões conforme liberar):
+       - reavaliar Maralto / protestos
+       - cronologia dos contatos de Mariana
+       - comparar com arquivos do celular
+       - reabrir emergência / entrada / apreensão
+  5. Última reflexão → fim do bloco.
+
+
+PARTE 6 — A PESSOA ERRADA (Bloco 6)
+-----------------------------------
+
+  1. Geraldo (autos + ficha + comanda) → mapa → reflexão.
+  2. Jana de novo (Válter).
+  3. Consultas Válter / Miro → interceptação rádio.
+  4. Bancada → Luas Pastoras → Galpão 17.
+  5. Mapa → operação → Miro → reflexão.
+
+
+PARTE 7 — O HOMEM QUE NÃO ERA RICARDO (Bloco 7)
+-----------------------------------------------
+
+  1. Mapa → Miro (2ª pressão).
+  2. Sandra → mapa → reflexão.
+  3. Caso: Morsa (duração), início dos lapsos, Júlia/Camila.
+  4. Bancada → Enceladus (hospital).
+  5. Ricardo → Henrique Valença.
+  6. Henrique → Cecília → mapa.
+  7. Caso → dump Henrique → bancada Cassini-Huygens.
+
+
+PARTE 8 — A NOITE SEM ASSASSINATO (Bloco 8)
+-------------------------------------------
+
+Pergunta final: como Mariana descobriu tudo?
+
+  1. Bancada → Ordem dos Anéis → Morsa = André.
+  2. Mapa → presídio → André admite.
+  3. Mapa → Miro (3ª) com álibi de André.
+  4. Caso → guardrail.
+  5. Cadeia documentos: guardrail, câmera, Mauro, oficina, Bia, Rui.
+  6. Bancada → Rotação de Saturno → VTR-14 → escala → reflexão Augusto.
+
+
+PARTE 9 — MEMÓRIA (final)
+-------------------------
+
+  1. Caso → cruzar Henrique e Mariana → O Omitido.
+  2. Caso → diário releitura → assistência no desaparecimento.
+  3. Monitor → Roberto / denúncia → Augusto colocado no caso.
+  4. WhatsApp Augusto → mensagens "de Mariana" (ondas).
+  5. Caso → mensagens impossíveis → trilha física → mapa → morte confirmada.
+  6. Caso → outros desaparecimentos → anomalias com Augusto.
+  7. Bancada → puzzle MEMÓRIA.
+  8. Palavra MEMÓRIA → reflexão final → fim do jogo.
+
+
+QUEBRA-CABEÇAS DE ÁUDIO (COLA)
+------------------------------
+
+Todos na bancada, "análise provisória":
+
+  Bloco 1  emergência
+  Bloco 2  áudio Rafael → Vértice
+  Bloco 3  Janus + Saturnalia
+  Bloco 4  Hexágono → PIN diário 481526
+  Bloco 6  Luas Pastoras → Galpão 17
+  Bloco 7  Enceladus + Cassini-Huygens
+  Bloco 8  Ordem dos Anéis + Rotação de Saturno (VTR-14)
+  Bloco 9  MEMÓRIA
+
+
+RAMAIS ÚTEIS (FIXO)
+-------------------
+
+  204  Cartório (cronologia Elisa)
+  212  Perícia (laudo; diário com PIN 481526)
+
+
+MODO DEV
+--------
+
+Ignore o painel DEV na primeira jogada — ele pula capítulos.
+
+
+================================================================================
+  Fim do guia — versão técnica: WALKTHROUGH.md
+================================================================================

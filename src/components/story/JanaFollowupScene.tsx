@@ -6,6 +6,7 @@ import {
   type JanaFollowupTopicId,
 } from '../../data/block06/janaFollowup'
 import { sceneBackgrounds } from '../../data/sceneIntros'
+import { portraitSrcForStory } from '../../lib/characterSprites'
 import { finishJanaFollowup } from '../../game/story/block06Handlers'
 import { TopicInterviewScene, type TopicInterviewConfig } from './TopicInterviewScene'
 
@@ -13,7 +14,7 @@ const config: TopicInterviewConfig<JanaFollowupTopicId> = {
   testId: 'jana-followup-scene',
   title: 'Jana Ribeiro',
   background: sceneBackgrounds.jana,
-  portrait: undefined,
+  portrait: portraitSrcForStory('jana'),
   topicIds: JANA_FOLLOWUP_TOPIC_IDS,
   labels: janaFollowupLabels,
   flags: janaFollowupFlags,

@@ -6,6 +6,7 @@ import {
   type MiroThirdTopicId,
 } from '../../data/block08/miroThird'
 import { sceneBackgrounds } from '../../data/sceneIntros'
+import { portraitSrcForStory } from '../../lib/characterSprites'
 import { finishMiroThird } from '../../game/story/block08Handlers'
 import { TopicInterviewScene, type TopicInterviewConfig } from './TopicInterviewScene'
 
@@ -13,7 +14,7 @@ const config: TopicInterviewConfig<MiroThirdTopicId> = {
   testId: 'miro-third-scene',
   title: 'Miro — terceira pressão',
   background: sceneBackgrounds.miro,
-  portrait: undefined,
+  portrait: portraitSrcForStory('miro'),
   topicIds: MIRO_THIRD_TOPIC_IDS,
   labels: miroThirdLabels,
   flags: miroThirdFlags,

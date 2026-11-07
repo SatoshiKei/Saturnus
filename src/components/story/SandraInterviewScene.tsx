@@ -6,6 +6,7 @@ import {
   type SandraTopicId,
 } from '../../data/block07/sandraInterview'
 import { sceneBackgrounds } from '../../data/sceneIntros'
+import { portraitSrcForStory } from '../../lib/characterSprites'
 import { finishSandraInterview } from '../../game/story/block07Handlers'
 import { TopicInterviewScene, type TopicInterviewConfig } from './TopicInterviewScene'
 
@@ -13,7 +14,7 @@ const config: TopicInterviewConfig<SandraTopicId> = {
   testId: 'sandra-scene',
   title: 'Sandra Almeida',
   background: sceneBackgrounds.sandra,
-  portrait: undefined,
+  portrait: portraitSrcForStory('sandra'),
   topicIds: SANDRA_TOPIC_IDS,
   labels: sandraTopicLabels,
   flags: sandraTopicFlags,

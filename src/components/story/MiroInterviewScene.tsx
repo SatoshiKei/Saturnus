@@ -6,6 +6,7 @@ import {
   type MiroTopicId,
 } from '../../data/block06/miroInterview'
 import { sceneBackgrounds } from '../../data/sceneIntros'
+import { portraitSrcForStory } from '../../lib/characterSprites'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { finishMiroInterview } from '../../game/story/block06Handlers'
 import { TopicInterviewScene, type TopicInterviewConfig } from './TopicInterviewScene'
@@ -16,7 +17,7 @@ const config: TopicInterviewConfig<MiroTopicId> = {
   testId: 'miro-scene',
   title: 'Miro',
   background: sceneBackgrounds.miro,
-  portrait: undefined,
+  portrait: portraitSrcForStory('miro'),
   topicIds: MIRO_TOPIC_IDS,
   labels: miroTopicLabels,
   flags: miroTopicFlags,

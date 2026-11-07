@@ -149,6 +149,19 @@
   color: #111;
 }
 
+.phone-shell__device:has(.cs--ios) .phone-status {
+  color: #fff;
+}
+
+.phone-shell__device:has(.cs--ios) .phone-shell__home-indicator {
+  background: rgba(255, 255, 255, 0.32);
+}
+
+.phone-app-recents--in-call {
+  background: #000;
+  position: relative;
+}
+
 .phone-home {
   height: 100%;
   position: relative;
@@ -328,40 +341,94 @@
 }
 
 .phone-app-recents {
+  --ios-font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: #fff;
-  color: #111;
+  background: #f2f2f7;
+  color: #000;
+  font-family: var(--ios-font);
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
 }
 
 .phone-app-recents__header {
-  padding: var(--phone-inset-top, 47px) 16px 8px;
+  flex-shrink: 0;
+  padding: calc(var(--phone-inset-top, 47px) + 2px) 16px 10px;
   background: #f2f2f7;
-  border-bottom: 1px solid #ddd;
 }
 
-.phone-app-recents__header h1 {
-  margin: 8px 0 12px;
-  font-size: 32px;
+.phone-app-recents__back {
+  color: #007aff;
+  font-size: 17px;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 8px 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-family: inherit;
+}
+
+.phone-app-recents__back::before {
+  content: '\2039';
+  font-size: 22px;
+  line-height: 1;
+  margin-right: 2px;
+}
+
+.phone-app-recents__title {
+  margin: 0 0 10px;
+  font-size: 34px;
   font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.phone-contacts__search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(118, 118, 128, 0.12);
+  color: rgba(60, 60, 67, 0.6);
+  font-size: 17px;
+}
+
+.phone-contacts__search-icon {
+  font-size: 15px;
+  opacity: 0.45;
+}
+
+.phone-contacts__search-placeholder {
+  flex: 1;
 }
 
 .phone-app-recents__seg {
   display: flex;
-  gap: 16px;
-  font-size: 14px;
+  gap: 20px;
+  font-size: 17px;
+  font-weight: 400;
+  padding-bottom: 8px;
 }
 
 .phone-app-recents__seg-item {
-  color: #888;
-  padding-bottom: 4px;
+  font: inherit;
+  color: rgba(60, 60, 67, 0.6);
+  padding: 0 0 6px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
 }
 
 .phone-app-recents__seg-item--active {
   color: #007aff;
   font-weight: 600;
-  border-bottom: 2px solid #007aff;
+  border-bottom-color: #007aff;
 }
 
 .ios-app-header {
@@ -403,53 +470,333 @@
   background: #fff;
 }
 
-/* Contatos do celular de Augusto */
-.phone-app-recents__seg-item {
-  font: inherit;
-  border: 0;
-  background: none;
-  cursor: pointer;
-}
+/* Contatos / chamadas — estilo próximo ao app Telefone iOS */
 .phone-contacts {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 0 0 calc(var(--phone-inset-bottom, 22px) + 8px);
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
+  background: #fff;
+  border-radius: 12px 12px 0 0;
+  margin-inline: 0;
+  box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.08);
 }
+
+.phone-contacts li {
+  margin: 0;
+}
+
 .phone-contacts__row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  gap: 12px;
+  width: 100%;
+  padding: 10px 16px 10px 16px;
+  border: 0;
+  border-bottom: 0.5px solid rgba(60, 60, 67, 0.29);
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
 }
-.phone-contacts__row[data-new='true'] {
-  background: rgba(200, 150, 62, 0.1);
+
+.phone-contacts__row:active {
+  background: rgba(0, 0, 0, 0.04);
 }
+
+.phone-contacts__row[data-new='true'] .phone-contacts__name {
+  font-weight: 600;
+}
+
+.phone-contacts__avatar {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #c7c7cc 0%, #aeaeb2 100%);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .phone-contacts__who {
   flex: 1 1 auto;
   min-width: 0;
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
+
 .phone-contacts__name {
   overflow-wrap: anywhere;
-  font-size: 14px;
+  font-size: 17px;
+  font-weight: 400;
+  color: #000;
 }
+
 .phone-contacts__num {
-  font-size: 11px;
-  opacity: 0.6;
+  font-size: 15px;
+  color: rgba(60, 60, 67, 0.6);
 }
-.phone-contacts__call {
-  padding: 5px 12px;
-  font-size: 12px;
-  color: #0d1a14;
-  background: #6fa883;
+
+.phone-contacts__new {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: #ff3b30;
+  padding: 3px 7px;
+  border-radius: 6px;
+}
+
+.phone-contacts__chevron {
+  flex-shrink: 0;
+  font-size: 22px;
+  font-weight: 300;
+  color: #c7c7cc;
+  line-height: 1;
+}
+
+/* CallSession compact — tela cheia, estilo chamada iOS */
+.phone-app-recents--in-call .cs--ios {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  flex: none;
+  width: 100%;
+  height: 100%;
+}
+
+.cs--ios.cs--compact {
+  padding: 0;
+  font-size: 16px;
+}
+
+.cs--ios {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  min-height: 0;
+  background: linear-gradient(165deg, #4a3568 0%, #241a36 42%, #0c0c0e 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color: #fff;
+}
+
+.cs-ios-call {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 100%;
+  padding: calc(var(--phone-inset-top, 47px) + 36px) 20px calc(var(--phone-inset-bottom, 22px) + 10px);
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.cs-ios-call__top {
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.cs-ios-call__name {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.cs-ios-call__status {
+  margin: 8px 0 0;
+  font-size: 17px;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  color: rgba(235, 235, 245, 0.6);
+}
+
+.cs-ios-call__hint {
+  margin: 10px 0 0;
+  font-size: 15px;
+  font-weight: 400;
+  color: rgba(235, 235, 245, 0.45);
+  text-transform: lowercase;
+}
+
+.cs-ios-call__hint--pulse {
+  animation: ios-pulse-opacity 1.4s ease-in-out infinite;
+}
+
+@keyframes ios-pulse-opacity {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.cs-ios-call__caption {
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  margin: 18px auto 0;
+  padding: 12px 14px;
   border: 0;
-  border-radius: 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.1);
+  font: inherit;
+  font-size: 15px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.92);
+  text-align: center;
   cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+.cs-ios-call__caption--static {
+  background: transparent;
+  cursor: default;
+}
+
+.cs-ios-call__caption-who {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(235, 235, 245, 0.55);
+}
+
+.cs-ios-call__sheet {
+  margin: 16px auto 0;
+  max-width: 300px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(44, 44, 46, 0.75);
+  text-align: left;
+}
+
+.cs-ios-call__sheet-title {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(235, 235, 245, 0.5);
+}
+
+.cs-ios-call__sheet-detail {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.4;
+  color: #fff;
+}
+
+.cs-ios-call__spacer {
+  flex: 1 1 auto;
+  min-height: 24px;
+}
+
+.cs-ios-call__pad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px 16px;
+  width: 100%;
+  max-width: 290px;
+  margin: 8px 0;
+  flex-shrink: 0;
+}
+
+.cs-ios-call__pad-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+}
+
+.cs-ios-call__pad-icon {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.cs-ios-call__pad-icon svg {
+  width: 26px;
+  height: 26px;
+  opacity: 0.95;
+}
+
+.cs-ios-call__pad-label {
+  font-size: 11px;
+  font-weight: 400;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.cs-ios-call__bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.cs-ios-call__advance {
+  border: 0;
+  background: none;
+  padding: 4px 8px;
+  font: inherit;
+  font-size: 13px;
+  color: rgba(235, 235, 245, 0.55);
+  cursor: pointer;
+}
+
+.cs-ios-call__hang {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 0;
+  background: none;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.cs-ios-call__hang-circle {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: #ff3b30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 24px rgba(255, 59, 48, 0.4);
+}
+
+.cs-ios-call__hang-icon {
+  width: 32px;
+  height: 32px;
+  color: #fff;
 }
 .phone-home__app,
 .phone-home__dock-app {

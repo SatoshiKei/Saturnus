@@ -6,6 +6,7 @@ import {
   type JanaTopicId,
 } from '../../data/block05/janaInterview'
 import { sceneBackgrounds } from '../../data/sceneIntros'
+import { portraitSrcForStory } from '../../lib/characterSprites'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { finishJanaInterview } from '../../game/story/block05Handlers'
 import { TopicInterviewScene, type TopicInterviewConfig } from './TopicInterviewScene'
@@ -15,7 +16,7 @@ const config: TopicInterviewConfig<JanaTopicId> = {
   testId: 'jana-scene',
   title: 'Jana Ribeiro',
   background: sceneBackgrounds.jana,
-  portrait: undefined,
+  portrait: portraitSrcForStory('jana'),
   topicIds: JANA_TOPIC_IDS,
   labels: janaTopicLabels,
   flags: janaTopicFlags,

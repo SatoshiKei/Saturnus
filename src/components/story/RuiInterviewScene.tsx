@@ -6,6 +6,7 @@ import {
   type RuiTopicId,
 } from '../../data/block08/ruiInterview'
 import { sceneBackgrounds } from '../../data/sceneIntros'
+import { portraitSrcForStory } from '../../lib/characterSprites'
 import { finishRuiInterview } from '../../game/story/block08Handlers'
 import { TopicInterviewScene, type TopicInterviewConfig } from './TopicInterviewScene'
 
@@ -13,7 +14,7 @@ const config: TopicInterviewConfig<RuiTopicId> = {
   testId: 'rui-scene',
   title: 'Rui',
   background: sceneBackgrounds.rui,
-  portrait: undefined,
+  portrait: portraitSrcForStory('rui'),
   topicIds: RUI_TOPIC_IDS,
   labels: ruiTopicLabels,
   flags: ruiTopicFlags,

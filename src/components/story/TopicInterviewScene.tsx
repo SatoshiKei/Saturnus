@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { assetPath } from '../../lib/assetPath'
 import { getInvestigationState, setFlag } from '../../game/state/investigationStore'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
-import { vnLinesThrough } from '../../lib/vnBeatLog'
 import { VisualNovelDialog, VNSceneShell } from './VisualNovelDialog'
 import '../../styles/visual-novel.css'
 
@@ -90,9 +89,24 @@ export function TopicInterviewScene<T extends string>({ config, onClose }: Props
     return () => window.clearTimeout(t)
   }, [idle, leave])
 
+  const portraitForBeat = useCallback(
+    (beat: TopicBeat) => {
+      if (!config.portrait || !beat.speaker || beat.speaker === 'Augusto') return undefined
+      return config.portrait
+    },
+    [config.portrait],
+  )
+
   const logLines = useMemo(
-    () => (activeTopic ? vnLinesThrough(beats, beatIndex, () => config.portrait) : []),
-    [activeTopic, beats, beatIndex, config.portrait],
+    () =>
+      activeTopic
+        ? beats.slice(0, beatIndex + 1).map((b) => ({
+            speaker: b.speaker,
+            text: b.text,
+            portraitSrc: portraitForBeat(b),
+          }))
+        : [],
+    [activeTopic, beats, beatIndex, portraitForBeat],
   )
 
   return (
@@ -124,7 +138,7 @@ export function TopicInterviewScene<T extends string>({ config, onClose }: Props
         <VisualNovelDialog
           speaker={currentBeat.speaker}
           text={currentBeat.text}
-          portraitSrc={currentBeat.portrait ? config.portrait : undefined}
+          portraitSrc={portraitForBeat(currentBeat)}
           logLines={logLines}
           onRewind={() => setBeatIndex((i) => Math.max(0, i - 1))}
           onContinue={() => {

@@ -6,6 +6,7 @@ import {
   type GeraldoTopicId,
 } from '../../data/block06/geraldoInterview'
 import { sceneBackgrounds } from '../../data/sceneIntros'
+import { portraitSrcForStory } from '../../lib/characterSprites'
 import { finishGeraldoInterview } from '../../game/story/block06Handlers'
 import { TopicInterviewScene, type TopicInterviewConfig } from './TopicInterviewScene'
 
@@ -13,7 +14,7 @@ const config: TopicInterviewConfig<GeraldoTopicId> = {
   testId: 'geraldo-scene',
   title: 'Geraldo Mota',
   background: sceneBackgrounds.geraldo,
-  portrait: undefined,
+  portrait: portraitSrcForStory('geraldo'),
   topicIds: GERALDO_TOPIC_IDS,
   labels: geraldoTopicLabels,
   flags: geraldoTopicFlags,

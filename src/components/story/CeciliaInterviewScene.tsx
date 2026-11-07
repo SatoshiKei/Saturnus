@@ -6,6 +6,7 @@ import {
   type CeciliaTopicId,
 } from '../../data/block07/ceciliaInterview'
 import { sceneBackgrounds } from '../../data/sceneIntros'
+import { portraitSrcForStory } from '../../lib/characterSprites'
 import { finishCeciliaInterview } from '../../game/story/block07Handlers'
 import { TopicInterviewScene, type TopicInterviewConfig } from './TopicInterviewScene'
 
@@ -13,7 +14,7 @@ const config: TopicInterviewConfig<CeciliaTopicId> = {
   testId: 'cecilia-scene',
   title: 'Cecília Prado',
   background: sceneBackgrounds.cecilia,
-  portrait: undefined,
+  portrait: portraitSrcForStory('cecilia'),
   topicIds: CECILIA_TOPIC_IDS,
   labels: ceciliaTopicLabels,
   flags: ceciliaTopicFlags,

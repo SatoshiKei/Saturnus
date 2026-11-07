@@ -12,6 +12,12 @@ interface PhoneCallsHomeProps {
 
 type Tab = 'contacts' | 'recents'
 
+function contactInitials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean)
+  if (parts.length >= 2) return `${parts[0]![0]}${parts[1]![0]}`.toUpperCase()
+  return name.trim().slice(0, 2).toUpperCase() || '?'
+}
+
 function noAnswer(name: string): CallScript {
   return {
     id: `noanswer-${name}`,
@@ -40,12 +46,26 @@ export function PhoneCallsHome({ onBack }: PhoneCallsHomeProps) {
   const contacts = Object.values(inv.contacts).filter((c) => c.unlocked)
 
   return (
-    <div className="phone-app-recents" data-testid="phone-calls-home">
+    <div
+      className={`phone-app-recents${session ? ' phone-app-recents--in-call' : ''}`}
+      data-testid="phone-calls-home"
+    >
+      {!session ? (
       <header className="phone-app-recents__header">
-        <button type="button" className="ios-app-header__back" onClick={onBack}>
-          ‹ Início
-        </button>
-        <h1>{tab === 'contacts' ? 'Contatos' : 'Recentes'}</h1>
+        <div className="phone-app-recents__bar">
+          <button type="button" className="phone-app-recents__back" onClick={onBack}>
+            Início
+          </button>
+        </div>
+        <h1 className="phone-app-recents__title">{tab === 'contacts' ? 'Contatos' : 'Recentes'}</h1>
+        {isAugusto && tab === 'contacts' && !session ? (
+          <div className="phone-contacts__search" role="search" aria-label="Buscar (apenas visual)">
+            <span className="phone-contacts__search-icon" aria-hidden>
+              ⌕
+            </span>
+            <span className="phone-contacts__search-placeholder">Buscar</span>
+          </div>
+        ) : null}
         {isAugusto ? (
           <nav className="phone-app-recents__seg" aria-label="Seção do telefone">
             <button
@@ -78,6 +98,7 @@ export function PhoneCallsHome({ onBack }: PhoneCallsHomeProps) {
           </nav>
         )}
       </header>
+      ) : null}
 
       {isAugusto && tab === 'contacts' ? (
         session ? (
@@ -85,20 +106,26 @@ export function PhoneCallsHome({ onBack }: PhoneCallsHomeProps) {
         ) : (
           <ul className="phone-contacts" data-testid="phone-contacts">
             {contacts.map((c) => (
-              <li key={c.id} className="phone-contacts__row" data-new={fresh.includes(c.id)}>
-                <div className="phone-contacts__who">
-                  <span className="phone-contacts__name">{c.displayName}</span>
-                  <span className="phone-contacts__num">{c.phone ?? 'sem número'}</span>
-                </div>
-                {fresh.includes(c.id) ? <span className="new-badge">NOVO</span> : null}
+              <li key={c.id}>
                 <button
                   type="button"
-                  className="phone-contacts__call"
+                  className="phone-contacts__row"
+                  data-new={fresh.includes(c.id)}
                   data-testid={`phone-call-${c.id}`}
-                  aria-label={`Ligar para ${c.displayName}`}
+                  aria-label={`Abrir ${c.displayName} — ligar`}
                   onClick={() => setSession(scriptByContact(c.id) ?? noAnswer(c.displayName))}
                 >
-                  Ligar
+                  <span className="phone-contacts__avatar" aria-hidden>
+                    {contactInitials(c.displayName)}
+                  </span>
+                  <div className="phone-contacts__who">
+                    <span className="phone-contacts__name">{c.displayName}</span>
+                    <span className="phone-contacts__num">{c.phone ?? 'Sem número'}</span>
+                  </div>
+                  {fresh.includes(c.id) ? <span className="phone-contacts__new">NOVO</span> : null}
+                  <span className="phone-contacts__chevron" aria-hidden>
+                    ›
+                  </span>
                 </button>
               </li>
             ))}

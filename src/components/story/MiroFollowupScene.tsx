@@ -6,6 +6,7 @@ import {
   type MiroFollowupTopicId,
 } from '../../data/block07/miroFollowup'
 import { sceneBackgrounds } from '../../data/sceneIntros'
+import { portraitSrcForStory } from '../../lib/characterSprites'
 import { finishMiroFollowup } from '../../game/story/block07Handlers'
 import { TopicInterviewScene, type TopicInterviewConfig } from './TopicInterviewScene'
 
@@ -13,7 +14,7 @@ const config: TopicInterviewConfig<MiroFollowupTopicId> = {
   testId: 'miro-followup-scene',
   title: 'Miro — segunda pressão',
   background: sceneBackgrounds.miro,
-  portrait: undefined,
+  portrait: portraitSrcForStory('miro'),
   topicIds: MIRO_FOLLOWUP_TOPIC_IDS,
   labels: miroFollowupLabels,
   flags: miroFollowupFlags,
