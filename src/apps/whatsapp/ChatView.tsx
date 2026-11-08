@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { contactById } from '../../data/mockContacts'
 import { getChatById } from '../../data/mockChats'
-import { chatScripts, formatClock } from '../../data/chatScripts'
+import { chatScripts, formatClock, repliesForOption } from '../../data/chatScripts'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { appendChatMessages, dispatchActions } from '../../game/state/investigationStore'
 import { onRafaelForwardAudioPlayed } from '../../game/story/block02Handlers'
@@ -110,7 +110,8 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
         timestamp: stamp(0),
         status: 'read',
       }
-      const replies: ChatMessage[] = step.replies.map((r, j) =>
+      const scriptReplies = repliesForOption(step, optionIndex)
+      const replies: ChatMessage[] = scriptReplies.map((r, j) =>
         r.kind === 'text'
           ? {
               id: `${chatId}-s${progress.step}-r${j}`,
