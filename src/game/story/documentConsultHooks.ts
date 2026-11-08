@@ -2,7 +2,13 @@ import {
   onMaraltoLineWeighed,
   revisitEmergencyEntry,
 } from './block05Handlers'
-import { reviewMorsaDuration, unlockHenriqueDump } from './block07Handlers'
+import {
+  onHenriqueCadastroOpened,
+  onRicardoIdentityDeadEnd,
+  onRicardoRecordFound,
+  reviewMorsaDuration,
+  unlockHenriqueDump,
+} from './block07Handlers'
 import { requestGuardrailReexam } from './block08Handlers'
 import {
   findOtherDisappearances,
@@ -89,6 +95,17 @@ export function onDocumentConsulted(docId: string) {
     !s.flags.block07_cassini_available
   ) {
     unlockHenriqueDump()
+  }
+
+  // B7: Ricardo hospital → confirmação civil → Henrique (cadastro).
+  if (docId === 'doc-hospital-ricardo-freitas') {
+    onRicardoRecordFound()
+  }
+  if (docId === 'doc-ricardo-consulta-negativa') {
+    onRicardoIdentityDeadEnd()
+  }
+  if (docId === 'doc-henrique-cadastro') {
+    onHenriqueCadastroOpened()
   }
 
   // B8: laudo complementar do guardrail (após ligação à Perícia).

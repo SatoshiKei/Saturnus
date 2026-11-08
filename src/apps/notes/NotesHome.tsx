@@ -1,5 +1,6 @@
 import { mockNotes } from '../../data/mockNotes'
 import { usePhoneSession } from '../../app/PhoneSessionContext'
+import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { openNote } from '../../lib/phoneRouter'
 
 interface NotesHomeProps {
@@ -8,6 +9,9 @@ interface NotesHomeProps {
 
 export function NotesHome({ onBack }: NotesHomeProps) {
   const { push } = usePhoneSession()
+  const inv = useInvestigation()
+  const highlightSess =
+    inv.flags.block07_revisit_mariana_clue_unlocked && !inv.flags.block07_partial_id_noted
 
   return (
     <div className="notes-app" data-testid="notes-home">
@@ -24,6 +28,7 @@ export function NotesHome({ onBack }: NotesHomeProps) {
               type="button"
               className="notes-list__row"
               data-testid={`note-row-${note.id}`}
+              data-sess-reread={highlightSess && note.id === 'n-sess' ? true : undefined}
               onClick={() => push(openNote(note.id))}
             >
               <span className="notes-list__title">{note.title}</span>

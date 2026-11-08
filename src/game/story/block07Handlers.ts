@@ -187,6 +187,7 @@ export function onEnceladusSolved() {
   ])
 }
 
+/** Hospital / busca → Ricardo Freitas (banal). Próximo passo: confirmar identidade civil. */
 export function onRicardoRecordFound() {
   const s = getInvestigationState()
   if (s.flags.block07_ricardo_found) return
@@ -197,23 +198,124 @@ export function onRicardoRecordFound() {
     { type: 'addEvidence', id: 'ricardo_record_poor_id' },
     { type: 'completeTask', id: 'task_find_ricardo' },
     { type: 'addHypothesis', id: 'hyp_ricardo_linked_to_onset' },
+    { type: 'setFlag', id: 'block07_ricardo_id_check_unlocked', value: true },
+    // Softlock saves antigos que ainda olhavam `crosscheck_unlocked`.
+    { type: 'setFlag', id: 'block07_ricardo_crosscheck_unlocked', value: true },
     {
       type: 'addTask',
-      id: 'task_crosscheck_ricardo_mariana',
-      label: 'Cruzar “Ricardo” com os dados privados de Mariana',
+      id: 'task_confirm_ricardo_identity',
+      label: 'Confirmar a identidade de Ricardo Freitas',
     },
-    { type: 'setFlag', id: 'block07_ricardo_crosscheck_unlocked', value: true },
   ])
 }
 
-export function onRicardoIdentityBroken() {
+/** Consulta civil → linha morta. Sem Henrique. */
+export function onRicardoIdentityDeadEnd() {
+  const s = getInvestigationState()
+  if (s.flags.block07_ricardo_dead_end) return
+  if (s.flags.block07_henrique_identified) return
+  dispatchActions([
+    { type: 'setFlag', id: 'block07_ricardo_dead_end', value: true },
+    { type: 'addEvidence', id: 'ricardo_civil_unconfirmed' },
+    { type: 'completeTask', id: 'task_confirm_ricardo_identity' },
+    { type: 'completeTask', id: 'task_crosscheck_ricardo_mariana' },
+    { type: 'setFlag', id: 'block07_refl_ricardo_dead_pending', value: true },
+  ])
+}
+
+export function onRicardoDeadReflectionDone() {
+  const s = getInvestigationState()
+  if (s.flags.block07_ricardo_dead_reflection_done) return
+  dispatchActions([
+    { type: 'setFlag', id: 'block07_ricardo_dead_reflection_done', value: true },
+    { type: 'setFlag', id: 'block07_refl_ricardo_dead_pending', value: false },
+    { type: 'setFlag', id: 'block07_revisit_mariana_clue_unlocked', value: true },
+    {
+      type: 'addTask',
+      id: 'task_revisit_mariana_ricardo_clue',
+      label: 'Rever o material que Mariana reuniu — notas e dados do aparelho',
+    },
+  ])
+}
+
+/** Reabre a nota antiga `n-sess` (pista parcial hvalenca@). */
+export function onMarianaPartialIdRevisited() {
+  const s = getInvestigationState()
+  if (s.flags.block07_partial_id_noted) return
+  if (!s.flags.block07_revisit_mariana_clue_unlocked) return
+  if (s.flags.block07_henrique_identified) return
+  dispatchActions([
+    { type: 'setFlag', id: 'block07_partial_id_noted', value: true },
+    { type: 'addEvidence', id: 'mariana_partial_account_hvalenca' },
+    { type: 'completeTask', id: 'task_revisit_mariana_ricardo_clue' },
+    { type: 'setFlag', id: 'block07_partial_id_search_unlocked', value: true },
+    {
+      type: 'addTask',
+      id: 'task_verify_hvalenca_identifier',
+      label: 'Verificar o identificador encontrado nos registros (hvalenca)',
+    },
+  ])
+}
+
+/**
+ * Batida A — cadastro independente mostra Henrique Valença.
+ * Conexão formal com Ricardo fica para a Reflection.
+ */
+export function onHenriqueCadastroOpened() {
+  const s = getInvestigationState()
+  if (s.flags.block07_henrique_named) return
+  if (s.flags.block07_henrique_identified) return
+  dispatchActions([
+    { type: 'setFlag', id: 'block07_henrique_named', value: true },
+    { type: 'discoverPerson', id: 'henrique', status: 'identified' },
+    { type: 'addEvidence', id: 'henrique_registry_match' },
+    { type: 'completeTask', id: 'task_verify_hvalenca_identifier' },
+    { type: 'setFlag', id: 'block07_refl_henrique_reveal_pending', value: true },
+  ])
+}
+
+/** Batida B — Reflection: Ricardo era Henrique; libera trilha. */
+export function onHenriqueRevealReflectionDone() {
   const s = getInvestigationState()
   if (s.flags.block07_henrique_identified) return
   dispatchActions([
     { type: 'setFlag', id: 'block07_henrique_identified', value: true },
+    { type: 'setFlag', id: 'block07_refl_henrique_reveal_pending', value: false },
     { type: 'addEvidence', id: 'ricardo_identity_false' },
     { type: 'addEvidence', id: 'ricardo_was_henrique_valenca' },
     { type: 'discoverPerson', id: 'henrique', status: 'identified' },
+    { type: 'completeTask', id: 'task_crosscheck_ricardo_mariana' },
+    { type: 'setFlag', id: 'block07_henrique_search_unlocked', value: true },
+    {
+      type: 'addTask',
+      id: 'task_investigate_henrique',
+      label: 'Investigar Henrique Valença',
+    },
+  ])
+}
+
+/**
+ * Compat / checkpoints: revela Henrique de uma vez (saves e DEV).
+ * Fluxo jogável novo usa dead-end → pista → cadastro → Reflection.
+ */
+export function onRicardoIdentityBroken() {
+  const s = getInvestigationState()
+  if (s.flags.block07_henrique_identified) return
+  dispatchActions([
+    { type: 'setFlag', id: 'block07_ricardo_dead_end', value: true },
+    { type: 'setFlag', id: 'block07_ricardo_dead_reflection_done', value: true },
+    { type: 'setFlag', id: 'block07_partial_id_noted', value: true },
+    { type: 'setFlag', id: 'block07_henrique_named', value: true },
+    { type: 'setFlag', id: 'block07_henrique_identified', value: true },
+    { type: 'addEvidence', id: 'ricardo_civil_unconfirmed' },
+    { type: 'addEvidence', id: 'mariana_partial_account_hvalenca' },
+    { type: 'addEvidence', id: 'henrique_registry_match' },
+    { type: 'addEvidence', id: 'ricardo_identity_false' },
+    { type: 'addEvidence', id: 'ricardo_was_henrique_valenca' },
+    { type: 'discoverPerson', id: 'henrique', status: 'identified' },
+    { type: 'completeTask', id: 'task_confirm_ricardo_identity' },
+    { type: 'completeTask', id: 'task_revisit_mariana_ricardo_clue' },
+    { type: 'completeTask', id: 'task_verify_hvalenca_identifier' },
     { type: 'completeTask', id: 'task_crosscheck_ricardo_mariana' },
     { type: 'setFlag', id: 'block07_henrique_search_unlocked', value: true },
     {

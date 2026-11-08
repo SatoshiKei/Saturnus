@@ -921,15 +921,48 @@ export const seedDocuments: Document[] = [
       { type: 'setFlag', id: 'block07_ricardo_found', value: true },
       { type: 'completeTask', id: 'task_find_ricardo' },
       { type: 'addHypothesis', id: 'hyp_ricardo_linked_to_onset' },
+      { type: 'setFlag', id: 'block07_ricardo_id_check_unlocked', value: true },
+      { type: 'setFlag', id: 'block07_ricardo_crosscheck_unlocked', value: true },
       {
         type: 'addTask',
-        id: 'task_crosscheck_ricardo_mariana',
-        label: 'Cruzar “Ricardo” com os dados privados de Mariana',
+        id: 'task_confirm_ricardo_identity',
+        label: 'Confirmar a identidade de Ricardo Freitas',
       },
-      { type: 'setFlag', id: 'block07_ricardo_crosscheck_unlocked', value: true },
     ],
   },
   {
+    id: 'doc-ricardo-consulta-negativa',
+    title: 'Consulta civil — Ricardo Freitas (dados incompletos)',
+    category: 'Consultas',
+    issuer: 'Sistema policial — cadastros',
+    system: 'consultas',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Cruzamento do nome e dos dados informados no hospital: nenhum cadastro civil compatível com idade, filiação ou endereço plausível.',
+      },
+      {
+        id: 'b2',
+        text: 'CPF/documento apresentado no atendimento não encontra correspondência confiável. Homônimos listados não batem com a descrição do paciente.',
+      },
+      {
+        id: 'b3',
+        text: 'Sem vínculo familiar útil. Os dados disponíveis não sustentam que aquele homem fosse, de fato, Ricardo Freitas.',
+      },
+    ],
+    onOpen: [
+      { type: 'setFlag', id: 'block07_ricardo_dead_end', value: true },
+      { type: 'addEvidence', id: 'ricardo_civil_unconfirmed' },
+      { type: 'completeTask', id: 'task_confirm_ricardo_identity' },
+      { type: 'completeTask', id: 'task_crosscheck_ricardo_mariana' },
+      { type: 'setFlag', id: 'block07_refl_ricardo_dead_pending', value: true },
+    ],
+  },
+  {
+    /**
+     * Legado — saves antigos. Não entra no fluxo novo (pista parcial = nota `n-sess`;
+     * confirmação = `doc-henrique-cadastro`).
+     */
     id: 'doc-mariana-ricardo-note',
     title: 'Extração — anotação privada de Mariana (Ricardo)',
     category: 'Extração forense',
@@ -938,25 +971,37 @@ export const seedDocuments: Document[] = [
     blocks: [
       {
         id: 'b1',
-        text: 'Fragmento sem contexto prévio: referência cruzada entre o nome usado no hospital e um identificador/contato interno.',
+        text: '[Legado] A ponte Ricardo → Henrique agora passa por consulta civil, nota antiga e cadastro independente.',
+      },
+    ],
+    onOpen: [],
+  },
+  {
+    id: 'doc-henrique-cadastro',
+    title: 'Consulta cadastral — identificador hvalenca',
+    category: 'Cadastro (pessoas)',
+    issuer: 'Sistema policial / juntas e registros profissionais',
+    system: 'consultas',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Identificador parcial hvalenca@ correlacionado a registro profissional/empresarial ativo na época do incidente setorial.',
       },
       {
         id: 'b2',
-        text: 'A peça é verificável: “Ricardo Freitas” não corresponde à identidade real daquele homem. Nome recuperado: Henrique Valença.',
+        text: 'Nome completo recuperado: Henrique Valença. Cadastro civil existente; histórico profissional em empresa de tecnologia (registro encerrado / reestruturado).',
+      },
+      {
+        id: 'b3',
+        text: 'Nenhuma menção a “Ricardo Freitas” neste cadastro. A correspondência é técnica — conta e vínculos — não hospitalar.',
       },
     ],
     onOpen: [
-      { type: 'addEvidence', id: 'ricardo_identity_false' },
-      { type: 'addEvidence', id: 'ricardo_was_henrique_valenca' },
+      { type: 'setFlag', id: 'block07_henrique_named', value: true },
       { type: 'discoverPerson', id: 'henrique', status: 'identified' },
-      { type: 'setFlag', id: 'block07_henrique_identified', value: true },
-      { type: 'completeTask', id: 'task_crosscheck_ricardo_mariana' },
-      { type: 'setFlag', id: 'block07_henrique_search_unlocked', value: true },
-      {
-        type: 'addTask',
-        id: 'task_investigate_henrique',
-        label: 'Investigar Henrique Valença',
-      },
+      { type: 'addEvidence', id: 'henrique_registry_match' },
+      { type: 'completeTask', id: 'task_verify_hvalenca_identifier' },
+      { type: 'setFlag', id: 'block07_refl_henrique_reveal_pending', value: true },
     ],
   },
   {

@@ -285,18 +285,7 @@ export const callScripts: CallScript[] = [
     onComplete: [
       { type: 'completeCall', id: 'call-hospital-ricardo' },
       { type: 'addDocument', id: 'doc-hospital-ricardo-freitas' },
-      { type: 'discoverPerson', id: 'ricardo', status: 'identified' },
-      { type: 'addEvidence', id: 'ricardo_freitas_died_that_shift' },
-      { type: 'addEvidence', id: 'ricardo_record_poor_id' },
-      { type: 'setFlag', id: 'block07_ricardo_found', value: true },
-      { type: 'completeTask', id: 'task_find_ricardo' },
-      { type: 'addHypothesis', id: 'hyp_ricardo_linked_to_onset' },
-      {
-        type: 'addTask',
-        id: 'task_crosscheck_ricardo_mariana',
-        label: 'Cruzar “Ricardo” com os dados privados de Mariana',
-      },
-      { type: 'setFlag', id: 'block07_ricardo_crosscheck_unlocked', value: true },
+      // Progressão formal: abrir o documento → `onRicardoRecordFound`.
     ],
     repeat: [
       {

@@ -656,15 +656,68 @@ export const seedSearchRules: SearchRule[] = [
     ],
   },
   {
-    id: 'block07_ricardo_cross',
+    id: 'block07_ricardo_freitas',
+    category: 'police',
+    requiredFlags: ['block07_ricardo_id_check_unlocked'],
+    requiredTerms: ['freitas'],
+    results: [
+      {
+        title: 'Consulta civil — Ricardo Freitas (dados incompletos)',
+        snippet: 'Sem cadastro civil compatível com o paciente do plantão.',
+        documentId: 'doc-ricardo-consulta-negativa',
+      },
+    ],
+  },
+  {
+    id: 'block07_ricardo_id_check',
+    category: 'police',
+    requiredFlags: ['block07_ricardo_id_check_unlocked'],
+    requiredTerms: ['ricardo'],
+    results: [
+      {
+        title: 'Consulta civil — Ricardo Freitas (dados incompletos)',
+        snippet: 'Sem cadastro civil compatível com o paciente do plantão.',
+        documentId: 'doc-ricardo-consulta-negativa',
+      },
+    ],
+  },
+  {
+    /** Softlock: saves com flag antiga de crosscheck ainda encontram a consulta negativa. */
+    id: 'block07_ricardo_cross_legacy',
     category: 'police',
     requiredFlags: ['block07_ricardo_crosscheck_unlocked'],
     requiredTerms: ['ricardo'],
     results: [
       {
-        title: 'Extração — anotação privada de Mariana (Ricardo)',
-        snippet: 'Cruzamento com material do celular / diário.',
-        documentId: 'doc-mariana-ricardo-note',
+        title: 'Consulta civil — Ricardo Freitas (dados incompletos)',
+        snippet: 'Sem cadastro civil compatível com o paciente do plantão.',
+        documentId: 'doc-ricardo-consulta-negativa',
+      },
+    ],
+  },
+  {
+    id: 'block07_hvalenca',
+    category: 'police',
+    requiredFlags: ['block07_partial_id_search_unlocked'],
+    requiredTerms: ['hvalenca'],
+    results: [
+      {
+        title: 'Consulta cadastral — identificador hvalenca',
+        snippet: 'Correlação com registro profissional / empresarial.',
+        documentId: 'doc-henrique-cadastro',
+      },
+    ],
+  },
+  {
+    id: 'block07_valenca_bridge',
+    category: 'police',
+    requiredFlags: ['block07_partial_id_search_unlocked'],
+    requiredTerms: ['valenca'],
+    results: [
+      {
+        title: 'Consulta cadastral — identificador hvalenca',
+        snippet: 'Correlação com registro profissional / empresarial.',
+        documentId: 'doc-henrique-cadastro',
       },
     ],
   },

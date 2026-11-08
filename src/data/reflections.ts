@@ -188,6 +188,24 @@ export const reflections: ReflectionDef[] = [
     ],
   },
   {
+    id: 'refl-b07-ricardo-dead',
+    background: HUB_REFLECTION_BACKGROUND,
+    blocks: [
+      'Ricardo Freitas não leva a lugar nenhum. O hospital não tinha identificação real — só um nome no papel.',
+      'Mariana não teria perdido tempo com um paciente qualquer. Se ela olhou esse homem antes de mim, talvez tenha achado outra coisa.',
+      'Preciso voltar ao que ela já tinha reunido. Algo que eu ainda não soube ler.',
+    ],
+  },
+  {
+    id: 'refl-b07-henrique-reveal',
+    background: HUB_REFLECTION_BACKGROUND,
+    blocks: [
+      'Henrique Valença. O cadastro fecha com o fragmento que já estava nas notas dela — hvalenca@ — meses antes deste caso.',
+      'Ricardo Freitas era só o nome conveniente no hospital. O homem era Henrique. Mariana chegou lá primeiro.',
+      'Agora a investigação tem um nome real. Empresa, incidente, quem ainda o conhecia.',
+    ],
+  },
+  {
     id: 'refl-b07-tech',
     background: HUB_REFLECTION_BACKGROUND,
     blocks: [

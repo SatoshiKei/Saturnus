@@ -100,6 +100,12 @@ function pendingSoloReflection(flags: Record<string, boolean>): string | null {
   if (flags.block06_refl_geraldo_pending && !flags['refl-b06-geraldo_seen']) return 'refl-b06-geraldo'
   if (flags.block06_refl_miro_pending && !flags['refl-b06-miro_seen']) return 'refl-b06-miro'
   if (flags.block07_refl_sandra_pending && !flags['refl-b07-sandra_seen']) return 'refl-b07-sandra'
+  if (flags.block07_refl_ricardo_dead_pending && !flags['refl-b07-ricardo-dead_seen']) {
+    return 'refl-b07-ricardo-dead'
+  }
+  if (flags.block07_refl_henrique_reveal_pending && !flags['refl-b07-henrique-reveal_seen']) {
+    return 'refl-b07-henrique-reveal'
+  }
   if (flags.block07_refl_tech_pending && !flags['refl-b07-tech_seen']) return 'refl-b07-tech'
   if (flags.block08_refl_morsa_pending && !flags['refl-b08-morsa_seen']) return 'refl-b08-morsa'
   if (flags.block08_refl_andre_pending && !flags['refl-b08-andre_seen']) return 'refl-b08-andre'

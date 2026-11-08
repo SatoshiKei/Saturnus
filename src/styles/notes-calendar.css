@@ -30,6 +30,18 @@
   background: rgba(0, 0, 0, 0.03);
 }
 
+.notes-list__row[data-sess-reread='true'] {
+  border-left: 2px solid #8a8a8e;
+  padding-left: 14px;
+}
+
+.notes-view__line--mark {
+  background: rgba(255, 214, 10, 0.18);
+  margin: 0 -4px;
+  padding: 0 4px;
+  border-radius: 2px;
+}
+
 .notes-list__title {
   display: block;
   font-weight: 600;

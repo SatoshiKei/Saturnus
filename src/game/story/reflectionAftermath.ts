@@ -15,7 +15,12 @@ import {
   onPathReflectionDone,
 } from './block05Handlers'
 import { onGeraldoReflectionDone, onMiroReflectionDone } from './block06Handlers'
-import { onSandraReflectionDone, onTechReflectionDone } from './block07Handlers'
+import {
+  onHenriqueRevealReflectionDone,
+  onRicardoDeadReflectionDone,
+  onSandraReflectionDone,
+  onTechReflectionDone,
+} from './block07Handlers'
 import {
   onAugustoAnomaliesReflectionDone,
   onDeathReflectionDone,
@@ -46,6 +51,12 @@ export function afterReflectionComplete(reflectionId: string): void {
       break
     case 'refl-b07-sandra':
       onSandraReflectionDone()
+      break
+    case 'refl-b07-ricardo-dead':
+      onRicardoDeadReflectionDone()
+      break
+    case 'refl-b07-henrique-reveal':
+      onHenriqueRevealReflectionDone()
       break
     case 'refl-b07-tech':
       onTechReflectionDone()

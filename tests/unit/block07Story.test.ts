@@ -27,6 +27,9 @@ import {
   finishSandraInterview,
   onCassiniSolved,
   onEnceladusSolved,
+  onHenriqueRevealReflectionDone,
+  onMarianaPartialIdRevisited,
+  onRicardoDeadReflectionDone,
   onSandraReflectionDone,
   onTechReflectionDone,
   organizeMemoryOnset,
@@ -118,11 +121,31 @@ describe('Bloco 7 — progressão', () => {
     openDocument('doc-hospital-ricardo-freitas')
     s = getInvestigationState()
     expect(s.evidenceOwned).toContain('ricardo_freitas_died_that_shift')
-    expect(s.flags.block07_ricardo_crosscheck_unlocked).toBe(true)
+    expect(s.flags.block07_ricardo_id_check_unlocked).toBe(true)
+    expect(s.flags.block07_henrique_identified).toBeFalsy()
 
-    openDocument('doc-mariana-ricardo-note')
+    openDocument('doc-ricardo-consulta-negativa')
+    s = getInvestigationState()
+    expect(s.flags.block07_ricardo_dead_end).toBe(true)
+    expect(s.evidenceOwned).toContain('ricardo_civil_unconfirmed')
+    expect(s.flags.block07_henrique_identified).toBeFalsy()
+
+    onRicardoDeadReflectionDone()
+    onMarianaPartialIdRevisited()
+    s = getInvestigationState()
+    expect(s.flags.block07_partial_id_search_unlocked).toBe(true)
+    expect(s.evidenceOwned).toContain('mariana_partial_account_hvalenca')
+
+    openDocument('doc-henrique-cadastro')
+    s = getInvestigationState()
+    expect(s.flags.block07_henrique_named).toBe(true)
+    expect(s.people.henrique?.status).toBe('identified')
+    expect(s.flags.block07_henrique_identified).toBeFalsy()
+
+    onHenriqueRevealReflectionDone()
     s = getInvestigationState()
     expect(s.evidenceOwned).toContain('ricardo_was_henrique_valenca')
+    expect(s.flags.block07_henrique_identified).toBe(true)
     expect(s.flags.block07_henrique_search_unlocked).toBe(true)
 
     openDocument('doc-henrique-empresa')
