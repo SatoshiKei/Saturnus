@@ -99,12 +99,17 @@ export function installMarianaApp(appId: string): 'ok' | 'needs-password' | 'alr
 }
 
 /**
- * PIN do diário. Só pode ser tentado depois que a Perícia liberou o acesso forense (módulo Perícia).
- * Nada é preenchido automaticamente: o jogador digita o código que recuperou dos seis áudios.
+ * PIN do diário (Hexágono). Tentado no app do iPhone de Mariana, depois que a Perícia
+ * restaurou o pacote no aparelho. Nada é preenchido automaticamente.
  */
 export function tryDiaryPin(pin: string): 'locked' | 'wrong' | 'unlocked' {
-  if (!state.flags.block04_forensics_access) return 'locked'
+  const revealed =
+    state.flags.block04_forensics_access ||
+    state.flags.block04_diary_icon_revealed ||
+    state.phones.mariana.diaryUnlocked
+  if (!revealed) return 'locked'
   const phone = state.phones.mariana
+  if (phone.diaryUnlocked) return 'unlocked'
   if (pin.trim() !== HEX_PIN) {
     commit({
       ...state,
@@ -125,6 +130,7 @@ export function tryDiaryPin(pin: string): 'locked' | 'wrong' | 'unlocked' {
         { type: 'discoverPassword', which: 'diary' },
         { type: 'addEvidence', id: 'hidden_diary_recovered' },
         { type: 'setFlag', id: 'block04_forensics_done', value: true },
+        { type: 'completeTask', id: 'task_unlock_diary' },
         { type: 'addTask', id: 'task_read_diary', label: 'Ler o diário recuperado' },
       ],
     ),
@@ -222,8 +228,42 @@ export function migrateState(raw: InvestigationState): InvestigationState {
     toastQueue: [],
   }
   // Fluxo antigo de Bloco 4: o diário já aberto vira acesso concluído; o resto segue o novo fluxo.
-  if (raw.phones?.mariana?.diaryUnlocked) {
-    merged.flags = { ...merged.flags, block04_forensics_access: true, block04_forensics_done: true }
+  if (raw.phones?.mariana?.diaryUnlocked || raw.flags?.block04_forensics_done || raw.flags?.block04_diary_opened) {
+    merged.flags = {
+      ...merged.flags,
+      block04_forensics_access: true,
+      block04_forensics_done: true,
+      block04_diary_icon_revealed: true,
+    }
+    const apps = merged.phones.mariana.installedAppIds
+    if (!apps.includes('hidden-diary')) {
+      merged.phones = {
+        ...merged.phones,
+        mariana: {
+          ...merged.phones.mariana,
+          diaryUnlocked: true,
+          installedAppIds: [...apps, 'hidden-diary'],
+        },
+      }
+    } else if (!merged.phones.mariana.diaryUnlocked) {
+      merged.phones = {
+        ...merged.phones,
+        mariana: { ...merged.phones.mariana, diaryUnlocked: true },
+      }
+    }
+  } else if (raw.flags?.block04_forensics_access) {
+    // Perícia já feita, PIN ainda pendente — revelar ícone no aparelho.
+    merged.flags = { ...merged.flags, block04_diary_icon_revealed: true }
+    const apps = merged.phones.mariana.installedAppIds
+    if (!apps.includes('hidden-diary')) {
+      merged.phones = {
+        ...merged.phones,
+        mariana: {
+          ...merged.phones.mariana,
+          installedAppIds: [...apps, 'hidden-diary'],
+        },
+      }
+    }
   }
   return merged
 }

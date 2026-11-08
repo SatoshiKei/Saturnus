@@ -224,7 +224,7 @@ function applyOne(state: InvestigationState, action: StoryActionRef): Investigat
     case 'installApp': {
       const phone = state.phones[action.device]
       if (phone.installedAppIds.includes(action.appId)) return state
-      return {
+      const moved = {
         ...state,
         phones: {
           ...state.phones,
@@ -234,6 +234,16 @@ function applyOne(state: InvestigationState, action: StoryActionRef): Investigat
           },
         },
       }
+      if (action.appId === 'hidden-diary') {
+        return withDiscovery(moved, {
+          id: 'app:hidden-diary',
+          kind: 'message',
+          title: 'Aplicativo oculto restaurado',
+          subtitle: 'Disponível no aparelho apreendido',
+          refId: 'hidden-diary',
+        })
+      }
+      return moved
     }
     case 'addHypothesis': {
       if (state.hypotheses[action.id]) return state

@@ -4,6 +4,7 @@ import { CalendarHome } from '../apps/calendar/CalendarHome'
 import { AppStoreView } from '../apps/device/AppStoreView'
 import { DeviceSettingsApp } from '../apps/device/DeviceSettingsApp'
 import { FilesApp } from '../apps/device/FilesApp'
+import { HiddenDiaryApp } from '../apps/device/HiddenDiaryApp'
 import { PhotosApp } from '../apps/device/PhotosApp'
 import { RecorderApp } from '../apps/device/RecorderApp'
 import { WaveLabApp } from '../apps/device/WaveLabApp'
@@ -26,6 +27,7 @@ export function PhoneAppRouter() {
       if (route.appId === 'notes') return <NotesHome onBack={back} />
       if (route.appId === 'calendar') return <CalendarHome onBack={back} />
       if (route.appId === 'phone') return <PhoneCallsHome onBack={back} />
+      if (route.appId === 'hidden-diary') return <HiddenDiaryApp onBack={back} />
       return <PhoneHome />
     case 'whatsapp':
       return <WhatsAppShell initialTab={route.tab} onBackToPhone={back} />

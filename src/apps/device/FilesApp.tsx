@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useGameHub } from '../../app/GameHubContext'
 import {
+  PROVENANCE_LABEL,
   augustoFilesLibrary,
   marianaFilesLibrary,
   type PhoneMediaItem,
@@ -26,6 +27,8 @@ export function FilesApp({ onBack }: FilesAppProps) {
         id: 'mf-rec-maralto',
         label: 'REC_1102.m4a',
         folder: 'Downloads',
+        provenance: 'existing_hidden',
+        provenanceNote: 'Arquivo localizado após reanálise',
       })
     }
     if (inv.flags.block04_unknown_recording_unlocked) {
@@ -33,6 +36,8 @@ export function FilesApp({ onBack }: FilesAppProps) {
         id: 'mf-chk-unk',
         label: 'CHK_UNK.m4a',
         folder: 'Downloads',
+        provenance: 'existing_hidden',
+        provenanceNote: 'Localizado após referência no diário',
       })
     }
     return [...base, ...extra]
@@ -82,6 +87,13 @@ export function FilesApp({ onBack }: FilesAppProps) {
   )
 }
 
+function provenanceHint(item: PhoneMediaItem, exported: boolean): string | null {
+  if (exported) return PROVENANCE_LABEL.exported
+  if (item.provenanceNote) return item.provenanceNote
+  if (item.provenance) return PROVENANCE_LABEL[item.provenance]
+  return null
+}
+
 function FileRow({ item }: { item: PhoneMediaItem }) {
   const inv = useInvestigation()
   const src = item.spriteId ? contactAvatarSrc(item.spriteId) : undefined
@@ -93,6 +105,10 @@ function FileRow({ item }: { item: PhoneMediaItem }) {
     item.id === 'mf-chk-unk' &&
     inv.flags.block04_unknown_recording_unlocked &&
     !inv.flags.block04_unknown_recording_found
+  const exported =
+    (item.id === 'mf-rec-maralto' && inv.flags.block03_maralto_recording_found) ||
+    (item.id === 'mf-chk-unk' && inv.flags.block04_unknown_recording_found)
+  const hint = provenanceHint(item, exported)
 
   return (
     <li className="ios-files__row">
@@ -111,7 +127,8 @@ function FileRow({ item }: { item: PhoneMediaItem }) {
           onClick={() => onMarianaMaraltoRecordingFound()}
         >
           {item.label}
-          <span className="ios-files__hint">Reanalisar</span>
+          {hint ? <span className="ios-files__hint">{hint}</span> : null}
+          <span className="ios-files__hint ios-files__hint--action">Reanalisar</span>
         </button>
       ) : unkAction ? (
         <button
@@ -121,17 +138,13 @@ function FileRow({ item }: { item: PhoneMediaItem }) {
           onClick={() => onUnknownRecordingFound()}
         >
           {item.label}
-          <span className="ios-files__hint">Exportar para bancada</span>
+          {hint ? <span className="ios-files__hint">{hint}</span> : null}
+          <span className="ios-files__hint ios-files__hint--action">Exportar para bancada</span>
         </button>
       ) : (
         <span className="ios-files__name">
           {item.label}
-          {item.id === 'mf-rec-maralto' && inv.flags.block03_maralto_recording_found ? (
-            <span className="ios-files__hint">Exportado</span>
-          ) : null}
-          {item.id === 'mf-chk-unk' && inv.flags.block04_unknown_recording_found ? (
-            <span className="ios-files__hint">Exportado</span>
-          ) : null}
+          {hint ? <span className="ios-files__hint">{hint}</span> : null}
         </span>
       )}
     </li>

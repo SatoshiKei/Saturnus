@@ -52,21 +52,57 @@ export function isPersonVisibleInRegistry(personId: string, inv: InvestigationSt
 
 /** Corrige estado quando a evidência existe mas flags de Bloco 2 não foram gravadas. */
 export function repairInvestigationState(state: InvestigationState): InvestigationState {
-  if (!state.evidenceOwned.includes('paula_leads_lucas')) return state
-  if (state.flags.block02_paula_chat_done) return state
+  let next = state
 
-  const lucas = state.people.lucas
-  return {
-    ...state,
-    flags: { ...state.flags, block02_paula_chat_done: true },
-    people: lucas
-      ? {
-          ...state.people,
-          lucas: {
-            ...lucas,
-            status: lucas.status === 'mentioned' ? 'contactable' : lucas.status,
-          },
-        }
-      : state.people,
+  if (state.evidenceOwned.includes('paula_leads_lucas') && !state.flags.block02_paula_chat_done) {
+    const lucas = state.people.lucas
+    next = {
+      ...next,
+      flags: { ...next.flags, block02_paula_chat_done: true },
+      people: lucas
+        ? {
+            ...next.people,
+            lucas: {
+              ...lucas,
+              status: lucas.status === 'mentioned' ? 'contactable' : lucas.status,
+            },
+          }
+        : next.people,
+    }
   }
+
+  // B2: Perícia/diário — revelar ícone no iPhone; saves com diário já aberto não pedem PIN de novo.
+  const diaryDone =
+    next.phones.mariana.diaryUnlocked ||
+    next.flags.block04_forensics_done ||
+    next.flags.block04_diary_opened
+  const forensicsDone = next.flags.block04_forensics_access || diaryDone
+  if (forensicsDone) {
+    const apps = next.phones.mariana.installedAppIds
+    const needApp = !apps.includes('hidden-diary')
+    const needFlag = !next.flags.block04_diary_icon_revealed
+    const needUnlock = diaryDone && !next.phones.mariana.diaryUnlocked
+    if (needApp || needFlag || needUnlock) {
+      next = {
+        ...next,
+        flags: {
+          ...next.flags,
+          block04_diary_icon_revealed: true,
+          ...(diaryDone
+            ? { block04_forensics_access: true, block04_forensics_done: true }
+            : {}),
+        },
+        phones: {
+          ...next.phones,
+          mariana: {
+            ...next.phones.mariana,
+            diaryUnlocked: diaryDone ? true : next.phones.mariana.diaryUnlocked,
+            installedAppIds: needApp ? [...apps, 'hidden-diary'] : apps,
+          },
+        },
+      }
+    }
+  }
+
+  return next
 }

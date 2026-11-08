@@ -188,13 +188,19 @@ export const callScripts: CallScript[] = [
     timeSkip: 'Algumas horas depois…',
     result: {
       label: 'Documento recebido',
-      detail: 'Laudo pericial — aparelho de Mariana (análise de pacotes). Disponível no módulo Perícia do computador.',
+      detail:
+        'Laudo pericial — aparelho de Mariana. Consulte o módulo Perícia; o pacote recuperado fica no aparelho apreendido.',
     },
     onComplete: [
       { type: 'completeCall', id: 'call-pericia-device' },
       { type: 'addDocument', id: 'doc-laudo-forense' },
     ],
-    repeat: [{ who: 'other', text: 'O laudo já foi enviado. Está no módulo de perícia do seu terminal.' }],
+    repeat: [
+      {
+        who: 'other',
+        text: 'O laudo já foi enviado. O pacote recuperado está acessível no aparelho apreendido.',
+      },
+    ],
     notYet: [
       { who: 'other', text: 'Perícia, dispositivos móveis.' },
       { who: 'augusto', text: 'Ainda não tenho o que pedir ao senhor.' },

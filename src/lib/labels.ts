@@ -58,7 +58,7 @@ const sourceLabels: Record<string, string> = {
   'augusto-whatsapp': 'WhatsApp — celular profissional',
   'unknown-channel': 'Canal sem identificação',
   'phone-forensics': 'Perícia digital — aparelho apreendido',
-  'hidden-diary': 'Diário — aparelho de Mariana (perícia)',
+  'hidden-diary': 'Diário — aparelho de Mariana',
 }
 
 export function evidenceSourceLabel(e: Pick<Evidence, 'sourceType' | 'obtainedFrom'>): string {

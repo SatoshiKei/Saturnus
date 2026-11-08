@@ -58,6 +58,10 @@ export function PhoneHome() {
       push({ screen: 'files' })
       return
     }
+    if (id === 'hidden-diary') {
+      push(openApp('hidden-diary'))
+      return
+    }
     push(openApp(id))
   }
 

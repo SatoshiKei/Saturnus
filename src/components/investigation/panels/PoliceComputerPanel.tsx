@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { getDocument } from '../../../data/game/seedDocuments'
 import { useInvestigation } from '../../../game/hooks/useInvestigation'
 import { runPoliceSearch, type SearchHit } from '../../../game/search/runSearch'
-import { dispatchActions, tryDiaryPin } from '../../../game/state/investigationStore'
+import { dispatchActions } from '../../../game/state/investigationStore'
 import { isPersonVisibleInRegistry } from '../../../game/personRegistryGates'
 import {
   comparePhoneFilesSequence,
@@ -25,7 +25,6 @@ import {
   rereadDiaryOmitido,
   weighMarianaMessageImpossibilities,
 } from '../../../game/story/block09Handlers'
-import { DiaryReader } from '../../../apps/device/HiddenDiaryApp'
 import { playSfx } from '../../../lib/sfx'
 import { GamePanel } from '../../ui/GamePanel'
 import { DocumentSheet } from '../DocumentSheet'
@@ -78,9 +77,6 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
   const [searched, setSearched] = useState(false)
   const [recent, setRecent] = useState<string[]>([])
   const [openDoc, setOpenDoc] = useState<string | null>(null)
-  const [pin, setPin] = useState('')
-  const [pinError, setPinError] = useState<string | null>(null)
-  const [pkgOpen, setPkgOpen] = useState(false)
   const clock = useClock()
 
   const search = (e?: FormEvent) => {
@@ -107,27 +103,11 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
     [inv],
   )
   const pending = inv.tasks.filter((t) => !t.completed)
-  const mariana = inv.phones.mariana
   const scopeDef = scopes.find((s) => s.id === scope) ?? scopes[0]
 
   const go = (s: Section) => {
     setSection(s)
     setOpenDoc(null)
-  }
-
-  const submitPin = (e: FormEvent) => {
-    e.preventDefault()
-    const res = tryDiaryPin(pin)
-    if (res === 'wrong') {
-      playSfx('error')
-      setPinError('Código incorreto.')
-    } else if (res === 'unlocked') {
-      playSfx('unlock')
-      setPinError(null)
-      setPin('')
-    } else {
-      setPinError('Acesso forense não liberado.')
-    }
   }
 
   const docList = (system: string, emptyText: string) => {
@@ -317,52 +297,22 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
             <>
               <h3 className="pc-h">Perícia</h3>
               {docList('pericia', 'Nenhum laudo recebido.')}
-              {inv.flags.block04_forensics_access ? (
+              {inv.flags.block04_forensics_access || inv.flags.block04_diary_icon_revealed ? (
                 <div className="pc-forensics" data-testid="forensic-access-panel">
                   <h4 className="pc-sub">Acesso forense — aparelho de Mariana</h4>
                   <p className="pc-empty">
-                    Pacote <code>local.priv.journal</code> · base local protegida por código numérico de 6
-                    dígitos.
+                    Pacote <code>local.priv.journal</code> recuperado. Aplicativo disponível no aparelho
+                    apreendido — abrir pelo launcher do celular de Mariana e usar o código obtido no
+                    Hexágono.
                   </p>
-                  {mariana.diaryUnlocked ? (
-                    <DiaryReader />
-                  ) : pkgOpen ? (
-                    <form className="pc-pin" onSubmit={submitPin} data-testid="forensic-pin-screen">
-                      <label htmlFor="forensic-pin" className="pc-pin__label">
-                        Código de acesso
-                      </label>
-                      <input
-                        id="forensic-pin"
-                        className="pc-term__input pc-pin__input"
-                        value={pin}
-                        onChange={(e) => {
-                          setPin(e.target.value.replace(/\D/g, '').slice(0, 6))
-                          setPinError(null)
-                        }}
-                        inputMode="numeric"
-                        autoComplete="off"
-                        maxLength={6}
-                        placeholder="••••••"
-                        data-testid="forensic-pin-input"
-                      />
-                      <button type="submit" className="pc-term__go" data-testid="forensic-pin-submit">
-                        Acessar
-                      </button>
-                      {pinError ? (
-                        <p className="pc-pin__error" role="alert" data-testid="forensic-pin-error">
-                          {pinError}
-                        </p>
-                      ) : null}
-                    </form>
+                  {inv.phones.mariana.diaryUnlocked ? (
+                    <p className="pc-empty" data-testid="forensic-diary-on-device">
+                      Diário já desbloqueado no aparelho.
+                    </p>
                   ) : (
-                    <button
-                      type="button"
-                      className="pc-inline"
-                      data-testid="forensic-open-package"
-                      onClick={() => setPkgOpen(true)}
-                    >
-                      Abrir pacote
-                    </button>
+                    <p className="pc-empty" data-testid="forensic-open-on-phone">
+                      Aplicativo recuperado — disponível no aparelho apreendido.
+                    </p>
                   )}
                 </div>
               ) : null}

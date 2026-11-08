@@ -516,17 +516,24 @@ export const seedDocuments: Document[] = [
       },
       {
         id: 'b2',
-        text: 'Pacote não apresentado pelo launcher: local.priv.journal — base local própria, protegida por código numérico de 6 dígitos. Último acesso: recente.',
+        text: 'Pacote não apresentado pelo launcher: local.priv.journal — base SQLite local própria, protegida por código numérico de 6 dígitos. Último acesso: recente.',
       },
       {
         id: 'b3',
-        text: 'Acesso forense ao pacote pode ser liberado neste terminal, mediante o código.',
+        text: 'A extração identificou um aplicativo instalado no aparelho que não constava no launcher. O pacote foi recuperado e tornado acessível no dispositivo apreendido. O código de acesso permanece necessário no próprio app.',
       },
     ],
     onOpen: [
       { type: 'addEvidence', id: 'hidden_app_detected' },
       { type: 'setFlag', id: 'block04_forensics_access', value: true },
+      { type: 'setFlag', id: 'block04_diary_icon_revealed', value: true },
+      { type: 'installApp', device: 'mariana', appId: 'hidden-diary' },
       { type: 'completeTask', id: 'task_phone_forensics' },
+      {
+        type: 'addTask',
+        id: 'task_open_recovered_diary',
+        label: 'Abrir o aplicativo recuperado no celular de Mariana',
+      },
     ],
   },
   // ───────────────────────── Bloco 5 ─────────────────────────
