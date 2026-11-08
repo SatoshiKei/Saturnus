@@ -67,3 +67,21 @@ export const marianaMessagesWave3: ChatMessage[] = [
     timestamp: '00:42',
   },
 ]
+
+/** Anomalias concretas envolvendo Augusto (após outros casos). */
+export const marianaMessagesAnomaly: ChatMessage[] = [
+  {
+    id: 'mm-anom-1',
+    kind: 'text',
+    from: 'them',
+    text: 'Você já pensou nisso antes de verbalizar. Eu só completei a frase.',
+    timestamp: '01:12',
+  },
+  {
+    id: 'mm-anom-2',
+    kind: 'text',
+    from: 'them',
+    text: 'Esse tom — o seu. Não o dela.',
+    timestamp: '01:13',
+  },
+]

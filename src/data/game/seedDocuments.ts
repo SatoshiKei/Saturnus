@@ -1040,7 +1040,7 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-guardrail-reanalise',
-    title: 'Reanálise pericial — guardrail (fotos, medidas, fragmentos)',
+    title: 'Laudo complementar — Guardrail / proteção da via',
     category: 'Perícia / forense',
     issuer: 'Perícia Criminal',
     dateLabel: '07/11/2026',
@@ -1048,14 +1048,15 @@ export const seedDocuments: Document[] = [
     blocks: [
       {
         id: 'b1',
-        text: 'Reexame do material preservado: deformação localizada, transferência de tinta e pequeno fragmento incompatíveis com simples desgaste.',
+        text: 'Reexame do material preservado: deformação localizada compatível com impacto automotivo; transferência de tinta e pequeno fragmento incompatíveis com simples desgaste.',
       },
       {
         id: 'b2',
-        text: 'Na época, os sinais foram tratados como dano antigo sem relação com a morte. A leitura atual sustenta impacto automotivo anterior.',
+        text: 'Na investigação original, os sinais foram tratados como dano antigo ou irrelevante. A leitura atual indica dano anterior à queda — impacto automotivo prévio na proteção da via.',
       },
     ],
-    onOpen: [{ type: 'addEvidence', id: 'guardrail_impact_signs' }],
+    /** Progressão (veículo / flags): `requestGuardrailReexam` via `onDocumentConsulted`. */
+    onOpen: [],
   },
   {
     id: 'doc-camera-veiculo-madrugada',
@@ -1181,23 +1182,24 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-omitido-interface',
-    title: 'Interface — identificador O Omitido',
+    title: 'Log de sessão — identificador O Omitido',
     category: 'Extração forense',
-    issuer: 'Cruzamento Henrique × Mariana',
+    issuer: 'Material digital recuperado (Henrique / Mariana)',
     system: 'pericia',
     blocks: [
       {
         id: 'b1',
-        text: 'Nos registros reconstruídos, o interlocutor aparece sob o identificador “O Omitido” — nome exibido pela própria interface, não inventado pela investigação.',
+        text: 'Nos registros de interface reconstruídos, o interlocutor aparece sob o identificador “O Omitido” — rótulo exibido pelo próprio sistema, não atribuído pela investigação.',
       },
       {
         id: 'b2',
-        text: 'Mariana utilizava a mesma infraestrutura durante meses. O Omitido perguntava, apontava inconsistências e oferecia fragmentos verificáveis; Mariana executava a investigação.',
+        text: 'A mesma infraestrutura aparece no material de Henrique e nas sessões prolongadas de Mariana. O canal pergunta, aponta inconsistências e oferece fragmentos verificáveis.',
       },
     ],
     onOpen: [],
   },
   {
+    /** Legado — saves antigos; não entra mais no fluxo novo (Reflection no diário). */
     id: 'doc-diario-releitura-omitido',
     title: 'Releitura — diário à luz de O Omitido',
     category: 'Anotação de caso',
@@ -1216,6 +1218,7 @@ export const seedDocuments: Document[] = [
     onOpen: [],
   },
   {
+    /** Legado — saves antigos; não entra mais no fluxo novo (Reflection). */
     id: 'doc-omitido-assistencia',
     title: 'Nota — assistência técnica no desaparecimento',
     category: 'Anotação de caso',
@@ -1253,6 +1256,7 @@ export const seedDocuments: Document[] = [
     onOpen: [],
   },
   {
+    /** Legado — saves antigos; conclusão agora vem da leitura no WhatsApp. */
     id: 'doc-mensagens-impossiveis',
     title: 'Nota — o que as mensagens sabem demais',
     category: 'Anotação de caso',
@@ -1271,19 +1275,55 @@ export const seedDocuments: Document[] = [
     onOpen: [],
   },
   {
-    id: 'doc-trilha-fisica-mariana',
-    title: 'Cadeia — últimos deslocamentos físicos',
-    category: 'Anotação de caso',
-    issuer: 'Delegacia — Augusto Nogueira',
-    system: 'documentos',
+    id: 'doc-trilha-camera-mariana',
+    title: 'Consulta — câmeras viárias (últimos deslocamentos)',
+    category: 'Consultas',
+    issuer: 'Sistema policial — imagens',
+    system: 'consultas',
     blocks: [
       {
         id: 'b1',
-        text: 'Transporte, câmera, compra e registro fecham um percurso até um galpão desativado no setor norte. Sem endereço ditado: só a cadeia.',
+        text: 'Sequência parcial de imagens: Mariana em deslocamento noturno na zona norte, sozinha, com intervalo compatível com transporte público e caminhada.',
       },
       {
         id: 'b2',
-        text: 'Há motivo suficiente para ir até lá. Ainda há chance — ou havia — de encontrá-la viva.',
+        text: 'Último enquadramento útil: saída em direção ao setor industrial. Sem confirmação de destino final nesta base.',
+      },
+    ],
+    onOpen: [],
+  },
+  {
+    id: 'doc-trilha-transporte-mariana',
+    title: 'Consulta — registro de transporte / passagem',
+    category: 'Consultas',
+    issuer: 'Sistema policial — mobilidade',
+    system: 'consultas',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Passagem registrada em linha/terminal compatível com a rota das câmeras. Horário alinhado ao último deslocamento conhecido.',
+      },
+      {
+        id: 'b2',
+        text: 'Destino operacional sugerido: entorno de galpões desativados no setor norte. Consolidar com demais consultas.',
+      },
+    ],
+    onOpen: [],
+  },
+  {
+    id: 'doc-trilha-fisica-mariana',
+    title: 'Relatório institucional — últimos deslocamentos (Mariana Silva)',
+    category: 'Consultas',
+    issuer: 'Sistema policial — consolidação de consultas',
+    system: 'consultas',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Consolidação de câmera, transporte e registros correlatos: percurso até um galpão desativado no setor norte. Sem endereço ditado por terceiros — só a cadeia documental.',
+      },
+      {
+        id: 'b2',
+        text: 'Há motivo suficiente para deslocamento imediato ao local. Ainda há chance — ou havia — de encontrá-la viva.',
       },
     ],
     leads: [{ type: 'address', label: 'Local', value: 'Galpão desativado — setor norte' }],
@@ -1291,9 +1331,9 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-outros-desaparecimentos',
-    title: 'Cruzamento — outros desaparecimentos',
+    title: 'Resultado de busca — outros desaparecimentos semelhantes',
     category: 'Consultas',
-    issuer: 'Sistema policial — resumo',
+    issuer: 'Sistema policial — resumo institucional',
     system: 'consultas',
     blocks: [
       {
@@ -1308,6 +1348,7 @@ export const seedDocuments: Document[] = [
     onOpen: [],
   },
   {
+    /** Legado — saves antigos; anomalias agora são eventos + Reflection. */
     id: 'doc-anomalias-augusto',
     title: 'Nota — anomalias envolvendo Augusto',
     category: 'Anotação de caso',

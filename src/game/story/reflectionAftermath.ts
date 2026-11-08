@@ -16,7 +16,13 @@ import {
 } from './block05Handlers'
 import { onGeraldoReflectionDone, onMiroReflectionDone } from './block06Handlers'
 import { onSandraReflectionDone, onTechReflectionDone } from './block07Handlers'
-import { onDeathReflectionDone, onSaturnusFinalReflectionDone } from './block09Handlers'
+import {
+  onAugustoAnomaliesReflectionDone,
+  onDeathReflectionDone,
+  onMessagesImpossibilityReflectionDone,
+  onOmitidoAssistanceReflectionDone,
+  onSaturnusFinalReflectionDone,
+} from './block09Handlers'
 
 export function afterReflectionComplete(reflectionId: string): void {
   switch (reflectionId) {
@@ -56,8 +62,17 @@ export function afterReflectionComplete(reflectionId: string): void {
     case 'refl-b08-final':
       onFinalReflectionDone()
       break
+    case 'refl-b09-omitido':
+      onOmitidoAssistanceReflectionDone()
+      break
+    case 'refl-b09-messages':
+      onMessagesImpossibilityReflectionDone()
+      break
     case 'refl-b09-death':
       onDeathReflectionDone()
+      break
+    case 'refl-b09-augusto':
+      onAugustoAnomaliesReflectionDone()
       break
     case 'refl-b09-final':
       onSaturnusFinalReflectionDone()

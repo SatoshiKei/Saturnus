@@ -238,6 +238,24 @@ export const reflections: ReflectionDef[] = [
     ],
   },
   {
+    /** Após comparar Henrique×Mariana, reler o diário e rever a fonte técnica. */
+    id: 'refl-b09-omitido',
+    background: HUB_REFLECTION_BACKGROUND,
+    blocks: [
+      'A mesma interface. O mesmo identificador. Nos registros, o nome é O Omitido — não inventei.',
+      'Parte dos lapsos do diário parece encenada para o percurso. Outra parte ainda pode ser deterioração real ou influência. Sem fronteira segura.',
+      'A ligação inicial, os arquivos manipulados, os áudios e o timing das provocações exigem capacidade técnica que Mariana sozinha dificilmente teria. O plano era dela. Havia assistência externa.',
+    ],
+  },
+  {
+    id: 'refl-b09-messages',
+    background: HUB_REFLECTION_BACKGROUND,
+    blocks: [
+      'As mensagens usam o tom de Mariana e fatos que ela poderia saber. Também conhecem descobertas feitas só depois do desaparecimento — e detalhes restritos à investigação.',
+      'A pergunta deixa de ser onde ela está. Passa a ser quem está falando — e desde quando.',
+    ],
+  },
+  {
     /** Imediata após achar o corpo — SceneRunner no local da trilha. */
     id: 'refl-b09-death',
     sceneId: 'trail',
@@ -247,6 +265,14 @@ export const reflections: ReflectionDef[] = [
       'Mariana está morta. André pode ser inocente. Elisa morreu em acidente. Eu participei da cadeia. O Omitido continua.',
       'Não sei se ela aceitou o fim ou se a escolha já estava moldada. As duas leituras cabem. Nenhuma fecha.',
       'Ainda há mensagens em nome dela. Ainda há o que investigar.',
+    ],
+  },
+  {
+    id: 'refl-b09-augusto',
+    background: HUB_REFLECTION_BACKGROUND,
+    blocks: [
+      'Uma frase no meu tom. Uma resposta a algo que não lembro de ter dito. Poucos sinais — suficientes.',
+      'Durante a investigação, culpa, raciocínio e medo ficaram expostos. O Omitido esteve presente. O processo pode ter se voltado para cá.',
     ],
   },
   {

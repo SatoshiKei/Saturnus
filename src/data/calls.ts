@@ -172,10 +172,52 @@ export const callScripts: CallScript[] = [
     ],
   },
   {
+    id: 'call-pericia-guardrail',
+    speaker: 'Perícia — criminalística',
+    ext: '212',
+    available: (s) =>
+      flag(s, 'block08_guardrail_reexam_unlocked') && !flag(s, 'block08_guardrail_done'),
+    lines: [
+      { who: 'other', text: 'Perícia, criminalística.' },
+      {
+        who: 'augusto',
+        text: 'Augusto Nogueira. Preciso de reanálise das fotografias antigas do guardrail da via auxiliar — deformações e vestígios preservados.',
+      },
+      {
+        who: 'other',
+        text: 'Temos o material lacrado. Comparo impacto, transferência e o que foi tratado como dano antigo na época.',
+      },
+      { who: 'augusto', text: 'Quando o laudo complementar estiver pronto, encaminhem ao sistema.' },
+      { who: 'other', text: 'Retorno em algumas horas.' },
+    ],
+    timeSkip: 'Algumas horas depois…',
+    result: {
+      label: 'Documento recebido',
+      detail: 'Laudo complementar — Guardrail / proteção da via. Consulte o módulo Perícia.',
+    },
+    onComplete: [
+      { type: 'completeCall', id: 'call-pericia-guardrail' },
+      { type: 'addDocument', id: 'doc-guardrail-reanalise' },
+    ],
+    repeat: [
+      {
+        who: 'other',
+        text: 'O laudo complementar do guardrail já está no sistema. Qualquer dúvida, abra o documento.',
+      },
+    ],
+    notYet: [
+      { who: 'other', text: 'Perícia, criminalística.' },
+      { who: 'augusto', text: 'Ainda não tenho solicitação formal para o senhor.' },
+      { who: 'other', text: 'Quando tiver material e pedido específicos, ligue de novo.' },
+    ],
+  },
+  {
     id: 'call-pericia-device',
     speaker: 'Perícia — dispositivos móveis',
     ext: '212',
-    available: (s) => flag(s, 'block04_forensics_unlocked'),
+    available: (s) =>
+      flag(s, 'block04_forensics_unlocked') &&
+      !(flag(s, 'block08_guardrail_reexam_unlocked') && !flag(s, 'block08_guardrail_done')),
     lines: [
       { who: 'other', text: 'Perícia, dispositivos móveis.' },
       {

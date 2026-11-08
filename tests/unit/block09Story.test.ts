@@ -20,10 +20,12 @@ import {
   findOtherDisappearances,
   finishTrailDiscovery,
   mapOmitidoAssistance,
+  onAugustoAnomaliesReflectionDone,
   onDeathReflectionDone,
   onMarianaChatOpened,
   onMemoryPuzzleSolved,
-  onPostDeathMessageRead,
+  onMessagesImpossibilityReflectionDone,
+  onOmitidoAssistanceReflectionDone,
   onRobertoExposed,
   onSaturnusFinalReflectionDone,
   reconstructPhysicalTrail,
@@ -72,6 +74,9 @@ describe('Bloco 9 — progressão', () => {
     s = getInvestigationState()
     expect(s.evidenceOwned).toContain('diary_partly_staged_ambiguity')
     expect(s.evidenceOwned).toContain('disappearance_plan_mariana_with_omitido')
+    expect(s.flags.block09_refl_omitido_pending).toBe(true)
+    onOmitidoAssistanceReflectionDone()
+    s = getInvestigationState()
     expect(s.flags.block09_roberto_search_unlocked).toBe(true)
 
     const { hits } = runPoliceSearch('roberto', getInvestigationState())
@@ -97,12 +102,15 @@ describe('Bloco 9 — progressão', () => {
     compareHenriqueMarianaSystem()
     rereadDiaryOmitido()
     mapOmitidoAssistance()
+    onOmitidoAssistanceReflectionDone()
     onRobertoExposed()
     onMarianaChatOpened()
 
     weighMarianaMessageImpossibilities()
     let s = getInvestigationState()
     expect(s.evidenceOwned).toContain('messages_know_post_disappearance_facts')
+    expect(s.flags.block09_refl_messages_pending).toBe(true)
+    onMessagesImpossibilityReflectionDone()
 
     reconstructPhysicalTrail()
     s = getInvestigationState()
@@ -126,6 +134,9 @@ describe('Bloco 9 — progressão', () => {
     s = getInvestigationState()
     expect(s.evidenceOwned).toContain('other_disappearances_pattern')
     expect(s.evidenceOwned).toContain('augusto_was_observed')
+    expect(s.flags.block09_refl_augusto_pending).toBe(true)
+    onAugustoAnomaliesReflectionDone()
+    s = getInvestigationState()
     expect(s.flags.block09_memory_available).toBe(true)
     expect(s.evidenceOwned).toContain('mariana_recent_recording_claim')
 

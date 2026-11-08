@@ -105,24 +105,28 @@ export function finishMiroThird() {
     {
       type: 'addTask',
       id: 'task_reexamine_guardrail',
-      label: 'Solicitar reanálise pericial do guardrail (fotos, medidas, fragmentos)',
+      label:
+        'Solicitar à Perícia (telefone fixo) uma nova análise das fotografias e vestígios do guardrail',
     },
   ])
 }
 
+/**
+ * Progressão ao abrir o laudo complementar (fonte real da Perícia).
+ * A solicitação em si é a ligação no ramal 212 — não o módulo Caso.
+ */
 export function requestGuardrailReexam() {
   const s = getInvestigationState()
   if (s.flags.block08_guardrail_done) return
   dispatchActions([
     { type: 'setFlag', id: 'block08_guardrail_done', value: true },
-    { type: 'addDocument', id: 'doc-guardrail-reanalise' },
     { type: 'addEvidence', id: 'guardrail_impact_signs' },
     { type: 'completeTask', id: 'task_reexamine_guardrail' },
     { type: 'setFlag', id: 'block08_vehicle_search_unlocked', value: true },
     {
       type: 'addTask',
       id: 'task_find_compatible_vehicle',
-      label: 'Buscar veículo com dano compatível na região naquela madrugada',
+      label: 'Identificar um veículo compatível com o dano no guardrail',
     },
   ])
 }

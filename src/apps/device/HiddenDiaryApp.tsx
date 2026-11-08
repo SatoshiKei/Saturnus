@@ -3,7 +3,11 @@ import { block04DiaryEntries } from '../../data/block04/diaryEntries'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { dispatchActions, setFlag, tryDiaryPin } from '../../game/state/investigationStore'
 import { onDiaryEntryRead } from '../../game/story/block04Handlers'
+import { rereadDiaryOmitido } from '../../game/story/block09Handlers'
 import { playSfx } from '../../lib/sfx'
+
+/** Entradas cujo sentido muda após O Omitido — destaque discreto quando a pendência está ativa. */
+const OMITIDO_REREAD_ENTRY_IDS = new Set(['diary-forget', 'diary-others', 'diary-record'])
 
 /**
  * App do diário no iPhone de Mariana (visível só após a Perícia restaurar o pacote).
@@ -105,6 +109,8 @@ export function DiaryReader({ onBack }: { onBack?: () => void }) {
   const inv = useInvestigation()
   const [openId, setOpenId] = useState<string | null>(null)
   const open = block04DiaryEntries.find((e) => e.id === openId)
+  const highlightOmitidoReread =
+    inv.flags.block09_diary_reread_unlocked && !inv.flags.block09_diary_reread_done
 
   return (
     <div className="diary-reader" data-testid="hidden-diary-unlocked">
@@ -125,11 +131,17 @@ export function DiaryReader({ onBack }: { onBack?: () => void }) {
                 className="diary-list__row"
                 data-testid={`diary-entry-${e.id}`}
                 data-read={Boolean(inv.flags[e.readFlag]) || undefined}
+                data-omitido-reread={
+                  highlightOmitidoReread && OMITIDO_REREAD_ENTRY_IDS.has(e.id) ? true : undefined
+                }
                 onClick={() => {
                   setOpenId(e.id)
                   if (!inv.flags[e.readFlag]) {
                     setFlag(e.readFlag, true)
                     onDiaryEntryRead(e.id, Boolean(e.unlocksUnknownRecording))
+                  }
+                  if (highlightOmitidoReread && OMITIDO_REREAD_ENTRY_IDS.has(e.id)) {
+                    rereadDiaryOmitido()
                   }
                 }}
               >

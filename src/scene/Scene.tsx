@@ -105,7 +105,14 @@ function pendingSoloReflection(flags: Record<string, boolean>): string | null {
   if (flags.block08_refl_andre_pending && !flags['refl-b08-andre_seen']) return 'refl-b08-andre'
   if (flags.block08_refl_accident_pending && !flags['refl-b08-accident_seen']) return 'refl-b08-accident'
   if (flags.block08_refl_final_pending && !flags['refl-b08-final_seen']) return 'refl-b08-final'
+  if (flags.block09_refl_omitido_pending && !flags['refl-b09-omitido_seen']) return 'refl-b09-omitido'
+  if (flags.block09_refl_messages_pending && !flags['refl-b09-messages_seen']) {
+    return 'refl-b09-messages'
+  }
   if (flags.block09_refl_death_pending && !flags['refl-b09-death_seen']) return 'refl-b09-death'
+  if (flags.block09_refl_augusto_pending && !flags['refl-b09-augusto_seen']) {
+    return 'refl-b09-augusto'
+  }
   if (
     flags.block09_refl_final_pending &&
     flags.block09_memory_word_dismissed &&

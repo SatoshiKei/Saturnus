@@ -168,6 +168,10 @@ export function PoliceLandline({ onClose }: { onClose: () => void }) {
                       const ricardo = callScripts.find((s) => s.id === 'call-hospital-ricardo')
                       if (ricardo) script = ricardo
                     }
+                    if (e.key === '212') {
+                      const pericia = scriptByExt('212', inv)
+                      if (pericia) script = pericia
+                    }
                     setNumber(e.key.length <= 4 && /^\d+$/.test(e.key) ? e.key : '')
                     startCall(script)
                   }}

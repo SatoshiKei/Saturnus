@@ -893,9 +893,100 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['omitido'],
     results: [
       {
-        title: 'Interface — identificador O Omitido',
-        snippet: 'Registro presente no material cruzado.',
+        title: 'Log de sessão — identificador O Omitido',
+        snippet: 'Registro presente no material digital recuperado.',
         documentId: 'doc-omitido-interface',
+      },
+    ],
+  },
+  {
+    id: 'block09_trail_camera',
+    category: 'police',
+    requiredFlags: ['block09_trail_unlocked'],
+    requiredTerms: ['camera'],
+    results: [
+      {
+        title: 'Consulta — câmeras viárias (últimos deslocamentos)',
+        snippet: 'Imagens do deslocamento noturno de Mariana.',
+        documentId: 'doc-trilha-camera-mariana',
+      },
+    ],
+  },
+  {
+    id: 'block09_trail_camera_alt',
+    category: 'police',
+    requiredFlags: ['block09_trail_unlocked'],
+    requiredTerms: ['cameras'],
+    results: [
+      {
+        title: 'Consulta — câmeras viárias (últimos deslocamentos)',
+        snippet: 'Imagens do deslocamento noturno de Mariana.',
+        documentId: 'doc-trilha-camera-mariana',
+      },
+    ],
+  },
+  {
+    id: 'block09_trail_deslocamento',
+    category: 'police',
+    requiredFlags: ['block09_trail_unlocked'],
+    requiredTerms: ['deslocamento'],
+    results: [
+      {
+        title: 'Consulta — câmeras viárias (últimos deslocamentos)',
+        snippet: 'Imagens do deslocamento noturno de Mariana.',
+        documentId: 'doc-trilha-camera-mariana',
+      },
+    ],
+  },
+  {
+    id: 'block09_trail_transporte',
+    category: 'police',
+    requiredFlags: ['block09_trail_unlocked'],
+    requiredTerms: ['transporte'],
+    results: [
+      {
+        title: 'Consulta — registro de transporte / passagem',
+        snippet: 'Passagem compatível com a rota das câmeras.',
+        documentId: 'doc-trilha-transporte-mariana',
+      },
+    ],
+  },
+  {
+    id: 'block09_other_desaparecimento',
+    category: 'police',
+    requiredFlags: ['block09_other_cases_unlocked'],
+    requiredTerms: ['desaparecimento'],
+    results: [
+      {
+        title: 'Resultado de busca — outros desaparecimentos semelhantes',
+        snippet: 'Padrão comportamental em casos esparsos.',
+        documentId: 'doc-outros-desaparecimentos',
+      },
+    ],
+  },
+  {
+    id: 'block09_other_desaparecimentos',
+    category: 'police',
+    requiredFlags: ['block09_other_cases_unlocked'],
+    requiredTerms: ['desaparecimentos'],
+    results: [
+      {
+        title: 'Resultado de busca — outros desaparecimentos semelhantes',
+        snippet: 'Padrão comportamental em casos esparsos.',
+        documentId: 'doc-outros-desaparecimentos',
+      },
+    ],
+  },
+  {
+    id: 'block09_other_omitido_search',
+    category: 'police',
+    requiredFlags: ['block09_other_cases_unlocked'],
+    requiredTerms: ['omitido'],
+    results: [
+      {
+        title: 'Resultado de busca — outros desaparecimentos semelhantes',
+        snippet: 'Ocorrências com assinatura compatível.',
+        documentId: 'doc-outros-desaparecimentos',
       },
     ],
   },
@@ -1118,7 +1209,7 @@ export const seedStoryTriggers: StoryTrigger[] = [
       {
         type: 'addTask',
         id: 'task_compare_omitido_system',
-        label: 'Reexaminar o sistema de Henrique cruzando com registros de Mariana',
+        label: 'Comparar os registros de Henrique com o material encontrado no caso Mariana',
       },
     ],
   },
