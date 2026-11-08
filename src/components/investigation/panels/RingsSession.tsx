@@ -1,33 +1,56 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
+  RING_CONTINUITY_CHECKS,
+  RING_CONTINUITY_FRAMES,
   RING_SOURCES,
   RING_TRUE_ORDER,
+  type ContinuityCheckId,
+  type RingSourceId,
   isRingOrderCorrect,
   rawOrderByTimestamp,
-  type RingSourceId,
 } from '../../../data/block08/ringsPuzzle'
-import { onRingsSolved } from '../../../game/story/block08Handlers'
+import {
+  onMorsaContinuityConfirmed,
+  onRingsTimelineSolved,
+} from '../../../game/story/block08Handlers'
 import { useInvestigation } from '../../../game/hooks/useInvestigation'
+import { resolveChatMediaSrc } from '../../../lib/characterSprites'
 import { playSfx } from '../../../lib/sfx'
 
 /**
- * Puzzle 10 — Ordem dos Anéis (placeholder).
- * Aplicar offsets/drift e ordenar fontes pela timeline corrigida.
+ * Puzzle 10 — Ordem dos Anéis.
+ * Timeline correta → confirmação visual de continuidade → Reflection (nome fora desta UI).
  */
 export function RingsSession() {
   const inv = useInvestigation()
-  const solved = Boolean(inv.flags.block08_rings_done)
+  const fullyDone = Boolean(inv.flags.block08_rings_done)
+  const timelineDone = Boolean(inv.flags.block08_rings_timeline_solved) || fullyDone
+  const continuityDone =
+    Boolean(inv.flags.block08_morsa_continuity_confirmed) || fullyDone
+
   const [order, setOrder] = useState<RingSourceId[]>([])
-  const [synced, setSynced] = useState(false)
+  const [synced, setSynced] = useState(timelineDone)
   const [msg, setMsg] = useState<string | null>(null)
+  const [checks, setChecks] = useState<Record<ContinuityCheckId, boolean>>({
+    backpack: continuityDone,
+    radio: continuityDone,
+    timing: continuityDone,
+  })
+  const [hold, setHold] = useState(false)
+
+  useEffect(() => {
+    if (timelineDone) setSynced(true)
+  }, [timelineDone])
 
   const remaining = useMemo(
     () => RING_SOURCES.filter((s) => !order.includes(s.id)),
     [order],
   )
 
+  const allChecks = RING_CONTINUITY_CHECKS.every((c) => checks[c.id])
+
   const applySync = () => {
-    if (solved) return
+    if (fullyDone || timelineDone) return
     playSfx('ui')
     setSynced(true)
     setMsg(null)
@@ -35,7 +58,7 @@ export function RingsSession() {
   }
 
   const add = (id: RingSourceId) => {
-    if (solved || !synced) return
+    if (fullyDone || timelineDone || !synced) return
     setMsg(null)
     playSfx('ui')
     const next = [...order, id]
@@ -43,23 +66,43 @@ export function RingsSession() {
     if (next.length === RING_TRUE_ORDER.length) {
       if (isRingOrderCorrect(next)) {
         playSfx('unlock')
-        onRingsSolved()
+        onRingsTimelineSolved()
       } else {
         playSfx('error')
-        setMsg('Ordem incorreta. Use a timeline corrigida (eventos compartilhados + offsets), não os timestamps brutos.')
+        setMsg(
+          'Ordem incorreta. Use a timeline corrigida (eventos compartilhados + offsets), não os timestamps brutos.',
+        )
         setOrder([])
       }
     }
   }
 
+  const toggleCheck = (id: ContinuityCheckId) => {
+    if (continuityDone || hold) return
+    playSfx('ui')
+    setChecks((prev) => ({ ...prev, [id]: !prev[id] }))
+  }
+
+  const confirmContinuity = () => {
+    if (!allChecks || continuityDone || hold) return
+    playSfx('unlock')
+    setHold(true)
+    window.setTimeout(() => {
+      onMorsaContinuityConfirmed()
+      setHold(false)
+    }, 900)
+  }
+
   const raw = rawOrderByTimestamp().join(' → ')
+  const showContinuity = timelineDone && !fullyDone
+  const showSolvedSummary = fullyDone
 
   return (
     <div className="aw-hex" data-testid="rings-panel">
       <p className="aw-orbit__title">Ordem dos anéis — fontes dessincronizadas</p>
       <p className="aw-provisional__note">
-        Placeholder do Puzzle 10. A ordem de descoberta ≠ ordem dos fatos. Relógios com offset/drift.
-        Sincronize por eventos compartilhados e ordene a timeline corrigida.
+        Relógios com offset/drift. Sincronize por eventos compartilhados e ordene a timeline corrigida.
+        Depois, confirme a continuidade visual entre os frames.
       </p>
 
       <p data-testid="rings-raw-order">Ordem só pelos timestamps brutos: {raw}</p>
@@ -72,7 +115,7 @@ export function RingsSession() {
               type="button"
               className="pc-inline"
               data-testid={`rings-source-${s.id}`}
-              disabled={solved || !synced || order.includes(s.id)}
+              disabled={fullyDone || timelineDone || !synced || order.includes(s.id)}
               onClick={() => add(s.id)}
             >
               {s.id}: {s.label} · bruto t={s.rawTMin} · offset {s.offsetMin}
@@ -83,41 +126,102 @@ export function RingsSession() {
         ))}
       </ul>
 
-      {!synced && !solved ? (
+      {!synced && !timelineDone ? (
         <button type="button" className="aw-provisional__go" data-testid="rings-sync" onClick={applySync}>
           Sincronizar por fingerprints / eventos compartilhados
         </button>
       ) : null}
 
-      <p data-testid="rings-order">Ordem montada: {order.join(' → ') || '—'}</p>
+      <p data-testid="rings-order">
+        Ordem montada: {timelineDone ? RING_TRUE_ORDER.join(' → ') : order.join(' → ') || '—'}
+      </p>
       {msg ? (
         <p role="alert" data-testid="rings-error">
           {msg}
         </p>
       ) : null}
-      {!solved && order.length ? (
+      {!timelineDone && order.length ? (
         <button type="button" className="pc-inline" onClick={() => setOrder([])}>
           Limpar ordem
         </button>
       ) : null}
 
-      {solved ? (
+      {showContinuity ? (
+        <div className="rings-continuity" data-testid="rings-continuity">
+          <h4 className="pc-sub">Continuidade observada</h4>
+          <p className="aw-provisional__note">
+            Timeline corrigida. Marque o que a sequência de frames demonstra — sem antecipar nomes.
+          </p>
+          <div className="rings-continuity__frames" data-testid="rings-continuity-frames">
+            {RING_CONTINUITY_FRAMES.map((f) => (
+              <figure key={f.id} className="rings-continuity__frame" data-testid={`rings-frame-${f.id}`}>
+                {f.imageSrc ? (
+                  <img src={resolveChatMediaSrc(f.imageSrc)} alt="" className="rings-continuity__img" />
+                ) : (
+                  <div className="rings-continuity__placeholder" aria-hidden>
+                    FRAME PENDENTE
+                    <span>{f.id}</span>
+                  </div>
+                )}
+                <figcaption>
+                  <strong>{f.timeLabel}</strong>
+                  <span>{f.caption}</span>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+          <fieldset className="rings-continuity__checks" data-testid="rings-continuity-checks">
+            <legend>Correspondências observadas</legend>
+            {RING_CONTINUITY_CHECKS.map((c) => (
+              <label key={c.id} className="rings-continuity__check">
+                <input
+                  type="checkbox"
+                  data-testid={`rings-check-${c.id}`}
+                  checked={checks[c.id]}
+                  disabled={continuityDone || hold}
+                  onChange={() => toggleCheck(c.id)}
+                />
+                {c.label}
+              </label>
+            ))}
+          </fieldset>
+          {hold ? (
+            <p className="aw-provisional__note" data-testid="rings-continuity-hold">
+              Sequência alinhada…
+            </p>
+          ) : continuityDone ? (
+            <p className="aw-provisional__note" data-testid="rings-continuity-done">
+              Continuidade registrada. Feche a bancada.
+            </p>
+          ) : (
+            <button
+              type="button"
+              className="aw-provisional__go"
+              data-testid="rings-confirm-continuity"
+              disabled={!allChecks}
+              onClick={confirmContinuity}
+            >
+              Confirmar continuidade
+            </button>
+          )}
+        </div>
+      ) : null}
+
+      {showSolvedSummary ? (
         <div data-testid="rings-solved">
           <p>Timeline corrigida: {RING_TRUE_ORDER.join(' → ')}</p>
           <p>
-            Continuidade D→F: máscara some na área lateral; a câmera de serviço registra a saída com o mesmo
-            rádio e a mesma mochila do núcleo — sem máscara.
-          </p>
-          <p className="aw-provisional__note">
-            A evidência demonstra a continuidade física. O intervalo de atividade cobre parte essencial usada na
-            condenação.
+            Continuidade confirmada: máscara some na área lateral; a câmera de serviço registra a saída com o
+            mesmo rádio e a mesma mochila.
           </p>
         </div>
-      ) : (
+      ) : null}
+
+      {!timelineDone ? (
         <p className="aw-provisional__note">
           {synced ? `Restam ${remaining.length} fonte(s).` : 'Sincronize antes de ordenar.'}
         </p>
-      )}
+      ) : null}
     </div>
   )
 }

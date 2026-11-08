@@ -5,6 +5,7 @@ import { extractFromDocument, openDocument } from '../../game/state/investigatio
 import { registerInitialPoliceReport } from '../../game/story/block01Handlers'
 import { onDocumentConsulted } from '../../game/story/documentConsultHooks'
 import { onRobertoExposed } from '../../game/story/block09Handlers'
+import { resolveChatMediaSrc } from '../../lib/characterSprites'
 import { playSfx } from '../../lib/sfx'
 
 /** Documentos que ficam na pasta física da mesa (entregues na passagem do caso). */
@@ -60,6 +61,12 @@ export function DocumentSheet({ docId, onBack, backLabel = '‹ Voltar' }: Docum
           {doc.issuer && doc.dateLabel ? ' · ' : ''}
           {doc.dateLabel}
         </p>
+      ) : null}
+      {doc.imageSrc ? (
+        <figure className="cf-figure" data-testid="document-figure">
+          <img src={resolveChatMediaSrc(doc.imageSrc)} alt={doc.imageCaption ?? ''} className="cf-figure__img" />
+          {doc.imageCaption ? <figcaption className="cf-figure__cap">{doc.imageCaption}</figcaption> : null}
+        </figure>
       ) : null}
       {doc.blocks.map((block) => {
         const extractable = block.id === 'b5' || block.extractableEvidenceId || block.extractAction

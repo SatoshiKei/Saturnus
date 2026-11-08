@@ -215,13 +215,13 @@ export const reflections: ReflectionDef[] = [
     ],
   },
   {
-    /** Puzzle Rings na bancada → hub / delegacia. */
+    /** Puzzle Rings na bancada → hub / delegacia. Nome só aqui. */
     id: 'refl-b08-morsa',
     background: HUB_REFLECTION_BACKGROUND,
     blocks: [
-      'A timeline fecha: Morsa era André. Ele escondeu onde estava.',
-      'Maralto não precisava ser conspiração empresarial. Mariana reconstruía os protestos porque o irmão mentiu sobre o intervalo.',
-      'As duas linhas finalmente se conectam. Agora preciso confrontá-lo.',
+      'O mascarado some na lateral. Poucos segundos depois, outro homem sai da mesma área.',
+      'Mesma mochila. Mesmo rádio. Sem tempo para duas pessoas distintas.',
+      'André.',
     ],
   },
   {

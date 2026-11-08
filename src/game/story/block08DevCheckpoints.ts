@@ -80,9 +80,20 @@ export const block08DevCheckpoints: { id: string; label: string; actions: StoryA
     actions: block08EntryActions,
   },
   {
-    id: 'b08-rings-done',
-    label: 'Puzzle 10 resolvido (Morsa=André)',
+    id: 'b08-rings-timeline',
+    label: 'Puzzle 10 — timeline correta (continuidade pendente)',
     actions: [
+      { type: 'setFlag', id: 'block08_rings_timeline_solved', value: true },
+      { type: 'addEvidence', id: 'protest_timeline_reconstructed' },
+      { type: 'completeTask', id: 'task_rings_puzzle' },
+    ],
+  },
+  {
+    id: 'b08-rings-done',
+    label: 'Puzzle 10 resolvido (pós-Reflection Morsa)',
+    actions: [
+      { type: 'setFlag', id: 'block08_rings_timeline_solved', value: true },
+      { type: 'setFlag', id: 'block08_morsa_continuity_confirmed', value: true },
       { type: 'setFlag', id: 'block08_rings_done', value: true },
       { type: 'addEvidence', id: 'protest_timeline_reconstructed' },
       { type: 'addEvidence', id: 'morsa_was_andre' },

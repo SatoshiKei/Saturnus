@@ -19,38 +19,77 @@ export function startBlock08() {
   ])
 }
 
-export function onRingsSolved() {
+/**
+ * Etapa 1 — timeline correta (ordem A→B→E→D→C→F).
+ * NÃO registra `morsa_was_andre` nem nomeia a continuidade.
+ */
+export function onRingsTimelineSolved() {
   const s = getInvestigationState()
-  if (s.flags.block08_rings_done) return
+  if (s.flags.block08_rings_timeline_solved || s.flags.block08_rings_done) return
   dispatchActions([
-    { type: 'setFlag', id: 'block08_rings_done', value: true },
+    { type: 'setFlag', id: 'block08_rings_timeline_solved', value: true },
     { type: 'addEvidence', id: 'protest_timeline_reconstructed' },
-    { type: 'addEvidence', id: 'morsa_was_andre' },
-    { type: 'addEvidence', id: 'andre_morsa_alibi_interval' },
-    { type: 'completeTask', id: 'task_identify_morsa' },
     { type: 'completeTask', id: 'task_rings_puzzle' },
-    { type: 'updateHypothesis', id: 'hyp_morsa_bridges_elisa_protests', state: 'confirmed' },
-    { type: 'addHypothesis', id: 'hyp_protests_needed_for_andre_alibi' },
-    { type: 'updateHypothesis', id: 'hyp_protests_needed_for_andre_alibi', state: 'confirmed' },
-    { type: 'addHypothesis', id: 'hyp_maralto_direct_elisa_death' },
-    { type: 'updateHypothesis', id: 'hyp_maralto_direct_elisa_death', state: 'discarded' },
+  ])
+}
+
+/**
+ * Etapa 2 — jogador confirmou mochila + rádio + tempo.
+ * Abre Reflection; evidência formal só no aftermath.
+ */
+export function onMorsaContinuityConfirmed() {
+  const s = getInvestigationState()
+  if (s.flags.block08_morsa_continuity_confirmed || s.flags.block08_rings_done) return
+  if (!s.flags.block08_rings_timeline_solved) return
+  dispatchActions([
+    { type: 'setFlag', id: 'block08_morsa_continuity_confirmed', value: true },
     { type: 'setFlag', id: 'block08_refl_morsa_pending', value: true },
   ])
 }
 
+/**
+ * Compat / checkpoints: completa a cadeia Rings → continuidade.
+ * Evidência `morsa_was_andre` só em `onMorsaReflectionDone` (ou checkpoint DEV).
+ */
+export function onRingsSolved() {
+  const s = getInvestigationState()
+  if (s.flags.block08_rings_done) return
+  onRingsTimelineSolved()
+  onMorsaContinuityConfirmed()
+}
+
+/** Etapa 4 — após Reflection: formaliza Morsa = André e libera confrontação. */
 export function onMorsaReflectionDone() {
   const s = getInvestigationState()
   if (s.flags.block08_morsa_reflection_done) return
-  dispatchActions([
+  const actions: StoryActionRef[] = [
     { type: 'setFlag', id: 'block08_morsa_reflection_done', value: true },
     { type: 'setFlag', id: 'block08_refl_morsa_pending', value: false },
+    { type: 'setFlag', id: 'block08_rings_done', value: true },
+    { type: 'setFlag', id: 'block08_rings_timeline_solved', value: true },
+    { type: 'setFlag', id: 'block08_morsa_continuity_confirmed', value: true },
+  ]
+  if (!s.evidenceOwned.includes('morsa_was_andre')) {
+    actions.push(
+      { type: 'addEvidence', id: 'morsa_was_andre' },
+      { type: 'addEvidence', id: 'andre_morsa_alibi_interval' },
+      { type: 'completeTask', id: 'task_identify_morsa' },
+      { type: 'updateHypothesis', id: 'hyp_morsa_bridges_elisa_protests', state: 'confirmed' },
+      { type: 'addHypothesis', id: 'hyp_protests_needed_for_andre_alibi' },
+      { type: 'updateHypothesis', id: 'hyp_protests_needed_for_andre_alibi', state: 'confirmed' },
+      { type: 'addHypothesis', id: 'hyp_maralto_direct_elisa_death' },
+      { type: 'updateHypothesis', id: 'hyp_maralto_direct_elisa_death', state: 'discarded' },
+    )
+  }
+  actions.push(
     { type: 'unlockLocation', id: 'presidio', status: 'visitAvailable' },
     {
       type: 'addTask',
       id: 'task_confront_andre_morsa',
       label: 'Confrontar André com a reconstrução de Morsa',
     },
-  ])
+  )
+  dispatchActions(actions)
 }
 
 export function finishAndreFollowup() {

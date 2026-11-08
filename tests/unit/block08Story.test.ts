@@ -30,8 +30,9 @@ import {
   onAccidentReflectionDone,
   onAndreWronglyReflectionDone,
   onFinalReflectionDone,
+  onMorsaContinuityConfirmed,
   onMorsaReflectionDone,
-  onRingsSolved,
+  onRingsTimelineSolved,
   onRotationSolved,
   requestGuardrailReexam,
 } from '../../src/game/story/block08Handlers'
@@ -69,14 +70,24 @@ describe('Bloco 8 — progressão', () => {
     expect(isRingOrderCorrect(RING_TRUE_ORDER)).toBe(true)
     expect(rawOrderByTimestamp().join('')).not.toBe(RING_TRUE_ORDER.join(''))
 
-    onRingsSolved()
+    onRingsTimelineSolved()
     let s = getInvestigationState()
+    expect(s.flags.block08_rings_timeline_solved).toBe(true)
+    expect(s.evidenceOwned).toContain('protest_timeline_reconstructed')
+    expect(s.evidenceOwned).not.toContain('morsa_was_andre')
+
+    onMorsaContinuityConfirmed()
+    s = getInvestigationState()
+    expect(s.flags.block08_morsa_continuity_confirmed).toBe(true)
+    expect(s.flags.block08_refl_morsa_pending).toBe(true)
+    expect(s.evidenceOwned).not.toContain('morsa_was_andre')
+
+    onMorsaReflectionDone()
+    s = getInvestigationState()
     expect(s.evidenceOwned).toContain('morsa_was_andre')
     expect(s.evidenceOwned).toContain('andre_morsa_alibi_interval')
     expect(s.tasks.find((t) => t.id === 'task_identify_morsa')?.completed).toBe(true)
-
-    onMorsaReflectionDone()
-    expect(getInvestigationState().locations.presidio?.status).toBe('visitAvailable')
+    expect(s.locations.presidio?.status).toBe('visitAvailable')
 
     finishAndreFollowup()
     s = getInvestigationState()
@@ -99,7 +110,8 @@ describe('Bloco 8 — progressão', () => {
 
   it('Mauro → Dênis → Bia → Rui → Puzzle 11 → escala → estado final', () => {
     seed()
-    onRingsSolved()
+    onRingsTimelineSolved()
+    onMorsaContinuityConfirmed()
     onMorsaReflectionDone()
     finishAndreFollowup()
     onAndreWronglyReflectionDone()

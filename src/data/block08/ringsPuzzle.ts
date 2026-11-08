@@ -86,10 +86,60 @@ export const RING_SOURCES: RingSource[] = [
 /** Ordem verdadeira após correção (A âncora → … → F saída). */
 export const RING_TRUE_ORDER: RingSourceId[] = ['A', 'B', 'E', 'D', 'C', 'F']
 
-export const RING_CALLSIGN_HINT = 'Continuidade: máscara some na D; F registra a saída com o mesmo rádio/mochila.'
+export const RING_CALLSIGN_HINT =
+  'Continuidade: máscara some na área lateral; a câmera de serviço registra a saída com o mesmo rádio e a mesma mochila.'
+
+export type ContinuityCheckId = 'backpack' | 'radio' | 'timing'
+
+export interface RingContinuityFrame {
+  id: 'morsa-frame-enter' | 'morsa-frame-lateral' | 'morsa-frame-exit'
+  /** Timestamp diegético (após correção). */
+  timeLabel: string
+  caption: string
+  /**
+   * Asset final quando existir. Enquanto null, a UI mostra placeholder
+   * `FRAME PENDENTE` — não fingir arte final.
+   */
+  imageSrc: string | null
+}
+
+/** Três frames da mesma sequência — assets finais ainda a produzir. */
+export const RING_CONTINUITY_FRAMES: RingContinuityFrame[] = [
+  {
+    id: 'morsa-frame-enter',
+    timeLabel: '21:14:08',
+    caption: 'Entra na área lateral — mascarado; mochila e rádio distintivos.',
+    imageSrc: null,
+  },
+  {
+    id: 'morsa-frame-lateral',
+    timeLabel: '21:14:31',
+    caption: 'Zona sem cobertura plena — some da imagem; objetos ainda legíveis.',
+    imageSrc: null,
+  },
+  {
+    id: 'morsa-frame-exit',
+    timeLabel: '21:15:02',
+    caption: 'Sai da área de serviço — sem máscara; mesma mochila; mesmo rádio.',
+    imageSrc: null,
+  },
+]
+
+export const RING_CONTINUITY_CHECKS: { id: ContinuityCheckId; label: string }[] = [
+  { id: 'backpack', label: 'Mochila / bolsa' },
+  { id: 'radio', label: 'Rádio / equipamento' },
+  { id: 'timing', label: 'Sequência temporal possível' },
+]
 
 export function correctedTime(s: RingSource): number {
   return s.rawTMin + s.offsetMin + s.driftMin
+}
+
+export function formatCorrectedClock(s: RingSource): string {
+  const total = correctedTime(s)
+  const h = Math.floor(total / 60) % 24
+  const m = total % 60
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
 }
 
 export function isRingOrderCorrect(order: RingSourceId[]): boolean {

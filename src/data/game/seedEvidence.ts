@@ -1555,7 +1555,7 @@ export const seedEvidenceCatalog: Evidence[] = [
     originalOrDerived: 'original',
     integrity: 'unverified',
     description: 'Fontes com timestamps próprios e possível drift. Análise na bancada.',
-    relatedPersonIds: ['morsa', 'andre', 'livia'],
+    relatedPersonIds: ['morsa', 'livia'],
     relatedLocationIds: [],
     relatedEventIds: [],
     exportable: true,
@@ -1565,7 +1565,7 @@ export const seedEvidenceCatalog: Evidence[] = [
     puzzleMeta: {
       puzzleId: 'puzzle-10-rings',
       implementation: 'placeholder',
-      completionEvidenceId: 'morsa_was_andre',
+      completionEvidenceId: 'protest_timeline_reconstructed',
     },
   },
   {
@@ -1576,7 +1576,7 @@ export const seedEvidenceCatalog: Evidence[] = [
     originalOrDerived: 'derived',
     sourceId: 'protest_heterogeneous_sources',
     integrity: 'unverified',
-    relatedPersonIds: ['morsa', 'andre'],
+    relatedPersonIds: ['morsa', 'livia'],
     relatedLocationIds: [],
     relatedEventIds: [],
   },

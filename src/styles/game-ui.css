@@ -635,6 +635,24 @@
   border-bottom: 2px solid var(--paper-ink);
 }
 
+.cf-figure {
+  margin: 0 0 1.2em;
+}
+
+.cf-figure__img {
+  display: block;
+  max-width: 100%;
+  max-height: 220px;
+  object-fit: contain;
+  background: #1a1a1a;
+}
+
+.cf-figure__cap {
+  margin: 0.4em 0 0;
+  font-size: 0.78em;
+  color: #5a4a3a;
+}
+
 .cf-block {
   position: relative;
   margin: 0 0 1.1em;
@@ -1655,6 +1673,91 @@
     radial-gradient(circle at 50% 40%, rgba(121, 194, 189, 0.12), transparent 55%),
     rgba(8, 18, 20, 0.5);
   border-radius: 3px;
+}
+
+.rings-continuity {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.rings-continuity__frames {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 8px 0 12px;
+}
+
+.rings-continuity__frame {
+  margin: 0;
+  min-width: 0;
+}
+
+.rings-continuity__img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: #111;
+}
+
+.rings-continuity__placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9a9a9a;
+  background: repeating-linear-gradient(
+    -45deg,
+    #1c1c1c,
+    #1c1c1c 6px,
+    #242424 6px,
+    #242424 12px
+  );
+  border: 1px dashed #555;
+}
+
+.rings-continuity__placeholder span {
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  opacity: 0.7;
+}
+
+.rings-continuity__frame figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 4px;
+  font-size: 11px;
+  line-height: 1.35;
+  color: #c8c8c8;
+}
+
+.rings-continuity__checks {
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.rings-continuity__checks legend {
+  padding: 0 4px;
+  font-size: 12px;
+}
+
+.rings-continuity__check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0;
+  font-size: 13px;
+  cursor: pointer;
 }
 
 .aw-hex__graph {

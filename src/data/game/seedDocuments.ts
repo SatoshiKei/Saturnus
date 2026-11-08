@@ -303,6 +303,8 @@ export const seedDocuments: Document[] = [
     issuer: 'Rádio Costeira FM — arquivo digital',
     dateLabel: 'Reprodução',
     system: 'documentos',
+    imageSrc: 'sprite:masked-man',
+    imageCaption: 'Frame de arquivo — manifestante mascarado (núcleo)',
     blocks: [
       {
         id: 'b1',
@@ -314,7 +316,7 @@ export const seedDocuments: Document[] = [
       },
       {
         id: 'b3',
-        text: 'Rodapé do arquivo: “Redação — Rádio Costeira FM. Atendimento ao ouvinte e à imprensa.”',
+        text: 'Rodapé do arquivo: “Redação — Rádio Costeira FM. Atendimento ao ouvinte e à imprensa.” Frame anexo: figura mascarada recorrente nas imagens da cobertura.',
       },
     ],
     leads: [{ type: 'phone', label: 'Redação — Rádio Costeira FM', value: '21 3xxx-4410' }],
@@ -361,6 +363,8 @@ export const seedDocuments: Document[] = [
     issuer: 'Delegacia regional — arquivo morto',
     dateLabel: 'Registro antigo',
     system: 'ocorrencias',
+    imageSrc: 'sprite:masked-man',
+    imageCaption: 'Registro policial — figura mascarada no canteiro (sem identificação)',
     blocks: [
       {
         id: 'b1',
@@ -372,7 +376,7 @@ export const seedDocuments: Document[] = [
       },
       {
         id: 'b3',
-        text: 'A relação nominal dos detidos consta em anexo separado.',
+        text: 'A relação nominal dos detidos consta em anexo separado. Imagem anexa: indivíduo mascarado observado junto ao núcleo, sem nome no boletim.',
       },
     ],
     onOpen: [{ type: 'addEvidence', id: 'protest_incident_report' }],

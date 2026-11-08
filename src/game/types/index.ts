@@ -125,6 +125,9 @@ export interface Document {
   blocks: DocumentBlock[]
   /** Pistas (telefone/endereço) listadas ao ler. */
   leads?: DocumentLead[]
+  /** Imagem diegética opcional (`sprite:id` ou caminho). */
+  imageSrc?: string
+  imageCaption?: string
   /** Executado uma única vez, na primeira leitura. */
   onOpen?: StoryActionRef[]
 }
