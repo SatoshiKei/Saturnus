@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useGameHub } from '../../app/GameHubContext'
 import {
   PROVENANCE_LABEL,
@@ -9,6 +9,7 @@ import {
 import { contactAvatarSrc } from '../../lib/characterSprites'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { onMarianaMaraltoRecordingFound } from '../../game/story/block03Handlers'
+import { comparePhoneFilesSequence } from '../../game/story/block05Handlers'
 import { onUnknownRecordingFound } from '../../game/story/block04Handlers'
 
 interface FilesAppProps {
@@ -18,6 +19,24 @@ interface FilesAppProps {
 export function FilesApp({ onBack }: FilesAppProps) {
   const { phoneDevice } = useGameHub()
   const inv = useInvestigation()
+
+  // B5: comparar cronologia × arquivos — abrir Arquivos no celular de Mariana basta.
+  useEffect(() => {
+    if (phoneDevice !== 'mariana') return
+    if (
+      inv.flags.block05_compare_unlocked &&
+      inv.flags.block05_chronology_done &&
+      !inv.flags.block05_compare_done
+    ) {
+      comparePhoneFilesSequence()
+    }
+  }, [
+    phoneDevice,
+    inv.flags.block05_compare_unlocked,
+    inv.flags.block05_chronology_done,
+    inv.flags.block05_compare_done,
+  ])
+
   const base = phoneDevice === 'augusto' ? augustoFilesLibrary : marianaFilesLibrary
   const items = useMemo(() => {
     if (phoneDevice !== 'mariana') return base

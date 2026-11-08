@@ -77,7 +77,7 @@ export function onElisaReviewComplete() {
     {
       type: 'addTask',
       id: 'task_weigh_maralto_line',
-      label: 'Reavaliar o que a linha Maralto explica — e o que não explica',
+      label: 'Rever o material dos protestos contra a Maralto',
     },
   ])
 }
@@ -103,7 +103,7 @@ export function onMaraltoLineWeighed() {
     {
       type: 'addTask',
       id: 'task_mariana_contact_chronology',
-      label: 'Organizar cronologia dos contatos recentes de Mariana',
+      label: 'Revisar a sequência dos contatos recentes de Mariana no caderno',
     },
   ])
 }
@@ -118,30 +118,31 @@ export function onMaraltoReflectionDone() {
   ])
 }
 
+/** Disparado ao revisar a Timeline do caderno no ponto certo do Bloco 5. */
 export function organizeMarianaContactChronology() {
   const s = getInvestigationState()
   if (s.flags.block05_chronology_done) return
+  if (!s.flags.block05_chronology_action_unlocked) return
   dispatchActions([
     { type: 'setFlag', id: 'block05_chronology_done', value: true },
-    { type: 'addDocument', id: 'doc-mariana-contact-chronology' },
     { type: 'addEvidence', id: 'mariana_sought_people_before' },
     { type: 'completeTask', id: 'task_mariana_contact_chronology' },
     {
       type: 'addTask',
       id: 'task_compare_phone_files',
-      label: 'Comparar a cronologia com os arquivos deixados no celular',
+      label: 'Comparar a sequência de contatos com os arquivos do celular de Mariana',
     },
     { type: 'setFlag', id: 'block05_compare_unlocked', value: true },
   ])
 }
 
+/** Disparado ao abrir Arquivos no celular de Mariana (1 interação representativa). */
 export function comparePhoneFilesSequence() {
   const s = getInvestigationState()
   if (s.flags.block05_compare_done) return
-  if (!s.flags.block05_chronology_done) return
+  if (!s.flags.block05_chronology_done || !s.flags.block05_compare_unlocked) return
   dispatchActions([
     { type: 'setFlag', id: 'block05_compare_done', value: true },
-    { type: 'addDocument', id: 'doc-phone-file-dependencies' },
     { type: 'addEvidence', id: 'phone_files_depend_on_order' },
     { type: 'completeTask', id: 'task_compare_phone_files' },
     { type: 'setFlag', id: 'block05_refl_coincidence_pending', value: true },
@@ -159,20 +160,21 @@ export function onCoincidenceReflectionDone() {
     {
       type: 'addTask',
       id: 'task_revisit_emergency_entry',
-      label: 'Reabrir a chamada de emergência e a entrada no apartamento',
+      label: 'Revisitar a chamada de emergência e a apreensão do aparelho',
     },
   ])
 }
 
+/** Disparado ao reabrir registro da central / entrada / apreensão. */
 export function revisitEmergencyEntry() {
   const s = getInvestigationState()
   if (s.flags.block05_emergency_revisited) return
+  if (!s.flags.block05_emergency_revisit_unlocked) return
   dispatchActions([
     { type: 'setFlag', id: 'block05_emergency_revisited', value: true },
     { type: 'addDocument', id: 'doc-central-chamada' },
     { type: 'addDocument', id: 'doc-entrada-apartamento' },
     { type: 'addDocument', id: 'doc-apreensao-celular' },
-    { type: 'addDocument', id: 'doc-emergency-reassessment' },
     { type: 'addEvidence', id: 'call_enabled_apartment_entry' },
     { type: 'addEvidence', id: 'phone_seized_after_call' },
     { type: 'completeTask', id: 'task_revisit_emergency_entry' },

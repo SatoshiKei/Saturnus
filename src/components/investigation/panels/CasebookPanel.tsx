@@ -1,8 +1,11 @@
-import { useMemo, useState, type CSSProperties } from 'react'
+import { useEffect, useMemo, useState, type CSSProperties } from 'react'
+import { visibleMarianaContactChronology } from '../../../data/block05/contactChronology'
 import { contradictionDefs } from '../../../data/game/seedStory'
 import { seedDocuments } from '../../../data/game/seedDocuments'
 import { useInvestigation } from '../../../game/hooks/useInvestigation'
 import { isPersonVisibleInRegistry } from '../../../game/personRegistryGates'
+import { organizeMarianaContactChronology } from '../../../game/story/block05Handlers'
+import { organizeMemoryOnset } from '../../../game/story/block07Handlers'
 import { takeNotebookFocus } from '../../../app/uiStore'
 import type { Evidence, InvestigationState, Location, Person } from '../../../game/types'
 import {
@@ -250,28 +253,99 @@ function LocationsTab({ inv }: { inv: InvestigationState }) {
 
 /* ---------------- Timeline ---------------- */
 function TimelineTab({ inv }: { inv: InvestigationState }) {
+  const contacts = visibleMarianaContactChronology(inv)
+  const showContacts =
+    inv.flags.block05_chronology_action_unlocked || inv.flags.block05_chronology_done
+  const showMemoryOnset =
+    inv.flags.block07_memory_onset_unlocked || inv.flags.block07_memory_onset_done
+
+  // Gates: só dispara com as flags de unlock — Timeline aberta cedo demais não marca progresso.
+  useEffect(() => {
+    if (inv.flags.block05_chronology_action_unlocked && !inv.flags.block05_chronology_done) {
+      organizeMarianaContactChronology()
+    }
+  }, [inv.flags.block05_chronology_action_unlocked, inv.flags.block05_chronology_done])
+
+  useEffect(() => {
+    if (inv.flags.block07_memory_onset_unlocked && !inv.flags.block07_memory_onset_done) {
+      organizeMemoryOnset()
+    }
+  }, [inv.flags.block07_memory_onset_unlocked, inv.flags.block07_memory_onset_done])
+
   return (
-    <ol className="nb-timeline" data-testid="timeline-list">
-      {inv.timeline.map((e) => (
-        <li key={e.id} className="nb-timeline__item" data-precision={e.precision}>
-          <span className="nb-timeline__time">
-            {e.start ?? '—'}
-            {e.end ? `–${e.end}` : ''}
-          </span>
-          <span className="nb-timeline__dot" aria-hidden />
-          <div className="nb-timeline__body">
-            <strong>{e.label}</strong>
-            <small>
-              {precisionLabel(e.precision)} · {confidenceLabel(e.confidence)}
-              {e.sourceIds.length ? ` · ${e.sourceIds.length} fonte(s)` : ''}
-            </small>
-            {e.sourceIds.length ? (
-              <span className="nb-timeline__src">{e.sourceIds.map((id) => titleOf(inv, id)).join(' · ')}</span>
-            ) : null}
-          </div>
-        </li>
-      ))}
-    </ol>
+    <div className="nb-timeline-wrap" data-testid="timeline-panel">
+      {showContacts ? (
+        <section className="nb-timeline-section" data-testid="timeline-mariana-contacts">
+          <h4>Contatos recentes de Mariana</h4>
+          <p className="nb-muted">
+            Sequência aproximada a partir do que já está no caderno — pessoas que ela procurou antes do
+            desaparecimento.
+          </p>
+          {contacts.length ? (
+            <ol className="nb-timeline">
+              {contacts.map((c, i) => (
+                <li key={c.personId} className="nb-timeline__item" data-precision="approximate">
+                  <span className="nb-timeline__time">{i + 1}</span>
+                  <span className="nb-timeline__dot" aria-hidden />
+                  <div className="nb-timeline__body">
+                    <strong>{c.label}</strong>
+                    <small>aproximado · reunido na investigação</small>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <p className="nb-muted">Ainda sem contatos suficientes registrados.</p>
+          )}
+        </section>
+      ) : null}
+
+      {showMemoryOnset ? (
+        <section className="nb-timeline-section" data-testid="timeline-memory-onset">
+          <h4>Início dos lapsos de memória</h4>
+          <ol className="nb-timeline">
+            <li className="nb-timeline__item" data-precision="interval">
+              <span className="nb-timeline__time">meses antes</span>
+              <span className="nb-timeline__dot" aria-hidden />
+              <div className="nb-timeline__body">
+                <strong>Primeiros registros anormais de memória</strong>
+                <small>
+                  intervalo · diário, notas e relatos — concentrados num período de plantões no hospital,
+                  sem evento dramático óbvio nos registros
+                </small>
+              </div>
+            </li>
+          </ol>
+        </section>
+      ) : null}
+
+      <section className="nb-timeline-section">
+        <h4>Linha do tempo do caso</h4>
+        <ol className="nb-timeline" data-testid="timeline-list">
+          {inv.timeline.map((e) => (
+            <li key={e.id} className="nb-timeline__item" data-precision={e.precision}>
+              <span className="nb-timeline__time">
+                {e.start ?? '—'}
+                {e.end ? `–${e.end}` : ''}
+              </span>
+              <span className="nb-timeline__dot" aria-hidden />
+              <div className="nb-timeline__body">
+                <strong>{e.label}</strong>
+                <small>
+                  {precisionLabel(e.precision)} · {confidenceLabel(e.confidence)}
+                  {e.sourceIds.length ? ` · ${e.sourceIds.length} fonte(s)` : ''}
+                </small>
+                {e.sourceIds.length ? (
+                  <span className="nb-timeline__src">
+                    {e.sourceIds.map((id) => titleOf(inv, id)).join(' · ')}
+                  </span>
+                ) : null}
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+    </div>
   )
 }
 

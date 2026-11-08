@@ -125,13 +125,11 @@ export const block07DevCheckpoints: { id: string; label: string; actions: StoryA
     label: 'Morsa duração + início dos lapsos',
     actions: [
       { type: 'setFlag', id: 'block07_morsa_duration_done', value: true },
-      { type: 'addDocument', id: 'doc-morsa-duration-note' },
       { type: 'addEvidence', id: 'morsa_active_long_interval' },
       { type: 'addEvidence', id: 'mariana_focused_morsa_duration' },
       { type: 'addHypothesis', id: 'hyp_morsa_bridges_elisa_protests' },
       { type: 'completeTask', id: 'task_review_morsa_duration' },
       { type: 'setFlag', id: 'block07_memory_onset_done', value: true },
-      { type: 'addDocument', id: 'doc-memory-onset-chronology' },
       { type: 'addEvidence', id: 'memory_anomalies_months_before' },
       { type: 'addEvidence', id: 'onset_matches_hospital_shifts' },
       { type: 'addHypothesis', id: 'hyp_memory_after_specific_period' },

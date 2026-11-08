@@ -774,77 +774,52 @@ export const seedDocuments: Document[] = [
     ],
     onOpen: [{ type: 'addEvidence', id: 'galpao17_operational_site' }],
   },
+  // ── Legado C1: anotações de raciocínio — não entram mais no fluxo jogável.
+  // Saves antigos podem ainda tê-las em documentsOwned; evidências/flags vêm dos novos gatilhos.
   {
     id: 'doc-mariana-contact-chronology',
     title: 'Cronologia — contatos recentes de Mariana (montagem)',
-    category: 'Anotação de caso',
+    category: 'Anotação de caso (legado)',
     issuer: 'Delegacia — Augusto Nogueira',
     dateLabel: '05/11/2026',
     system: 'documentos',
     blocks: [
       {
         id: 'b1',
-        text: 'Montagem a partir de chats, ligações, visitas e autos já reunidos. Ordem aproximada antes do desaparecimento:',
-      },
-      {
-        id: 'b2',
-        text: 'Rafael (hospital / áudio) → pessoas ligadas ao Vértice → Paula → Lucas Moreira → Nico → Lívia Serrano → Samuel Teixeira → Jana Ribeiro (autos) → André (unidade).',
-      },
-      {
-        id: 'b3',
-        text: 'Observação: essas pessoas não começaram a procurar Mariana depois do desaparecimento. Mariana já as havia procurado — ou as peças que levam a elas — antes.',
+        text: '[Legado] Cronologia agora vive na Timeline do caderno.',
       },
     ],
-    onOpen: [{ type: 'addEvidence', id: 'mariana_sought_people_before' }],
+    onOpen: [],
   },
   {
     id: 'doc-phone-file-dependencies',
     title: 'Comparação — arquivos do celular × ordem de compreensão',
-    category: 'Anotação de caso',
+    category: 'Anotação de caso (legado)',
     issuer: 'Delegacia — Augusto Nogueira',
     dateLabel: '05/11/2026',
     system: 'documentos',
     blocks: [
       {
         id: 'b1',
-        text: 'Alguns arquivos do aparelho só ganharam sentido depois que determinadas pessoas foram alcançadas (ex.: Nico → jaqueta/Jana; Lívia → material da rádio; Samuel → núcleo mascarado; diário → interlocutor).',
-      },
-      {
-        id: 'b2',
-        text: 'A seleção e os carimbos de tempo dos materiais deixados no aparelho têm pouca utilidade fora dessa ordem. Isolados, parecem ruído; em sequência, abrem a próxima etapa.',
-      },
-      {
-        id: 'b3',
-        text: 'Primeira leitura: pode ser coincidência — estou reconstruindo a mesma investigação que ela fez. Ainda assim, a utilidade condicionada à ordem merece um teste: voltar ao início do caso.',
+        text: '[Legado] Conclusão registrada via evidência ao consultar Arquivos no celular.',
       },
     ],
-    onOpen: [{ type: 'addEvidence', id: 'phone_files_depend_on_order' }],
+    onOpen: [],
   },
   {
     id: 'doc-emergency-reassessment',
     title: 'Releitura — chamada, entrada e apreensão do celular',
-    category: 'Anotação de caso',
+    category: 'Anotação de caso (legado)',
     issuer: 'Delegacia — Augusto Nogueira',
     dateLabel: '05/11/2026',
     system: 'documentos',
     blocks: [
       {
         id: 'b1',
-        text: 'Elementos reabertos: registro da central (08:03), relatório de entrada no apartamento e termo de apreensão do aparelho. Conferir também a pasta física do caso.',
-      },
-      {
-        id: 'b2',
-        text: 'Fato estável: a chamada fez a polícia entrar. Como consequência direta, o celular de Mariana foi localizado e apreendido.',
-      },
-      {
-        id: 'b3',
-        text: 'Hipótese de trabalho (não conclusão): e se colocar a polícia dentro daquele apartamento fosse a função da chamada? Permanecem abertos voz, diário, autoria e se Mariana controlava o processo.',
+        text: '[Legado] Reabrir as peças reais (central / entrada / apreensão).',
       },
     ],
-    onOpen: [
-      { type: 'addEvidence', id: 'call_enabled_apartment_entry' },
-      { type: 'addEvidence', id: 'phone_seized_after_call' },
-    ],
+    onOpen: [],
   },
   {
     id: 'doc-sandra-depoimento',
@@ -887,25 +862,18 @@ export const seedDocuments: Document[] = [
       },
     ],
   },
+  // ── Legado C1: raciocínio absorvido em evidências + Timeline.
   {
     id: 'doc-morsa-duration-note',
     title: 'Nota — duração da atividade de Morsa (reconstrução)',
-    category: 'Anotação de caso',
+    category: 'Anotação de caso (legado)',
     issuer: 'Delegacia — Augusto Nogueira',
     dateLabel: '06/11/2026',
     system: 'documentos',
     blocks: [
       {
         id: 'b1',
-        text: 'Cruzamento de arquivos de Lívia, transmissão reconstruída e material obtido via Samuel: Morsa permanece ativo por intervalo significativo naquela noite.',
-      },
-      {
-        id: 'b2',
-        text: 'Ainda sem identidade. Nos materiais de Mariana, o interesse especial recai justamente sobre essa duração — não só sobre o apelido.',
-      },
-      {
-        id: 'b3',
-        text: 'Hipótese de trabalho: a identidade de Morsa talvez seja a ponte entre o caso Elisa e a linha dos protestos. Sem apontar nomes.',
+        text: '[Legado] Reabrir ocorrência/detidos dos protestos Maralto.',
       },
     ],
     onOpen: [],
@@ -913,18 +881,14 @@ export const seedDocuments: Document[] = [
   {
     id: 'doc-memory-onset-chronology',
     title: 'Cronologia — primeiros registros anormais de memória',
-    category: 'Anotação de caso',
+    category: 'Anotação de caso (legado)',
     issuer: 'Delegacia — Augusto Nogueira',
     dateLabel: '06/11/2026',
     system: 'documentos',
     blocks: [
       {
         id: 'b1',
-        text: 'Diário, Notas, mensagens e registros do celular: os primeiros apontamentos realmente anormais ligados à memória começam meses antes do desaparecimento.',
-      },
-      {
-        id: 'b2',
-        text: 'O período coincide com um conjunto específico de plantões no Hospital Municipal — não com um acidente, agressão ou colapso óbvio nos registros.',
+        text: '[Legado] Agora na Timeline do caderno.',
       },
     ],
     onOpen: [],
@@ -1060,16 +1024,16 @@ export const seedDocuments: Document[] = [
     id: 'doc-henrique-pcap-note',
     title: 'Material digital antigo — captura de rede (Henrique)',
     category: 'Perícia / forense',
-    issuer: 'Backup / cache recuperado',
+    issuer: 'Backup / cache recuperado — incidente de segurança',
     system: 'pericia',
     blocks: [
       {
         id: 'b1',
-        text: 'Dump contendo sessão de voz fragmentada. Pacotes RTP com timestamps, sequence numbers e SSRCs misturados.',
+        text: 'Arquivo recuperado de backup setorial ligado ao incidente reportado por Henrique Valença. Dump contendo sessão de voz fragmentada.',
       },
       {
         id: 'b2',
-        text: 'Encaminhado à bancada. Parece uma transmissão corrompida; a análise deve verificar se há mais de um fluxo.',
+        text: 'Pacotes RTP com timestamps, sequence numbers e SSRCs misturados. Encaminhado à bancada de áudio para reconstrução.',
       },
     ],
     onOpen: [],

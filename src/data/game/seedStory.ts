@@ -705,6 +705,45 @@ export const seedSearchRules: SearchRule[] = [
     ],
   },
   {
+    id: 'block07_henrique_dump',
+    category: 'police',
+    requiredFlags: ['block07_henrique_dump_unlocked'],
+    requiredTerms: ['captura'],
+    results: [
+      {
+        title: 'Material digital antigo — captura de rede (Henrique)',
+        snippet: 'Backup / cache recuperado do incidente de segurança. Encaminhado à bancada.',
+        documentId: 'doc-henrique-pcap-note',
+      },
+    ],
+  },
+  {
+    id: 'block07_henrique_dump_pcap',
+    category: 'police',
+    requiredFlags: ['block07_henrique_dump_unlocked'],
+    requiredTerms: ['pcap'],
+    results: [
+      {
+        title: 'Material digital antigo — captura de rede (Henrique)',
+        snippet: 'Backup / cache recuperado do incidente de segurança. Encaminhado à bancada.',
+        documentId: 'doc-henrique-pcap-note',
+      },
+    ],
+  },
+  {
+    id: 'block07_henrique_dump_alt',
+    category: 'police',
+    requiredFlags: ['block07_henrique_dump_unlocked'],
+    requiredTerms: ['dump'],
+    results: [
+      {
+        title: 'Material digital antigo — captura de rede (Henrique)',
+        snippet: 'Backup / cache recuperado do incidente de segurança. Encaminhado à bancada.',
+        documentId: 'doc-henrique-pcap-note',
+      },
+    ],
+  },
+  {
     id: 'block08_vehicle_guardrail',
     category: 'police',
     requiredFlags: ['block08_vehicle_search_unlocked'],
@@ -988,7 +1027,7 @@ export const seedStoryTriggers: StoryTrigger[] = [
       {
         type: 'addTask',
         id: 'task_weigh_maralto_line',
-        label: 'Reavaliar o que a linha Maralto explica — e o que não explica',
+        label: 'Rever o material dos protestos contra a Maralto',
       },
     ],
   },

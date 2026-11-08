@@ -85,17 +85,18 @@ export function onSandraReflectionDone() {
     {
       type: 'addTask',
       id: 'task_review_morsa_duration',
-      label: 'Reavaliar a duração da atividade de Morsa nos arquivos dos protestos',
+      label: 'Reexaminar a duração da atividade de Morsa nos registros dos protestos',
     },
   ])
 }
 
+/** Disparado ao reabrir ocorrência/detidos/clipping Maralto. */
 export function reviewMorsaDuration() {
   const s = getInvestigationState()
   if (s.flags.block07_morsa_duration_done) return
+  if (!s.flags.block07_morsa_review_unlocked) return
   dispatchActions([
     { type: 'setFlag', id: 'block07_morsa_duration_done', value: true },
-    { type: 'addDocument', id: 'doc-morsa-duration-note' },
     { type: 'addEvidence', id: 'morsa_active_long_interval' },
     { type: 'addEvidence', id: 'mariana_focused_morsa_duration' },
     { type: 'addHypothesis', id: 'hyp_morsa_bridges_elisa_protests' },
@@ -103,18 +104,19 @@ export function reviewMorsaDuration() {
     {
       type: 'addTask',
       id: 'task_memory_onset_chronology',
-      label: 'Organizar quando começaram os primeiros registros anormais da memória de Mariana',
+      label: 'Revisar quando começaram os lapsos de Mariana (Timeline do caderno)',
     },
     { type: 'setFlag', id: 'block07_memory_onset_unlocked', value: true },
   ])
 }
 
+/** Disparado ao consultar a Timeline no ponto certo do Bloco 7. */
 export function organizeMemoryOnset() {
   const s = getInvestigationState()
   if (s.flags.block07_memory_onset_done) return
+  if (!s.flags.block07_memory_onset_unlocked) return
   dispatchActions([
     { type: 'setFlag', id: 'block07_memory_onset_done', value: true },
-    { type: 'addDocument', id: 'doc-memory-onset-chronology' },
     { type: 'addEvidence', id: 'memory_anomalies_months_before' },
     { type: 'addEvidence', id: 'onset_matches_hospital_shifts' },
     { type: 'addHypothesis', id: 'hyp_memory_after_specific_period' },
@@ -124,7 +126,7 @@ export function organizeMemoryOnset() {
     {
       type: 'addTask',
       id: 'task_check_julia_camila_onset',
-      label: 'Falar com Júlia sobre o período em que começaram os lapsos de Mariana',
+      label: 'Ligar para Júlia sobre o período em que começaram os lapsos',
     },
   ])
 }
@@ -259,11 +261,15 @@ export function finishCeciliaInterview() {
     {
       type: 'addTask',
       id: 'task_henrique_digital',
-      label: 'Localizar e analisar o material digital antigo de Henrique',
+      label: 'Localizar a captura de rede do incidente de Henrique (consulta no computador)',
     },
   ])
 }
 
+/**
+ * Obtém o dump/PCAP (fonte forense real). Preferir via consulta no computador + abertura do
+ * doc-henrique-pcap-note; checkpoints ainda podem chamar direto.
+ */
 export function unlockHenriqueDump() {
   const s = getInvestigationState()
   if (s.flags.block07_cassini_available) return

@@ -174,7 +174,6 @@ export const block05DevCheckpoints: { id: string; label: string; actions: StoryA
     label: 'Cronologia organizada',
     actions: [
       { type: 'setFlag', id: 'block05_chronology_done', value: true },
-      { type: 'addDocument', id: 'doc-mariana-contact-chronology' },
       { type: 'addEvidence', id: 'mariana_sought_people_before' },
       { type: 'completeTask', id: 'task_mariana_contact_chronology' },
       { type: 'setFlag', id: 'block05_compare_unlocked', value: true },
@@ -190,7 +189,6 @@ export const block05DevCheckpoints: { id: string; label: string; actions: StoryA
     label: 'Arquivos comparados (reflexão coincidência)',
     actions: [
       { type: 'setFlag', id: 'block05_compare_done', value: true },
-      { type: 'addDocument', id: 'doc-phone-file-dependencies' },
       { type: 'addEvidence', id: 'phone_files_depend_on_order' },
       { type: 'completeTask', id: 'task_compare_phone_files' },
       { type: 'setFlag', id: 'block05_coincidence_reflection_done', value: true },
@@ -211,7 +209,6 @@ export const block05DevCheckpoints: { id: string; label: string; actions: StoryA
       { type: 'addDocument', id: 'doc-central-chamada' },
       { type: 'addDocument', id: 'doc-entrada-apartamento' },
       { type: 'addDocument', id: 'doc-apreensao-celular' },
-      { type: 'addDocument', id: 'doc-emergency-reassessment' },
       { type: 'addEvidence', id: 'call_enabled_apartment_entry' },
       { type: 'addEvidence', id: 'phone_seized_after_call' },
       { type: 'completeTask', id: 'task_revisit_emergency_entry' },
