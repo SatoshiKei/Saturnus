@@ -95,33 +95,34 @@ export interface RingContinuityFrame {
   id: 'morsa-frame-enter' | 'morsa-frame-lateral' | 'morsa-frame-exit'
   /** Timestamp diegético (após correção). */
   timeLabel: string
+  /** Overlay de arquivo — câmeras distintas da mesma passagem. */
+  cameraId: string
   caption: string
-  /**
-   * Asset final quando existir. Enquanto null, a UI mostra placeholder
-   * `FRAME PENDENTE` — não fingir arte final.
-   */
-  imageSrc: string | null
+  imageSrc: string
 }
 
-/** Três frames da mesma sequência — assets finais ainda a produzir. */
+/** Entrada da passagem → interior / zona cega → saída na outra extremidade. */
 export const RING_CONTINUITY_FRAMES: RingContinuityFrame[] = [
   {
     id: 'morsa-frame-enter',
     timeLabel: '21:14:08',
-    caption: 'Entra na área lateral — mascarado; mochila e rádio distintivos.',
-    imageSrc: null,
+    cameraId: 'CAM 03',
+    caption: 'Entra na passagem de serviço — mascarado; mochila e rádio distintivos.',
+    imageSrc: '/assets/block08/rings/morsa-enter-1.png',
   },
   {
     id: 'morsa-frame-lateral',
     timeLabel: '21:14:31',
-    caption: 'Zona sem cobertura plena — some da imagem; objetos ainda legíveis.',
-    imageSrc: null,
+    cameraId: 'CAM 07',
+    caption: 'Já no interior da passagem — some da cobertura; objetos ainda legíveis.',
+    imageSrc: '/assets/block08/rings/morsa-enter-2.png',
   },
   {
     id: 'morsa-frame-exit',
     timeLabel: '21:15:02',
-    caption: 'Sai da área de serviço — sem máscara; mesma mochila; mesmo rádio.',
-    imageSrc: null,
+    cameraId: 'CAM 11',
+    caption: 'Sai pela outra extremidade — sem máscara; mesma mochila; mesmo rádio.',
+    imageSrc: '/assets/block08/rings/morsa-exit.png',
   },
 ]
 

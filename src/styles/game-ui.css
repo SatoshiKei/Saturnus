@@ -1684,7 +1684,7 @@
 .rings-continuity__frames {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  gap: 10px;
   margin: 8px 0 12px;
 }
 
@@ -1693,41 +1693,79 @@
   min-width: 0;
 }
 
-.rings-continuity__img {
+.rings-cctv {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: #0c0c0c;
+  border: 1px solid rgba(180, 180, 180, 0.22);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+
+.rings-cctv__img {
   display: block;
   width: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
-  background: #111;
+  filter: contrast(1.08) saturate(0.78) brightness(0.94);
 }
 
-.rings-continuity__placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #9a9a9a;
+.rings-cctv__fx,
+.rings-cctv__noise {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+}
+
+.rings-cctv__fx::before {
+  content: '';
+  position: absolute;
+  inset: 0;
   background: repeating-linear-gradient(
-    -45deg,
-    #1c1c1c,
-    #1c1c1c 6px,
-    #242424 6px,
-    #242424 12px
+    to bottom,
+    rgba(0, 0, 0, 0.16) 0,
+    rgba(0, 0, 0, 0.16) 1px,
+    transparent 1px,
+    transparent 3px
   );
-  border: 1px dashed #555;
+  opacity: 0.28;
 }
 
-.rings-continuity__placeholder span {
-  font-size: 9px;
-  letter-spacing: 0.04em;
-  text-transform: none;
-  opacity: 0.7;
+.rings-cctv__fx::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at center, transparent 52%, rgba(0, 0, 0, 0.42) 100%),
+    linear-gradient(180deg, rgba(28, 36, 40, 0.1), rgba(0, 0, 0, 0.16));
+}
+
+.rings-cctv__noise {
+  opacity: 0.14;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+.rings-cctv__cam,
+.rings-cctv__time {
+  position: absolute;
+  z-index: 1;
+  font-family: var(--font-type);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: rgba(228, 228, 228, 0.9);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+  pointer-events: none;
+}
+
+.rings-cctv__cam {
+  top: 6px;
+  left: 8px;
+}
+
+.rings-cctv__time {
+  bottom: 6px;
+  left: 8px;
 }
 
 .rings-continuity__frame figcaption {

@@ -150,19 +150,22 @@ export function RingsSession() {
         <div className="rings-continuity" data-testid="rings-continuity">
           <h4 className="pc-sub">Continuidade observada</h4>
           <p className="aw-provisional__note">
-            Timeline corrigida. Marque o que a sequência de frames demonstra — sem antecipar nomes.
+            Compare os registros. Marque os elementos que permanecem consistentes entre as fontes.
           </p>
           <div className="rings-continuity__frames" data-testid="rings-continuity-frames">
             {RING_CONTINUITY_FRAMES.map((f) => (
               <figure key={f.id} className="rings-continuity__frame" data-testid={`rings-frame-${f.id}`}>
-                {f.imageSrc ? (
-                  <img src={resolveChatMediaSrc(f.imageSrc)} alt="" className="rings-continuity__img" />
-                ) : (
-                  <div className="rings-continuity__placeholder" aria-hidden>
-                    FRAME PENDENTE
-                    <span>{f.id}</span>
-                  </div>
-                )}
+                <div className="rings-cctv">
+                  <img
+                    src={resolveChatMediaSrc(f.imageSrc)}
+                    alt={f.caption}
+                    className="rings-cctv__img"
+                  />
+                  <div className="rings-cctv__fx" aria-hidden />
+                  <div className="rings-cctv__noise" aria-hidden />
+                  <span className="rings-cctv__cam">{f.cameraId}</span>
+                  <span className="rings-cctv__time">{f.timeLabel}</span>
+                </div>
                 <figcaption>
                   <strong>{f.timeLabel}</strong>
                   <span>{f.caption}</span>
