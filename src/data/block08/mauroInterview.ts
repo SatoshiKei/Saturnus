@@ -3,10 +3,10 @@ export type MauroTopicId = 'car' | 'bia' | 'repair' | 'elisa'
 export const MAURO_TOPIC_IDS: MauroTopicId[] = ['car', 'bia', 'repair', 'elisa']
 
 export const mauroTopicLabels: Record<MauroTopicId, string> = {
-  car: 'O carro naquela época',
-  bia: 'O que Bia disse',
+  car: 'O carro',
+  bia: 'Bia',
   repair: 'O conserto',
-  elisa: 'Sobre Elisa',
+  elisa: 'O que o carro fez',
 }
 
 export const mauroTopicFlags: Record<MauroTopicId, string> = {
@@ -20,19 +20,34 @@ export type MauroBeat = { speaker?: string; text: string }
 
 export const mauroBeats: Record<MauroTopicId, MauroBeat[]> = {
   car: [
-    { speaker: 'Augusto', text: 'Mauro? Polícia Civil. Sobre um veículo registrado em seu nome, seis anos atrás — dano na lateral dianteira.' },
-    { speaker: 'Mauro', text: 'Lembro de um problema com o carro naquela época.\nNada de polícia. Foi… doméstico.' },
+    { speaker: 'Augusto', text: 'O carro era seu seis anos atrás?' },
+    { speaker: 'Mauro', text: 'Era.\n\nPor quê?' },
+    { speaker: 'Augusto', text: 'Houve reparo na lateral dianteira naquela semana.' },
+    { speaker: 'Mauro', text: 'Ah.\n\nIsso.' },
+    { speaker: 'Augusto', text: 'Lembra.' },
+    { speaker: 'Mauro', text: 'Lembro da dor de cabeça.\n\nNão lembro do dano olhando para ele.' },
   ],
   bia: [
-    { speaker: 'Augusto', text: 'Quem dirigia?' },
-    { speaker: 'Mauro', text: 'A Bia — minha enteada — disse que tinha raspado.\nEla providenciou o conserto.' },
+    { speaker: 'Augusto', text: 'Quem estava com o carro?' },
+    { speaker: 'Mauro', text: 'Minha enteada. Bia.' },
+    { speaker: 'Augusto', text: 'Ela disse o quê?' },
+    {
+      speaker: 'Mauro',
+      text: 'Que tinha raspado em alguma coisa.\n\nEra nova, ficou apavorada achando que eu ia matar ela por causa do carro.',
+    },
+    { speaker: 'Augusto', text: 'E o senhor acreditou.' },
+    { speaker: 'Mauro', text: 'Era um carro amassado.\n\nNão abri investigação familiar.' },
   ],
   repair: [
-    { speaker: 'Augusto', text: 'Onde?' },
-    { speaker: 'Mauro', text: 'Não lembro o nome de cabeça.\nMas tenho um comprovante antigo de transferência.\nPosso te passar.' },
+    { speaker: 'Augusto', text: 'Onde consertou?' },
+    {
+      speaker: 'Mauro',
+      text: 'Ela resolveu.\n\nEu paguei uma parte depois.\n\nTalvez eu ainda tenha a transferência.',
+    },
+    { speaker: 'Augusto', text: 'Preciso dela.' },
   ],
   elisa: [
-    { speaker: 'Augusto', text: 'O senhor sabe quem é Elisa Duarte?' },
-    { speaker: 'Mauro', text: 'Não.\nNão sei do que o senhor está falando.' },
+    { speaker: 'Mauro', text: 'Delegado...\n\no que esse carro fez?' },
+    { speaker: 'Augusto', text: 'É isso que eu estou tentando descobrir.' },
   ],
 }

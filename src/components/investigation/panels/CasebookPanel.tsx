@@ -132,7 +132,9 @@ function PeopleTab({ inv }: { inv: InvestigationState }) {
 
 /* ---------------- Evidências ---------------- */
 function EvidenceTab({ inv, focusId }: { inv: InvestigationState; focusId: string | null }) {
-  const items = inv.evidenceOwned.map((id) => inv.evidence[id]).filter((e): e is Evidence => Boolean(e))
+  const items = inv.evidenceOwned
+    .map((id) => inv.evidence[id])
+    .filter((e): e is Evidence => Boolean(e) && !e.catalogHidden)
   const [sel, setSel] = useState<string | null>(focusId)
   const ev = items.find((e) => e.id === sel) ?? items[0]
   if (!ev) return <p className="nb-muted">Nenhuma evidência reunida ainda.</p>

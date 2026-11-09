@@ -48,6 +48,13 @@ const augustoChats: ChatThread[] = [
     lastTime: '—',
     messages: [],
   },
+  {
+    id: 'chat-anon-augusto',
+    contactId: 'unknown',
+    lastPreview: 'Toque para abrir',
+    lastTime: '—',
+    messages: [],
+  },
 ]
 
 export const mockChats: ChatThread[] = [...block01MarianaChats, ...augustoChats]

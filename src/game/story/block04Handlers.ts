@@ -140,7 +140,7 @@ export function onDiaryEntryRead(entryId: string, unlocksUnknown: boolean) {
       {
         type: 'addTask',
         id: 'task_unknown_recording',
-        label: 'Localizar a gravação citada no diário',
+        label: 'Localizar CHK_UNK no armazenamento do aparelho',
       },
     )
   }

@@ -1,23 +1,36 @@
-import { dispatchActions, getInvestigationState } from '../state/investigationStore'
+import { appendChatMessages, dispatchActions, getInvestigationState } from '../state/investigationStore'
 import type { StoryActionRef } from '../types'
+
+export const ANON_CHAT_ID = 'chat-anon-augusto'
 
 export function startBlock07() {
   const s = getInvestigationState()
   if (s.flags.block07_started) {
+    // Save antigo: Miro 1 feito, segunda visita ainda pendente.
     if (
       s.flags.block06_complete &&
-      s.locations['detencao-miro']?.status === 'visited' &&
-      !s.flags.block07_miro_followup_done
+      !s.flags.block07_miro_followup_done &&
+      s.locations['detencao-miro']?.status === 'visited'
     ) {
       dispatchActions([{ type: 'unlockLocation', id: 'detencao-miro', status: 'visitAvailable' }])
     }
     return
   }
   if (!s.flags.block06_complete && !s.flags.block07_entry_ready) return
-  dispatchActions([
-    { type: 'setFlag', id: 'block07_started', value: true },
-    { type: 'unlockLocation', id: 'detencao-miro', status: 'visitAvailable' },
-  ])
+  const actions: StoryActionRef[] = [{ type: 'setFlag', id: 'block07_started', value: true }]
+  if (!s.flags.block07_miro_followup_done) {
+    actions.push({ type: 'unlockLocation', id: 'detencao-miro', status: 'visitAvailable' })
+  } else if (!s.flags.block07_sandra_search_unlocked) {
+    actions.push(
+      { type: 'setFlag', id: 'block07_sandra_search_unlocked', value: true },
+      {
+        type: 'addTask',
+        id: 'task_locate_sandra',
+        label: 'Quem Sandra viu voltando da região da queda?',
+      },
+    )
+  }
+  dispatchActions(actions)
 }
 
 export function finishMiroFollowup() {
@@ -144,28 +157,63 @@ export function finishJuliaOnsetCall() {
 }
 
 /**
- * Evento separado: arquivo anônimo chega à bancada e libera o Enceladus.
- * Não é enviado por Júlia — origem desconhecida.
+ * Mensagem de número desconhecido no WhatsApp de Augusto, com attachment.
+ * Não revela a origem. A bancada só recebe o arquivo se o jogador encaminhar.
+ */
+export function deliverAnonWhatsApp() {
+  const s = getInvestigationState()
+  if (s.flags.block07_anon_message_received) return
+  if (!s.flags.block07_julia_camila_checked) return
+  dispatchActions([
+    { type: 'setFlag', id: 'block07_anon_message_received', value: true },
+    { type: 'unlockChat', device: 'augusto', chatId: ANON_CHAT_ID },
+    {
+      type: 'addTask',
+      id: 'task_anon_audio_enceladus',
+      label: 'Identificar o que o arquivo anônimo contém',
+    },
+  ])
+  const already = s.chatProgress[ANON_CHAT_ID]?.messages ?? []
+  if (already.some((m) => m.id === 'anon-burst-1')) return
+  appendChatMessages(
+    ANON_CHAT_ID,
+    [
+      {
+        id: 'anon-burst-1',
+        kind: 'audio',
+        from: 'them',
+        audioSrc: '/assets/audio/emergency-call-0803.wav',
+        durationSec: 80,
+        timestamp: '02:14',
+      },
+    ],
+    0,
+    false,
+  )
+}
+
+/**
+ * Encaminhamento à bancada — libera Enceladus.
+ * Checkpoints / saves antigos podem chamar direto após a checagem com Júlia.
  */
 export function receiveAnonHospitalAudio() {
   const s = getInvestigationState()
   if (s.flags.block07_anon_audio_received) return
-  if (!s.flags.block07_julia_camila_checked) return
+  if (!s.flags.block07_julia_camila_checked && !s.flags.block07_anon_message_received) return
+  if (!s.flags.block07_anon_message_received) {
+    deliverAnonWhatsApp()
+  }
   dispatchActions([
     { type: 'setFlag', id: 'block07_anon_audio_received', value: true },
     { type: 'addEvidence', id: 'anon_hospital_burst_audio' },
     { type: 'setFlag', id: 'block07_enceladus_available', value: true },
-    {
-      type: 'addTask',
-      id: 'task_anon_audio_enceladus',
-      label: 'Analisar o arquivo anônimo recebido',
-    },
   ])
 }
 
-/** Compat (checkpoints / saves): checagem + áudio de uma vez. A UI usa a ligação + receiveAnonHospitalAudio. */
+/** Compat (checkpoints / saves): checagem + WhatsApp + bancada de uma vez. */
 export function finishJuliaCamilaOnsetCheck() {
   finishJuliaOnsetCall()
+  deliverAnonWhatsApp()
   receiveAnonHospitalAudio()
 }
 

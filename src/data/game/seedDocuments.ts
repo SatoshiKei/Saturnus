@@ -577,57 +577,76 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-elisa-argumento',
-    title: 'Peças — discussão e estado do relacionamento',
+    title: 'Autos — Caso Elisa Duarte',
     category: 'Autos',
-    issuer: 'Vara Criminal — resumo',
+    issuer: 'Vara Criminal — cópia integral (consulta)',
     dateLabel: 'Proc. 2020',
     system: 'autos',
     blocks: [
       {
-        id: 'b1',
-        text: 'Duas testemunhas descrevem discussão entre André e Elisa junto ao bar, com troca de acusações e ciúmes.',
+        id: 'sec-resumo',
+        text: 'RESUMO. Vítima: Elisa Duarte, 17 anos. Réu: André Silva. Imputação: homicídio doloso. Sentença de 1ª instância: condenação. Recurso pendente.',
       },
       {
-        id: 'b2',
-        text: 'Amigos próximos afirmam que o relacionamento atravessava fase ruim nas semanas anteriores.',
+        id: 'sec-cronologia',
+        text: 'CRONOLOGIA. Chegada ao Vértice por volta das 23h. Discussão junto ao bar entre 00h30 e 01h. Elisa deixa o salão entre 01h e 01h30. André reaparece na portaria às 01h40.',
+      },
+      {
+        id: 'sec-relacao',
+        text: 'RELAÇÃO ANDRÉ × ELISA. Duas testemunhas descrevem discussão junto ao bar, com troca de acusações e ciúmes. Amigos próximos afirmam que o relacionamento atravessava fase ruim nas semanas anteriores.',
+        extractableEvidenceId: 'elisa_argument_jealousy',
+      },
+      {
+        id: 'sec-alibi',
+        text: 'ÁLIBI. André não apresentou álibi considerado confiável para o intervalo entre a saída de Elisa e o próprio reaparecimento na portaria. Inconsistências pontuais entre depoimentos de frequentadores foram anotadas; a cronologia oficial prevaleceu na sentença.',
+        extractableEvidenceId: 'elisa_weak_alibi',
+      },
+      {
+        id: 'sec-testemunhas',
+        text: 'TESTEMUNHAS. Ouvidos na fase policial: amigos da vítima, funcionários da Boate Vértice e o DJ Nicolas Prado Reis. Uma testemunha afirmou ter visto, próximo à região da queda, alguém com porte semelhante ao de André Silva. A identificação visual não foi inequívoca.',
+        extractableEvidenceId: 'elisa_lookalike_near_fall',
+      },
+      {
+        id: 'sec-sentenca',
+        text: 'SENTENÇA. O conjunto — discussão, estado do relacionamento, álibi fraco e testemunha próxima à queda — sustentou a condenação em primeira instância.',
       },
     ],
-    onOpen: [{ type: 'addEvidence', id: 'elisa_argument_jealousy' }],
+    onOpen: [
+      { type: 'addEvidence', id: 'elisa_argument_jealousy' },
+      { type: 'addEvidence', id: 'elisa_weak_alibi' },
+      { type: 'addEvidence', id: 'elisa_lookalike_near_fall' },
+    ],
   },
   {
+    /** Legado — conteúdo absorvido em `doc-elisa-argumento`. */
     id: 'doc-elisa-alibi',
-    title: 'Peças — álibi e inconsistências',
+    title: 'Autos — Caso Elisa Duarte (álibi)',
     category: 'Autos',
     issuer: 'Vara Criminal — resumo',
     dateLabel: 'Proc. 2020',
     system: 'autos',
+    playerFacing: false,
     blocks: [
       {
         id: 'b1',
         text: 'André não apresentou álibi considerado confiável para o intervalo entre a saída de Elisa e o próprio reaparecimento na portaria.',
       },
-      {
-        id: 'b2',
-        text: 'Inconsistências pontuais entre depoimentos de frequentadores foram anotadas; a cronologia oficial prevaleceu na sentença.',
-      },
     ],
     onOpen: [{ type: 'addEvidence', id: 'elisa_weak_alibi' }],
   },
   {
+    /** Legado — conteúdo absorvido em `doc-elisa-argumento`. */
     id: 'doc-elisa-testemunha-queda',
-    title: 'Peças — testemunha próxima à região da queda',
+    title: 'Autos — Caso Elisa Duarte (testemunha)',
     category: 'Autos',
     issuer: 'Vara Criminal — resumo',
     dateLabel: 'Proc. 2020',
     system: 'autos',
+    playerFacing: false,
     blocks: [
       {
         id: 'b1',
         text: 'Uma testemunha afirmou ter visto, próximo à região da queda, alguém com porte semelhante ao de André Silva.',
-      },
-      {
-        id: 'b2',
-        text: 'A identificação visual não foi inequívoca; o conjunto probatório, contudo, sustentou a condenação.',
       },
     ],
     onOpen: [{ type: 'addEvidence', id: 'elisa_lookalike_near_fall' }],
@@ -787,6 +806,7 @@ export const seedDocuments: Document[] = [
     issuer: 'Delegacia — Augusto Nogueira',
     dateLabel: '05/11/2026',
     system: 'documentos',
+    playerFacing: false,
     blocks: [
       {
         id: 'b1',
@@ -802,6 +822,7 @@ export const seedDocuments: Document[] = [
     issuer: 'Delegacia — Augusto Nogueira',
     dateLabel: '05/11/2026',
     system: 'documentos',
+    playerFacing: false,
     blocks: [
       {
         id: 'b1',
@@ -817,6 +838,7 @@ export const seedDocuments: Document[] = [
     issuer: 'Delegacia — Augusto Nogueira',
     dateLabel: '05/11/2026',
     system: 'documentos',
+    playerFacing: false,
     blocks: [
       {
         id: 'b1',
@@ -874,6 +896,7 @@ export const seedDocuments: Document[] = [
     issuer: 'Delegacia — Augusto Nogueira',
     dateLabel: '06/11/2026',
     system: 'documentos',
+    playerFacing: false,
     blocks: [
       {
         id: 'b1',
@@ -889,6 +912,7 @@ export const seedDocuments: Document[] = [
     issuer: 'Delegacia — Augusto Nogueira',
     dateLabel: '06/11/2026',
     system: 'documentos',
+    playerFacing: false,
     blocks: [
       {
         id: 'b1',
@@ -1254,6 +1278,7 @@ export const seedDocuments: Document[] = [
     category: 'Anotação de caso',
     issuer: 'Delegacia — Augusto Nogueira',
     system: 'documentos',
+    playerFacing: false,
     blocks: [
       {
         id: 'b1',
@@ -1273,6 +1298,7 @@ export const seedDocuments: Document[] = [
     category: 'Anotação de caso',
     issuer: 'Delegacia — Augusto Nogueira',
     system: 'documentos',
+    playerFacing: false,
     blocks: [
       {
         id: 'b1',
@@ -1294,11 +1320,11 @@ export const seedDocuments: Document[] = [
     blocks: [
       {
         id: 'b1',
-        text: 'Denúncia anônima com material comprometedor real. Roberto tinha o que justificar investigação. Timing: imediatamente antes de Augusto assumir o caso Mariana.',
+        text: 'Roberto Siqueira. Material da denúncia verdadeiro. Afastamento justificado pelos autos da Corregedoria.',
       },
       {
         id: 'b2',
-        text: 'Metadata e origem compatíveis com o canal de O Omitido: descobriu, selecionou, enviou e escolheu o momento. Augusto não apenas resolveu o percurso — foi colocado nele.',
+        text: 'O problema está na hora: dias antes do desaparecimento de Mariana Silva. Tempo suficiente para abrir uma cadeira — a do delegado que assumiu o caso.',
       },
     ],
     /** Efeitos de Roberto + mensagens: `onRobertoExposed` (DocumentSheet). */
@@ -1311,6 +1337,7 @@ export const seedDocuments: Document[] = [
     category: 'Anotação de caso',
     issuer: 'Delegacia — Augusto Nogueira',
     system: 'documentos',
+    playerFacing: false,
     blocks: [
       {
         id: 'b1',
@@ -1387,11 +1414,11 @@ export const seedDocuments: Document[] = [
     blocks: [
       {
         id: 'b1',
-        text: 'Casos esparsos, cidades e métodos distintos. A semelhança é comportamental: conversa prolongada, aprendizado de identidade, depois o original parece deixar de ser necessário.',
+        text: 'Não é uma lista limpa. Pessoas, cidades e contextos diferentes. Alguns relatos repetem a mesma forma: conversas longas, interlocutor que acumula detalhes, mudança gradual de comportamento.',
       },
       {
         id: 'b2',
-        text: 'Sem mapa completo da infraestrutura. Padrão suficiente para escala maior do que Henrique e Mariana.',
+        text: 'Pessoas próximas dizendo que o sujeito “não parecia ele mesmo”. Depois, desaparecimento. Henrique Valença e Mariana Silva não aparecem como acidentes isolados.',
       },
     ],
     onOpen: [],
@@ -1403,6 +1430,7 @@ export const seedDocuments: Document[] = [
     category: 'Anotação de caso',
     issuer: 'Delegacia — Augusto Nogueira',
     system: 'documentos',
+    playerFacing: false,
     blocks: [
       {
         id: 'b1',

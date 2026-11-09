@@ -39,6 +39,7 @@ import { reflectionById } from '../data/reflections'
 import { HUB_REFLECTION_BACKGROUND } from '../data/sceneIntros'
 import { setFlag } from '../game/state/investigationStore'
 import { afterReflectionComplete } from '../game/story/reflectionAftermath'
+import { absorbLegacyB5MicroReflections } from '../game/story/block05Handlers'
 import { TrailDiscoveryScene } from '../components/story/TrailDiscoveryScene'
 import { MemoryWordOverlay } from '../components/investigation/MemoryWordOverlay'
 import { onMarianaPhoneClosed, onMarianaPhoneOpened } from '../game/story/block01Handlers'
@@ -92,10 +93,6 @@ function renderLocationScene(id: NonNullable<LocationSceneId>, close: () => void
 
 function pendingSoloReflection(flags: Record<string, boolean>): string | null {
   if (flags.block05_refl_andre_pending && !flags['refl-b05-andre_seen']) return 'refl-b05-andre'
-  if (flags.block05_refl_maralto_pending && !flags['refl-b05-maralto_seen']) return 'refl-b05-maralto'
-  if (flags.block05_refl_coincidence_pending && !flags['refl-b05-coincidence_seen']) {
-    return 'refl-b05-coincidence'
-  }
   if (flags.block05_refl_path_pending && !flags['refl-b05-path_seen']) return 'refl-b05-path'
   if (flags.block06_refl_geraldo_pending && !flags['refl-b06-geraldo_seen']) return 'refl-b06-geraldo'
   if (flags.block06_refl_miro_pending && !flags['refl-b06-miro_seen']) return 'refl-b06-miro'
@@ -152,6 +149,10 @@ export function Scene() {
   const { menuOpen } = useUiState()
   const soloReflectionId = pendingSoloReflection(inv.flags)
   const soloReflectionDef = soloReflectionId ? reflectionById(soloReflectionId) : undefined
+
+  useEffect(() => {
+    absorbLegacyB5MicroReflections()
+  }, [inv.flags.block05_refl_maralto_pending, inv.flags.block05_refl_coincidence_pending])
   const soloReflectionActive = Boolean(
     !locationScene && !hubPanel && !phoneOpen && soloReflectionId && soloReflectionDef,
   )

@@ -48,13 +48,17 @@ export const block07EntryActions: StoryActionRef[] = [
   { type: 'unlockLocation', id: 'geraldo-casa', status: 'visited' },
   { type: 'unlockLocation', id: 'jana-casa', status: 'visited' },
   { type: 'unlockLocation', id: PASTOR_LOCATION_ID, status: 'visited' },
-  { type: 'unlockLocation', id: 'detencao-miro', status: 'visitAvailable' },
+  { type: 'unlockLocation', id: 'detencao-miro', status: 'visited' },
+  { type: 'setFlag', id: 'block07_miro_followup_done', value: true },
+  { type: 'addEvidence', id: 'miro_descended_fall_area' },
+  { type: 'addEvidence', id: 'miro_recovered_jana_bag' },
+  { type: 'setFlag', id: 'block07_sandra_search_unlocked', value: true },
   {
     type: 'replaceTasks',
     tasks: [
       {
-        id: 'task_press_miro_further',
-        label: 'Até onde Miro seguiu Elisa — e o que ele ainda omite?',
+        id: 'task_locate_sandra',
+        label: 'Quem Sandra viu voltando da região da queda?',
         completed: false,
       },
     ],

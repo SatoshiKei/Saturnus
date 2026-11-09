@@ -63,7 +63,14 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
     const q = query.trim()
     if (!q) return
     const { hits, newTerms } = runPoliceSearch(q, inv)
-    setResults(hits.filter((h) => scopeAllows(scope, h.documentId)))
+    setResults(
+      hits.filter((h) => {
+        if (!scopeAllows(scope, h.documentId)) return false
+        if (!h.documentId) return true
+        const d = getDocument(h.documentId)
+        return !d || d.playerFacing !== false
+      }),
+    )
     setSearched(true)
     playSfx('keyboard')
     setRecent((r) => [q, ...r.filter((x) => x !== q)].slice(0, 5))
@@ -75,7 +82,10 @@ export function PoliceComputer({ onClose }: { onClose: () => void }) {
   const docsFor = (system: string) =>
     inv.documentsOwned
       .map((id) => getDocument(id))
-      .filter((d): d is NonNullable<typeof d> => Boolean(d) && d!.system === system)
+      .filter(
+        (d): d is NonNullable<typeof d> =>
+          Boolean(d) && d!.system === system && d!.playerFacing !== false,
+      )
 
   const people = useMemo(
     () => Object.values(inv.people).filter((p) => isPersonVisibleInRegistry(p.id, inv)),

@@ -9,6 +9,7 @@ import { phoneFeatureLocks } from '../../data/phoneFeatures'
 import { onJuliaChatReviewed, onRafaelAudioPlayed } from '../../game/story/block01Handlers'
 import { onMarianaChatOpened } from '../../game/story/block09Handlers'
 import { MARIANA_CHAT_ID } from '../../data/block09/marianaMessages'
+import { ANON_CHAT_ID, receiveAnonHospitalAudio } from '../../game/story/block07Handlers'
 import { Avatar } from '../../components/Avatar'
 import { playSfx } from '../../lib/sfx'
 import type { ChatMessage } from '../../types/messaging'
@@ -271,6 +272,16 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
           </div>
         ) : null}
         {composerHint ? <p className="wa-composer-hint">{composerHint}</p> : null}
+        {chatId === ANON_CHAT_ID && !inv.flags.block07_anon_audio_received ? (
+          <button
+            type="button"
+            className="wa-script-options__btn"
+            data-testid="anon-forward-bench"
+            onClick={() => receiveAnonHospitalAudio()}
+          >
+            Encaminhar à bancada
+          </button>
+        ) : null}
         <ChatComposer
           composeAvailable={canCompose}
           composing={composing}

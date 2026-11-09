@@ -176,12 +176,16 @@ export const block06DevCheckpoints: { id: string; label: string; actions: StoryA
       { type: 'updateHypothesis', id: 'hyp_mariana_right_on_ignored_aspects', state: 'confirmed' },
       { type: 'setFlag', id: 'block06_complete', value: true },
       { type: 'setFlag', id: 'block07_entry_ready', value: true },
+      { type: 'setFlag', id: 'block07_miro_followup_done', value: true },
+      { type: 'addEvidence', id: 'miro_descended_fall_area' },
+      { type: 'addEvidence', id: 'miro_recovered_jana_bag' },
+      { type: 'setFlag', id: 'block07_sandra_search_unlocked', value: true },
       {
         type: 'replaceTasks',
         tasks: [
           {
-            id: 'task_press_miro_further',
-            label: 'Até onde Miro seguiu Elisa — e o que ele ainda omite?',
+            id: 'task_locate_sandra',
+            label: 'Quem Sandra viu voltando da região da queda?',
             completed: false,
           },
         ],

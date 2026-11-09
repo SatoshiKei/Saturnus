@@ -3,9 +3,9 @@ export type GeraldoTopicId = 'night' | 'drinks' | 'pressure' | 'admit'
 export const GERALDO_TOPIC_IDS: GeraldoTopicId[] = ['night', 'drinks', 'pressure', 'admit']
 
 export const geraldoTopicLabels: Record<GeraldoTopicId, string> = {
-  night: 'A noite no Vértice',
+  night: 'A noite',
   drinks: 'O que Elisa bebeu',
-  pressure: 'A comanda e o fechamento',
+  pressure: 'A comanda',
   admit: 'O que ficou de fora',
 }
 
@@ -20,28 +20,59 @@ export type GeraldoBeat = { speaker?: string; text: string }
 
 export const geraldoBeats: Record<GeraldoTopicId, GeraldoBeat[]> = {
   night: [
-    { speaker: 'Augusto', text: 'Geraldo Mota? Polícia Civil. Preciso revisar o que você disse sobre a noite em que Elisa Duarte morreu.' },
-    { speaker: 'Geraldo', text: 'Isso já acabou.\nFaz seis anos.\nEu depus. André foi condenado.' },
-    { speaker: 'Augusto', text: 'Horário. Movimento. O que ela bebeu. Como parecia.' },
-    { speaker: 'Geraldo', text: 'Eu estava no bar.\nO salão cheio.\nEla e o namorado discutiram.\nEla saiu.\nPonto.' },
+    { speaker: 'Augusto', text: 'Geraldo Mota?' },
+    { speaker: 'Geraldo', text: 'Quem pergunta?' },
+    { speaker: 'Augusto', text: 'Augusto Nogueira. Polícia Civil.' },
+    { speaker: 'Geraldo', text: 'Porra.\n\nÉ sobre o quê?' },
+    { speaker: 'Augusto', text: 'Elisa Duarte.' },
+    { speaker: 'Geraldo', text: 'Não.\n\nIsso já foi.' },
+    { speaker: 'Augusto', text: 'Para você.' },
+    {
+      speaker: 'Geraldo',
+      text: 'Eu depus. Fui no fórum. Respondi advogado. Respondi polícia. O André foi condenado.\n\nEu não tenho mais nada pra acrescentar.',
+    },
   ],
   drinks: [
-    { speaker: 'Augusto', text: 'No depoimento você disse que quase não serviu nada para ela.' },
-    { speaker: 'Geraldo', text: 'Foi o que eu lembrei.\nUma, talvez duas.\nNão fiquei contando copo.' },
-    { speaker: 'Augusto', text: 'Você sabia a idade dela?' },
-    { speaker: 'Geraldo', text: '…\nEu não perguntava documento pra todo mundo.' },
+    { speaker: 'Augusto', text: 'Talvez tenha que corrigir.' },
+    { speaker: 'Geraldo', text: 'Corrigir o quê?' },
+    { speaker: 'Augusto', text: 'Você disse que quase não serviu bebida para Elisa naquela noite.' },
+    { speaker: 'Geraldo', text: 'Foi o que eu lembrava.' },
+    { speaker: 'Augusto', text: 'A comanda do bar não concorda.' },
+    { speaker: 'Geraldo', text: 'A comanda não diz quem bebeu cada copo.' },
+    {
+      speaker: 'Augusto',
+      text: 'Não.\n\nMas diz que naquele intervalo saiu muito mais coisa do que o seu depoimento faz parecer.',
+    },
+    { speaker: 'Geraldo', text: 'A casa estava cheia.' },
   ],
   pressure: [
-    { speaker: 'Augusto', text: 'Temos a comanda daquela noite e o fechamento de caixa do bar. O volume no horário dela não casa com “quase nada”.' },
-    { speaker: 'Geraldo', text: 'Comanda não prova o que cada pessoa bebeu.' },
-    { speaker: 'Augusto', text: 'Prova que a sua versão “quase não servi” não se sustenta. E o cartão de menor no cadastro de entrada ainda existe nos autos do Vértice.' },
-    { speaker: 'Geraldo', text: '…' },
+    { speaker: 'Augusto', text: 'E o cadastro de entrada do grupo tinha indicação de menor.' },
+    { speaker: 'Geraldo', text: 'Você veio aqui por causa disso?' },
+    {
+      speaker: 'Augusto',
+      text: 'Vim porque eu quero saber o que aconteceu naquela noite, e seis anos atrás você tinha uma boa razão para fazer Elisa parecer mais sóbria do que estava.',
+    },
+    { speaker: 'Geraldo', text: 'Eu não queria perder o emprego.' },
+    { speaker: 'Augusto', text: 'Então sabia.' },
+    { speaker: 'Geraldo', text: 'Eu desconfiava.' },
+    { speaker: 'Augusto', text: 'E serviu mesmo assim.' },
+    { speaker: 'Geraldo', text: 'Servi.\n\nMais do que falei.' },
   ],
   admit: [
-    { speaker: 'Geraldo', text: 'Eu minimiizei.\nServi mais do que declarei.\nE eu… suspeitava que ela era menor.' },
-    { speaker: 'Augusto', text: 'Por quê?' },
-    { speaker: 'Geraldo', text: 'Porque admitir isso na época me queimava.\nAdministrativo. Trabalho. Talvez pior.\nEu protegi a mim mesmo.\nNão conspirei com ninguém.' },
-    { speaker: 'Augusto', text: 'Quanto exatamente?' },
-    { speaker: 'Geraldo', text: 'Não sei o número clínico.\nSei que não foi “quase nada”.\nEla estava mais alcoolizada do que eu deixei no papel.' },
+    { speaker: 'Augusto', text: 'Quanto?' },
+    {
+      speaker: 'Geraldo',
+      text: 'Eu não sei.\n\nNão fiquei marcando o copo dela no papel.\n\nSó sei que quando ela saiu não tinha tomado “quase nada”.\n\nIsso eu posso te dizer agora.',
+    },
+    { speaker: 'Augusto', text: 'Por que mentiu?' },
+    {
+      speaker: 'Geraldo',
+      text: 'Porque eu tinha vinte e poucos anos, precisava daquele trabalho e achei que a pergunta era “você fez alguma coisa errada?”, não “isso vai importar daqui a seis anos?”.\n\nEntão eu me protegi.',
+    },
+    { speaker: 'Augusto', text: 'Protegeu você.' },
+    {
+      speaker: 'Geraldo',
+      text: 'É.\n\nEu.\n\nNão o André. Não sei porra nenhuma sobre quem matou a menina.',
+    },
   ],
 }

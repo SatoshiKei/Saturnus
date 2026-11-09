@@ -948,7 +948,9 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'elisa_argument_jealousy',
-    title: 'Autos: discussão e ciúmes entre André e Elisa',
+    title: 'Autos — fundamento da condenação de André Silva',
+    description:
+      'Discussão e ciúmes no Vértice; álibi de André considerado fraco para o intervalo da saída de Elisa; testemunha colocou alguém de porte semelhante perto da região da queda.',
     type: 'document',
     sourceType: 'case-file',
     originalOrDerived: 'original',
@@ -1026,7 +1028,9 @@ export const seedEvidenceCatalog: Evidence[] = [
   // ───────────────────────── Bloco 6 ─────────────────────────
   {
     id: 'geraldo_minimized_alcohol',
-    title: 'Geraldo admite ter minimizado o álcool servido a Elisa',
+    title: 'Depoimento original de Geraldo minimizou o consumo de álcool de Elisa',
+    description:
+      'Geraldo admite ter servido mais do que declarou. Elisa bebeu além do que consta no resumo. Ele suspeitava que ela era menor.',
     type: 'document',
     sourceType: 'witness',
     originalOrDerived: 'original',
@@ -1181,7 +1185,9 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'miro_followed_elisa_by_mistake',
-    title: 'Miro seguiu Elisa acreditando inicialmente que fosse Jana',
+    title: 'Miro estava na trajetória de Elisa após confundi-la com Jana',
+    description:
+      'Procurava Jana; viu jaqueta e bolsa; seguiu Elisa por engano. Nega assassinato. Admite ter descido depois e recuperado a bolsa.',
     type: 'document',
     sourceType: 'witness',
     originalOrDerived: 'original',
@@ -1310,7 +1316,8 @@ export const seedEvidenceCatalog: Evidence[] = [
     originalOrDerived: 'original',
     integrity: 'questionable',
     description:
-      'Arquivo anônimo recebido de origem desconhecida. Quase inútil à escuta direta. Disponível na bancada.',
+      'Arquivo recebido por mensagem de número desconhecido no celular de Augusto. Origem não identificada. Quase inútil à escuta direta.',
+    obtainedFrom: 'WhatsApp — número desconhecido',
     relatedPersonIds: ['mariana'],
     relatedLocationIds: ['hospital'],
     relatedEventIds: [],
@@ -2011,3 +2018,28 @@ export const seedEvidenceCatalog: Evidence[] = [
     relatedEventIds: [],
   },
 ]
+
+/** Detalhes agrupados numa evidência principal — flags/lógica permanecem; caderno não lista. */
+const CATALOG_HIDDEN_IDS = new Set([
+  'elisa_weak_alibi',
+  'elisa_lookalike_near_fall',
+  'elisa_more_alcohol_than_stated',
+  'geraldo_suspected_underage',
+  'jana_loan_explanation',
+  'jana_feared_valter_people',
+  'miro_sought_jana_night_x',
+  'miro_denies_killing_elisa',
+  'miro_recovered_jana_bag',
+  'sandra_acknowledges_miro_possibility',
+  'mariana_focused_morsa_duration',
+  'onset_matches_hospital_shifts',
+  'anon_audio_hospital_environment',
+  'anon_audio_shift_window',
+  'phone_files_depend_on_order',
+  'phone_seized_after_call',
+  'nico_believes_jacket_jana',
+])
+
+for (const e of seedEvidenceCatalog) {
+  if (CATALOG_HIDDEN_IDS.has(e.id)) e.catalogHidden = true
+}

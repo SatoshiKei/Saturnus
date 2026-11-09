@@ -37,6 +37,7 @@ export function FilesApp({ onBack }: FilesAppProps) {
     inv.flags.block05_compare_done,
   ])
 
+  const [query, setQuery] = useState('')
   const base = phoneDevice === 'augusto' ? augustoFilesLibrary : marianaFilesLibrary
   const items = useMemo(() => {
     if (phoneDevice !== 'mariana') return base
@@ -50,21 +51,29 @@ export function FilesApp({ onBack }: FilesAppProps) {
         provenanceNote: 'Arquivo localizado após reanálise',
       })
     }
-    if (inv.flags.block04_unknown_recording_unlocked) {
+    const chkQuery = /chk[_\s-]?unk/i.test(query)
+    const showChkUnk =
+      inv.flags.block04_unknown_recording_found ||
+      (inv.flags.block04_unknown_recording_unlocked && chkQuery)
+    if (showChkUnk) {
       extra.push({
         id: 'mf-chk-unk',
         label: 'CHK_UNK.m4a',
         folder: 'Downloads',
         provenance: 'existing_hidden',
-        provenanceNote: 'Localizado após referência no diário',
+        provenanceNote: inv.flags.block04_unknown_recording_found
+          ? 'Localizado após referência no diário'
+          : 'Nome conferido com o diário',
       })
     }
     return [...base, ...extra]
   }, [
     base,
     phoneDevice,
+    query,
     inv.flags.block03_reanalysis_unlocked,
     inv.flags.block04_unknown_recording_unlocked,
+    inv.flags.block04_unknown_recording_found,
   ])
 
   const folders = useMemo(() => {
@@ -72,7 +81,12 @@ export function FilesApp({ onBack }: FilesAppProps) {
     return [...set]
   }, [items])
   const [folder, setFolder] = useState(folders[0] ?? 'WhatsApp')
-  const visible = items.filter((i) => (i.folder ?? 'Outros') === folder)
+  const q = query.trim().toLowerCase()
+  const visible = items.filter((i) => {
+    if ((i.folder ?? 'Outros') !== folder) return false
+    if (!q) return true
+    return i.label.toLowerCase().includes(q) || i.id.toLowerCase().includes(q)
+  })
 
   return (
     <div className="ios-files" data-testid="files-app">
@@ -82,6 +96,17 @@ export function FilesApp({ onBack }: FilesAppProps) {
         </button>
         <h1>Arquivos</h1>
       </header>
+      {phoneDevice === 'mariana' ? (
+        <input
+          type="search"
+          className="ios-files__search"
+          data-testid="files-search"
+          aria-label="Buscar arquivo"
+          placeholder="Buscar"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+      ) : null}
       <nav className="ios-files__folders" aria-label="Pastas" role="tablist">
         {folders.map((f) => (
           <button

@@ -60,47 +60,46 @@ function applyOne(state: InvestigationState, action: StoryActionRef): Investigat
       if (state.evidenceOwned.includes(action.id)) return state
       const def = catalogEvidence(action.id)
       if (!def) return state
-      return withDiscovery(
-        {
-          ...state,
-          evidence: { ...state.evidence, [action.id]: def },
-          evidenceOwned: [...state.evidenceOwned, action.id],
-        },
-        {
-          id: `evidence:${action.id}`,
-          kind: def.type === 'audio' ? 'audio' : 'evidence',
-          title:
-            def.type === 'audio'
-              ? def.sourceType === 'unknown-channel'
-                ? 'Arquivo anônimo recebido'
-                : (def.displayFileName ?? def.title)
-              : def.title,
-          subtitle:
-            def.type === 'audio'
-              ? def.sourceType === 'unknown-channel'
-                ? 'Origem desconhecida · disponível na bancada'
-                : 'Disponível na bancada de áudio'
-              : undefined,
-          source: evidenceSourceLabel(def),
-          summary: def.description,
-          refId: action.id,
-        },
-      )
+      const next = {
+        ...state,
+        evidence: { ...state.evidence, [action.id]: def },
+        evidenceOwned: [...state.evidenceOwned, action.id],
+      }
+      // Interpretação interna / detalhe agrupado: sem notification.
+      if (def.catalogHidden) return next
+      return withDiscovery(next, {
+        id: `evidence:${action.id}`,
+        kind: def.type === 'audio' ? 'audio' : 'evidence',
+        title:
+          def.type === 'audio'
+            ? def.sourceType === 'unknown-channel'
+              ? 'Arquivo anônimo recebido'
+              : (def.displayFileName ?? def.title)
+            : def.title,
+        subtitle:
+          def.type === 'audio'
+            ? def.sourceType === 'unknown-channel'
+              ? 'Origem desconhecida · disponível na bancada'
+              : 'Disponível na bancada de áudio'
+            : undefined,
+        source: evidenceSourceLabel(def),
+        summary: def.description,
+        refId: action.id,
+      })
     }
     case 'addDocument': {
       if (state.documentsOwned.includes(action.id)) return state
       const doc = seedDocuments.find((d) => d.id === action.id)
       if (!doc) return state
-      return withDiscovery(
-        { ...state, documentsOwned: [...state.documentsOwned, action.id] },
-        {
-          id: `document:${action.id}`,
-          kind: 'document',
-          title: doc.title,
-          subtitle: doc.category,
-          refId: action.id,
-        },
-      )
+      const next = { ...state, documentsOwned: [...state.documentsOwned, action.id] }
+      if (doc.playerFacing === false) return next
+      return withDiscovery(next, {
+        id: `document:${action.id}`,
+        kind: 'document',
+        title: doc.title,
+        subtitle: doc.category,
+        refId: action.id,
+      })
     }
     case 'completeCall':
       if (state.callsDone.includes(action.id)) return state
@@ -249,20 +248,17 @@ function applyOne(state: InvestigationState, action: StoryActionRef): Investigat
       if (state.hypotheses[action.id]) return state
       const def = hypothesisCatalog.find((h) => h.id === action.id)
       if (!def) return state
-      return withDiscovery(
-        {
-          ...state,
-          hypotheses: {
-            ...state.hypotheses,
-            [action.id]: {
-              ...def,
-              supportingEvidenceIds: [...def.supportingEvidenceIds],
-              contradictingEvidenceIds: [...def.contradictingEvidenceIds],
-            },
+      return {
+        ...state,
+        hypotheses: {
+          ...state.hypotheses,
+          [action.id]: {
+            ...def,
+            supportingEvidenceIds: [...def.supportingEvidenceIds],
+            contradictingEvidenceIds: [...def.contradictingEvidenceIds],
           },
         },
-        { id: `hypothesis:${action.id}`, kind: 'hypothesis', title: def.title, refId: action.id },
-      )
+      }
     }
     case 'linkHypothesis': {
       const h = state.hypotheses[action.hypothesisId]

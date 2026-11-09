@@ -128,7 +128,9 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
     .map((id) => inv.evidence[id])
     .filter(
       (e): e is Evidence =>
-        Boolean(e) && (e.type === 'audio' || e.type === 'derived' || e.type === 'digital'),
+        Boolean(e) &&
+        // Só material sonoro ou sessão reconstruível — nunca laudo/hipótese/documento.
+        (e.type === 'audio' || Boolean(e.puzzleMeta)),
     )
   const [filter, setFilter] = useState<Filter>('all')
   const isNew = (id: string) => !inv.audioSeen.includes(id)

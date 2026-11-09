@@ -4,7 +4,7 @@ import { scriptByContact, type CallScript } from '../../data/calls'
 import { CallSession } from '../../components/investigation/CallSession'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { dispatchActions } from '../../game/state/investigationStore'
-import { receiveAnonHospitalAudio } from '../../game/story/block07Handlers'
+import { deliverAnonWhatsApp } from '../../game/story/block07Handlers'
 import { markContactSeen, newContactIds } from '../../lib/contactsSeen'
 import { CallList } from '../whatsapp/CallList'
 
@@ -56,10 +56,10 @@ export function PhoneCallsHome({ onBack }: PhoneCallsHomeProps) {
   // Se a checagem já passou e o áudio não chegou (save antigo / hangup a meio), entregar fora da chamada.
   useEffect(() => {
     if (!isAugusto || session) return
-    if (!inv.flags.block07_julia_camila_checked || inv.flags.block07_anon_audio_received) return
-    const t = window.setTimeout(() => receiveAnonHospitalAudio(), 900)
+    if (!inv.flags.block07_julia_camila_checked || inv.flags.block07_anon_message_received) return
+    const t = window.setTimeout(() => deliverAnonWhatsApp(), 900)
     return () => window.clearTimeout(t)
-  }, [isAugusto, session, inv.flags.block07_julia_camila_checked, inv.flags.block07_anon_audio_received])
+  }, [isAugusto, session, inv.flags.block07_julia_camila_checked, inv.flags.block07_anon_message_received])
 
   // Instituições ficam no telefone fixo — não na agenda pessoal.
   const contacts = Object.values(inv.contacts).filter((c) => c.unlocked && !c.institution)
@@ -130,7 +130,7 @@ export function PhoneCallsHome({ onBack }: PhoneCallsHomeProps) {
               setSession(null)
               // Áudio anônimo chega DEPOIS da conversa — não é Júlia quem envia.
               if (endedId === 'call-julia-onset') {
-                window.setTimeout(() => receiveAnonHospitalAudio(), 700)
+                window.setTimeout(() => deliverAnonWhatsApp(), 700)
               }
             }}
           />

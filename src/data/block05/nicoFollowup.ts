@@ -8,9 +8,9 @@ export const NICO_FOLLOWUP_TOPIC_IDS: NicoFollowupTopicId[] = [
 ]
 
 export const nicoFollowupLabels: Record<NicoFollowupTopicId, string> = {
-  jacket: 'A saída de Elisa',
-  exit: 'Detalhes da noite',
-  jana: 'Quem era Jana',
+  jacket: 'A jaqueta',
+  exit: 'A saída',
+  jana: 'Jana',
   mariana_repeat: 'O que Mariana repetia',
 }
 
@@ -25,58 +25,48 @@ export type NicoFollowupBeat = { speaker?: string; text: string; portrait?: 'nic
 
 export const nicoFollowupBeats: Record<NicoFollowupTopicId, NicoFollowupBeat[]> = {
   jacket: [
-    { speaker: 'Augusto', text: 'Quero voltar à saída de Elisa. Não ao processo — ao que você viu.' },
+    { speaker: 'Augusto', text: 'Quero voltar numa coisa que você falou da saída da Elisa.' },
+    { speaker: 'Nico', text: 'Eu sabia que você ia voltar.', portrait: 'nico' },
+    { speaker: 'Augusto', text: 'A roupa.' },
+    { speaker: 'Nico', text: 'A jaqueta?', portrait: 'nico' },
+    { speaker: 'Augusto', text: 'Você lembra dela especificamente.' },
     {
       speaker: 'Nico',
-      text: 'De novo?\nCara… eu já contei isso umas dez vezes.',
-      portrait: 'nico',
-    },
-    { speaker: 'Augusto', text: 'Conte a undécima. Algo específico da roupa.' },
-    {
-      speaker: 'Nico',
-      text: 'A jaqueta.\nNão parecia dela.\nEu já tinha visto aquela peça em outra pessoa.',
+      text: 'Lembro porque era clara. A pista estava escura, aquela coisa saltava no meio de todo mundo.',
       portrait: 'nico',
     },
   ],
   exit: [
-    { speaker: 'Augusto', text: 'Você tem certeza de que ela saiu com aquela jaqueta?' },
+    { speaker: 'Augusto', text: 'Era dela?' },
     {
       speaker: 'Nico',
-      text: 'Certeza de cabine.\nOlho no mixer, olho na pista.\nA peça chamava atenção — era clara demais praquela noite.',
+      text: 'Na época eu achei que sim. Depois fiquei com isso na cabeça.',
       portrait: 'nico',
     },
-    { speaker: 'Augusto', text: 'E o resto do visual?' },
+    { speaker: 'Augusto', text: 'Por quê?' },
+    { speaker: 'Nico', text: 'Porque eu já tinha visto a Jana usando.', portrait: 'nico' },
+    { speaker: 'Augusto', text: 'Tem certeza de que era a mesma?' },
     {
       speaker: 'Nico',
-      text: 'O resto era Elisa.\nSó a jaqueta… não batia.',
+      text: 'Certeza, certeza? Não.\n\nFaz seis anos, delegado.\n\nMas se você me perguntar o que eu lembro quando penso naquela noite, eu lembro daquela jaqueta.',
       portrait: 'nico',
     },
   ],
   jana: [
-    { speaker: 'Augusto', text: 'De quem você acha que era?' },
+    { speaker: 'Augusto', text: 'Jana o quê?' },
     {
       speaker: 'Nico',
-      text: 'Jana.\nAmiga dela.\nEu já tinha visto Jana com aquela peça umas duas vezes.',
-      portrait: 'nico',
-    },
-    { speaker: 'Augusto', text: 'Você tem certeza?' },
-    {
-      speaker: 'Nico',
-      text: 'Não é laudo.\nÉ o que a memória me devolve quando você força o assunto.',
+      text: 'Aí você já quer demais de mim.\n\nSó lembro de Jana. Deve estar no processo.',
       portrait: 'nico',
     },
   ],
   mariana_repeat: [
-    { speaker: 'Augusto', text: 'Mariana perguntou a mesma coisa?' },
+    { speaker: 'Augusto', text: 'Mariana perguntou sobre isso?' },
+    { speaker: 'Nico', text: 'Perguntou.', portrait: 'nico' },
+    { speaker: 'Augusto', text: 'Uma vez?' },
     {
       speaker: 'Nico',
-      text: 'Perguntou.\nMais de uma vez.\nParecia que a jaqueta importava mais do que o nome de quem empurrou.',
-      portrait: 'nico',
-    },
-    { speaker: 'Augusto', text: 'Você lembra o sobrenome da Jana?' },
-    {
-      speaker: 'Nico',
-      text: 'Não.\nSó Jana.\nDeve estar nos autos, se alguém ainda se importa com isso.',
+      text: 'Não.\n\nE isso que foi estranho.\n\nEla voltava no mesmo detalhe de outro jeito. “Era clara?”, “você já tinha visto antes?”, “quem estava com ela?”.\n\nParecia que estava testando a própria pergunta.',
       portrait: 'nico',
     },
   ],

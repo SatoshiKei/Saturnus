@@ -35,7 +35,7 @@ export function finishNicoFollowup() {
     {
       type: 'addTask',
       id: 'task_locate_jana',
-      label: 'Localizar Jana nos autos do caso Elisa',
+      label: 'Quem era Jana na noite em que Elisa morreu?',
     },
   ])
 }
@@ -58,7 +58,7 @@ export function finishJanaInterview() {
     {
       type: 'addTask',
       id: 'task_review_elisa_autos',
-      label: 'Revisar as peças que sustentaram a condenação de André',
+      label: 'Testar a cronologia do caso Elisa',
     },
   ])
 }
@@ -77,7 +77,7 @@ export function onElisaReviewComplete() {
     {
       type: 'addTask',
       id: 'task_weigh_maralto_line',
-      label: 'Rever o material dos protestos contra a Maralto',
+      label: 'Entender o que Mariana investigava além de Elisa',
     },
   ])
 }
@@ -99,13 +99,25 @@ export function onMaraltoLineWeighed() {
     { type: 'setFlag', id: 'block05_maralto_weighed', value: true },
     { type: 'completeTask', id: 'task_weigh_maralto_line' },
     { type: 'addHypothesis', id: 'hyp_one_line_distraction' },
-    { type: 'setFlag', id: 'block05_refl_maralto_pending', value: true },
     {
       type: 'addTask',
       id: 'task_mariana_contact_chronology',
-      label: 'Revisar a sequência dos contatos recentes de Mariana no caderno',
+      label: 'Entender a ordem em que Mariana procurou as pessoas',
     },
   ])
+  onMaraltoReflectionDone()
+}
+
+/** Saves antigos que ficaram nas micro-reflections B5 — conclui flags sem cena. */
+export function absorbLegacyB5MicroReflections() {
+  const s = getInvestigationState()
+  if (s.flags.block05_refl_maralto_pending && !s.flags.block05_maralto_reflection_done) {
+    onMaraltoReflectionDone()
+  }
+  const s2 = getInvestigationState()
+  if (s2.flags.block05_refl_coincidence_pending && !s2.flags.block05_coincidence_reflection_done) {
+    onCoincidenceReflectionDone()
+  }
 }
 
 export function onMaraltoReflectionDone() {
@@ -130,7 +142,7 @@ export function organizeMarianaContactChronology() {
     {
       type: 'addTask',
       id: 'task_compare_phone_files',
-      label: 'Comparar a sequência de contatos com os arquivos do celular de Mariana',
+      label: 'Os arquivos do celular seguem a mesma ordem da investigação?',
     },
     { type: 'setFlag', id: 'block05_compare_unlocked', value: true },
   ])
@@ -145,8 +157,8 @@ export function comparePhoneFilesSequence() {
     { type: 'setFlag', id: 'block05_compare_done', value: true },
     { type: 'addEvidence', id: 'phone_files_depend_on_order' },
     { type: 'completeTask', id: 'task_compare_phone_files' },
-    { type: 'setFlag', id: 'block05_refl_coincidence_pending', value: true },
   ])
+  onCoincidenceReflectionDone()
 }
 
 /** Depois da reflexão “pode ser coincidência”: testar voltando à chamada inicial. */
@@ -160,7 +172,7 @@ export function onCoincidenceReflectionDone() {
     {
       type: 'addTask',
       id: 'task_revisit_emergency_entry',
-      label: 'Revisitar a chamada de emergência e a apreensão do aparelho',
+      label: 'Por que a polícia entrou no apartamento de Mariana?',
     },
   ])
 }
@@ -201,6 +213,12 @@ export function onPathReflectionDone() {
   const actions: StoryActionRef[] = [
     { type: 'setFlag', id: 'block05_path_reflection_done', value: true },
     { type: 'setFlag', id: 'block05_refl_path_pending', value: false },
+    { type: 'setFlag', id: 'block05_maralto_reflection_done', value: true },
+    { type: 'setFlag', id: 'block05_coincidence_reflection_done', value: true },
+    { type: 'setFlag', id: 'block05_refl_maralto_pending', value: false },
+    { type: 'setFlag', id: 'block05_refl_coincidence_pending', value: false },
+    { type: 'setFlag', id: 'refl-b05-maralto_seen', value: true },
+    { type: 'setFlag', id: 'refl-b05-coincidence_seen', value: true },
     { type: 'addHypothesis', id: 'hyp_deliberate_path' },
     {
       type: 'linkHypothesis',

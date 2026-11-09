@@ -77,6 +77,11 @@ export interface Evidence {
   /** Nome exibido na estação (pode diferir do arquivo em disco). */
   displayFileName?: string
   puzzleMeta?: AudioPuzzleMeta
+  /**
+   * Se true, a evidência existe para lógica/save mas não aparece no caderno.
+   * Usar para detalhes agrupados numa evidência principal.
+   */
+  catalogHidden?: boolean
 }
 
 export interface AudioEvidence extends Evidence {
@@ -130,6 +135,11 @@ export interface Document {
   imageCaption?: string
   /** Executado uma única vez, na primeira leitura. */
   onOpen?: StoryActionRef[]
+  /**
+   * Se false, o documento existe para save/legado mas não lista no computador.
+   * Padrão: visível.
+   */
+  playerFacing?: boolean
 }
 
 export interface DocumentProgress {

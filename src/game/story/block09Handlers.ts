@@ -57,7 +57,7 @@ export function compareHenriqueMarianaSystem() {
     {
       type: 'addTask',
       id: 'task_reread_diary_omitido',
-      label: 'Reler o diário de Mariana à luz do que foi descoberto sobre O Omitido',
+      label: 'O que o diário significa agora?',
     },
   ])
 }
@@ -75,7 +75,7 @@ export function rereadDiaryOmitido() {
     {
       type: 'addTask',
       id: 'task_omitido_assistance',
-      label: 'Rever a origem técnica da chamada inicial à luz de O Omitido',
+      label: 'Quem sustentou a outra metade do percurso?',
     },
   ])
 }
@@ -126,7 +126,7 @@ export function onRobertoExposed() {
     {
       type: 'addTask',
       id: 'task_read_mariana_messages',
-      label: 'Ler as novas mensagens de Mariana no WhatsApp',
+      label: 'Quem fala em nome de Mariana?',
     },
   ])
   injectMarianaWave(1)
@@ -287,8 +287,13 @@ export function finishTrailDiscovery() {
     { type: 'addEvidence', id: 'mariana_confirmed_dead' },
     { type: 'completeTask', id: 'task_follow_trail_location' },
     mark,
+    { type: 'setFlag', id: 'block09_messages_wave3', value: true },
+    { type: 'setFlag', id: 'block09_post_death_message_read', value: true },
+    { type: 'addEvidence', id: 'system_speaks_as_mariana_after_death' },
+    { type: 'completeTask', id: 'task_message_after_death' },
     { type: 'setFlag', id: 'block09_refl_death_pending', value: true },
   ])
+  injectMarianaWave(3)
 }
 
 export function onDeathReflectionDone() {
@@ -297,14 +302,13 @@ export function onDeathReflectionDone() {
   dispatchActions([
     { type: 'setFlag', id: 'block09_death_reflection_done', value: true },
     { type: 'setFlag', id: 'block09_refl_death_pending', value: false },
-    { type: 'setFlag', id: 'block09_messages_wave3', value: true },
+    { type: 'setFlag', id: 'block09_other_cases_unlocked', value: true },
     {
       type: 'addTask',
-      id: 'task_message_after_death',
-      label: 'Uma nova mensagem chegou em nome de Mariana',
+      id: 'task_other_disappearances',
+      label: 'Mariana e Henrique não eram casos isolados?',
     },
   ])
-  injectMarianaWave(3)
 }
 
 export function onPostDeathMessageRead() {

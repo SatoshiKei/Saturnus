@@ -549,19 +549,9 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['elisa'],
     results: [
       {
-        title: 'Peças — discussão e estado do relacionamento',
-        snippet: 'Autos do processo Elisa Duarte (resumo).',
+        title: 'Autos — Caso Elisa Duarte',
+        snippet: 'Cópia integral: resumo, cronologia, relação, álibi, testemunhas, sentença.',
         documentId: 'doc-elisa-argumento',
-      },
-      {
-        title: 'Peças — álibi e inconsistências',
-        snippet: 'Autos do processo Elisa Duarte (resumo).',
-        documentId: 'doc-elisa-alibi',
-      },
-      {
-        title: 'Peças — testemunha próxima à região da queda',
-        snippet: 'Autos do processo Elisa Duarte (resumo).',
-        documentId: 'doc-elisa-testemunha-queda',
       },
     ],
   },
@@ -1171,7 +1161,7 @@ export const seedStoryTriggers: StoryTrigger[] = [
       {
         type: 'addTask',
         id: 'task_weigh_maralto_line',
-        label: 'Rever o material dos protestos contra a Maralto',
+        label: 'Entender o que Mariana investigava além de Elisa',
       },
     ],
   },
@@ -1212,7 +1202,6 @@ export const seedStoryTriggers: StoryTrigger[] = [
     conditions: [{ type: 'flag', id: 'block06_complete', value: true }],
     actions: [
       { type: 'setFlag', id: 'block07_started', value: true },
-      { type: 'unlockLocation', id: 'detencao-miro', status: 'visitAvailable' },
     ],
   },
   {

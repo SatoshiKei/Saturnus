@@ -3,10 +3,10 @@ export type JanaTopicId = 'night' | 'jacket' | 'andre' | 'close'
 export const JANA_TOPIC_IDS: JanaTopicId[] = ['night', 'jacket', 'andre', 'close']
 
 export const janaTopicLabels: Record<JanaTopicId, string> = {
-  night: 'A noite no Vértice',
+  night: 'A noite',
   jacket: 'A jaqueta',
-  andre: 'André e o processo',
-  close: 'Por que encerrar',
+  andre: 'Mariana e André',
+  close: 'Esquecer',
 }
 
 export const janaTopicFlags: Record<JanaTopicId, string> = {
@@ -20,29 +20,44 @@ export type JanaBeat = { speaker?: string; text: string }
 
 export const janaBeats: Record<JanaTopicId, JanaBeat[]> = {
   night: [
-    { speaker: 'Augusto', text: 'Jana Ribeiro? Sou Augusto Nogueira, Polícia Civil. Preciso de alguns minutos sobre a noite em que Elisa Duarte morreu.' },
-    { speaker: 'Jana', text: 'Eu já falei isso.\nFaz seis anos.\nO caso acabou.' },
-    { speaker: 'Augusto', text: 'Para a Justiça, talvez. Para mim, ainda não.' },
-    { speaker: 'Jana', text: 'Eu estava lá.\nEu vi a discussão.\nEu vi ela sair.\nNão sei o que mais você quer.' },
+    { speaker: 'Augusto', text: 'Jana Ribeiro?' },
+    { speaker: 'Jana', text: 'Sim.' },
+    { speaker: 'Augusto', text: 'Delegado Augusto Nogueira. É sobre Elisa Duarte.' },
+    { speaker: 'Jana', text: 'Claro que é.' },
+    { speaker: 'Augusto', text: 'Posso entrar?' },
+    { speaker: 'Jana', text: 'Prefiro que não.' },
+    { speaker: 'Augusto', text: 'Tudo bem.' },
+    { speaker: 'Jana', text: 'Eu já falei sobre aquela noite. Mais de uma vez.' },
+    {
+      speaker: 'Augusto',
+      text: 'Eu sei.\n\nEstou atrás de um detalhe que quase não aparece nos autos.',
+    },
   ],
   jacket: [
-    { speaker: 'Augusto', text: 'Sobre a jaqueta que Elisa usava ao sair.' },
-    { speaker: 'Jana', text: '…' },
-    { speaker: 'Augusto', text: 'Era sua?' },
-    { speaker: 'Jana', text: 'Era.\nEla pegou emprestada naquela noite.\nEstava frio na saída.\nSó isso.' },
-    { speaker: 'Augusto', text: 'Por que isso não aparece com clareza nos autos?' },
-    { speaker: 'Jana', text: 'Porque ninguém perguntou direito.\nE porque não muda nada.\nUma jaqueta não empurra ninguém.' },
+    { speaker: 'Jana', text: 'Qual?' },
+    { speaker: 'Augusto', text: 'A jaqueta que Elisa usava quando saiu do Vértice.' },
+    { speaker: 'Jana', text: 'Era minha.' },
+    { speaker: 'Augusto', text: 'Ela pegou emprestada?' },
+    { speaker: 'Jana', text: 'Pegou.' },
+    { speaker: 'Augusto', text: 'Por quê?' },
+    { speaker: 'Jana', text: 'Estava frio.\n\nEla pediu. Eu dei.' },
+    { speaker: 'Augusto', text: 'Só isso?' },
+    { speaker: 'Jana', text: 'O que mais você quer que uma jaqueta signifique?' },
   ],
   andre: [
-    { speaker: 'Augusto', text: 'Você acha que André matou Elisa?' },
-    { speaker: 'Jana', text: 'O júri achou.\nAs provas apontavam pra ele.\nEu não estou aqui para reabrir processo.' },
-    { speaker: 'Augusto', text: 'A irmã dele desapareceu. Ela estava revisando aquela noite.' },
-    { speaker: 'Jana', text: 'Então ela também está presa no passado.\nNão sou a pessoa certa pra isso.' },
+    {
+      speaker: 'Augusto',
+      text: 'Nada, se for só uma jaqueta.\n\nO problema é que alguém se lembrou dela seis anos depois e Mariana passou semanas perguntando sobre a mesma peça.',
+    },
+    {
+      speaker: 'Jana',
+      text: 'Mariana era irmã do André.\n\nEla procurava qualquer coisa que pudesse mudar o que aconteceu.',
+    },
   ],
   close: [
-    { speaker: 'Augusto', text: 'Se lembrar de mais alguma coisa sobre a saída dela…' },
-    { speaker: 'Jana', text: 'Não vou lembrar.\nNão quero.\nA peça era minha, ela pediu, eu emprestei.\nFim.' },
-    { speaker: 'Augusto', text: 'Você parece desconfortável.' },
-    { speaker: 'Jana', text: 'Desconfortável é você bater na porta seis anos depois por causa de uma jaqueta.\nPor favor… deixe isso quieto.' },
+    { speaker: 'Augusto', text: 'E você?' },
+    { speaker: 'Jana', text: 'Eu queria esquecer.' },
+    { speaker: 'Augusto', text: 'Isso eu já percebi.' },
+    { speaker: 'Jana', text: 'Então percebe também que não é a mesma coisa que esconder um crime.' },
   ],
 }

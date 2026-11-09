@@ -148,8 +148,6 @@ export function TerminalIntro({
 
 /* ───────────────────────── Modo Reflexão (mesmo padrão NVL das cenas VN) ───────────────────────── */
 
-const REFL_AUTO_MS = 1600
-
 export function ReflectionView({
   blocks,
   background,
@@ -175,20 +173,15 @@ export function ReflectionView({
     if (shown < blocks.length) {
       playSfx('ui')
       setShown((n) => n + 1)
+    } else {
+      finish()
     }
-  }, [shown, blocks.length])
+  }, [shown, blocks.length, finish])
 
   const rewind = useCallback(() => {
     if (doneRef.current) return
     if (shown > 1) setShown((n) => Math.max(1, n - 1))
   }, [shown])
-
-  // Último bloco: sem botão nem hint — fade automático de volta à mesa.
-  useEffect(() => {
-    if (!atEnd) return
-    const t = window.setTimeout(finish, REFL_AUTO_MS)
-    return () => window.clearTimeout(t)
-  }, [atEnd, finish])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -230,7 +223,7 @@ export function ReflectionView({
       data-testid="reflection-view"
       style={background ? { backgroundImage: `url(${assetPath(background)})` } : undefined}
       onClick={() => {
-        if (!atEnd) advance()
+        advance()
       }}
       onWheel={onWheel}
       role="presentation"
@@ -255,6 +248,12 @@ export function ReflectionView({
               <p className="vn-nvl__text">{b}</p>
             </div>
           ))}
+        </div>
+        <div className="vn-nvl__foot">
+          <span className="vn-nvl__next-hint">
+            {atEnd ? 'Clique ou Espaço para continuar' : 'Clique ou Espaço para continuar'}
+          </span>
+          <span className="vn-adv__next vn-nvl__chevron" aria-hidden />
         </div>
       </div>
     </div>
