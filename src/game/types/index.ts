@@ -104,6 +104,8 @@ export type AudioOperation =
 
 export interface DocumentBlock {
   id: string
+  /** Título da peça/seção, quando o documento é um volume com trechos distintos. */
+  heading?: string
   text: string
   extractableEvidenceId?: string
   extractAction?: StoryActionRef

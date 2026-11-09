@@ -550,7 +550,7 @@ export const seedSearchRules: SearchRule[] = [
     results: [
       {
         title: 'Autos — Caso Elisa Duarte',
-        snippet: 'Cópia integral: resumo, cronologia, relação, álibi, testemunhas, sentença.',
+        snippet: 'Cópia integral: resumo, relação e discussão, álibi e cronologia, testemunhas, sentença.',
         documentId: 'doc-elisa-argumento',
       },
     ],

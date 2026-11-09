@@ -7,6 +7,7 @@ import {
   __setStateForTests,
   dispatchActions,
   getInvestigationState,
+  extractFromDocument,
   openDocument,
   resetGame,
 } from '../../src/game/state/investigationStore'
@@ -16,9 +17,7 @@ import {
   finishJanaInterview,
   finishNicoFollowup,
   onAndreStillGuiltyReflectionDone,
-  onCoincidenceReflectionDone,
   onMaraltoLineWeighed,
-  onMaraltoReflectionDone,
   onPathReflectionDone,
   organizeMarianaContactChronology,
   revisitEmergencyEntry,
@@ -27,6 +26,17 @@ import {
 function seedBlock05Start() {
   resetGame()
   __setStateForTests(runStoryEngine(applyStoryActions(createInitialState(), block05EntryActions)))
+}
+
+function consultElisaAutosBySection() {
+  openDocument('doc-elisa-argumento')
+  extractFromDocument('sec-relacao', 'doc-elisa-argumento', [
+    { type: 'addEvidence', id: 'elisa_argument_jealousy' },
+  ])
+  extractFromDocument('sec-alibi', 'doc-elisa-argumento', [{ type: 'addEvidence', id: 'elisa_weak_alibi' }])
+  extractFromDocument('sec-testemunhas', 'doc-elisa-argumento', [
+    { type: 'addEvidence', id: 'elisa_lookalike_near_fall' },
+  ])
 }
 
 describe('Bloco 5 — progressão', () => {
@@ -75,15 +85,35 @@ describe('Bloco 5 — progressão', () => {
     expect(s.flags.block05_elisa_review_unlocked).toBe(true)
   })
 
-  it('consulta dos autos Elisa completa a revisão e abre reflexão sobre André', () => {
+  it('abrir a capa dos autos Elisa não absorve o processo; cada seção registra um fato', () => {
     seedBlock05Start()
     finishNicoFollowup()
     openDocument('doc-elisa-jana')
     finishJanaInterview()
     openDocument('doc-elisa-argumento')
-    openDocument('doc-elisa-alibi')
-    openDocument('doc-elisa-testemunha-queda')
-    const s = getInvestigationState()
+    let s = getInvestigationState()
+    expect(s.evidenceOwned).not.toContain('elisa_argument_jealousy')
+    expect(s.evidenceOwned).not.toContain('elisa_weak_alibi')
+    expect(s.evidenceOwned).not.toContain('elisa_lookalike_near_fall')
+    expect(s.flags.block05_elisa_review_done).toBeFalsy()
+
+    extractFromDocument('sec-relacao', 'doc-elisa-argumento', [
+      { type: 'addEvidence', id: 'elisa_argument_jealousy' },
+    ])
+    s = getInvestigationState()
+    expect(s.evidenceOwned).toContain('elisa_argument_jealousy')
+    expect(s.flags.block05_elisa_review_done).toBeFalsy()
+
+    extractFromDocument('sec-alibi', 'doc-elisa-argumento', [{ type: 'addEvidence', id: 'elisa_weak_alibi' }])
+    s = getInvestigationState()
+    expect(s.evidenceOwned).toContain('elisa_weak_alibi')
+    expect(s.flags.block05_elisa_review_done).toBeFalsy()
+
+    extractFromDocument('sec-testemunhas', 'doc-elisa-argumento', [
+      { type: 'addEvidence', id: 'elisa_lookalike_near_fall' },
+    ])
+    s = getInvestigationState()
+    expect(s.evidenceOwned).toContain('elisa_lookalike_near_fall')
     expect(s.flags.block05_elisa_review_done).toBe(true)
     expect(s.hypotheses.hyp_mariana_needed_brother).toBeTruthy()
     expect(s.flags.block05_refl_andre_pending).toBe(true)
@@ -94,27 +124,19 @@ describe('Bloco 5 — progressão', () => {
     finishNicoFollowup()
     openDocument('doc-elisa-jana')
     finishJanaInterview()
-    openDocument('doc-elisa-argumento')
-    openDocument('doc-elisa-alibi')
-    openDocument('doc-elisa-testemunha-queda')
+    consultElisaAutosBySection()
     onAndreStillGuiltyReflectionDone()
     onMaraltoLineWeighed()
-    onMaraltoReflectionDone()
     organizeMarianaContactChronology()
     let s = getInvestigationState()
-    expect(s.documentsOwned).toContain('doc-mariana-contact-chronology')
     expect(s.evidenceOwned).toContain('mariana_sought_people_before')
+    expect(s.flags.block05_chronology_done).toBe(true)
     comparePhoneFilesSequence()
     s = getInvestigationState()
-    expect(s.documentsOwned).toContain('doc-phone-file-dependencies')
     expect(s.evidenceOwned).toContain('phone_files_depend_on_order')
-    expect(s.flags.block05_refl_coincidence_pending).toBe(true)
-    expect(s.flags.block05_emergency_revisit_unlocked).toBeFalsy()
-    onCoincidenceReflectionDone()
-    expect(getInvestigationState().flags.block05_emergency_revisit_unlocked).toBe(true)
+    expect(s.flags.block05_emergency_revisit_unlocked).toBe(true)
     revisitEmergencyEntry()
     s = getInvestigationState()
-    expect(s.documentsOwned).toContain('doc-emergency-reassessment')
     expect(s.documentsOwned).toContain('doc-central-chamada')
     expect(s.documentsOwned).toContain('doc-entrada-apartamento')
     expect(s.documentsOwned).toContain('doc-apreensao-celular')

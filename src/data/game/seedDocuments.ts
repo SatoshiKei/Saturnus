@@ -582,39 +582,36 @@ export const seedDocuments: Document[] = [
     issuer: 'Vara Criminal — cópia integral (consulta)',
     dateLabel: 'Proc. 2020',
     system: 'autos',
+    /** Sem onOpen de evidência: cada peça só entra no caderno ao ser registrada. */
     blocks: [
       {
         id: 'sec-resumo',
-        text: 'RESUMO. Vítima: Elisa Duarte, 17 anos. Réu: André Silva. Imputação: homicídio doloso. Sentença de 1ª instância: condenação. Recurso pendente.',
-      },
-      {
-        id: 'sec-cronologia',
-        text: 'CRONOLOGIA. Chegada ao Vértice por volta das 23h. Discussão junto ao bar entre 00h30 e 01h. Elisa deixa o salão entre 01h e 01h30. André reaparece na portaria às 01h40.',
+        heading: 'Resumo',
+        text: 'Vítima: Elisa Duarte, 17 anos. Réu: André Silva. Imputação: homicídio doloso. Sentença de 1ª instância: condenação. Recurso pendente.',
       },
       {
         id: 'sec-relacao',
-        text: 'RELAÇÃO ANDRÉ × ELISA. Duas testemunhas descrevem discussão junto ao bar, com troca de acusações e ciúmes. Amigos próximos afirmam que o relacionamento atravessava fase ruim nas semanas anteriores.',
+        heading: 'Relação e discussão',
+        text: 'Duas testemunhas descrevem discussão junto ao bar, com troca de acusações e ciúmes. Amigos próximos afirmam que o relacionamento atravessava fase ruim nas semanas anteriores.',
         extractableEvidenceId: 'elisa_argument_jealousy',
       },
       {
         id: 'sec-alibi',
-        text: 'ÁLIBI. André não apresentou álibi considerado confiável para o intervalo entre a saída de Elisa e o próprio reaparecimento na portaria. Inconsistências pontuais entre depoimentos de frequentadores foram anotadas; a cronologia oficial prevaleceu na sentença.',
+        heading: 'Álibi e cronologia',
+        text: 'Chegada ao Vértice por volta das 23h. Discussão junto ao bar entre 00h30 e 01h. Elisa deixa o salão entre 01h e 01h30. André reaparece na portaria às 01h40. André não apresentou álibi considerado confiável para o intervalo entre a saída de Elisa e o próprio reaparecimento. Inconsistências pontuais entre depoimentos de frequentadores foram anotadas; a cronologia oficial prevaleceu na sentença.',
         extractableEvidenceId: 'elisa_weak_alibi',
       },
       {
         id: 'sec-testemunhas',
-        text: 'TESTEMUNHAS. Ouvidos na fase policial: amigos da vítima, funcionários da Boate Vértice e o DJ Nicolas Prado Reis. Uma testemunha afirmou ter visto, próximo à região da queda, alguém com porte semelhante ao de André Silva. A identificação visual não foi inequívoca.',
+        heading: 'Testemunhas',
+        text: 'Ouvidos na fase policial: amigos da vítima, funcionários da Boate Vértice e o DJ Nicolas Prado Reis. Uma testemunha afirmou ter visto, próximo à região da queda, alguém com porte semelhante ao de André Silva. A identificação visual não foi inequívoca.',
         extractableEvidenceId: 'elisa_lookalike_near_fall',
       },
       {
         id: 'sec-sentenca',
-        text: 'SENTENÇA. O conjunto — discussão, estado do relacionamento, álibi fraco e testemunha próxima à queda — sustentou a condenação em primeira instância.',
+        heading: 'Sentença',
+        text: 'O conjunto — discussão, estado do relacionamento, álibi fraco e testemunha próxima à queda — sustentou a condenação em primeira instância.',
       },
-    ],
-    onOpen: [
-      { type: 'addEvidence', id: 'elisa_argument_jealousy' },
-      { type: 'addEvidence', id: 'elisa_weak_alibi' },
-      { type: 'addEvidence', id: 'elisa_lookalike_near_fall' },
     ],
   },
   {

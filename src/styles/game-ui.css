@@ -660,6 +660,25 @@
   font-size: 0.98em;
 }
 
+.cf-block__heading {
+  margin: 0 0 0.28em;
+  font-family: var(--font-ui);
+  font-size: 0.72em;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #6b4a14;
+}
+
+.cf-block__text {
+  margin: 0;
+}
+
+.cf-block:has(.cf-block__heading) .cf-mark {
+  display: block;
+  margin: 0.55em 0 0;
+}
+
 .cf-block[data-marked='true'] .cf-block__text {
   background: linear-gradient(transparent 52%, rgba(200, 150, 62, 0.42) 52%);
 }

@@ -948,9 +948,9 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'elisa_argument_jealousy',
-    title: 'Autos — fundamento da condenação de André Silva',
+    title: 'Autos: discussão e ciúmes entre André e Elisa',
     description:
-      'Discussão e ciúmes no Vértice; álibi de André considerado fraco para o intervalo da saída de Elisa; testemunha colocou alguém de porte semelhante perto da região da queda.',
+      'Duas testemunhas descrevem discussão junto ao bar, com troca de acusações e ciúmes. O relacionamento atravessava fase ruim nas semanas anteriores.',
     type: 'document',
     sourceType: 'case-file',
     originalOrDerived: 'original',
@@ -2021,8 +2021,6 @@ export const seedEvidenceCatalog: Evidence[] = [
 
 /** Detalhes agrupados numa evidência principal — flags/lógica permanecem; caderno não lista. */
 const CATALOG_HIDDEN_IDS = new Set([
-  'elisa_weak_alibi',
-  'elisa_lookalike_near_fall',
   'elisa_more_alcohol_than_stated',
   'geraldo_suspected_underage',
   'jana_loan_explanation',

@@ -64,13 +64,18 @@ test('Bloco 5 — entrada, Jana pelos autos, revisão, cronologia, percurso, Ger
 
   await openHubObject(page, 'monitor')
   await page.getByTestId('pc-nav-consultas').click()
-  for (const docId of ['doc-elisa-argumento', 'doc-elisa-alibi', 'doc-elisa-testemunha-queda']) {
-    await page.getByTestId('police-search-input').fill('elisa')
-    await page.getByTestId('police-search-submit').click()
-    await page.getByTestId(`search-open-${docId}`).click()
-    await expect(page.getByTestId('case-document-view')).toBeVisible()
-    await page.getByTestId('pc-doc-back').click()
-    await page.getByTestId('pc-nav-consultas').click()
+  await page.getByTestId('police-search-input').fill('elisa')
+  await page.getByTestId('police-search-submit').click()
+  await expect(page.getByTestId('search-open-doc-elisa-argumento')).toBeVisible()
+  await expect(page.getByTestId('search-open-doc-elisa-alibi')).toHaveCount(0)
+  await page.getByTestId('search-open-doc-elisa-argumento').click()
+  await expect(page.getByTestId('case-document-view')).toBeVisible()
+  await expect(page.getByText('Relação e discussão')).toBeVisible()
+  await expect(page.getByText('Álibi e cronologia')).toBeVisible()
+  await expect(page.getByText('Testemunhas')).toBeVisible()
+  for (const section of ['sec-relacao', 'sec-alibi', 'sec-testemunhas']) {
+    await page.getByTestId(`extract-${section}`).click()
+    await dismissEvidenceCards(page)
   }
   await skipSoloReflection(page)
   await closeHub(page)

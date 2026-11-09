@@ -69,32 +69,42 @@ export function DocumentSheet({ docId, onBack, backLabel = '‹ Voltar' }: Docum
         </figure>
       ) : null}
       {doc.blocks.map((block) => {
-        const extractable = block.id === 'b5' || block.extractableEvidenceId || block.extractAction
+        const extractable = Boolean(block.id === 'b5' || block.extractableEvidenceId || block.extractAction)
         const done = progress?.highlightedBlockIds.includes(block.id)
+        const markButton = extractable ? (
+          <button
+            type="button"
+            className="cf-mark"
+            data-testid={block.id === 'b5' ? 'extract-b1' : `extract-${block.id}`}
+            disabled={done}
+            onClick={() => {
+              const actions: Parameters<typeof extractFromDocument>[2] = []
+              if (block.extractableEvidenceId) {
+                actions.push({ type: 'addEvidence', id: block.extractableEvidenceId })
+              }
+              if (block.extractAction) actions.push(block.extractAction)
+              if (doc.id === 'doc-bo-inicial' && block.id === 'b5') {
+                registerInitialPoliceReport()
+              }
+              extractFromDocument(block.id, doc.id, actions)
+            }}
+          >
+            {done ? 'Registrado' : 'Registrar no caderno'}
+          </button>
+        ) : null
+        if (block.heading) {
+          return (
+            <section key={block.id} className="cf-block" data-marked={done || undefined}>
+              <h4 className="cf-block__heading">{block.heading}</h4>
+              <p className="cf-block__text">{block.text}</p>
+              {markButton}
+            </section>
+          )
+        }
         return (
-          <p key={block.id} className="cf-block" data-marked={done}>
+          <p key={block.id} className="cf-block" data-marked={done || undefined}>
             <span className="cf-block__text">{block.text}</span>
-            {extractable ? (
-              <button
-                type="button"
-                className="cf-mark"
-                data-testid={block.id === 'b5' ? 'extract-b1' : `extract-${block.id}`}
-                disabled={done}
-                onClick={() => {
-                  const actions: Parameters<typeof extractFromDocument>[2] = []
-                  if (block.extractableEvidenceId) {
-                    actions.push({ type: 'addEvidence', id: block.extractableEvidenceId })
-                  }
-                  if (block.extractAction) actions.push(block.extractAction)
-                  if (doc.id === 'doc-bo-inicial' && block.id === 'b5') {
-                    registerInitialPoliceReport()
-                  }
-                  extractFromDocument(block.id, doc.id, actions)
-                }}
-              >
-                {done ? 'Registrado' : 'Registrar no caderno'}
-              </button>
-            ) : null}
+            {markButton}
           </p>
         )
       })}
