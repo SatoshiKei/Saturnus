@@ -14,10 +14,8 @@ function prefersReducedMotion() {
 
 /* ───────────────────────── Abertura: cabeçalho digitado ───────────────────────── */
 
-const CHAR_MS = 55
-const LINE_PAUSE_MS = 480
-const INTRO_HOLD_MS = 900
-const INTRO_FADE_MS = 700
+const INTRO_HOLD_MS = 1400
+const INTRO_FADE_MS = 500
 
 export function TerminalIntro({
   lines,
@@ -32,11 +30,8 @@ export function TerminalIntro({
   ambience?: 'scene-in' | 'ambience-hush'
 }) {
   const reduced = prefersReducedMotion()
-  const [typed, setTyped] = useState<string[]>([])
   const [fading, setFading] = useState(false)
   const doneRef = useRef(false)
-  // Ref estável: o efeito de digitação NÃO pode depender de onDone (senão re-render do pai
-  // cancela o timer final e a intro trava com o texto já completo, sem transição).
   const onDoneRef = useRef(onDone)
   const onRevealRef = useRef(onReveal)
   onDoneRef.current = onDone
@@ -45,68 +40,26 @@ export function TerminalIntro({
   const finish = useCallback((skipped = false) => {
     if (doneRef.current) return
     doneRef.current = true
-    setTyped(lines)
     setFading(true)
-    onRevealRef.current?.()
     playSfx(skipped ? 'ui' : 'fade')
-    window.setTimeout(() => onDoneRef.current(), reduced ? 200 : INTRO_FADE_MS)
-  }, [lines, reduced])
+    window.setTimeout(() => onDoneRef.current(), reduced ? 160 : INTRO_FADE_MS)
+  }, [reduced])
 
   useEffect(() => {
     if (ambience) playSfx(ambience)
   }, [ambience])
 
   useEffect(() => {
-    let cancelled = false
-    let timer = 0
     doneRef.current = false
     setFading(false)
-
+    onRevealRef.current?.()
     if (reduced) {
-      setTyped(lines)
-      timer = window.setTimeout(() => {
-        if (!cancelled) finish(false)
-      }, 900)
-      return () => {
-        cancelled = true
-        window.clearTimeout(timer)
-      }
+      const t = window.setTimeout(() => finish(false), 400)
+      return () => window.clearTimeout(t)
     }
-
-    setTyped([])
-    const run = (li: number, ci: number) => {
-      if (cancelled || doneRef.current) return
-      if (li >= lines.length) {
-        timer = window.setTimeout(() => {
-          if (!cancelled && !doneRef.current) finish(false)
-        }, INTRO_HOLD_MS)
-        return
-      }
-      const line = lines[li] ?? ''
-      if (ci > line.length) {
-        timer = window.setTimeout(() => run(li + 1, 0), LINE_PAUSE_MS)
-        return
-      }
-      setTyped((prev) => {
-        const next = prev.slice(0, li)
-        while (next.length < li) next.push('')
-        next[li] = line.slice(0, ci)
-        return next
-      })
-      // Clique a cada 2 letras — audível sem saturar o Web Audio.
-      if (ci > 0 && ci % 2 === 0) playSfx('keyboard')
-      timer = window.setTimeout(() => run(li, ci + 1), CHAR_MS)
-    }
-    // Pequeno atraso para o fade-in da tela preta antes da primeira letra.
-    timer = window.setTimeout(() => run(0, 1), 380)
-
-    return () => {
-      cancelled = true
-      window.clearTimeout(timer)
-    }
-    // Apenas o conteúdo das linhas; finish/onDone ficam fora de propósito.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lines.join('\n')])
+    const t = window.setTimeout(() => finish(false), INTRO_HOLD_MS)
+    return () => window.clearTimeout(t)
+  }, [lines.join('\n'), finish, reduced])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -127,10 +80,9 @@ export function TerminalIntro({
       role="presentation"
     >
       <div className="tr-intro__lines" aria-label={lines.join(', ')}>
-        {typed.map((l, i) => (
+        {lines.map((l, i) => (
           <p key={i} className={`tr-intro__line tr-intro__line--${i === 0 ? 'date' : i === 1 ? 'time' : 'place'}`}>
             {l}
-            {!fading && i === typed.length - 1 ? <span className="tr-intro__caret" aria-hidden /> : null}
           </p>
         ))}
       </div>

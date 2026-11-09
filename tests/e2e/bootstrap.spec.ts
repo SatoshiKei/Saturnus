@@ -11,7 +11,9 @@ test('SATURNUS bootstrap flow and screenshots', async ({ page }) => {
   await page.goto('/')
   const menu = page.getByTestId('main-menu')
   if (await menu.isVisible()) {
-    await page.getByTestId('main-menu-continue').click()
+    const cont = page.getByTestId('main-menu-continue')
+    if (await cont.isVisible().catch(() => false)) await cont.click()
+    else await page.getByTestId('main-menu-new').click()
   }
   await expect(page.getByTestId('investigation-scene')).toBeVisible()
   await page.screenshot({ path: path.join(shots, '01-investigation-room.png'), fullPage: true })

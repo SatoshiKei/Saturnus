@@ -7,6 +7,7 @@ import { createInitialState, SAVE_KEY, STATE_VERSION } from './initialState'
 import { applyStoryActions } from '../story/actions'
 import { runStoryEngine } from '../story/engine'
 import { maxPersonStatus } from './personStatusOrder'
+import { clearAutosaveStorage, syncAutosaveMeta } from './saveSlots'
 
 type Listener = () => void
 
@@ -189,6 +190,7 @@ export function deriveEvidenceFromAudio(sourceId: string, derivedId: string) {
 export function saveGame(s = state) {
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify(s))
+    syncAutosaveMeta(s)
   } catch {
     /* ignore quota */
   }
@@ -223,6 +225,8 @@ export function migrateState(raw: InvestigationState): InvestigationState {
     audioSeen: raw.audioSeen ?? raw.evidenceOwned?.filter((id) => raw.evidence?.[id]?.type === 'audio') ?? [],
     chatProgress: raw.chatProgress ?? {},
     callsDone: raw.callsDone ?? [],
+    playTimeMs: raw.playTimeMs ?? 0,
+    achievementUnlocks: raw.achievementUnlocks ?? {},
     contacts: { ...base.contacts, ...(raw.contacts ?? {}) },
     locations: { ...base.locations, ...(raw.locations ?? {}) },
     toastQueue: [],
@@ -284,9 +288,23 @@ export function loadGame(): boolean {
   }
 }
 
+export function addPlayTime(ms: number) {
+  if (ms <= 0) return
+  state = { ...state, playTimeMs: (state.playTimeMs ?? 0) + ms }
+  saveGame(state)
+}
+
+export function applyLoadedState(next: InvestigationState) {
+  const migrated = next.version >= STATE_VERSION ? { ...createInitialState(), ...next } : migrateState(next)
+  const repaired = repairInvestigationState(migrated)
+  state = runStoryEngine(repaired)
+  saveGame(state)
+  emit()
+}
+
 export function resetGame() {
   state = createInitialState()
-  localStorage.removeItem(SAVE_KEY)
+  clearAutosaveStorage()
   emit()
 }
 

@@ -16,14 +16,14 @@ export function RecorderApp({ onBack }: RecorderAppProps) {
         ‹ Início
       </button>
       <h2>Gravador</h2>
-      <p>Gravações locais criptografadas — exportação bloqueada pelo sandbox.</p>
+      <p>Gravações neste aparelho. Exportação bloqueada pela proteção do sistema.</p>
       {!owned ? (
         <button
           type="button"
           data-testid="recorder-reveal-protected"
           onClick={() => addEvidence(id)}
         >
-          Abrir gravação “Noite anterior” (demo)
+          Abrir gravação “Noite anterior”
         </button>
       ) : (
         <p>

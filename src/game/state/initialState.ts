@@ -51,5 +51,7 @@ export function createInitialState(): InvestigationState {
     audioSeen: [],
     chatProgress: {},
     callsDone: [],
+    playTimeMs: 0,
+    achievementUnlocks: {},
   }
 }

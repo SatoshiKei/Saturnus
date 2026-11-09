@@ -37,7 +37,9 @@ for (const size of sizes) {
       await page.evaluate(() => localStorage.setItem('saturnus-ui-hints-v1', '1'))
       await page.reload()
       if (await page.getByTestId('main-menu').count()) {
-        await page.getByTestId('main-menu-continue').click()
+        const cont = page.getByTestId('main-menu-continue')
+        if (await cont.isVisible().catch(() => false)) await cont.click()
+        else await page.getByTestId('main-menu-new').click()
       }
       await expect(page.getByTestId('investigation-scene')).toBeVisible()
 

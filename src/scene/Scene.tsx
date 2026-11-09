@@ -6,7 +6,13 @@ import { DESIGN_HEIGHT, DESIGN_WIDTH } from '../types/scene'
 import type { SceneObjectDef } from '../types/scene'
 import { usePhoneSession } from '../app/PhoneSessionContext'
 import { useGameHub } from '../app/GameHubContext'
-import { hintsAlreadySeen, markHintsSeen, setFullscreenScene, useUiState } from '../app/uiStore'
+import {
+  hintsAlreadySeen,
+  markHintsSeen,
+  openPauseMenu,
+  setFullscreenScene,
+  useUiState,
+} from '../app/uiStore'
 import { useInvestigation } from '../game/hooks/useInvestigation'
 import { PhoneShell } from '../phone/PhoneShell'
 import { SceneObject, type ObjectFx } from './SceneObject'
@@ -146,16 +152,24 @@ export function Scene() {
     closeLocationScene,
   } = useGameHub()
   const inv = useInvestigation()
-  const { menuOpen } = useUiState()
+  const { menuOpen, shell } = useUiState()
   const soloReflectionId = pendingSoloReflection(inv.flags)
   const soloReflectionDef = soloReflectionId ? reflectionById(soloReflectionId) : undefined
 
   useEffect(() => {
     absorbLegacyB5MicroReflections()
   }, [inv.flags.block05_refl_maralto_pending, inv.flags.block05_refl_coincidence_pending])
-  const soloReflectionActive = Boolean(
-    !locationScene && !hubPanel && !phoneOpen && soloReflectionId && soloReflectionDef,
-  )
+
+  const [hoverId, setHoverId] = useState<string | null>(null)
+  const [camera, setCamera] = useState<Camera | null>(null)
+  const [hints, setHints] = useState(false)
+  const [returnFade, setReturnFade] = useState(false)
+  const [openingDone, setOpeningDone] = useState(() => Boolean(inv.flags.block01_opening_seen))
+  const pending = useRef<number | null>(null)
+
+  const cinematic = Boolean(locationScene || (soloReflectionId && soloReflectionDef))
+  const overlaysLocked = Boolean(cinematic || returnFade)
+  const soloReflectionActive = Boolean(!locationScene && soloReflectionId && soloReflectionDef)
 
   // Pausar discoveries enquanto a reflection solo cobre o hub.
   useEffect(() => {
@@ -164,12 +178,16 @@ export function Scene() {
     return () => setFullscreenScene(false)
   }, [soloReflectionActive])
 
-  const [hoverId, setHoverId] = useState<string | null>(null)
-  const [camera, setCamera] = useState<Camera | null>(null)
-  const [hints, setHints] = useState(false)
-  const [returnFade, setReturnFade] = useState(false)
-  const [openingDone, setOpeningDone] = useState(() => Boolean(inv.flags.block01_opening_seen))
-  const pending = useRef<number | null>(null)
+  useEffect(() => {
+    if (!cinematic) return
+    closePhone()
+    closeHub()
+    setCamera(null)
+    if (pending.current) {
+      window.clearTimeout(pending.current)
+      pending.current = null
+    }
+  }, [cinematic, closePhone, closeHub])
 
   useEffect(() => {
     if (inv.flags.block01_opening_seen) setOpeningDone(true)
@@ -292,15 +310,20 @@ export function Scene() {
     closePhone()
   }, [closePhone, phoneDevice])
 
-  // ESC fecha o celular
+  // ESC fecha o celular; sem overlay, abre o menu de pausa.
   useEffect(() => {
-    if (!phoneOpen) return
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') handleClosePhone()
+      if (e.key !== 'Escape') return
+      if (phoneOpen) {
+        handleClosePhone()
+        return
+      }
+      if (shell !== 'playing' || cinematic || hubPanel || !openingDone) return
+      openPauseMenu()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [phoneOpen, handleClosePhone])
+  }, [phoneOpen, handleClosePhone, shell, cinematic, hubPanel, openingDone])
 
   const s = scale.scale
   const z = camera?.zoom ?? 1
@@ -371,7 +394,7 @@ export function Scene() {
           <CaseNotepad />
         </div>
 
-        {phoneOpen ? (
+        {phoneOpen && !overlaysLocked ? (
           <div className="scene-phone-overlay" data-testid="phone-overlay">
             <button
               type="button"
@@ -415,7 +438,7 @@ export function Scene() {
         ) : null}
         {returnFade ? <div className="tr-return" data-testid="vn-return-fade" aria-hidden /> : null}
 
-        <HubOverlay panel={hubPanel} onClose={handleCloseHub} />
+        {!overlaysLocked ? <HubOverlay panel={hubPanel} onClose={handleCloseHub} /> : null}
       </div>
     </div>
   )

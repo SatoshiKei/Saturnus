@@ -6,7 +6,12 @@ export async function newGame(page: Page) {
   await page.evaluate(() => window.localStorage.clear())
   await page.reload()
   const menu = page.getByTestId('main-menu')
-  if (await menu.isVisible()) await page.getByTestId('main-menu-new').click()
+  if (await menu.isVisible()) {
+    const neu = page.getByTestId('main-menu-new')
+    await neu.click()
+    const confirm = page.getByTestId('main-menu-new-confirm')
+    if (await confirm.isVisible().catch(() => false)) await confirm.click()
+  }
   const opening = page.getByTestId('block01-opening')
   if (await opening.isVisible().catch(() => false)) {
     await expect(opening).toBeHidden({ timeout: 12000 })

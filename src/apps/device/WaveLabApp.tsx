@@ -28,9 +28,9 @@ export function WaveLabApp({ onBack }: WaveLabAppProps) {
       ) : null}
       {canProcess && hasProtected ? (
         <>
-          <p>Áudio protegido carregado do sandbox do Gravador.</p>
+          <p>Áudio protegido carregado a partir do Gravador.</p>
           <button type="button" data-testid="wavelab-noise-reduction" onClick={runDemoOp}>
-            Redução de ruído (demo)
+            Redução de ruído
           </button>
         </>
       ) : null}

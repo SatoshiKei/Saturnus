@@ -7,6 +7,7 @@ import { isPersonVisibleInRegistry } from '../../../game/personRegistryGates'
 import { organizeMarianaContactChronology } from '../../../game/story/block05Handlers'
 import { organizeMemoryOnset } from '../../../game/story/block07Handlers'
 import { takeNotebookFocus } from '../../../app/uiStore'
+import { EvidenceBoard } from '../EvidenceBoard'
 import type { Evidence, InvestigationState, Location, Person } from '../../../game/types'
 import {
   confidenceLabel,
@@ -21,7 +22,7 @@ import {
 } from '../../../lib/labels'
 import { GamePanel } from '../../ui/GamePanel'
 
-type Tab = 'people' | 'evidence' | 'locations' | 'timeline' | 'hypotheses' | 'contradictions'
+type Tab = 'people' | 'evidence' | 'locations' | 'timeline' | 'hypotheses' | 'contradictions' | 'board'
 
 const tabs: { id: Tab; label: string; hue: string }[] = [
   { id: 'people', label: 'Pessoas', hue: '#8f6a2c' },
@@ -30,6 +31,7 @@ const tabs: { id: Tab; label: string; hue: string }[] = [
   { id: 'timeline', label: 'Timeline', hue: '#4b5a6e' },
   { id: 'hypotheses', label: 'Hipóteses', hue: '#6e4b4b' },
   { id: 'contradictions', label: 'Contradições', hue: '#7a3a32' },
+  { id: 'board', label: 'Quadro', hue: '#3a4a5c' },
 ]
 
 /** Nunca vaza o id interno: itens ainda não reunidos aparecem como registro genérico. */
@@ -131,13 +133,31 @@ function PeopleTab({ inv }: { inv: InvestigationState }) {
 }
 
 /* ---------------- Evidências ---------------- */
+type EvidenceFilter = 'all' | 'source' | 'fact'
+
 function EvidenceTab({ inv, focusId }: { inv: InvestigationState; focusId: string | null }) {
-  const items = inv.evidenceOwned
+  const owned = inv.evidenceOwned
     .map((id) => inv.evidence[id])
     .filter((e): e is Evidence => Boolean(e) && !e.catalogHidden)
+  const [filter, setFilter] = useState<EvidenceFilter>('all')
+  const items = owned.filter((e) => {
+    if (filter === 'all') return true
+    const fact = e.originalOrDerived === 'derived' || e.type === 'derived'
+    return filter === 'fact' ? fact : !fact
+  })
   const [sel, setSel] = useState<string | null>(focusId)
+  useEffect(() => {
+    if (focusId) setSel(focusId)
+  }, [focusId])
   const ev = items.find((e) => e.id === sel) ?? items[0]
-  if (!ev) return <p className="nb-muted">Nenhuma evidência reunida ainda.</p>
+  if (!owned.length) return <p className="nb-muted">Nenhuma evidência reunida ainda.</p>
+  if (!ev) {
+    return (
+      <div className="nb-split nb-split--index">
+        <p className="nb-muted">Nada neste filtro.</p>
+      </div>
+    )
+  }
 
   const doc = ev.contentRef ? seedDocuments.find((d) => d.id === ev.contentRef) : undefined
   const content = ev.description ?? doc?.blocks[0]?.text
@@ -150,24 +170,43 @@ function EvidenceTab({ inv, focusId }: { inv: InvestigationState; focusId: strin
   const protectedItem = ev.exportable === false || ev.deviceLocked
 
   return (
-    <div className="nb-split">
-      <ul className="nb-list">
-        {items.map((e) => (
-          <li key={e.id}>
+    <div className="nb-split nb-split--index">
+      <div className="nb-index">
+        <div className="nb-filters" role="tablist" aria-label="Filtrar evidências">
+          {(
+            [
+              ['all', 'Tudo'],
+              ['source', 'Fontes'],
+              ['fact', 'Fatos'],
+            ] as const
+          ).map(([id, label]) => (
             <button
+              key={id}
               type="button"
-              className="nb-list__item"
-              data-active={e.id === ev.id}
-              onClick={() => setSel(e.id)}
+              className="nb-filter"
+              data-active={filter === id}
+              onClick={() => setFilter(id)}
             >
-              <span>{e.title}</span>
-              <small>
-                {evidenceTypeLabel[e.type]} · {evidenceOriginLabel(e.originalOrDerived)}
-              </small>
+              {label}
             </button>
-          </li>
-        ))}
-      </ul>
+          ))}
+        </div>
+        <ul className="nb-list">
+          {items.map((e) => (
+            <li key={e.id}>
+              <button
+                type="button"
+                className="nb-list__item"
+                data-active={e.id === ev?.id}
+                onClick={() => setSel(e.id)}
+              >
+                <span>{e.title}</span>
+                <small>{evidenceTypeLabel[e.type]}</small>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
       <article className="nb-page">
         <h3 className="nb-name">{ev.title}</h3>
         <p className="nb-role">{evidenceTypeLabel[ev.type]}</p>
@@ -418,6 +457,7 @@ export function InvestigationNotebook({ onClose }: { onClose: () => void }) {
   const inv = useInvestigation()
   const [focus] = useState(() => takeNotebookFocus())
   const [tab, setTab] = useState<Tab>((focus?.tab as Tab | undefined) ?? 'people')
+  const [focusId, setFocusId] = useState<string | null>(focus?.id ?? null)
   const current = useMemo(() => tabs.find((t) => t.id === tab)!, [tab])
 
   return (
@@ -445,7 +485,7 @@ export function InvestigationNotebook({ onClose }: { onClose: () => void }) {
         </nav>
         <div className="nb-sheet" style={{ '--tab-hue': current.hue } as CSSProperties}>
           {tab === 'people' ? <PeopleTab inv={inv} /> : null}
-          {tab === 'evidence' ? <EvidenceTab inv={inv} focusId={focus?.id ?? null} /> : null}
+          {tab === 'evidence' ? <EvidenceTab inv={inv} focusId={focusId} /> : null}
           {tab === 'locations' ? <LocationsTab inv={inv} /> : null}
           {tab === 'timeline' ? (
             <div className="nb-scroll">
@@ -461,6 +501,14 @@ export function InvestigationNotebook({ onClose }: { onClose: () => void }) {
             <div className="nb-scroll">
               <ContradictionsTab inv={inv} />
             </div>
+          ) : null}
+          {tab === 'board' ? (
+            <EvidenceBoard
+              onOpen={(nextTab, id) => {
+                setFocusId(id)
+                setTab((nextTab as Tab) ?? 'evidence')
+              }}
+            />
           ) : null}
         </div>
       </div>

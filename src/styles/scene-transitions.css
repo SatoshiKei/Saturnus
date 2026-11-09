@@ -31,11 +31,11 @@
   align-items: center;
   justify-content: flex-start;
   padding: 0 calc(var(--u) * 140px);
-  background: #000;
+  background: rgba(0, 0, 0, 0.72);
   font-family: var(--font-mono);
   color: #cfd8d2;
-  animation: tr-in 420ms ease both;
-  transition: opacity 700ms ease;
+  animation: tr-in 280ms ease both;
+  transition: opacity 500ms ease, background 500ms ease;
 }
 .tr-intro--out {
   opacity: 0;

@@ -1,7 +1,21 @@
+import { seedAchievements } from '../../data/game/seedAchievements'
 import { contradictionDefs, seedStoryTriggers } from '../../data/game/seedStory'
 import type { InvestigationState, StoryTrigger } from '../types'
 import { applyStoryActions } from './actions'
 import { evaluateAllConditions } from './conditions'
+
+function syncAchievements(state: InvestigationState): InvestigationState {
+  const unlocks = { ...(state.achievementUnlocks ?? {}) }
+  let changed = false
+  const now = Date.now()
+  for (const a of seedAchievements) {
+    if (unlocks[a.id]) continue
+    if (!a.unlocked(state)) continue
+    unlocks[a.id] = now
+    changed = true
+  }
+  return changed ? { ...state, achievementUnlocks: unlocks } : state
+}
 
 /** Contradições são detectadas sozinhas quando as duas evidências já estão no caderno. */
 function detectContradictions(state: InvestigationState): InvestigationState {
@@ -40,5 +54,5 @@ export function runStoryEngine(
       changed = true
     }
   }
-  return next
+  return syncAchievements(next)
 }

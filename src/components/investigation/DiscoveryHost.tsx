@@ -144,8 +144,8 @@ export function DiscoveryHost() {
   const { openHub, locationScene } = useGameHub()
   const head = inv.discoveries[0]
   // Durante cenas de VN a fila fica pausada.
-  const { fullscreenScene } = useUiState()
-  const paused = Boolean(locationScene) || fullscreenScene
+  const { fullscreenScene, shell } = useUiState()
+  const paused = Boolean(locationScene) || fullscreenScene || shell !== 'playing'
 
   // Avisos curtos (não-evidência) empilham, até 3 por vez; cartões de evidência ficam sozinhos.
   const stack: DiscoveryEvent[] = []

@@ -343,6 +343,10 @@ export interface InvestigationState {
   chatProgress: Record<string, ChatProgress>
   /** Ligações já concluídas (ids de CallScript). */
   callsDone: string[]
+  /** Tempo de jogo acumulado (ms). Não inclui menus. */
+  playTimeMs?: number
+  /** Primeiro instante em que cada conquista foi satisfeita. */
+  achievementUnlocks?: Record<string, number>
 }
 
 export type DiscoveryKind =

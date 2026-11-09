@@ -165,7 +165,9 @@
 .phone-home {
   height: 100%;
   position: relative;
-  padding: var(--phone-inset-top) 16px calc(var(--phone-inset-bottom) + 64px);
+  display: flex;
+  flex-direction: column;
+  padding: var(--phone-inset-top) 14px calc(var(--phone-inset-bottom) + 86px);
   overflow: hidden;
 }
 
@@ -176,16 +178,67 @@
   z-index: 0;
 }
 
+.phone-home__device-label {
+  position: relative;
+  z-index: 1;
+  margin: 2px 0 8px;
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.phone-home__pages {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.phone-home__track {
+  display: flex;
+  height: 100%;
+  will-change: transform;
+}
+
 .phone-home__grid {
   position: relative;
   z-index: 1;
+  flex: 0 0 auto;
+  width: 100%;
+  box-sizing: border-box;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 12px 6px;
+  grid-template-rows: repeat(3, min-content);
+  gap: 16px 4px;
   align-content: start;
-  max-height: calc(100% - 210px);
-  overflow-y: auto;
-  scrollbar-width: none;
+  overflow: hidden;
+  padding: 4px 2px;
+}
+
+.phone-home__dots {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+  margin: 8px 0 4px;
+}
+
+.phone-home__dot {
+  width: 6px;
+  height: 6px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.32);
+  cursor: pointer;
+}
+
+.phone-home__dot[data-active] {
+  background: #fff;
 }
 
 .phone-home__app {
@@ -226,13 +279,7 @@
 }
 
 .phone-home__clock {
-  position: relative;
-  z-index: 1;
-  text-align: center;
-  font-size: 14px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.75);
-  margin: 0 0 8px;
+  display: none;
 }
 
 .app-icon {
