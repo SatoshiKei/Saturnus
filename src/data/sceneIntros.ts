@@ -113,31 +113,24 @@ export const sceneBackgrounds: Record<SceneId, string> = {
   // Titã Club ≠ Vértice: segunda variante de casa noturna (palco/fumaça vermelha).
   nico: `${BG}/nightclub/nightclub-02-dj-booth.jpg`,
   andre: `${BG}/prison/prison-01-visit-room.jpg`,
-  // Miro: sala de entrevista da detenção → ambiente policial (não a sala de visita do presídio).
-  miro: `${BG}/police/police-02-interrogation-tone.jpg`,
+  // Miro: sala de entrevista da detenção / polícia civil.
+  miro: `${BG}/police/police-interrogation-room.png`,
 
-  // Residências — 3 variantes reutilizáveis (escura / clara / hall de prédio).
+  // Residências — variantes reutilizáveis (escura / clara / hall); Bia tem asset próprio.
   samuel: `${BG}/apartment/apartment-01-living-room.jpg`,
   geraldo: `${BG}/apartment/apartment-01-living-room.jpg`,
   sandra: `${BG}/apartment/apartment-01-living-room.jpg`,
-  bia: `${BG}/apartment/apartment-01-living-room.jpg`,
+  bia: `${BG}/apartment/apartment-bia-house.png`,
   jana: `${BG}/apartment/apartment-01-living-modest.jpg`,
   mauro: `${BG}/apartment/apartment-01-living-modest.jpg`,
   rui: `${BG}/apartment/apartment-01-living-modest.jpg`,
   cecilia: `${BG}/apartment/apartment-04-hall-brazil-sp.jpg`,
 
-  // ── NOVO ASSET NECESSÁRIO (fallback técnico TEMPORÁRIO — NÃO é o fundo final) ──
-  // operation — galpão/armazém industrial (pátio norte, noite). Nenhum asset existente serve.
-  operation: `${BG}/nightclub/nightclub-01-lights-haze.jpg`,
-  // denis — oficina mecânica / pátio. Nenhum asset existente serve.
-  denis: `${BG}/nightclub/nightclub-01-lights-haze.jpg`,
-  // trail — galpão desativado, setor norte, madrugada, silencioso/vazio. Nenhum asset existente serve.
-  trail: `${BG}/nightclub/nightclub-01-lights-haze.jpg`,
+  // Galpão 17 (prisão de Miro) ≠ galpão final (Mariana).
+  operation: `${BG}/warehouse/warehouse-17-north-yard.png`,
+  denis: `${BG}/workshop/denis-workshop.png`,
+  trail: `${BG}/warehouse/warehouse-final-north-sector.png`,
 }
 
-/** Cenas cujo fundo atual é só fallback técnico (ver NOVO ASSET NECESSÁRIO acima). */
-export const sceneBackgroundsPending: Partial<Record<SceneId, string>> = {
-  operation: 'galpão/armazém industrial',
-  denis: 'oficina mecânica',
-  trail: 'galpão desativado, setor norte',
-}
+/** Cenas ainda sem fundo próprio definitivo. */
+export const sceneBackgroundsPending: Partial<Record<SceneId, string>> = {}
