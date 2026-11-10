@@ -220,7 +220,7 @@ export const seedPeople: Person[] = [
     id: 'mauro',
     name: 'Mauro',
     status: 'mentioned',
-    notes: ['Proprietário do veículo com dano compatível'],
+    notes: ['Proprietário do Jaguar XJ6 4.0 Sovereign (1996, verde)'],
     relatedEvidenceIds: [],
     relatedPersonIds: ['bia'],
     locationId: 'mauro-casa',

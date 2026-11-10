@@ -814,6 +814,7 @@ export const seedSearchRules: SearchRule[] = [
     ],
   },
   {
+    /** Legado — fluxo antigo (câmera viária). */
     id: 'block08_vehicle_guardrail',
     category: 'police',
     requiredFlags: ['block08_vehicle_search_unlocked'],
@@ -821,46 +822,7 @@ export const seedSearchRules: SearchRule[] = [
     results: [
       {
         title: 'Câmera viária — veículo com dano lateral (madrugada)',
-        snippet: 'Registro municipal / imagem policial na região.',
-        documentId: 'doc-camera-veiculo-madrugada',
-      },
-    ],
-  },
-  {
-    id: 'block08_vehicle_veiculo',
-    category: 'police',
-    requiredFlags: ['block08_vehicle_search_unlocked'],
-    requiredTerms: ['veiculo'],
-    results: [
-      {
-        title: 'Câmera viária — veículo com dano lateral (madrugada)',
-        snippet: 'Registro municipal / imagem policial na região.',
-        documentId: 'doc-camera-veiculo-madrugada',
-      },
-    ],
-  },
-  {
-    id: 'block08_vehicle_impacto',
-    category: 'police',
-    requiredFlags: ['block08_vehicle_search_unlocked'],
-    requiredTerms: ['impacto'],
-    results: [
-      {
-        title: 'Câmera viária — veículo com dano lateral (madrugada)',
-        snippet: 'Registro municipal / imagem policial na região.',
-        documentId: 'doc-camera-veiculo-madrugada',
-      },
-    ],
-  },
-  {
-    id: 'block08_mauro',
-    category: 'police',
-    requiredFlags: ['block08_vehicle_search_unlocked'],
-    requiredTerms: ['mauro'],
-    results: [
-      {
-        title: 'Câmera viária — veículo com dano lateral (madrugada)',
-        snippet: 'Veículo registrado em nome de Mauro.',
+        snippet: '[Arquivo removido do fluxo atual]',
         documentId: 'doc-camera-veiculo-madrugada',
       },
     ],

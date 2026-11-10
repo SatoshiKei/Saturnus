@@ -125,6 +125,12 @@ function pendingSoloReflection(flags: Record<string, boolean>): string | null {
   if (flags.block07_refl_tech_pending && !flags['refl-b07-tech_seen']) return 'refl-b07-tech'
   if (flags.block08_refl_morsa_pending && !flags['refl-b08-morsa_seen']) return 'refl-b08-morsa'
   if (flags.block08_refl_andre_pending && !flags['refl-b08-andre_seen']) return 'refl-b08-andre'
+  if (flags.block08_refl_miro_guardrail_pending && !flags['refl-b08-miro-guardrail_seen']) {
+    return 'refl-b08-miro-guardrail'
+  }
+  if (flags.block08_refl_jaguar_lead_pending && !flags['refl-b08-jaguar-lead_seen']) {
+    return 'refl-b08-jaguar-lead'
+  }
   if (flags.block08_refl_accident_pending && !flags['refl-b08-accident_seen']) return 'refl-b08-accident'
   if (flags.block08_refl_final_pending && !flags['refl-b08-final_seen']) return 'refl-b08-final'
   if (flags.block09_refl_omitido_pending && !flags['refl-b09-omitido_seen']) return 'refl-b09-omitido'

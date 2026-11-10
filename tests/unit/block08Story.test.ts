@@ -20,6 +20,7 @@ import {
   resetGame,
 } from '../../src/game/state/investigationStore'
 import { block08EntryActions } from '../../src/game/story/block08DevCheckpoints'
+import { onDocumentConsulted } from '../../src/game/story/documentConsultHooks'
 import {
   finishAndreFollowup,
   finishBiaInterview,
@@ -29,11 +30,16 @@ import {
   finishRuiInterview,
   onAccidentReflectionDone,
   onAndreWronglyReflectionDone,
+  onDetranMauroCallDone,
   onFinalReflectionDone,
+  onJaguarLeadReflectionDone,
+  onMiroGuardrailReflectionDone,
   onMorsaContinuityConfirmed,
   onMorsaReflectionDone,
+  onPartsShopDenisLead,
   onRingsTimelineSolved,
   onRotationSolved,
+  onScaleLinksAugusto,
   requestGuardrailReexam,
 } from '../../src/game/story/block08Handlers'
 
@@ -100,47 +106,60 @@ describe('Bloco 8 — progressão', () => {
     finishMiroThird()
     s = getInvestigationState()
     expect(s.evidenceOwned).toContain('miro_says_guardrail_gave_way')
-    expect(s.flags.block08_guardrail_reexam_unlocked).toBe(true)
+    expect(s.flags.block08_refl_miro_guardrail_pending).toBe(true)
+    expect(s.flags.block08_guardrail_reexam_unlocked).toBeFalsy()
 
+    onMiroGuardrailReflectionDone()
+    expect(getInvestigationState().flags.block08_guardrail_reexam_unlocked).toBe(true)
+
+    openDocument('doc-guardrail-reanalise')
+    onDocumentConsulted('doc-guardrail-reanalise')
     requestGuardrailReexam()
     s = getInvestigationState()
     expect(s.evidenceOwned).toContain('guardrail_impact_signs')
-    expect(s.flags.block08_vehicle_search_unlocked).toBe(true)
+    expect(s.evidenceOwned).toContain('jaguar_x300_paint_fragment')
+    expect(s.flags.block08_vehicle_search_unlocked).toBeFalsy()
+
+    onJaguarLeadReflectionDone()
+    onPartsShopDenisLead()
+    expect(getInvestigationState().locations['oficina-denis']?.status).toBe('visitAvailable')
   })
 
-  it('Mauro → Dênis → Bia → Rui → Puzzle 11 → escala → estado final', () => {
+  it('Dênis → DETRAN → Mauro → Bia → Rui → Puzzle 11 → escala → estado final', () => {
     seed()
-    onRingsTimelineSolved()
     onMorsaContinuityConfirmed()
     onMorsaReflectionDone()
     finishAndreFollowup()
     onAndreWronglyReflectionDone()
     finishMiroThird()
+    onMiroGuardrailReflectionDone()
     requestGuardrailReexam()
+    onJaguarLeadReflectionDone()
+    onPartsShopDenisLead()
 
-    openDocument('doc-camera-veiculo-madrugada')
+    const cam = runPoliceSearch('guardrail', getInvestigationState())
+    expect(cam.hits.some((h) => h.documentId === 'doc-camera-veiculo-madrugada')).toBe(false)
+
+    finishDenisInterview()
     let s = getInvestigationState()
-    expect(s.evidenceOwned).toContain('mauro_vehicle_compatible_damage')
+    expect(s.evidenceOwned).toContain('denis_remembers_jaguar_green')
+    expect(s.flags.block08_detran_call_unlocked).toBe(true)
+
+    onDetranMauroCallDone()
+    s = getInvestigationState()
+    expect(s.evidenceOwned).toContain('jaguar_registered_mauro')
     expect(s.locations['mauro-casa']?.status).toBe('visitAvailable')
 
     finishMauroInterview()
     s = getInvestigationState()
-    expect(s.evidenceOwned).toContain('mauro_repair_transfer_denis')
-    expect(s.locations['oficina-denis']?.status).toBe('visitAvailable')
+    expect(s.evidenceOwned).toContain('bia_used_jaguar_without_permission')
+    expect(s.locations['bia-casa']?.status).toBe('visitAvailable')
 
-    finishDenisInterview()
-    s = getInvestigationState()
-    expect(s.evidenceOwned).toContain('vehicle_guardrail_damage_match')
-    expect(s.flags.block08_bia_search_unlocked).toBe(true)
-
-    const biaHits = runPoliceSearch('bia', getInvestigationState())
-    expect(biaHits.hits.some((h) => h.documentId === 'doc-bia-ficha')).toBe(true)
-    openDocument('doc-bia-ficha')
     finishBiaInterview()
     s = getInvestigationState()
     expect(s.evidenceOwned).toContain('bia_was_with_rui')
+    expect(s.locations['rui-casa']?.status).toBe('visitAvailable')
 
-    openDocument('doc-rui-ficha')
     finishRuiInterview()
     s = getInvestigationState()
     expect(s.evidenceOwned).toContain('rui_admits_drunk_crash')
@@ -151,9 +170,7 @@ describe('Bloco 8 — progressão', () => {
     onAccidentReflectionDone()
     expect(getInvestigationState().flags.block08_rotation_available).toBe(true)
 
-    expect(
-      isRotationSynced({ radio: 0, cad: -3, dispatch: -2, scale: 1 }),
-    ).toBe(true)
+    expect(isRotationSynced({ radio: 0, cad: -3, dispatch: -2, scale: 1 })).toBe(true)
     expect(resolveCallsignAfterSync()).toBe(ROTATION_CALLSIGN)
     onRotationSolved()
     s = getInvestigationState()
@@ -161,6 +178,8 @@ describe('Bloco 8 — progressão', () => {
     expect(s.flags.block08_scale_search_unlocked).toBe(true)
 
     openDocument('doc-escala-vtr14')
+    onDocumentConsulted('doc-escala-vtr14')
+    onScaleLinksAugusto()
     s = getInvestigationState()
     expect(s.evidenceOwned).toContain('scale_links_callsign_to_augusto')
     expect(s.flags.block08_refl_final_pending).toBe(true)

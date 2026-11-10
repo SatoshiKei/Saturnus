@@ -374,14 +374,14 @@ export const LINK_BOARD_NODES: LinkBoardNodeDef[] = [
   {
     id: 'lb-vehicle',
     kind: 'event',
-    title: 'Veículo da cena',
+    title: 'Jaguar XJ6 verde',
     x: 1040,
     y: 760,
     cluster: 'guardrail',
     tier: 'secondary',
     revealFocus: 'guardrail',
-    showWhen: [f('block08_vehicle_search_unlocked')],
-    detail: { blurb: 'Elo entre impacto e oficina de Denis.' },
+    showWhen: [ev('jaguar_x300_paint_fragment')],
+    detail: { blurb: 'Família X300 — perícia ao proprietário.' },
   },
   // —— Henrique / O Omitido (B7) ——
   {

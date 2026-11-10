@@ -1153,11 +1153,15 @@ export const seedDocuments: Document[] = [
     blocks: [
       {
         id: 'b1',
-        text: 'Reexame do material preservado: deformação localizada compatível com impacto automotivo; transferência de tinta e pequeno fragmento incompatíveis com simples desgaste.',
+        text: 'A proteção da via já apresentava comprometimento estrutural antes da queda de Elisa Duarte. Deformação compatível com impacto oblíquo de veículo.',
       },
       {
         id: 'b2',
-        text: 'Na investigação original, os sinais foram tratados como dano antigo ou irrelevante. A leitura atual indica dano anterior à queda — impacto automotivo prévio na proteção da via.',
+        text: 'Transferência de tinta verde metálica escura e pequeno fragmento de acabamento automotivo. Numeração parcial compatível com acabamento dianteiro de veículos Jaguar família X300 (XJ6, meados dos anos 1990).',
+      },
+      {
+        id: 'b3',
+        text: 'Não foi possível identificar placa, proprietário nem veículo individual. Compatibilidade mais provável: Jaguar XJ6 / X300, aproximadamente 1995–1997.',
       },
     ],
     /** Progressão (veículo / flags): `requestGuardrailReexam` via `onDocumentConsulted`. */
@@ -1170,6 +1174,7 @@ export const seedDocuments: Document[] = [
     issuer: 'Registro municipal / imagem policial',
     dateLabel: 'Noite X',
     system: 'consultas',
+    playerFacing: false,
     blocks: [
       {
         id: 'b1',
@@ -1181,18 +1186,7 @@ export const seedDocuments: Document[] = [
       },
     ],
     leads: [{ type: 'address', label: 'Endereço do proprietário', value: 'Rua do Cedro, 55' }],
-    onOpen: [
-      { type: 'discoverPerson', id: 'mauro', status: 'located' },
-      { type: 'addEvidence', id: 'mauro_vehicle_compatible_damage' },
-      { type: 'unlockLocation', id: 'mauro-casa', status: 'visitAvailable' },
-      { type: 'setFlag', id: 'block08_mauro_located', value: true },
-      { type: 'completeTask', id: 'task_find_compatible_vehicle' },
-      {
-        type: 'addTask',
-        id: 'task_talk_mauro',
-        label: 'Falar com Mauro sobre o veículo',
-      },
-    ],
+    onOpen: [],
   },
   {
     id: 'doc-mauro-transferencia',
@@ -1200,6 +1194,7 @@ export const seedDocuments: Document[] = [
     category: 'Documento particular',
     issuer: 'Mauro (arquivo pessoal)',
     system: 'documentos',
+    playerFacing: false,
     blocks: [
       {
         id: 'b1',
@@ -1219,21 +1214,13 @@ export const seedDocuments: Document[] = [
     category: 'Cadastro (pessoas)',
     issuer: 'Sistema de consulta policial',
     system: 'consultas',
+    playerFacing: false,
     blocks: [
       { id: 'b1', text: 'Bia: enteada de Mauro. Cadastro atualizado.' },
       { id: 'b2', text: 'Endereço residencial disponível.' },
     ],
     leads: [{ type: 'address', label: 'Endereço', value: 'Travessa Leste, 19' }],
-    onOpen: [
-      { type: 'discoverPerson', id: 'bia', status: 'located' },
-      { type: 'unlockLocation', id: 'bia-casa', status: 'visitAvailable' },
-      { type: 'completeTask', id: 'task_locate_bia' },
-      {
-        type: 'addTask',
-        id: 'task_talk_bia',
-        label: 'Confrontar Bia com veículo, oficina e guardrail',
-      },
-    ],
+    onOpen: [],
   },
   {
     id: 'doc-rui-ficha',
@@ -1241,21 +1228,13 @@ export const seedDocuments: Document[] = [
     category: 'Cadastro (pessoas)',
     issuer: 'Sistema de consulta policial',
     system: 'consultas',
+    playerFacing: false,
     blocks: [
       { id: 'b1', text: 'Rui: indicado por Bia. Cadastro atualizado.' },
       { id: 'b2', text: 'Endereço residencial disponível.' },
     ],
     leads: [{ type: 'address', label: 'Endereço', value: 'Rua das Figueiras, 301' }],
-    onOpen: [
-      { type: 'discoverPerson', id: 'rui', status: 'located' },
-      { type: 'unlockLocation', id: 'rui-casa', status: 'visitAvailable' },
-      { type: 'completeTask', id: 'task_locate_rui' },
-      {
-        type: 'addTask',
-        id: 'task_talk_rui',
-        label: 'Ouvir Rui sobre a madrugada do impacto',
-      },
-    ],
+    onOpen: [],
   },
   {
     id: 'doc-escala-vtr14',

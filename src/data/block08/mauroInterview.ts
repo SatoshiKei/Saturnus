@@ -1,53 +1,62 @@
-export type MauroTopicId = 'car' | 'bia' | 'repair' | 'elisa'
+export type MauroTopicId = 'jaguar' | 'permission' | 'damage' | 'bia'
 
-export const MAURO_TOPIC_IDS: MauroTopicId[] = ['car', 'bia', 'repair', 'elisa']
+export const MAURO_TOPIC_IDS: MauroTopicId[] = ['jaguar', 'permission', 'damage', 'bia']
 
 export const mauroTopicLabels: Record<MauroTopicId, string> = {
-  car: 'O carro',
-  bia: 'Bia',
-  repair: 'O conserto',
-  elisa: 'O que o carro fez',
+  jaguar: 'O Jaguar',
+  permission: 'Autorização',
+  damage: 'O dano',
+  bia: 'Bia agora',
 }
 
 export const mauroTopicFlags: Record<MauroTopicId, string> = {
-  car: 'block08_mauro_car',
+  jaguar: 'block08_mauro_jaguar',
+  permission: 'block08_mauro_permission',
+  damage: 'block08_mauro_damage',
   bia: 'block08_mauro_bia',
-  repair: 'block08_mauro_repair',
-  elisa: 'block08_mauro_elisa',
 }
 
 export type MauroBeat = { speaker?: string; text: string }
 
 export const mauroBeats: Record<MauroTopicId, MauroBeat[]> = {
-  car: [
-    { speaker: 'Augusto', text: 'O carro era seu seis anos atrás?' },
-    { speaker: 'Mauro', text: 'Era.\n\nPor quê?' },
-    { speaker: 'Augusto', text: 'Houve reparo na lateral dianteira naquela semana.' },
-    { speaker: 'Mauro', text: 'Ah.\n\nIsso.' },
-    { speaker: 'Augusto', text: 'Lembra.' },
-    { speaker: 'Mauro', text: 'Lembro da dor de cabeça.\n\nNão lembro do dano olhando para ele.' },
+  jaguar: [
+    { speaker: 'Augusto', text: 'O senhor tinha um Jaguar XJ6 verde em 2020?' },
+    { speaker: 'Mauro', text: 'Tinha não. Tenho.\n\nPor quê?' },
+    { speaker: 'Augusto', text: 'Ano 96. Interior bege.' },
+    { speaker: 'Mauro', text: 'É o meu.' },
+    { speaker: 'Augusto', text: 'Quem costumava dirigir?' },
+    { speaker: 'Mauro', text: 'Eu.' },
+    { speaker: 'Augusto', text: 'Sua enteada?' },
+    { speaker: 'Mauro', text: 'A Bia?' },
+  ],
+  permission: [
+    { speaker: 'Augusto', text: 'Sim.' },
+    { speaker: 'Mauro', text: 'Não naquele carro.\n\nEu não deixava.' },
+    { speaker: 'Augusto', text: 'Nunca?' },
+    {
+      speaker: 'Mauro',
+      text: 'Ela podia usar outro carro de casa. O Jaguar não.\n\nAquilo não era carro pra adolescente sair batendo por aí.',
+    },
+  ],
+  damage: [
+    { speaker: 'Augusto', text: 'Ele apareceu danificado naquela época?' },
+    { speaker: 'Mauro', text: 'Apareceu.\n\nEu quase matei a Bia.' },
+    { speaker: 'Augusto', text: 'O que ela disse?' },
+    {
+      speaker: 'Mauro',
+      text: 'Que tinha mexido no carro sem me avisar e raspado enquanto manobrava.\n\nFicou desesperada, disse que ia resolver.',
+    },
+    { speaker: 'Augusto', text: 'O senhor acreditou?' },
+    {
+      speaker: 'Mauro',
+      text: 'Eu queria acreditar.\n\nEla pagou o conserto e ficou meses sem encostar em chave nenhuma minha.',
+    },
   ],
   bia: [
-    { speaker: 'Augusto', text: 'Quem estava com o carro?' },
-    { speaker: 'Mauro', text: 'Minha enteada. Bia.' },
-    { speaker: 'Augusto', text: 'Ela disse o quê?' },
+    { speaker: 'Augusto', text: 'Onde encontro a Bia?' },
     {
       speaker: 'Mauro',
-      text: 'Que tinha raspado em alguma coisa.\n\nEra nova, ficou apavorada achando que eu ia matar ela por causa do carro.',
+      text: 'Ainda mora perto.\n\nTravessa Leste.\n\nMas eu não vou adivinhar o que você vai perguntar pra ela.',
     },
-    { speaker: 'Augusto', text: 'E o senhor acreditou.' },
-    { speaker: 'Mauro', text: 'Era um carro amassado.\n\nNão abri investigação familiar.' },
-  ],
-  repair: [
-    { speaker: 'Augusto', text: 'Onde consertou?' },
-    {
-      speaker: 'Mauro',
-      text: 'Ela resolveu.\n\nEu paguei uma parte depois.\n\nTalvez eu ainda tenha a transferência.',
-    },
-    { speaker: 'Augusto', text: 'Preciso dela.' },
-  ],
-  elisa: [
-    { speaker: 'Mauro', text: 'Delegado...\n\no que esse carro fez?' },
-    { speaker: 'Augusto', text: 'É isso que eu estou tentando descobrir.' },
   ],
 }

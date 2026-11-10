@@ -1,63 +1,98 @@
-export type BiaTopicId = 'car' | 'rui' | 'hide' | 'know'
+export type BiaTopicId = 'jaguar' | 'permission' | 'alone' | 'driver' | 'night'
 
-export const BIA_TOPIC_IDS: BiaTopicId[] = ['car', 'rui', 'hide', 'know']
+export const BIA_TOPIC_IDS: BiaTopicId[] = ['jaguar', 'permission', 'alone', 'driver', 'night']
 
 export const biaTopicLabels: Record<BiaTopicId, string> = {
-  car: 'O comprovante',
-  rui: 'Quem dirigia',
-  hide: 'Por que esconder',
-  know: 'Elisa',
+  jaguar: 'O Jaguar',
+  permission: 'Autorização',
+  alone: 'Sozinha?',
+  driver: 'Quem dirigia',
+  night: 'Aquela noite',
 }
 
 export const biaTopicFlags: Record<BiaTopicId, string> = {
-  car: 'block08_bia_car',
-  rui: 'block08_bia_rui',
-  hide: 'block08_bia_hide',
-  know: 'block08_bia_know',
+  jaguar: 'block08_bia_jaguar',
+  permission: 'block08_bia_permission',
+  alone: 'block08_bia_alone',
+  driver: 'block08_bia_driver',
+  night: 'block08_bia_night',
 }
 
 export type BiaBeat = { speaker?: string; text: string }
 
 export const biaBeats: Record<BiaTopicId, BiaBeat[]> = {
-  car: [
-    { speaker: 'Bia', text: 'Meu padrasto te mandou?' },
-    { speaker: 'Augusto', text: 'Não.\n\nEle me deu um comprovante.' },
-    { speaker: 'Augusto', text: 'E a oficina guardou as fotos.' },
-    { speaker: 'Bia', text: 'Meu Deus.' },
+  jaguar: [
+    { speaker: 'Augusto', text: 'Quero falar sobre o Jaguar do Mauro.' },
+    { speaker: 'Bia', text: 'O quê que tem?' },
+    { speaker: 'Augusto', text: 'XJ6 verde. 1996.' },
+    { speaker: 'Bia', text: 'Isso foi há uma vida.' },
+    { speaker: 'Augusto', text: 'Você bateu aquele carro?' },
+    { speaker: 'Bia', text: 'Já falei disso com meu padrasto.' },
+    { speaker: 'Augusto', text: 'Não perguntei o que você falou pra ele.' },
+    { speaker: 'Bia', text: 'Então pergunta pra ele.' },
+    { speaker: 'Augusto', text: 'Perguntei.' },
   ],
-  rui: [
-    { speaker: 'Augusto', text: 'Você não dirigia.' },
-    { speaker: 'Augusto', text: 'Quem dirigia, Bia?' },
+  permission: [
+    {
+      speaker: 'Augusto',
+      text: 'Mauro disse que você não tinha autorização para sair com o Jaguar.',
+    },
+    { speaker: 'Bia', text: 'Eu era adulta.' },
+    { speaker: 'Augusto', text: 'Não foi o que eu perguntei.' },
+    { speaker: 'Bia', text: 'Era um carro da família.' },
+    {
+      speaker: 'Augusto',
+      text: 'Era o carro dele.\n\nE ele acabou de me dizer que você não podia pegar.',
+    },
+    {
+      speaker: 'Augusto',
+      text: 'Posso voltar lá agora.\n\nPosso dizer onde aquele carro realmente bateu e perguntar por que você contou que tinha raspado manobrando.\n\nOu você pode me contar antes.',
+    },
+    {
+      speaker: 'Bia',
+      text: 'Tá.\n\nEu peguei o carro.\n\nSaí sem pedir.\n\nBati.\n\nFoi isso.',
+    },
+  ],
+  alone: [
+    { speaker: 'Augusto', text: 'Sozinha?' },
+    { speaker: 'Bia', text: 'Sim.' },
+    {
+      speaker: 'Augusto',
+      text: 'O homem que consertou o carro lembra de você.\n\nE lembra que você não apareceu sozinha.',
+    },
+    { speaker: 'Bia', text: '…' },
+  ],
+  driver: [
+    { speaker: 'Augusto', text: 'Você quer continuar dizendo que estava dirigindo?' },
+    { speaker: 'Bia', text: 'Eu já disse o que aconteceu.' },
+    {
+      speaker: 'Augusto',
+      text: 'Onde vocês estavam antes.\n\nDe que lado você acertou a proteção.\n\nOnde o carro parou.\n\nQuem estava com você.',
+    },
+    {
+      speaker: 'Augusto',
+      text: 'Eu não estou aqui por causa de um Jaguar arranhado.\n\nHoras depois, uma garota morreu porque aquela proteção não segurou o peso dela.',
+    },
+    { speaker: 'Bia', text: 'Eu não sabia.' },
+    { speaker: 'Augusto', text: 'Eu acredito que você não sabia.\n\nMas preciso saber quem estava dirigindo.' },
     { speaker: 'Bia', text: 'Rui.' },
-    { speaker: 'Augusto', text: 'Ele tinha bebido?' },
-    { speaker: 'Bia', text: 'Tinha.' },
-    { speaker: 'Augusto', text: 'Quanto?' },
-    { speaker: 'Bia', text: 'O suficiente.' },
-    { speaker: 'Augusto', text: 'Bateu numa proteção de via.' },
+    { speaker: 'Augusto', text: 'Rui quem?' },
+    { speaker: 'Bia', text: 'Ele estava dirigindo.' },
     {
       speaker: 'Bia',
-      text: 'Foi rápido.\n\nA gente bateu, parou, olhou o carro.\n\nParecia só...\n\numa merda que ia custar dinheiro.',
-    },
-    { speaker: 'Augusto', text: 'E vocês foram embora.' },
-    { speaker: 'Bia', text: 'Fomos.' },
-  ],
-  hide: [
-    { speaker: 'Augusto', text: 'Por que disse ao Mauro que tinha sido você?' },
-    {
-      speaker: 'Bia',
-      text: 'Porque o carro era dele.\n\nPorque Rui estava bêbado.\n\nPorque eu tinha certeza de que, se meu padrasto descobrisse, acabava tudo.\n\nNaquela hora aquilo era o pior problema do mundo.',
+      text: 'Porque eu tinha pegado o carro escondida.\n\nPorque o Rui tinha bebido.\n\nPorque meu padrasto ia acabar com a gente se descobrisse que eu entreguei aquele carro pra ele.',
     },
   ],
-  know: [
-    { speaker: 'Augusto', text: 'Depois Elisa morreu.' },
+  night: [
     {
       speaker: 'Bia',
-      text: 'Eu vi na notícia.\n\nMas não...\n\neu nunca liguei uma coisa à outra.',
+      text: 'Rui perdeu o controle numa curva.\n\nPegou o guardrail de raspão.\n\nO Jaguar continuou rodando.\n\nA gente parou, entrou em pânico e foi embora.',
     },
-    { speaker: 'Augusto', text: 'Nem quando disseram onde ela caiu?' },
     {
       speaker: 'Bia',
-      text: 'Não sabia exatamente onde tinha sido.\n\nE eu não queria saber.\n\nTalvez essa seja a parte pior.',
+      text: 'Depois levamos o carro pro Dênis.\n\nPaguei em dinheiro.\n\nContei pro Mauro que tinha raspado manobrando.\n\nNunca liguei isso à Elisa.',
     },
+    { speaker: 'Augusto', text: 'Você também tinha bebido?' },
+    { speaker: 'Bia', text: 'Um pouco.\n\nEle disse que conseguia dirigir.\n\nEu tinha dezenove anos.' },
   ],
 }

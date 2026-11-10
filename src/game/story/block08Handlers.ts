@@ -140,6 +140,17 @@ export function finishMiroThird() {
     { type: 'completeTask', id: 'task_press_miro_third' },
     mark,
     { type: 'updateHypothesis', id: 'hyp_miro_may_be_involved_elisa', state: 'weakened' },
+    { type: 'setFlag', id: 'block08_refl_miro_guardrail_pending', value: true },
+  ])
+}
+
+/** Reflection pós-Miro — libera ligação à Perícia. */
+export function onMiroGuardrailReflectionDone() {
+  const s = getInvestigationState()
+  if (s.flags.block08_miro_guardrail_reflection_done) return
+  dispatchActions([
+    { type: 'setFlag', id: 'block08_miro_guardrail_reflection_done', value: true },
+    { type: 'setFlag', id: 'block08_refl_miro_guardrail_pending', value: false },
     { type: 'setFlag', id: 'block08_guardrail_reexam_unlocked', value: true },
     {
       type: 'addTask',
@@ -151,8 +162,7 @@ export function finishMiroThird() {
 }
 
 /**
- * Progressão ao abrir o laudo complementar (fonte real da Perícia).
- * A solicitação em si é a ligação no ramal 212 — não o módulo Caso.
+ * Laudo complementar (fonte: Perícia, após abrir documento).
  */
 export function requestGuardrailReexam() {
   const s = getInvestigationState()
@@ -160,29 +170,83 @@ export function requestGuardrailReexam() {
   dispatchActions([
     { type: 'setFlag', id: 'block08_guardrail_done', value: true },
     { type: 'addEvidence', id: 'guardrail_impact_signs' },
+    { type: 'addEvidence', id: 'jaguar_x300_paint_fragment' },
     { type: 'completeTask', id: 'task_reexamine_guardrail' },
-    { type: 'setFlag', id: 'block08_vehicle_search_unlocked', value: true },
+    { type: 'setFlag', id: 'block08_refl_jaguar_lead_pending', value: true },
+  ])
+}
+
+/** Reflection pós-laudo — libera ponte humana até oficina (peças/importados). */
+export function onJaguarLeadReflectionDone() {
+  const s = getInvestigationState()
+  if (s.flags.block08_jaguar_lead_reflection_done) return
+  dispatchActions([
+    { type: 'setFlag', id: 'block08_jaguar_lead_reflection_done', value: true },
+    { type: 'setFlag', id: 'block08_refl_jaguar_lead_pending', value: false },
+    { type: 'setFlag', id: 'block08_parts_call_unlocked', value: true },
     {
       type: 'addTask',
-      id: 'task_find_compatible_vehicle',
-      label: 'Identificar um veículo compatível com o dano no guardrail',
+      id: 'task_find_jaguar_workshop',
+      label: 'Localizar oficina que trabalhava com Jaguar antigo na cidade',
     },
   ])
 }
 
-export function onMauroVehicleFound() {
+/** Ligação genérica peças/importados → indica Dênis. */
+export function onPartsShopDenisLead() {
   const s = getInvestigationState()
-  if (s.flags.block08_mauro_located) return
+  if (s.flags.block08_denis_contact_unlocked) return
   dispatchActions([
+    { type: 'setFlag', id: 'block08_denis_contact_unlocked', value: true },
+    { type: 'discoverPerson', id: 'denis', status: 'located' },
+    { type: 'unlockLocation', id: 'oficina-denis', status: 'visitAvailable' },
+    { type: 'completeTask', id: 'task_find_jaguar_workshop' },
+    {
+      type: 'addTask',
+      id: 'task_talk_denis',
+      label: 'Ir à oficina de Dênis — memória do Jaguar verde',
+    },
+  ])
+}
+
+export function finishDenisInterview() {
+  const s = getInvestigationState()
+  const mark = { type: 'unlockLocation' as const, id: 'oficina-denis', status: 'visited' as const }
+  if (s.flags.block08_denis_interview_done) {
+    if (s.locations['oficina-denis']?.status === 'visitAvailable') dispatchActions([mark])
+    return
+  }
+  dispatchActions([
+    { type: 'setFlag', id: 'block08_denis_interview_done', value: true },
+    { type: 'discoverPerson', id: 'denis', status: 'interviewed' },
+    { type: 'addEvidence', id: 'denis_remembers_jaguar_green' },
+    { type: 'addEvidence', id: 'denis_gothic_client_pair' },
+    { type: 'completeTask', id: 'task_talk_denis' },
+    mark,
+    { type: 'setFlag', id: 'block08_detran_call_unlocked', value: true },
+    {
+      type: 'addTask',
+      id: 'task_detran_jaguar_fleet',
+      label: 'Solicitar ao DETRAN levantamento histórico de Jaguar XJ6 verde (X300)',
+    },
+  ])
+}
+
+/** Ligação formal DETRAN — proprietário Mauro. */
+export function onDetranMauroCallDone() {
+  const s = getInvestigationState()
+  if (s.flags.block08_detran_done) return
+  dispatchActions([
+    { type: 'setFlag', id: 'block08_detran_done', value: true },
     { type: 'setFlag', id: 'block08_mauro_located', value: true },
     { type: 'discoverPerson', id: 'mauro', status: 'located' },
-    { type: 'addEvidence', id: 'mauro_vehicle_compatible_damage' },
+    { type: 'addEvidence', id: 'jaguar_registered_mauro' },
+    { type: 'completeTask', id: 'task_detran_jaguar_fleet' },
     { type: 'unlockLocation', id: 'mauro-casa', status: 'visitAvailable' },
-    { type: 'completeTask', id: 'task_find_compatible_vehicle' },
     {
       type: 'addTask',
       id: 'task_talk_mauro',
-      label: 'Falar com Mauro sobre o veículo',
+      label: 'Falar com Mauro sobre o Jaguar XJ6',
     },
   ])
 }
@@ -199,41 +263,23 @@ export function finishMauroInterview() {
     { type: 'discoverPerson', id: 'mauro', status: 'interviewed' },
     { type: 'discoverPerson', id: 'bia', status: 'identified' },
     { type: 'addEvidence', id: 'mauro_bia_said_scraped_car' },
-    { type: 'addEvidence', id: 'mauro_repair_transfer_denis' },
-    { type: 'addDocument', id: 'doc-mauro-transferencia' },
+    { type: 'addEvidence', id: 'bia_used_jaguar_without_permission' },
     { type: 'completeTask', id: 'task_talk_mauro' },
     mark,
-    { type: 'discoverPerson', id: 'denis', status: 'located' },
-    { type: 'unlockLocation', id: 'oficina-denis', status: 'visitAvailable' },
+    { type: 'unlockLocation', id: 'bia-casa', status: 'visitAvailable' },
     {
       type: 'addTask',
-      id: 'task_talk_denis',
-      label: 'Ir à oficina de Dênis com o registro do reparo',
+      id: 'task_talk_bia',
+      label: 'Falar com Bia sobre o Jaguar do Mauro',
     },
   ])
 }
 
-export function finishDenisInterview() {
+/** Compat: saves antigos / laudo câmera. */
+export function onMauroVehicleFound() {
   const s = getInvestigationState()
-  const mark = { type: 'unlockLocation' as const, id: 'oficina-denis', status: 'visited' as const }
-  if (s.flags.block08_denis_interview_done) {
-    if (s.locations['oficina-denis']?.status === 'visitAvailable') dispatchActions([mark])
-    return
-  }
-  dispatchActions([
-    { type: 'setFlag', id: 'block08_denis_interview_done', value: true },
-    { type: 'discoverPerson', id: 'denis', status: 'interviewed' },
-    { type: 'addEvidence', id: 'denis_workshop_damage_photos' },
-    { type: 'addEvidence', id: 'vehicle_guardrail_damage_match' },
-    { type: 'completeTask', id: 'task_talk_denis' },
-    mark,
-    { type: 'setFlag', id: 'block08_bia_search_unlocked', value: true },
-    {
-      type: 'addTask',
-      id: 'task_locate_bia',
-      label: 'Localizar Bia pelos vínculos familiares/documentais',
-    },
-  ])
+  if (s.flags.block08_mauro_located) return
+  onDetranMauroCallDone()
 }
 
 export function finishBiaInterview() {
@@ -251,11 +297,11 @@ export function finishBiaInterview() {
     { type: 'addEvidence', id: 'rui_drove_drunk_hit_rail' },
     { type: 'completeTask', id: 'task_talk_bia' },
     mark,
-    { type: 'setFlag', id: 'block08_rui_search_unlocked', value: true },
+    { type: 'unlockLocation', id: 'rui-casa', status: 'visitAvailable' },
     {
       type: 'addTask',
-      id: 'task_locate_rui',
-      label: 'Localizar Rui',
+      id: 'task_talk_rui',
+      label: 'Falar com Rui',
     },
   ])
 }

@@ -178,17 +178,29 @@ export const callScripts: CallScript[] = [
     available: (s) =>
       flag(s, 'block08_guardrail_reexam_unlocked') && !flag(s, 'block08_guardrail_done'),
     lines: [
-      { who: 'other', text: 'Perícia, criminalística.' },
+      { who: 'other', text: 'Criminalística.' },
       {
         who: 'augusto',
-        text: 'Augusto Nogueira. Preciso de reanálise das fotografias antigas do guardrail da via auxiliar — deformações e vestígios preservados.',
+        text: 'Augusto Nogueira. Preciso que vocês reabram o material fotográfico da queda de Elisa Duarte.',
+      },
+      { who: 'other', text: 'O caso antigo?' },
+      {
+        who: 'augusto',
+        text: 'Principalmente a proteção da via. Não quero uma revisão da queda. Quero a estrutura.',
+      },
+      { who: 'other', text: 'Procurando o quê?' },
+      {
+        who: 'augusto',
+        text: 'Quero saber se aquele dano podia estar ali antes de Elisa encostar no guardrail.',
       },
       {
         who: 'other',
-        text: 'Temos o material lacrado. Comparo impacto, transferência e o que foi tratado como dano antigo na época.',
+        text: 'As fotografias originais ainda estão preservadas. Vou pedir comparação de deformação e vestígios.',
       },
-      { who: 'augusto', text: 'Quando o laudo complementar estiver pronto, encaminhem ao sistema.' },
-      { who: 'other', text: 'Retorno em algumas horas.' },
+      {
+        who: 'augusto',
+        text: 'Procurem impacto automotivo. Tinta, plástico, metal, direção da força. O que tiver.',
+      },
     ],
     timeSkip: 'Algumas horas depois…',
     result: {
@@ -213,10 +225,61 @@ export const callScripts: CallScript[] = [
       },
     ],
     notYet: [
-      { who: 'other', text: 'Perícia, criminalística.' },
+      { who: 'other', text: 'Criminalística.' },
       { who: 'augusto', text: 'Ainda não tenho solicitação formal para o senhor.' },
       { who: 'other', text: 'Quando tiver material e pedido específicos, ligue de novo.' },
     ],
+  },
+  {
+    id: 'call-parts-jaguar-lead',
+    speaker: 'Peças / importados (atendimento)',
+    ext: 'PECA',
+    available: (s) => flag(s, 'block08_parts_call_unlocked') && !flag(s, 'block08_denis_contact_unlocked'),
+    lines: [
+      { who: 'other', text: 'Bom dia.' },
+      {
+        who: 'augusto',
+        text: 'Polícia Civil. Estou tentando localizar uma oficina que trabalhasse com Jaguar antigo aqui na cidade uns seis anos atrás.',
+      },
+      { who: 'other', text: 'Jaguar novo ou velho?' },
+      { who: 'augusto', text: 'XJ6. Meados dos noventa.' },
+      {
+        who: 'other',
+        text: 'Aqui quase ninguém queria pegar isso.\n\nFala com o Dênis. Ele mexia bastante com importado velho e carro que os outros não queriam encostar.',
+      },
+    ],
+    result: { label: 'Indicação', detail: 'Oficina Dênis — importados antigos.' },
+    onComplete: [{ type: 'completeCall', id: 'call-parts-jaguar-lead' }],
+    repeat: [{ who: 'other', text: 'Já te indiquei o Dênis, delegado.' }],
+  },
+  {
+    id: 'call-detran-jaguar',
+    speaker: 'DETRAN — histórico de frota',
+    ext: 'DETRAN',
+    available: (s) => flag(s, 'block08_detran_call_unlocked') && !flag(s, 'block08_detran_done'),
+    lines: [
+      {
+        who: 'augusto',
+        text: 'Delegado Augusto Nogueira, Polícia Civil. Preciso de levantamento histórico de frota.',
+      },
+      { who: 'other', text: 'Quais filtros?' },
+      {
+        who: 'augusto',
+        text: 'Jaguar XJ6. Geração X300. Ano aproximado entre 1995 e 1997. Cor registrada verde. Quero os veículos que estavam registrados nesta regional na data que vou encaminhar.',
+      },
+      { who: 'other', text: 'É um filtro bem específico.' },
+      { who: 'augusto', text: 'Quantos?' },
+      {
+        who: 'other',
+        text: 'Três na regional naquele período.\n\nDois estavam registrados em municípios vizinhos.\n\nSó um constava nesta cidade na data informada.',
+      },
+      { who: 'augusto', text: 'Proprietário?' },
+      { who: 'other', text: 'Mauro.' },
+    ],
+    result: { label: 'Levantamento', detail: 'Um Jaguar XJ6 verde nesta cidade — titular Mauro.' },
+    onComplete: [{ type: 'completeCall', id: 'call-detran-jaguar' }],
+    repeat: [{ who: 'other', text: 'O levantamento de Jaguar verde já foi registrado no protocolo.' }],
+    notYet: [{ who: 'other', text: 'Preciso dos filtros e da data formalizados na solicitação.' }],
   },
   {
     id: 'call-pericia-device',

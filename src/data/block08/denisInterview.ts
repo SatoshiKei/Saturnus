@@ -1,55 +1,74 @@
-export type DenisTopicId = 'order' | 'photos' | 'match' | 'memory'
+export type DenisTopicId = 'intro' | 'jaguar' | 'people'
 
-export const DENIS_TOPIC_IDS: DenisTopicId[] = ['order', 'photos', 'match', 'memory']
+export const DENIS_TOPIC_IDS: DenisTopicId[] = ['intro', 'jaguar', 'people']
 
 export const denisTopicLabels: Record<DenisTopicId, string> = {
-  order: 'A ordem',
-  photos: 'As fotos',
-  match: 'Comparar',
-  memory: 'Perícia',
+  intro: 'O carro',
+  jaguar: 'O dano',
+  people: 'Quem trouxe',
 }
 
 export const denisTopicFlags: Record<DenisTopicId, string> = {
-  order: 'block08_denis_order',
-  photos: 'block08_denis_photos',
-  match: 'block08_denis_match',
-  memory: 'block08_denis_memory',
+  intro: 'block08_denis_intro',
+  jaguar: 'block08_denis_jaguar',
+  people: 'block08_denis_people',
 }
 
 export type DenisBeat = { speaker?: string; text: string }
 
 export const denisBeats: Record<DenisTopicId, DenisBeat[]> = {
-  order: [
-    { speaker: 'Dênis', text: 'Seis anos?' },
-    { speaker: 'Augusto', text: 'Seis.' },
-    { speaker: 'Dênis', text: 'Eu mal lembro o que entrou aqui mês passado.' },
-    { speaker: 'Augusto', text: 'Tenho o comprovante.' },
-    { speaker: 'Dênis', text: 'Aí já melhora.' },
-    { speaker: 'Dênis', text: 'Achei.\n\nLateral dianteira. Para-lama, tinta, alinhamento.' },
-  ],
-  photos: [
-    { speaker: 'Augusto', text: 'Tem fotografia?' },
-    { speaker: 'Dênis', text: 'Se fizeram orçamento aqui, provavelmente.' },
-    { speaker: 'Dênis', text: 'Tem.' },
-  ],
-  match: [
-    { speaker: 'Augusto', text: 'Quero comparar com isso.' },
-    { speaker: 'Dênis', text: 'O que é?' },
-    { speaker: 'Augusto', text: 'Foto de uma proteção de via.' },
-    { speaker: 'Dênis', text: 'Essa tinta aqui...' },
-    { speaker: 'Augusto', text: 'É compatível?' },
+  intro: [
+    { speaker: 'Dênis', text: 'Sou eu.' },
+    {
+      speaker: 'Augusto',
+      text: 'Polícia Civil. Preciso perguntar sobre um carro que pode ter passado por aqui alguns anos atrás.',
+    },
+    { speaker: 'Dênis', text: 'Seis anos? Se for Uno, Gol ou Celta, pode voltar pra casa.' },
+    { speaker: 'Augusto', text: 'Jaguar XJ6.' },
+    { speaker: 'Dênis', text: 'Verde?' },
+    { speaker: 'Augusto', text: 'Por que verde?' },
     {
       speaker: 'Dênis',
-      text: 'Compatível eu digo.\n\n“É o mesmo carro” eu não digo olhando uma foto.',
+      text: 'Porque Jaguar eu lembro.\n\nVerde então, mais ainda.',
     },
   ],
-  memory: [
-    { speaker: 'Augusto', text: 'Certo.' },
+  jaguar: [
+    { speaker: 'Augusto', text: 'O dano era compatível com uma pancada em proteção metálica?' },
     {
       speaker: 'Dênis',
-      text: 'Mas altura bate.\n\nPonto de contato bate.\n\nE esse tipo de marca aqui é bem parecido.',
+      text: 'Podia ser.\n\nPara-choque, para-lama, lateral. Pegou alguma coisa de raspão e com força.',
     },
-    { speaker: 'Augusto', text: 'O suficiente para justificar perícia.' },
-    { speaker: 'Dênis', text: 'Isso é com vocês.\n\nEu só conserto o estrago.' },
+    {
+      speaker: 'Dênis',
+      text: 'XJ6 antigo, verde-escuro, interior bege.\n\nCanto dianteiro direito destruído — friso, para-lama, pintura raspada.\n\nO carro ainda rodava.',
+    },
+    { speaker: 'Augusto', text: 'Placa?' },
+    { speaker: 'Dênis', text: 'Depois de seis anos? Nem ideia.' },
+    { speaker: 'Augusto', text: 'Seguro?' },
+    { speaker: 'Dênis', text: 'Não.\n\nDinheiro.' },
+    {
+      speaker: 'Dênis',
+      text: 'Chegou pouco depois daquela madrugada.\n\nGeração X300 — uns noventa e cinco, noventa e seis.',
+    },
+  ],
+  people: [
+    { speaker: 'Augusto', text: 'Você lembra de quem trouxe?' },
+    { speaker: 'Dênis', text: 'Da guria.' },
+    { speaker: 'Augusto', text: 'Nome?' },
+    { speaker: 'Dênis', text: 'Nem ideia.' },
+    {
+      speaker: 'Dênis',
+      text: 'Jovem demais pra combinar com aquele carro.\n\nToda de preto. Cabelo escuro, maquiagem carregada.\n\nParecia que tinha saído de outra década e roubado o carro de outra pessoa.',
+    },
+    { speaker: 'Augusto', text: 'Estava sozinha?' },
+    {
+      speaker: 'Dênis',
+      text: 'Tinha um rapaz.\n\nMais ou menos da idade dela.\n\nNervosos. Queriam reparo rápido.',
+    },
+    { speaker: 'Augusto', text: 'Quem dirigia?' },
+    {
+      speaker: 'Dênis',
+      text: 'Não lembro.\n\nE não vou inventar porque você quer ouvir.',
+    },
   ],
 }

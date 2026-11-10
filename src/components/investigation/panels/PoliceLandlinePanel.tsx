@@ -10,6 +10,7 @@ import {
 import { useInvestigation } from '../../../game/hooks/useInvestigation'
 import { onHexCallsPreserved } from '../../../game/story/block04Handlers'
 import { onAsterHenriqueNamed, onRenataCallDone } from '../../../game/story/block07Handlers'
+import { onDetranMauroCallDone, onPartsShopDenisLead } from '../../../game/story/block08Handlers'
 import { playSfx } from '../../../lib/sfx'
 import { CallSession } from '../CallSession'
 import { HexCallScene } from '../HexCallScene'
@@ -63,11 +64,21 @@ export function PoliceLandline({ onClose }: { onClose: () => void }) {
         scriptId: 'call-aster-henrique',
       })
     }
+    if (inv.flags.block08_parts_call_unlocked && !inv.flags.block08_denis_contact_unlocked) {
+      extra.push({ key: 'PECA', name: 'Peças / importados', scriptId: 'call-parts-jaguar-lead' })
+    }
+    if (inv.flags.block08_detran_call_unlocked && !inv.flags.block08_detran_done) {
+      extra.push({ key: 'DETRAN', name: 'DETRAN — frota histórica', scriptId: 'call-detran-jaguar' })
+    }
     return [...landlineDirectory, ...extra]
   }, [
     inv.flags.block07_renata_call_unlocked,
     inv.flags.block07_aster_call_unlocked,
     inv.flags.block07_henrique_named,
+    inv.flags.block08_parts_call_unlocked,
+    inv.flags.block08_denis_contact_unlocked,
+    inv.flags.block08_detran_call_unlocked,
+    inv.flags.block08_detran_done,
   ])
 
   // Se o jogador saiu no meio da cena, as gravações ainda precisam chegar à bancada.
@@ -95,6 +106,8 @@ export function PoliceLandline({ onClose }: { onClose: () => void }) {
     endCall()
     if (id === 'call-renata-farias') onRenataCallDone()
     if (id === 'call-aster-henrique') onAsterHenriqueNamed()
+    if (id === 'call-parts-jaguar-lead') onPartsShopDenisLead()
+    if (id === 'call-detran-jaguar') onDetranMauroCallDone()
   }
 
   const dialNumber = () => {
