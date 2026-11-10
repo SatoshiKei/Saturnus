@@ -184,6 +184,16 @@ export function finishMiroInterview() {
     { type: 'addHypothesis', id: 'hyp_mariana_right_on_ignored_aspects' },
     { type: 'updateHypothesis', id: 'hyp_mariana_right_on_ignored_aspects', state: 'confirmed' },
     { type: 'setFlag', id: 'block06_refl_miro_pending', value: true },
+    {
+      type: 'notifyInvestigationUpdate',
+      id: 'miro-followed-elisa',
+      kind: 'evidence',
+      presentation: 'card',
+      label: 'EVIDÊNCIA REGISTRADA',
+      title: 'Miro esteve na trajetória de Elisa',
+      summary: 'A admissão de Miro altera a reconstrução que condenou André.',
+      refId: 'miro_followed_elisa_by_mistake',
+    },
   ]
   dispatchActions(actions)
 }

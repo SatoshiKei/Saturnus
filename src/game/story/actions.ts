@@ -4,13 +4,25 @@ import { evidenceSourceLabel } from '../../lib/labels'
 import { seedEvidenceCatalog } from '../../data/game/seedEvidence'
 import { block01MarianaChatIds } from '../../data/block01/marianaChats'
 import { appDefinitions } from '../../data/game/seedApps'
-import type { DiscoveryEvent, InvestigationState, StoryActionRef } from '../types'
+import type { DiscoveryEvent, DiscoveryKind, InvestigationState, StoryActionRef } from '../types'
 import { maxPersonStatus } from '../state/personStatusOrder'
 
-/** Empilha um evento de descoberta (sem duplicar o mesmo id). */
+/** Prioridade entre notices no mesmo lote (maior vence). */
+const DISCOVERY_PRIORITY: Partial<Record<DiscoveryKind, number>> = {
+  contradiction: 100,
+  message: 90,
+  location: 80,
+  evidence: 70,
+  document: 60,
+  objective: 50,
+  audio: 40,
+  contact: 30,
+  hypothesis: 20,
+}
+
+/** Empilha discovery (sem duplicar id). Áudios no mesmo lote agregam. */
 export function withDiscovery(state: InvestigationState, ev: DiscoveryEvent): InvestigationState {
   if (state.discoveries.some((d) => d.id === ev.id)) return state
-  // Vários áudios seguidos (ex.: lote preservado pela central) viram um único aviso.
   if (ev.kind === 'audio') {
     const idx = state.discoveries.findIndex((d) => d.kind === 'audio')
     if (idx >= 0) {
@@ -19,13 +31,32 @@ export function withDiscovery(state: InvestigationState, ev: DiscoveryEvent): In
       const merged: DiscoveryEvent = {
         ...prev,
         title: 'Novos áudios na bancada',
-        subtitle: `${count} arquivos`,
+        subtitle: `${count} arquivos adicionados à bancada`,
         count,
       }
       return { ...state, discoveries: state.discoveries.map((d, i) => (i === idx ? merged : d)) }
     }
   }
   return { ...state, discoveries: [...state.discoveries, ev] }
+}
+
+function discoveryPriority(ev: DiscoveryEvent): number {
+  // DiscoveryCard consome o evento causal — vence qualquer notice do mesmo lote.
+  if (ev.presentation === 'card') return 1000 + (DISCOVERY_PRIORITY[ev.kind] ?? 0)
+  return DISCOVERY_PRIORITY[ev.kind] ?? 0
+}
+
+/** Mantém só o discovery novo de maior prioridade no lote. */
+function collapseNewDiscoveries(
+  before: DiscoveryEvent[],
+  after: InvestigationState,
+): InvestigationState {
+  const beforeIds = new Set(before.map((d) => d.id))
+  const retained = after.discoveries.filter((d) => beforeIds.has(d.id))
+  const brandNew = after.discoveries.filter((d) => !beforeIds.has(d.id))
+  if (brandNew.length <= 1) return after
+  const best = brandNew.reduce((a, b) => (discoveryPriority(b) > discoveryPriority(a) ? b : a))
+  return { ...after, discoveries: [...retained, best] }
 }
 
 function catalogEvidence(id: string) {
@@ -38,15 +69,30 @@ function defaultPhoneApps(device: 'mariana' | 'augusto') {
     .map((a) => a.id)
 }
 
+/** Helper para handlers: feedback visual explícito (opt-in). */
+export function notifyUpdate(opts: {
+  id: string
+  kind: DiscoveryKind
+  title: string
+  subtitle?: string
+  summary?: string
+  label?: string
+  refId?: string
+  presentation?: 'card' | 'notice'
+}): Extract<StoryActionRef, { type: 'notifyInvestigationUpdate' }> {
+  return { type: 'notifyInvestigationUpdate', ...opts }
+}
+
 export function applyStoryActions(
   state: InvestigationState,
   actions: StoryActionRef[],
 ): InvestigationState {
+  const beforeDiscoveries = state.discoveries
   let next = state
   for (const action of actions) {
     next = applyOne(next, action)
   }
-  return next
+  return collapseNewDiscoveries(beforeDiscoveries, next)
 }
 
 function applyOne(state: InvestigationState, action: StoryActionRef): InvestigationState {
@@ -65,23 +111,19 @@ function applyOne(state: InvestigationState, action: StoryActionRef): Investigat
         evidence: { ...state.evidence, [action.id]: def },
         evidenceOwned: [...state.evidenceOwned, action.id],
       }
-      // Interpretação interna / detalhe agrupado: sem notification.
-      if (def.catalogHidden) return next
+      // Evidência comum: silenciosa. Só áudio novo notifica a bancada.
+      if (def.type !== 'audio') return next
       return withDiscovery(next, {
         id: `evidence:${action.id}`,
-        kind: def.type === 'audio' ? 'audio' : 'evidence',
+        kind: 'audio',
         title:
-          def.type === 'audio'
-            ? def.sourceType === 'unknown-channel'
-              ? 'Arquivo anônimo recebido'
-              : (def.displayFileName ?? def.title)
-            : def.title,
+          def.sourceType === 'unknown-channel'
+            ? 'Arquivo anônimo recebido'
+            : (def.displayFileName ?? def.title),
         subtitle:
-          def.type === 'audio'
-            ? def.sourceType === 'unknown-channel'
-              ? 'Origem desconhecida · disponível na bancada'
-              : 'Disponível na bancada de áudio'
-            : undefined,
+          def.sourceType === 'unknown-channel'
+            ? 'Origem desconhecida · disponível na bancada'
+            : 'Disponível na bancada de áudio',
         source: evidenceSourceLabel(def),
         summary: def.description,
         refId: action.id,
@@ -91,15 +133,8 @@ function applyOne(state: InvestigationState, action: StoryActionRef): Investigat
       if (state.documentsOwned.includes(action.id)) return state
       const doc = seedDocuments.find((d) => d.id === action.id)
       if (!doc) return state
-      const next = { ...state, documentsOwned: [...state.documentsOwned, action.id] }
-      if (doc.playerFacing === false) return next
-      return withDiscovery(next, {
-        id: `document:${action.id}`,
-        kind: 'document',
-        title: doc.title,
-        subtitle: doc.category,
-        refId: action.id,
-      })
+      // Sempre silencioso — feedback via notifyInvestigationUpdate quando o evento merecer.
+      return { ...state, documentsOwned: [...state.documentsOwned, action.id] }
     }
     case 'completeCall':
       if (state.callsDone.includes(action.id)) return state
@@ -139,21 +174,8 @@ function applyOne(state: InvestigationState, action: StoryActionRef): Investigat
     case 'unlockContact': {
       const c = state.contacts[action.contactId]
       if (!c) return state
-      const moved = { ...state, contacts: { ...state.contacts, [action.contactId]: { ...c, unlocked: true } } }
-      if (c.unlocked) return moved
-      return withDiscovery(moved, {
-        id: `contact:${action.contactId}`,
-        kind: 'contact',
-        title: c.displayName,
-        subtitle: c.institution
-          ? c.phone
-            ? `Anotar no telefone fixo: ${c.phone}`
-            : 'Registrado na agenda do telefone fixo'
-          : c.phone
-            ? `Número registrado: ${c.phone}`
-            : 'Registrado na agenda',
-        refId: action.contactId,
-      })
+      // Silencioso — badge no telefone; notify explícito se o evento precisar.
+      return { ...state, contacts: { ...state.contacts, [action.contactId]: { ...c, unlocked: true } } }
     }
     case 'unlockTopic':
       if (state.interviewTopicsUnlocked.includes(action.id)) return state
@@ -163,27 +185,16 @@ function applyOne(state: InvestigationState, action: StoryActionRef): Investigat
       }
     case 'addTask': {
       if (state.tasks.some((t) => t.id === action.id)) return state
-      return withDiscovery(
-        {
-          ...state,
-          tasks: [...state.tasks, { id: action.id, label: action.label ?? action.id, completed: false }],
-        },
-        { id: `objective:${action.id}`, kind: 'objective', title: action.label ?? action.id, refId: action.id },
-      )
+      // Silencioso — CaseNotepad + pulse.
+      return {
+        ...state,
+        tasks: [...state.tasks, { id: action.id, label: action.label ?? action.id, completed: false }],
+      }
     }
     case 'removeTask':
       return { ...state, tasks: state.tasks.filter((t) => t.id !== action.id) }
-    case 'replaceTasks': {
-      const replaced = { ...state, tasks: action.tasks.map((t) => ({ ...t })) }
-      const fresh = action.tasks.find((t) => !t.completed && !state.tasks.some((o) => o.id === t.id))
-      if (!fresh) return replaced
-      return withDiscovery(replaced, {
-        id: `objective:${fresh.id}`,
-        kind: 'objective',
-        title: fresh.label,
-        refId: fresh.id,
-      })
-    }
+    case 'replaceTasks':
+      return { ...state, tasks: action.tasks.map((t) => ({ ...t })) }
     case 'completeTask':
       return {
         ...state,
@@ -284,8 +295,9 @@ function applyOne(state: InvestigationState, action: StoryActionRef): Investigat
         },
       }
     }
-    case 'confirmContradiction':
+    case 'confirmContradiction': {
       if (state.contradictionsConfirmed.some((c) => c.id === action.id)) return state
+      const summary = contradictionDefs.find((c) => c.id === action.id)?.summary
       return withDiscovery(
         {
           ...state,
@@ -297,11 +309,12 @@ function applyOne(state: InvestigationState, action: StoryActionRef): Investigat
         {
           id: `contradiction:${action.id}`,
           kind: 'contradiction',
-          title: 'CONTRADIÇÃO REGISTRADA',
-          summary: contradictionDefs.find((c) => c.id === action.id)?.summary,
+          title: summary ?? 'Contradição registrada no caderno',
+          summary,
           refId: action.id,
         },
       )
+    }
     case 'pushProvocation': {
       if (state.provocationsPending.includes(action.id)) return state
       const prov = seedProvocations.find((p) => p.id === action.id)
@@ -329,6 +342,17 @@ function applyOne(state: InvestigationState, action: StoryActionRef): Investigat
       for (const id of action.ids) next.add(id)
       return { ...state, triggersFired: [...next] }
     }
+    case 'notifyInvestigationUpdate':
+      return withDiscovery(state, {
+        id: `notify:${action.id}`,
+        kind: action.kind,
+        title: action.title,
+        subtitle: action.subtitle,
+        summary: action.summary,
+        label: action.label,
+        refId: action.refId,
+        presentation: action.presentation ?? 'notice',
+      })
     default:
       return state
   }
@@ -344,4 +368,3 @@ export function createInitialPhoneState(device: 'mariana' | 'augusto') {
     readMessageIds: [] as string[],
   }
 }
-

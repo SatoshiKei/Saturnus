@@ -178,35 +178,34 @@
   z-index: 0;
 }
 
-.phone-home__device-label {
-  position: relative;
-  z-index: 1;
-  margin: 2px 0 8px;
-  text-align: center;
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.55);
-}
-
 .phone-home__pages {
   position: relative;
   z-index: 1;
   flex: 1;
   min-height: 0;
-  overflow: hidden;
-  touch-action: pan-y;
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  /* Manipulação própria no JS; evita scroll nativo competir com o clique. */
+  touch-action: none;
+  cursor: grab;
 }
 
-.phone-home__track {
-  display: flex;
-  height: 100%;
-  will-change: transform;
+.phone-home__pages:active {
+  cursor: grabbing;
+}
+
+.phone-home__pages::-webkit-scrollbar {
+  display: none;
 }
 
 .phone-home__grid {
   position: relative;
   z-index: 1;
-  flex: 0 0 auto;
+  flex: 0 0 100%;
   width: 100%;
   box-sizing: border-box;
   display: grid;
@@ -216,6 +215,8 @@
   align-content: start;
   overflow: hidden;
   padding: 4px 2px;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
 .phone-home__dots {

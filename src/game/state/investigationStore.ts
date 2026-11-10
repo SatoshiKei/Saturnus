@@ -187,9 +187,14 @@ export function deriveEvidenceFromAudio(sourceId: string, derivedId: string) {
   setFlag(`derived_from_${sourceId}`, true)
 }
 
+/** Fila visual — não é progresso narrativo; nunca persistir. */
+export function stripEphemeralUi(s: InvestigationState): InvestigationState {
+  return { ...s, discoveries: [], toastQueue: [] }
+}
+
 export function saveGame(s = state) {
   try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify(s))
+    localStorage.setItem(SAVE_KEY, JSON.stringify(stripEphemeralUi(s)))
     syncAutosaveMeta(s)
   } catch {
     /* ignore quota */
@@ -221,7 +226,7 @@ export function migrateState(raw: InvestigationState): InvestigationState {
     ...raw,
     version: STATE_VERSION,
     documentsOwned: [...owned],
-    discoveries: raw.discoveries ?? [],
+    discoveries: [],
     audioSeen: raw.audioSeen ?? raw.evidenceOwned?.filter((id) => raw.evidence?.[id]?.type === 'audio') ?? [],
     chatProgress: raw.chatProgress ?? {},
     callsDone: raw.callsDone ?? [],
@@ -279,7 +284,7 @@ export function loadGame(): boolean {
     const parsed = JSON.parse(raw) as InvestigationState
     const migrated = parsed.version >= STATE_VERSION ? { ...createInitialState(), ...parsed } : migrateState(parsed)
     const repaired = repairInvestigationState(migrated)
-    state = runStoryEngine(repaired)
+    state = stripEphemeralUi(runStoryEngine(repaired))
     saveGame(state)
     emit()
     return true
@@ -297,7 +302,7 @@ export function addPlayTime(ms: number) {
 export function applyLoadedState(next: InvestigationState) {
   const migrated = next.version >= STATE_VERSION ? { ...createInitialState(), ...next } : migrateState(next)
   const repaired = repairInvestigationState(migrated)
-  state = runStoryEngine(repaired)
+  state = stripEphemeralUi(runStoryEngine(repaired))
   saveGame(state)
   emit()
 }

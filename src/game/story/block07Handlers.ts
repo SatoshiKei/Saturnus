@@ -339,6 +339,16 @@ export function onHenriqueRevealReflectionDone() {
       id: 'task_investigate_henrique',
       label: 'Investigar Henrique Valença',
     },
+    {
+      type: 'notifyInvestigationUpdate',
+      id: 'henrique-identified',
+      kind: 'evidence',
+      presentation: 'card',
+      label: 'IDENTIDADE CONFIRMADA',
+      title: 'Henrique Valença',
+      summary: 'Ricardo Freitas era um nome falso. A identidade real entra no caderno.',
+      refId: 'ricardo_was_henrique_valenca',
+    },
   ])
 }
 

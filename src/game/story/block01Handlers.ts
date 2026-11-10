@@ -25,6 +25,16 @@ export function registerInitialPoliceReport() {
     { type: 'addDocument', id: 'doc-entrada-apartamento' },
     { type: 'addDocument', id: 'doc-apreensao-celular' },
     { type: 'addDocument', id: 'doc-extracao-inicial' },
+    {
+      type: 'notifyInvestigationUpdate',
+      id: 'bo-registered',
+      kind: 'evidence',
+      presentation: 'card',
+      label: 'EVIDÊNCIA REGISTRADA',
+      title: 'BO — desaparecimento de Mariana Silva',
+      summary: 'A ocorrência inicial foi incorporada ao caderno de investigação.',
+      refId: 'initial_police_report',
+    },
   ]
   dispatchActions(actions)
 }

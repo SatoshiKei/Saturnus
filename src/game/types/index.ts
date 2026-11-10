@@ -257,6 +257,17 @@ export type StoryCondition =
   | { type: 'passwordDiscovered'; which: 'marianaAccount' | 'diary' }
   | { type: 'contradictionConfirmed'; id: string }
 
+export type DiscoveryKind =
+  | 'evidence'
+  | 'document'
+  | 'contact'
+  | 'location'
+  | 'audio'
+  | 'hypothesis'
+  | 'objective'
+  | 'contradiction'
+  | 'message'
+
 export type StoryActionRef =
   | { type: 'setFlag'; id: string; value?: boolean }
   | { type: 'addEvidence'; id: string }
@@ -283,6 +294,26 @@ export type StoryActionRef =
   | { type: 'discoverSearchTerm'; term: string }
   /** Marca triggers `once` como já disparados (checkpoints DEV / save repair). */
   | { type: 'markTriggersFired'; ids: string[] }
+  /**
+   * Feedback visual explícito (opt-in). Não é emitido automaticamente por
+   * addEvidence / addDocument / addTask / unlockContact.
+   */
+  | {
+      type: 'notifyInvestigationUpdate'
+      id: string
+      kind: DiscoveryKind
+      title: string
+      subtitle?: string
+      summary?: string
+      /** Sobrescreve o rótulo padrão do kind (ex.: “CASO ATUALIZADO”). */
+      label?: string
+      refId?: string
+      /**
+       * `card` = DiscoveryCard claro (bloqueante, CTA caderno).
+       * `notice` = faixa preta auto-dismiss (padrão).
+       */
+      presentation?: 'card' | 'notice'
+    }
 
 export interface StoryTrigger {
   id: string
@@ -335,7 +366,7 @@ export interface InvestigationState {
   toastQueue: string[]
   /** Documentos que o jogador possui (pasta física e sistema). */
   documentsOwned: string[]
-  /** Fila de eventos de descoberta (cartões e avisos). */
+  /** Fila UI efêmera de discoveries (não persiste no save). */
   discoveries: DiscoveryEvent[]
   /** Áudios (ids de evidência) já abertos na bancada. */
   audioSeen: string[]
@@ -349,17 +380,6 @@ export interface InvestigationState {
   achievementUnlocks?: Record<string, number>
 }
 
-export type DiscoveryKind =
-  | 'evidence'
-  | 'document'
-  | 'contact'
-  | 'location'
-  | 'audio'
-  | 'hypothesis'
-  | 'objective'
-  | 'contradiction'
-  | 'message'
-
 export interface DiscoveryEvent {
   id: string
   kind: DiscoveryKind
@@ -370,6 +390,10 @@ export interface DiscoveryEvent {
   refId?: string
   /** Quantos itens do mesmo tipo foram agrupados (áudios em lote). */
   count?: number
+  /** Rótulo customizado no notice (senão usa o padrão do kind). */
+  label?: string
+  /** `card` = DiscoveryCard claro; omitido/`notice` = faixa preta. */
+  presentation?: 'card' | 'notice'
 }
 
 export interface ChatProgress {

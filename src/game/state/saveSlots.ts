@@ -107,8 +107,9 @@ export function syncAutosaveMeta(state: InvestigationState, thumbnail?: string |
 
 export function writeManualSlot(id: Exclude<SaveSlotId, 'auto'>, state: InvestigationState, thumbnail: string | null) {
   const meta = metaFromState(state, id, 'manual', thumbnail)
+  const persisted: InvestigationState = { ...state, discoveries: [], toastQueue: [] }
   try {
-    localStorage.setItem(`${SLOT_KEY_PREFIX}${id}`, JSON.stringify({ meta, state }))
+    localStorage.setItem(`${SLOT_KEY_PREFIX}${id}`, JSON.stringify({ meta, state: persisted }))
   } catch {
     /* quota */
   }

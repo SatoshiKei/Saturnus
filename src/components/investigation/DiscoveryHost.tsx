@@ -8,8 +8,8 @@ import { playSfx, type SfxId } from '../../lib/sfx'
 import '../../styles/investigation.css'
 
 const KIND_LABEL: Record<DiscoveryKind, string> = {
-  evidence: 'EVIDÊNCIA',
-  document: 'DOCUMENTO',
+  evidence: 'NOVA EVIDÊNCIA',
+  document: 'DOCUMENTO RECEBIDO',
   contact: 'NOVO CONTATO',
   location: 'NOVO LOCAL',
   audio: 'NOVO ÁUDIO',
@@ -35,6 +35,12 @@ const KIND_ACTION: Partial<Record<DiscoveryKind, { label: string; panel: HubPane
   location: { label: 'Abrir o mapa', panel: 'map' },
   audio: { label: 'Ir à bancada', panel: 'audio-lab' },
   contradiction: { label: 'Ver no caderno', panel: 'casebook' },
+}
+
+function noticeLabel(ev: DiscoveryEvent): string {
+  if (ev.label) return ev.label
+  if (ev.kind === 'audio' && (ev.count ?? 1) > 1) return 'NOVOS ÁUDIOS'
+  return KIND_LABEL[ev.kind]
 }
 
 function Glyph({ kind }: { kind: DiscoveryKind }) {
@@ -79,7 +85,8 @@ function Glyph({ kind }: { kind: DiscoveryKind }) {
   }
 }
 
-function EvidenceCard({ ev, onSeeNotebook }: { ev: DiscoveryEvent; onSeeNotebook: () => void }) {
+/** DiscoveryCard claro — opt-in via presentation:'card'. Não auto-dismiss. */
+function DiscoveryCard({ ev, onOpenNotebook }: { ev: DiscoveryEvent; onOpenNotebook: () => void }) {
   return (
     <div className="disc-card" role="status" data-testid="evidence-card" key={ev.id}>
       <button
@@ -91,19 +98,20 @@ function EvidenceCard({ ev, onSeeNotebook }: { ev: DiscoveryEvent; onSeeNotebook
       >
         ×
       </button>
-      <div className="disc-card__stamp">EVIDÊNCIA ADQUIRIDA</div>
+      <div className="disc-card__stamp">{ev.label ?? 'EVIDÊNCIA REGISTRADA'}</div>
       <div className="disc-card__head">
         <span className="disc-card__icon">
-          <Glyph kind="evidence" />
+          <Glyph kind={ev.kind === 'evidence' ? 'evidence' : ev.kind} />
         </span>
         <h3 className="disc-card__title">{ev.title}</h3>
       </div>
       {ev.source ? <p className="disc-card__source">{ev.source}</p> : null}
       {ev.summary ? <p className="disc-card__summary">{ev.summary}</p> : null}
+      {ev.subtitle && !ev.summary ? <p className="disc-card__summary">{ev.subtitle}</p> : null}
       <p className="disc-card__filed">Arquivada no caderno.</p>
       <div className="disc-card__actions">
-        <button type="button" className="disc-card__btn" data-testid="evidence-card-notebook" onClick={onSeeNotebook}>
-          Ver no caderno
+        <button type="button" className="disc-card__btn" data-testid="evidence-card-notebook" onClick={onOpenNotebook}>
+          Abrir no caderno
         </button>
       </div>
     </div>
@@ -112,7 +120,7 @@ function EvidenceCard({ ev, onSeeNotebook }: { ev: DiscoveryEvent; onSeeNotebook
 
 function Notice({ ev, action, onAction }: { ev: DiscoveryEvent; action?: { label: string }; onAction: () => void }) {
   useEffect(() => {
-    const t = window.setTimeout(() => dismissDiscovery(ev.id), action ? 6500 : 4200)
+    const t = window.setTimeout(() => dismissDiscovery(ev.id), action ? 5000 : 3500)
     return () => window.clearTimeout(t)
   }, [ev.id, action])
   return (
@@ -121,10 +129,12 @@ function Notice({ ev, action, onAction }: { ev: DiscoveryEvent; action?: { label
         <Glyph kind={ev.kind} />
       </span>
       <div className="disc-notice__body">
-        <p className="disc-notice__label">{KIND_LABEL[ev.kind]}</p>
+        <p className="disc-notice__label">{noticeLabel(ev)}</p>
         <p className="disc-notice__title">{ev.title}</p>
         {ev.subtitle ? <p className="disc-notice__sub">{ev.subtitle}</p> : null}
-        {ev.summary && ev.kind === 'contradiction' ? <p className="disc-notice__sub">{ev.summary}</p> : null}
+        {ev.summary && (ev.kind === 'contradiction' || !ev.subtitle) ? (
+          <p className="disc-notice__sub">{ev.summary}</p>
+        ) : null}
       </div>
       {action ? (
         <button type="button" className="disc-notice__btn" onClick={onAction}>
@@ -138,42 +148,36 @@ function Notice({ ev, action, onAction }: { ev: DiscoveryEvent; action?: { label
   )
 }
 
-/** Fila central de descobertas: cartão de evidência persistente + avisos curtos por tipo. */
+/** Fila: no máx. 1 item. Card claro (opt-in) ou notice preto. */
 export function DiscoveryHost() {
   const inv = useInvestigation()
-  const { openHub, locationScene } = useGameHub()
+  const { openHub, locationScene, hubPanel } = useGameHub()
   const head = inv.discoveries[0]
-  // Durante cenas de VN a fila fica pausada.
   const { fullscreenScene, shell } = useUiState()
   const paused = Boolean(locationScene) || fullscreenScene || shell !== 'playing'
+  const isCard = head?.presentation === 'card'
 
-  // Avisos curtos (não-evidência) empilham, até 3 por vez; cartões de evidência ficam sozinhos.
-  const stack: DiscoveryEvent[] = []
-  if (head && head.kind !== 'evidence') {
-    for (const ev of inv.discoveries) {
-      if (ev.kind === 'evidence' || stack.length >= 3) break
-      stack.push(ev)
-    }
-  }
-  const stackKey = (head?.kind === 'evidence' ? [head] : stack).map((e) => e.id).join('|')
+  useEffect(() => {
+    if (paused || !head || isCard || head.kind !== 'location' || hubPanel !== 'map') return
+    dismissDiscovery(head.id)
+  }, [head, hubPanel, paused, isCard])
 
   useEffect(() => {
     if (!head || paused) return
-    const shown = head.kind === 'evidence' ? [head] : stack
-    const seen = new Set<SfxId>()
-    for (const ev of shown) seen.add(KIND_SFX[ev.kind])
-    seen.forEach((id) => playSfx(id))
-  }, [stackKey, paused]) // eslint-disable-line react-hooks/exhaustive-deps
+    if (!isCard && head.kind === 'location' && hubPanel === 'map') return
+    playSfx(KIND_SFX[head.kind])
+  }, [head?.id, paused, hubPanel, isCard]) // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!head || paused) return null
+  if (!isCard && head.kind === 'location' && hubPanel === 'map') return null
 
-  if (head.kind === 'evidence') {
+  if (isCard) {
     return (
       <div className="disc-layer" data-testid="discovery-layer">
-        <EvidenceCard
+        <DiscoveryCard
           key={head.id}
           ev={head}
-          onSeeNotebook={() => {
+          onOpenNotebook={() => {
             dismissDiscovery(head.id)
             focusNotebook('evidence', head.refId)
             openHub('casebook')
@@ -182,25 +186,22 @@ export function DiscoveryHost() {
       </div>
     )
   }
+
+  const action = KIND_ACTION[head.kind]
   return (
     <div className="disc-layer disc-layer--notice" data-testid="discovery-layer">
-      {stack.map((ev) => {
-        const action = KIND_ACTION[ev.kind]
-        return (
-          <Notice
-            key={ev.id}
-            ev={ev}
-            action={action}
-            onAction={() => {
-              dismissDiscovery(ev.id)
-              if (action) {
-                if (action.panel === 'casebook') focusNotebook('contradictions')
-                openHub(action.panel)
-              }
-            }}
-          />
-        )
-      })}
+      <Notice
+        key={head.id}
+        ev={head}
+        action={action}
+        onAction={() => {
+          dismissDiscovery(head.id)
+          if (action) {
+            if (action.panel === 'casebook') focusNotebook('contradictions')
+            openHub(action.panel)
+          }
+        }}
+      />
     </div>
   )
 }

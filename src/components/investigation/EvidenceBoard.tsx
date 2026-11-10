@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent as PE, type WheelEvent } from 'react'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { buildEvidenceBoard, type BoardNode, type BoardNodeKind } from '../../game/board/buildEvidenceBoard'
+import { CasebookFilterBar } from './CasebookFilterBar'
 
 const KIND_LABEL: Record<BoardNodeKind, string> = {
   person: 'Pessoa',
@@ -90,21 +91,24 @@ export function EvidenceBoard({ onOpen }: { onOpen: (tab: string, id: string) =>
   const worldW = Math.max(1400, ...nodes.map((n) => n.x + 220))
   const worldH = Math.max(720, ...nodes.map((n) => n.y + 120))
 
+  const emptyLabel =
+    filter === 'fact'
+      ? 'Nenhum fato registrado até o momento.'
+      : filter === 'all'
+        ? 'Nada registrado no quadro ainda.'
+        : `Nenhum item em “${FILTERS.find((f) => f.id === filter)?.label ?? filter}”.`
+
   return (
     <div className="eb" data-testid="evidence-board">
-      <div className="eb-toolbar">
-        {FILTERS.map((f) => (
-          <button
-            key={f.id}
-            type="button"
-            className="eb-filter"
-            data-active={filter === f.id}
-            onClick={() => setFilter(f.id)}
-          >
-            {f.label}
-          </button>
-        ))}
-      </div>
+      <CasebookFilterBar
+        ariaLabel="Filtrar quadro"
+        options={FILTERS}
+        value={filter}
+        onChange={(id) => {
+          setFilter(id)
+          setSel(null)
+        }}
+      />
       <div
         className="eb-viewport"
         data-testid="evidence-board-view"
@@ -151,6 +155,7 @@ export function EvidenceBoard({ onOpen }: { onOpen: (tab: string, id: string) =>
             </button>
           ))}
         </div>
+        {visible.length === 0 ? <p className="eb-empty">{emptyLabel}</p> : null}
       </div>
       {selected ? (
         <aside className="eb-detail">

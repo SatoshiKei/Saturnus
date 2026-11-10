@@ -7,6 +7,7 @@ import { isPersonVisibleInRegistry } from '../../../game/personRegistryGates'
 import { organizeMarianaContactChronology } from '../../../game/story/block05Handlers'
 import { organizeMemoryOnset } from '../../../game/story/block07Handlers'
 import { takeNotebookFocus } from '../../../app/uiStore'
+import { CasebookFilterBar } from '../CasebookFilterBar'
 import { EvidenceBoard } from '../EvidenceBoard'
 import type { Evidence, InvestigationState, Location, Person } from '../../../game/types'
 import {
@@ -135,6 +136,12 @@ function PeopleTab({ inv }: { inv: InvestigationState }) {
 /* ---------------- Evidências ---------------- */
 type EvidenceFilter = 'all' | 'source' | 'fact'
 
+const EVIDENCE_FILTERS = [
+  { id: 'all' as const, label: 'Tudo' },
+  { id: 'source' as const, label: 'Fontes' },
+  { id: 'fact' as const, label: 'Fatos' },
+]
+
 function EvidenceTab({ inv, focusId }: { inv: InvestigationState; focusId: string | null }) {
   const owned = inv.evidenceOwned
     .map((id) => inv.evidence[id])
@@ -149,100 +156,104 @@ function EvidenceTab({ inv, focusId }: { inv: InvestigationState; focusId: strin
   useEffect(() => {
     if (focusId) setSel(focusId)
   }, [focusId])
+  const itemIds = items.map((e) => e.id).join('|')
+  useEffect(() => {
+    if (sel && !itemIds.split('|').includes(sel)) setSel(items[0]?.id ?? null)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- só reage a mudança de filtro/lista
+  }, [filter, itemIds])
   const ev = items.find((e) => e.id === sel) ?? items[0]
-  if (!owned.length) return <p className="nb-muted">Nenhuma evidência reunida ainda.</p>
-  if (!ev) {
-    return (
-      <div className="nb-split nb-split--index">
-        <p className="nb-muted">Nada neste filtro.</p>
-      </div>
-    )
-  }
 
-  const doc = ev.contentRef ? seedDocuments.find((d) => d.id === ev.contentRef) : undefined
-  const content = ev.description ?? doc?.blocks[0]?.text
-  const people = ev.relatedPersonIds.map((id) => inv.people[id]?.name).filter(Boolean) as string[]
-  const places = ev.relatedLocationIds
-    .map((id) => inv.locations[id])
-    .filter((l): l is Location => Boolean(l) && l.status !== 'unknown')
-    .map((l) => l.name)
-  const parent = ev.sourceId ? inv.evidence[ev.sourceId] : undefined
-  const protectedItem = ev.exportable === false || ev.deviceLocked
+  const doc = ev?.contentRef ? seedDocuments.find((d) => d.id === ev.contentRef) : undefined
+  const content = ev ? (ev.description ?? doc?.blocks[0]?.text) : undefined
+  const people = ev
+    ? (ev.relatedPersonIds.map((id) => inv.people[id]?.name).filter(Boolean) as string[])
+    : []
+  const places = ev
+    ? ev.relatedLocationIds
+        .map((id) => inv.locations[id])
+        .filter((l): l is Location => Boolean(l) && l.status !== 'unknown')
+        .map((l) => l.name)
+    : []
+  const parent = ev?.sourceId ? inv.evidence[ev.sourceId] : undefined
+  const protectedItem = ev ? ev.exportable === false || ev.deviceLocked : false
 
   return (
     <div className="nb-split nb-split--index">
       <div className="nb-index">
-        <div className="nb-filters" role="tablist" aria-label="Filtrar evidências">
-          {(
-            [
-              ['all', 'Tudo'],
-              ['source', 'Fontes'],
-              ['fact', 'Fatos'],
-            ] as const
-          ).map(([id, label]) => (
-            <button
-              key={id}
-              type="button"
-              className="nb-filter"
-              data-active={filter === id}
-              onClick={() => setFilter(id)}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-        <ul className="nb-list">
-          {items.map((e) => (
-            <li key={e.id}>
-              <button
-                type="button"
-                className="nb-list__item"
-                data-active={e.id === ev?.id}
-                onClick={() => setSel(e.id)}
-              >
-                <span>{e.title}</span>
-                <small>{evidenceTypeLabel[e.type]}</small>
-              </button>
-            </li>
-          ))}
-        </ul>
+        <CasebookFilterBar
+          ariaLabel="Filtrar evidências"
+          options={EVIDENCE_FILTERS}
+          value={filter}
+          onChange={setFilter}
+        />
+        {!owned.length ? (
+          <p className="nb-muted nb-empty">Nenhuma evidência reunida ainda.</p>
+        ) : !items.length ? (
+          <p className="nb-muted nb-empty">Nenhuma evidência desta categoria foi registrada.</p>
+        ) : (
+          <ul className="nb-list">
+            {items.map((e) => (
+              <li key={e.id}>
+                <button
+                  type="button"
+                  className="nb-list__item"
+                  data-active={e.id === ev?.id}
+                  onClick={() => setSel(e.id)}
+                >
+                  <span>{e.title}</span>
+                  <small>{evidenceTypeLabel[e.type]}</small>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
       <article className="nb-page">
-        <h3 className="nb-name">{ev.title}</h3>
-        <p className="nb-role">{evidenceTypeLabel[ev.type]}</p>
-        <dl className="nb-dl">
-          <dt>Origem</dt>
-          <dd>{evidenceSourceLabel(ev)}</dd>
-          <dt>Natureza</dt>
-          <dd>
-            {evidenceOriginLabel(ev.originalOrDerived)}
-            {parent ? ` — a partir de “${parent.title}”` : ''}
-          </dd>
-          <dt>Integridade</dt>
-          <dd data-integrity={ev.integrity ?? 'none'}>{integrityLabel(ev.integrity)}</dd>
-          {ev.obtainedAt ? (
-            <>
-              <dt>Obtida em</dt>
-              <dd>{ev.obtainedAt}</dd>
-            </>
-          ) : null}
-          {protectedItem ? (
-            <>
-              <dt>Acesso</dt>
-              <dd>Somente no aparelho de origem — não exportável</dd>
-            </>
-          ) : null}
-        </dl>
-        {content ? (
+        {!ev ? (
+          <p className="nb-muted nb-empty">
+            {owned.length
+              ? 'Nenhuma evidência desta categoria foi registrada.'
+              : 'Selecione uma evidência na lista.'}
+          </p>
+        ) : (
           <>
-            <h4>Conteúdo</h4>
-            <blockquote className="nb-quote">{content}</blockquote>
+            <h3 className="nb-name">{ev.title}</h3>
+            <p className="nb-role">{evidenceTypeLabel[ev.type]}</p>
+            <dl className="nb-dl">
+              <dt>Origem</dt>
+              <dd>{evidenceSourceLabel(ev)}</dd>
+              <dt>Natureza</dt>
+              <dd>
+                {evidenceOriginLabel(ev.originalOrDerived)}
+                {parent ? ` — a partir de “${parent.title}”` : ''}
+              </dd>
+              <dt>Integridade</dt>
+              <dd data-integrity={ev.integrity ?? 'none'}>{integrityLabel(ev.integrity)}</dd>
+              {ev.obtainedAt ? (
+                <>
+                  <dt>Obtida em</dt>
+                  <dd>{ev.obtainedAt}</dd>
+                </>
+              ) : null}
+              {protectedItem ? (
+                <>
+                  <dt>Acesso</dt>
+                  <dd>Somente no aparelho de origem — não exportável</dd>
+                </>
+              ) : null}
+            </dl>
+            {content ? (
+              <>
+                <h4>Conteúdo</h4>
+                <blockquote className="nb-quote">{content}</blockquote>
+              </>
+            ) : null}
+            <h4>Pessoas</h4>
+            <Chips items={people} empty="—" />
+            <h4>Locais</h4>
+            <Chips items={places} empty="—" />
           </>
-        ) : null}
-        <h4>Pessoas</h4>
-        <Chips items={people} empty="—" />
-        <h4>Locais</h4>
-        <Chips items={places} empty="—" />
+        )}
       </article>
     </div>
   )

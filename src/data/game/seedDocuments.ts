@@ -264,6 +264,13 @@ export const seedDocuments: Document[] = [
       { type: 'unlockContact', contactId: 'contact-nico' },
       { type: 'completeTask', id: 'task_locate_nico' },
       { type: 'addTask', id: 'task_talk_nico', label: 'Falar com Nico' },
+      {
+        type: 'notifyInvestigationUpdate',
+        id: 'nico-located',
+        kind: 'contact',
+        title: 'Nicolas “Nico”',
+        subtitle: 'Contato registrado no telefone',
+      },
     ],
   },
   {

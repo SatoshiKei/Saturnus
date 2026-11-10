@@ -101,7 +101,7 @@ export const paulaScript: ChatScript = {
       options: [
         'Você sabe o sobrenome dele?',
         'Lucas o quê?',
-        'Lucas Neto? Estou chutando.',
+        'Lucas Neto?',
       ],
       replies: [{ kind: 'text', text: 'Moreira.' }],
       repliesByOption: [

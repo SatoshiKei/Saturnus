@@ -59,6 +59,16 @@ export function compareHenriqueMarianaSystem() {
       id: 'task_reread_diary_omitido',
       label: 'O que o diário significa agora?',
     },
+    {
+      type: 'notifyInvestigationUpdate',
+      id: 'omitido-named',
+      kind: 'evidence',
+      presentation: 'card',
+      label: 'IDENTIFICADOR RECUPERADO',
+      title: 'O Omitido',
+      summary: 'O identificador foi formalizado nos registros do caso.',
+      refId: 'omitido_named_in_records',
+    },
   ])
 }
 

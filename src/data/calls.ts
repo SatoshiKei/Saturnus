@@ -198,6 +198,13 @@ export const callScripts: CallScript[] = [
     onComplete: [
       { type: 'completeCall', id: 'call-pericia-guardrail' },
       { type: 'addDocument', id: 'doc-guardrail-reanalise' },
+      {
+        type: 'notifyInvestigationUpdate',
+        id: 'doc-received-guardrail',
+        kind: 'document',
+        title: 'Laudo complementar — Guardrail',
+        subtitle: 'Encaminhado pela Perícia',
+      },
     ],
     repeat: [
       {
@@ -236,6 +243,13 @@ export const callScripts: CallScript[] = [
     onComplete: [
       { type: 'completeCall', id: 'call-pericia-device' },
       { type: 'addDocument', id: 'doc-laudo-forense' },
+      {
+        type: 'notifyInvestigationUpdate',
+        id: 'doc-received-laudo',
+        kind: 'document',
+        title: 'Laudo pericial — aparelho de Mariana',
+        subtitle: 'Encaminhado pela Perícia',
+      },
     ],
     repeat: [
       {
