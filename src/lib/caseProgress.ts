@@ -39,6 +39,15 @@ export function formatPlayTime(ms: number): string {
   return `${h} h ${m.toString().padStart(2, '0')} min`
 }
 
+/** Tempo de jogo no formato de slot de save: `00:05:34`. */
+export function formatPlayTimeClock(ms: number): string {
+  const totalSec = Math.max(0, Math.floor(ms / 1000))
+  const h = Math.floor(totalSec / 3600)
+  const m = Math.floor((totalSec % 3600) / 60)
+  const s = totalSec % 60
+  return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
+}
+
 export function formatSaveClock(ts: number): string {
   const d = new Date(ts)
   const dd = d.getDate().toString().padStart(2, '0')

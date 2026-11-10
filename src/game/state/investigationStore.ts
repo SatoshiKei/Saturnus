@@ -4,10 +4,17 @@ import type { ChatMessage } from '../../types/messaging'
 import type { ChatProgress, InvestigationState, StoryActionRef, PersonStatus } from '../types'
 import { repairInvestigationState } from '../personRegistryGates'
 import { createInitialState, SAVE_KEY, STATE_VERSION } from './initialState'
+import {
+  buildStateFromActions,
+  createGameSaveSnapshot,
+  parseSavePayload,
+  stripEphemeralUi,
+  type GameSaveSnapshot,
+} from './gameSave'
 import { applyStoryActions } from '../story/actions'
 import { runStoryEngine } from '../story/engine'
 import { maxPersonStatus } from './personStatusOrder'
-import { clearAutosaveStorage, syncAutosaveMeta } from './saveSlots'
+import { clearAutosaveStorage, writeAutosaveSnapshot } from './saveSlots'
 
 type Listener = () => void
 
@@ -187,18 +194,32 @@ export function deriveEvidenceFromAudio(sourceId: string, derivedId: string) {
   setFlag(`derived_from_${sourceId}`, true)
 }
 
-/** Fila visual — não é progresso narrativo; nunca persistir. */
-export function stripEphemeralUi(s: InvestigationState): InvestigationState {
-  return { ...s, discoveries: [], toastQueue: [] }
-}
+export { stripEphemeralUi }
 
 export function saveGame(s = state) {
   try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify(stripEphemeralUi(s)))
-    syncAutosaveMeta(s)
+    writeAutosaveSnapshot(createGameSaveSnapshot(s, null))
   } catch {
     /* ignore quota */
   }
+}
+
+/** Restaura snapshot completo (save manual, autosave ou checkpoint DEV). */
+export function restoreGameSnapshot(snapshot: GameSaveSnapshot, opts?: { persist?: boolean }) {
+  const migrated =
+    snapshot.investigation.version >= STATE_VERSION
+      ? { ...createInitialState(), ...snapshot.investigation, version: STATE_VERSION }
+      : migrateState(snapshot.investigation)
+  const repaired = repairInvestigationState(migrated)
+  state = stripEphemeralUi(runStoryEngine(repaired))
+  if (opts?.persist !== false) saveGame(state)
+  emit()
+}
+
+/** Carrega checkpoint DEV a partir de actions cumulativas (sempre do zero). */
+export function loadDevCheckpoint(actions: StoryActionRef[]) {
+  const built = buildStateFromActions(actions)
+  restoreGameSnapshot(createGameSaveSnapshot(built, null), { persist: true })
 }
 
 /**
@@ -281,12 +302,9 @@ export function loadGame(): boolean {
   try {
     const raw = localStorage.getItem(SAVE_KEY)
     if (!raw) return false
-    const parsed = JSON.parse(raw) as InvestigationState
-    const migrated = parsed.version >= STATE_VERSION ? { ...createInitialState(), ...parsed } : migrateState(parsed)
-    const repaired = repairInvestigationState(migrated)
-    state = stripEphemeralUi(runStoryEngine(repaired))
-    saveGame(state)
-    emit()
+    const snap = parseSavePayload(JSON.parse(raw))
+    if (!snap) return false
+    restoreGameSnapshot(snap)
     return true
   } catch {
     return false
@@ -299,12 +317,12 @@ export function addPlayTime(ms: number) {
   saveGame(state)
 }
 
-export function applyLoadedState(next: InvestigationState) {
-  const migrated = next.version >= STATE_VERSION ? { ...createInitialState(), ...next } : migrateState(next)
-  const repaired = repairInvestigationState(migrated)
-  state = stripEphemeralUi(runStoryEngine(repaired))
-  saveGame(state)
-  emit()
+export function applyLoadedState(next: InvestigationState | GameSaveSnapshot) {
+  const snap =
+    'investigation' in next && next.investigation
+      ? (next as GameSaveSnapshot)
+      : createGameSaveSnapshot(next as InvestigationState, null)
+  restoreGameSnapshot(snap)
 }
 
 export function resetGame() {
@@ -313,10 +331,12 @@ export function resetGame() {
   emit()
 }
 
-/** Aplica ações de checkpoint sem poluir a fila de descobertas. */
+/**
+ * @deprecated Preferir `loadDevCheckpoint` com actions cumulativas.
+ * Mantido para compatibilidade pontual — aplica delta sobre o estado atual.
+ */
 export function devApply(actions: StoryActionRef[]) {
-  const before = state.discoveries
-  state = { ...runStoryEngine(applyStoryActions(state, actions)), discoveries: before }
+  state = stripEphemeralUi(runStoryEngine(applyStoryActions(state, actions)))
   saveGame(state)
   emit()
 }

@@ -1,6 +1,11 @@
 import type { InvestigationState } from '../types'
 import { currentBlockLabel, hubLocationLabel, playTimeOf } from '../../lib/caseProgress'
-import { SAVE_KEY } from './initialState'
+import {
+  createGameSaveSnapshot,
+  parseSavePayload,
+  SAVE_KEY,
+  type GameSaveSnapshot,
+} from './gameSave'
 
 export const SAVE_INDEX_KEY = 'saturnus-save-index-v1'
 export const SLOT_KEY_PREFIX = 'saturnus-save-slot-'
@@ -45,8 +50,9 @@ function migrateLegacyIndex(): SaveIndex {
   try {
     const raw = localStorage.getItem(SAVE_KEY)
     if (!raw) return index
-    const parsed = JSON.parse(raw) as InvestigationState
-    index.slots.auto = metaFromState(parsed, 'auto', 'legacy', null)
+    const snap = parseSavePayload(JSON.parse(raw))
+    if (!snap) return index
+    index.slots.auto = metaFromSnapshot(snap, 'auto', 'legacy')
     writeSaveIndex(index)
   } catch {
     /* ignore */
@@ -98,18 +104,60 @@ export function metaFromState(
   }
 }
 
+export function metaFromSnapshot(
+  snap: GameSaveSnapshot,
+  id: SaveSlotId,
+  kind: SaveSlotMeta['kind'],
+): SaveSlotMeta {
+  return {
+    id,
+    kind,
+    savedAt: snap.metadata.savedAt,
+    playTimeMs: snap.metadata.playTimeMs,
+    blockLabel: snap.metadata.blockLabel,
+    locationLabel: snap.metadata.locationLabel,
+    thumbnail: snap.thumbnail,
+  }
+}
+
 export function syncAutosaveMeta(state: InvestigationState, thumbnail?: string | null) {
   const index = readSaveIndex()
   const prev = index.slots.auto
-  index.slots.auto = metaFromState(state, 'auto', prev?.kind === 'legacy' ? 'legacy' : 'auto', thumbnail ?? prev?.thumbnail ?? null)
+  index.slots.auto = metaFromState(
+    state,
+    'auto',
+    prev?.kind === 'legacy' ? 'legacy' : 'auto',
+    thumbnail ?? prev?.thumbnail ?? null,
+  )
   writeSaveIndex(index)
 }
 
-export function writeManualSlot(id: Exclude<SaveSlotId, 'auto'>, state: InvestigationState, thumbnail: string | null) {
-  const meta = metaFromState(state, id, 'manual', thumbnail)
-  const persisted: InvestigationState = { ...state, discoveries: [], toastQueue: [] }
+export function writeAutosaveSnapshot(snap: GameSaveSnapshot) {
+  const index = readSaveIndex()
+  const prev = index.slots.auto
+  const thumb = snap.thumbnail ?? prev?.thumbnail ?? null
+  const toStore: GameSaveSnapshot = { ...snap, thumbnail: thumb }
   try {
-    localStorage.setItem(`${SLOT_KEY_PREFIX}${id}`, JSON.stringify({ meta, state: persisted }))
+    localStorage.setItem(SAVE_KEY, JSON.stringify(toStore))
+  } catch {
+    /* quota */
+  }
+  index.slots.auto = {
+    ...metaFromSnapshot(toStore, 'auto', prev?.kind === 'legacy' ? 'legacy' : 'auto'),
+    thumbnail: thumb,
+  }
+  writeSaveIndex(index)
+}
+
+export function writeManualSlot(
+  id: Exclude<SaveSlotId, 'auto'>,
+  state: InvestigationState,
+  thumbnail: string | null,
+) {
+  const snap = createGameSaveSnapshot(state, thumbnail)
+  const meta = metaFromSnapshot(snap, id, 'manual')
+  try {
+    localStorage.setItem(`${SLOT_KEY_PREFIX}${id}`, JSON.stringify({ meta, snapshot: snap, state: snap.investigation }))
   } catch {
     /* quota */
   }
@@ -119,12 +167,22 @@ export function writeManualSlot(id: Exclude<SaveSlotId, 'auto'>, state: Investig
   return meta
 }
 
+/** Retorna InvestigationState (compat) a partir do slot. */
 export function readManualSlot(id: Exclude<SaveSlotId, 'auto'>): InvestigationState | null {
+  const snap = readManualSnapshot(id)
+  return snap?.investigation ?? null
+}
+
+export function readManualSnapshot(id: Exclude<SaveSlotId, 'auto'>): GameSaveSnapshot | null {
   try {
     const raw = localStorage.getItem(`${SLOT_KEY_PREFIX}${id}`)
     if (!raw) return null
-    const parsed = JSON.parse(raw) as { state?: InvestigationState }
-    return parsed.state ?? null
+    const parsed = JSON.parse(raw) as { snapshot?: GameSaveSnapshot; state?: InvestigationState; meta?: SaveSlotMeta }
+    if (parsed.snapshot) return parsed.snapshot
+    if (parsed.state) {
+      return createGameSaveSnapshot(parsed.state, parsed.meta?.thumbnail ?? null)
+    }
+    return parseSavePayload(parsed)
   } catch {
     return null
   }

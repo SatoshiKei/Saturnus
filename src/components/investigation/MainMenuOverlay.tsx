@@ -23,6 +23,21 @@ export function MainMenuOverlay() {
     }
   }, [shell])
 
+  useEffect(() => {
+    if (shell === 'playing') return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return
+      e.preventDefault()
+      if (view !== 'root') {
+        setView('root')
+        return
+      }
+      if (shell === 'paused') resumeGameplay()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [shell, view])
+
   if (shell === 'playing') return null
 
   const paused = shell === 'paused'
@@ -37,6 +52,7 @@ export function MainMenuOverlay() {
       className="inv-main-menu"
       data-testid="main-menu"
       data-paused={paused || undefined}
+      data-view={view}
       style={{ '--menu-bg': `url(${assetPath('/assets/scene/hub-office-bg.jpg')})` } as CSSProperties}
     >
       {view === 'root' ? (
