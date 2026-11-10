@@ -11,6 +11,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "tsc -b && vite build --mode e2e && playwright test",
+    "dump:cutscenes": "tsx scripts/dump-cutscenes.ts",
     "audio:generate": "node scripts/generate-test-audio.mjs",
     "assets:fetch": "node scripts/fetch-vn-assets.mjs",
     "assets:process": "node scripts/process-vn-backgrounds.mjs",

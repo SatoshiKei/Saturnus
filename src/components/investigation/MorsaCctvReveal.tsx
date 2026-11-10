@@ -1,30 +1,15 @@
 import { useCallback, useEffect, useState } from 'react'
 import { resolveChatMediaSrc } from '../../lib/characterSprites'
+import { MORSA_CCTV_BEATS, type MorsaCctvBeat } from '../../data/block08/morsaCctvBeats'
 import { RING_CONTINUITY_FRAMES } from '../../data/block08/ringsPuzzle'
 import { playSfx } from '../../lib/sfx'
 import '../../styles/morsa-cctv.css'
-
-type Beat =
-  | { kind: 'cam'; frameIndex: number; thought?: string }
-  | { kind: 'thought'; text: string }
-  | { kind: 'name'; text: string }
-  | { kind: 'pause' }
-
-const BEATS: Beat[] = [
-  { kind: 'thought', text: 'As câmeras não discordam entre si — só entre os relógios.' },
-  { kind: 'cam', frameIndex: 0, thought: 'Mochila. Rádio. Mesma passagem.' },
-  { kind: 'cam', frameIndex: 1, thought: 'No interior a máscara ainda cobre o rosto. Os objetos permanecem.' },
-  { kind: 'cam', frameIndex: 2, thought: 'A saída não bate com ninguém que eu conheça. E ainda assim…' },
-  { kind: 'pause' },
-  { kind: 'thought', text: 'O porte. A altura. O gesto de ajustar o rádio.' },
-  { kind: 'name', text: 'André.' },
-]
 
 export function MorsaCctvReveal({ onComplete }: { onComplete: () => void }) {
   const [index, setIndex] = useState(0)
   const [endPrimed, setEndPrimed] = useState(false)
   const [fading, setFading] = useState(false)
-  const beat = BEATS[index]
+  const beat = MORSA_CCTV_BEATS[index]
 
   const finish = useCallback(() => {
     setFading(true)
@@ -34,7 +19,7 @@ export function MorsaCctvReveal({ onComplete }: { onComplete: () => void }) {
 
   const advance = useCallback(() => {
     if (fading) return
-    if (index >= BEATS.length - 1) {
+    if (index >= MORSA_CCTV_BEATS.length - 1) {
       if (!endPrimed) {
         setEndPrimed(true)
         return
@@ -71,7 +56,7 @@ export function MorsaCctvReveal({ onComplete }: { onComplete: () => void }) {
       <div className="morsa-cctv__room" />
       <CctvBeatView beat={beat} frame={frame} />
       <footer className="morsa-cctv__hint">
-        {index >= BEATS.length - 1 && endPrimed ? 'Encerrar' : 'Continuar'}
+        {index >= MORSA_CCTV_BEATS.length - 1 && endPrimed ? 'Encerrar' : 'Continuar'}
       </footer>
     </div>
   )
@@ -81,7 +66,7 @@ function CctvBeatView({
   beat,
   frame,
 }: {
-  beat: Beat | undefined
+  beat: MorsaCctvBeat | undefined
   frame: (typeof RING_CONTINUITY_FRAMES)[number]
 }) {
   if (!beat) return null

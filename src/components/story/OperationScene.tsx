@@ -3,45 +3,9 @@ import { assetPath } from '../../lib/assetPath'
 import { sceneBackgrounds } from '../../data/sceneIntros'
 import { finishPoliceOperation } from '../../game/story/block06Handlers'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
+import { OPERATION_SCENE_BEATS } from '../../data/block06/operationSceneBeats'
 import { VisualNovelDialog, VNSceneShell } from './VisualNovelDialog'
 import '../../styles/visual-novel.css'
-
-const BEATS = [
-  { speaker: 'Rádio', text: 'Unidade dois em posição. Lateral norte limpa.' },
-  { speaker: 'Augusto', text: 'Espera meu sinal.' },
-  { speaker: 'Rádio', text: 'Copiado.' },
-  { speaker: 'Rádio', text: 'Movimento nos fundos.' },
-  { speaker: 'Augusto', text: 'Quantos?' },
-  { speaker: 'Rádio', text: 'Não dá pra fechar. Um confirmado.' },
-  { speaker: 'Augusto', text: 'Ninguém entra ainda.' },
-  { speaker: 'Rádio', text: 'Porta lateral.' },
-  { speaker: 'Augusto', text: 'Agora.' },
-  { speaker: 'Policial', text: 'Polícia! No chão!' },
-  { speaker: 'Rádio', text: 'Um correndo para o pátio norte.' },
-  { speaker: 'Augusto', text: 'Fecha a saída.' },
-  { speaker: 'Policial', text: 'Parado!' },
-  { speaker: 'Rádio', text: 'Contato. Sem disparo.' },
-  { speaker: 'Augusto', text: 'Identificação?' },
-  { speaker: 'Rádio', text: 'Um segundo.' },
-  { speaker: 'Rádio', text: 'É o Miro.' },
-  { speaker: 'Augusto', text: 'Tem certeza?' },
-  { speaker: 'Rádio', text: 'Documento com ele. Miro confirmado.' },
-  { speaker: 'Miro', text: 'Isso tudo por mim?' },
-  { speaker: 'Augusto', text: 'Hoje não.' },
-  { speaker: 'Miro', text: 'Então você veio tarde.' },
-  { speaker: 'Augusto', text: 'Alguma arma?' },
-  { speaker: 'Policial', text: 'Nenhuma com ele. Rádio, telefone, material do galpão.' },
-  { speaker: 'Augusto', text: 'Lacra tudo.' },
-  { speaker: 'Miro', text: 'Delegado.' },
-  { speaker: 'Augusto', text: 'O quê?' },
-  {
-    speaker: 'Miro',
-    text: 'Se você acha que isso aqui vai responder a pergunta que você trouxe, não vai.',
-  },
-  { speaker: 'Augusto', text: 'Você nem sabe qual é a pergunta.' },
-  { speaker: 'Miro', text: 'Sei de qual morto vocês sempre lembram quando aparece meu nome.' },
-  { speaker: 'Augusto', text: 'Leva.' },
-]
 
 export function OperationScene({ onClose }: { onClose: () => void }) {
   const inv = useInvestigation()
@@ -64,7 +28,7 @@ export function OperationScene({ onClose }: { onClose: () => void }) {
     )
   }
 
-  const beat = BEATS[i]
+  const beat = OPERATION_SCENE_BEATS[i]
   return (
     <VNSceneShell
       title="Operação — Galpão 17"
@@ -78,7 +42,7 @@ export function OperationScene({ onClose }: { onClose: () => void }) {
         speaker={beat.speaker}
         text={beat.text}
         onContinue={() => {
-          if (i + 1 < BEATS.length) setI(i + 1)
+          if (i + 1 < OPERATION_SCENE_BEATS.length) setI(i + 1)
           else {
             finishPoliceOperation()
             onClose()
