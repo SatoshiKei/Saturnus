@@ -28,6 +28,8 @@ interface VisualNovelDialogProps {
   onContinue?: () => void
   onRewind?: () => void
   continueLabel?: string
+  /** Última fala da cena: primeiro input confirma leitura, segundo encerra. */
+  terminalBeat?: boolean
   extra?: ReactNode
 }
 
@@ -43,9 +45,11 @@ export function VisualNovelDialog({
   onContinue,
   onRewind,
   continueLabel,
+  terminalBeat,
   extra,
 }: VisualNovelDialogProps) {
   const [nvlOpen, setNvlOpen] = useState(false)
+  const [endPrimed, setEndPrimed] = useState(false)
   const [nvlPage, setNvlPage] = useState(0)
   const [backlogOpen, setBacklogOpen] = useState(false)
   const wheelLock = useRef(0)
@@ -58,6 +62,10 @@ export function VisualNovelDialog({
   const nvlPages = useMemo(() => paginateNvlLines(history), [history])
   const nvlPageLines = nvlPages[nvlPage] ?? []
 
+  useEffect(() => {
+    setEndPrimed(false)
+  }, [text, speaker, terminalBeat])
+
   const advance = useCallback(() => {
     if (backlogOpen) return
     if (nvlOpen) {
@@ -69,8 +77,12 @@ export function VisualNovelDialog({
       return
     }
     if (!canAdvance) return
+    if (terminalBeat && !endPrimed) {
+      setEndPrimed(true)
+      return
+    }
     onContinue?.()
-  }, [backlogOpen, canAdvance, nvlOpen, nvlPage, nvlPages.length, onContinue])
+  }, [backlogOpen, canAdvance, endPrimed, nvlOpen, nvlPage, nvlPages.length, onContinue, terminalBeat])
 
   const openNvl = useCallback(() => {
     if (hasChoices || history.length === 0) return
@@ -171,7 +183,12 @@ export function VisualNovelDialog({
           text={text}
           canAdvance={canAdvance}
           onAdvance={advance}
-          continueLabel={continueLabel}
+          continueLabel={
+            endPrimed && terminalBeat
+              ? 'Encerrar cena'
+              : continueLabel ?? (terminalBeat ? 'Continuar' : undefined)
+          }
+          endPrimed={endPrimed && Boolean(terminalBeat)}
           extra={extra}
         />
       )}

@@ -97,7 +97,10 @@ test('Bloco 4 — André: registro de visitas → ligação à unidade → visit
 
   // A comparação de horários é trabalho do jogador, com dois documentos.
   await searchAndOpen(page, 'André Silva', 'doc-andre-ligacoes')
-  await searchAndOpen(page, 'número desconhecido', 'doc-numero-sem-nome')
+  await openHubObject(page, 'mariana-phone')
+  await page.getByTestId('wa-tab-calls').click()
+  await page.getByTestId('call-history').getByText('Sem nome').first().click()
+  await searchAndOpen(page, '99184', 'doc-numero-sem-nome')
   await waitForNotice(page, 'discovery-contradiction')
   save = await readSave(page)
   expect(save.contradictionsConfirmed.some((c: { id: string }) => c.id === 'contra_andre_night_hours')).toBe(true)

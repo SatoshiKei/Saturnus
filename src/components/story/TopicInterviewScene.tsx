@@ -1,12 +1,9 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { assetPath } from '../../lib/assetPath'
 import { getInvestigationState, setFlag } from '../../game/state/investigationStore'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { VisualNovelDialog, VNSceneShell } from './VisualNovelDialog'
 import '../../styles/visual-novel.css'
-
-/** Breve batida na fala final antes da reflexão / fade. */
-const IDLE_AUTO_MS = 1400
 
 export type TopicBeat = { speaker?: string; text: string; portrait?: string }
 
@@ -80,33 +77,12 @@ export function TopicInterviewScene<T extends string>({ config, onClose }: Props
   const pending = config.topicIds.filter((id) => !doneTopics.has(id))
   const beats = activeTopic ? config.beats[activeTopic] : []
   const currentBeat = activeTopic ? beats[beatIndex] : null
-  const idle = !activeTopic && pending.length === 0
-
-  // Rede de segurança: sem assuntos, não fica preso pedindo clique — vai à reflexão / fade.
-  useEffect(() => {
-    if (!idle) return
-    const t = window.setTimeout(leave, IDLE_AUTO_MS)
-    return () => window.clearTimeout(t)
-  }, [idle, leave])
-
   const portraitForBeat = useCallback(
     (beat: TopicBeat) => {
       if (!config.portrait || !beat.speaker || beat.speaker === 'Augusto') return undefined
       return config.portrait
     },
     [config.portrait],
-  )
-
-  const logLines = useMemo(
-    () =>
-      activeTopic
-        ? beats.slice(0, beatIndex + 1).map((b) => ({
-            speaker: b.speaker,
-            text: b.text,
-            portraitSrc: portraitForBeat(b),
-          }))
-        : [],
-    [activeTopic, beats, beatIndex, portraitForBeat],
   )
 
   return (
@@ -130,7 +106,12 @@ export function TopicInterviewScene<T extends string>({ config, onClose }: Props
             }}
           />
         ) : (
-          <VisualNovelDialog speaker="Augusto" text={config.idleLine} />
+          <VisualNovelDialog
+            speaker="Augusto"
+            text={config.idleLine}
+            terminalBeat
+            onContinue={leave}
+          />
         )
       ) : null}
 
@@ -139,8 +120,9 @@ export function TopicInterviewScene<T extends string>({ config, onClose }: Props
           speaker={currentBeat.speaker}
           text={currentBeat.text}
           portraitSrc={portraitForBeat(currentBeat)}
-          logLines={logLines}
+          logLines={[]}
           onRewind={() => setBeatIndex((i) => Math.max(0, i - 1))}
+          terminalBeat={beatIndex >= beats.length - 1}
           onContinue={() => {
             const next = beatIndex + 1
             if (next < beats.length) setBeatIndex(next)

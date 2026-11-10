@@ -504,27 +504,27 @@ export const seedSearchRules: SearchRule[] = [
     ],
   },
   {
-    id: 'block04_unnamed_number',
+    id: 'block04_unknown_msisdn',
     category: 'police',
-    requiredFlags: ['block04_chronology_search_unlocked'],
-    requiredTerms: ['desconhecido'],
+    requiredFlags: ['block04_chronology_search_unlocked', 'block04_unknown_number_seen'],
+    requiredTerms: ['99184'],
     results: [
       {
-        title: 'Log de interações — número sem nome',
-        snippet: 'Extração do aparelho de Mariana.',
+        title: 'Log de interações — +55 47 99184-2207',
+        snippet: 'Extração do aparelho de Mariana (interações noturnas).',
         documentId: 'doc-numero-sem-nome',
       },
     ],
   },
   {
-    id: 'block04_unnamed_number_b',
+    id: 'block04_unknown_msisdn_full',
     category: 'police',
-    requiredFlags: ['block04_chronology_search_unlocked'],
-    requiredTerms: ['sem', 'nome'],
+    requiredFlags: ['block04_chronology_search_unlocked', 'block04_unknown_number_seen'],
+    requiredTerms: ['47991842207'],
     results: [
       {
-        title: 'Log de interações — número sem nome',
-        snippet: 'Extração do aparelho de Mariana.',
+        title: 'Log de interações — +55 47 99184-2207',
+        snippet: 'Extração do aparelho de Mariana (interações noturnas).',
         documentId: 'doc-numero-sem-nome',
       },
     ],

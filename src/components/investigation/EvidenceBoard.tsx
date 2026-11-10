@@ -22,9 +22,18 @@ const FILTERS: { id: 'all' | BoardNodeKind; label: string }[] = [
   { id: 'hypothesis', label: 'Hipóteses' },
 ]
 
-export function EvidenceBoard({ onOpen }: { onOpen: (tab: string, id: string) => void }) {
+export function EvidenceBoard({
+  onOpen,
+  layout,
+  surface = 'paper',
+}: {
+  onOpen: (tab: string, id: string) => void
+  layout?: { nodes: BoardNode[]; edges: import('../../game/board/buildEvidenceBoard').BoardEdge[] }
+  surface?: 'paper' | 'cork'
+}) {
   const inv = useInvestigation()
-  const { nodes, edges } = useMemo(() => buildEvidenceBoard(inv), [inv])
+  const built = useMemo(() => buildEvidenceBoard(inv), [inv])
+  const { nodes, edges } = layout ?? built
   const [filter, setFilter] = useState<(typeof FILTERS)[number]['id']>('all')
   const [sel, setSel] = useState<string | null>(null)
   const pan = useRef({ x: 24, y: 16, z: 1 })
@@ -99,7 +108,7 @@ export function EvidenceBoard({ onOpen }: { onOpen: (tab: string, id: string) =>
         : `Nenhum item em “${FILTERS.find((f) => f.id === filter)?.label ?? filter}”.`
 
   return (
-    <div className="eb" data-testid="evidence-board">
+    <div className="eb" data-surface={surface} data-testid="evidence-board">
       <CasebookFilterBar
         ariaLabel="Filtrar quadro"
         options={FILTERS}

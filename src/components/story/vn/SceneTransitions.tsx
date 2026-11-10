@@ -111,13 +111,17 @@ export function ReflectionView({
 }) {
   const [shown, setShown] = useState(1)
   const atEnd = shown >= blocks.length
+  const [endPrimed, setEndPrimed] = useState(false)
+  const [fading, setFading] = useState(false)
   const wheelLock = useRef(0)
   const doneRef = useRef(false)
 
   const finish = useCallback(() => {
     if (doneRef.current) return
     doneRef.current = true
-    onDone()
+    setFading(true)
+    playSfx('fade')
+    window.setTimeout(() => onDone(), prefersReducedMotion() ? 120 : 520)
   }, [onDone])
 
   const advance = useCallback(() => {
@@ -125,10 +129,15 @@ export function ReflectionView({
     if (shown < blocks.length) {
       playSfx('ui')
       setShown((n) => n + 1)
-    } else {
-      finish()
+      setEndPrimed(false)
+      return
     }
-  }, [shown, blocks.length, finish])
+    if (!endPrimed) {
+      setEndPrimed(true)
+      return
+    }
+    finish()
+  }, [shown, blocks.length, endPrimed, finish])
 
   const rewind = useCallback(() => {
     if (doneRef.current) return
@@ -140,8 +149,7 @@ export function ReflectionView({
       if (e.key === ' ' || e.key === 'Enter' || e.key === 'ArrowDown') {
         e.preventDefault()
         e.stopPropagation()
-        if (atEnd) finish()
-        else advance()
+        advance()
       } else if (e.key === 'ArrowUp') {
         e.preventDefault()
         e.stopPropagation()
@@ -162,8 +170,7 @@ export function ReflectionView({
     wheelLock.current = now
     e.preventDefault()
     if (e.deltaY > 0) {
-      if (atEnd) finish()
-      else advance()
+      advance()
     } else if (e.deltaY < 0) {
       rewind()
     }
@@ -171,8 +178,9 @@ export function ReflectionView({
 
   return (
     <div
-      className="vn-nvl tr-refl"
+      className={`vn-nvl tr-refl${fading ? ' tr-refl--out' : ''}`}
       data-testid="reflection-view"
+      data-end-primed={endPrimed || undefined}
       style={background ? { backgroundImage: `url(${assetPath(background)})` } : undefined}
       onClick={() => {
         advance()
@@ -203,7 +211,7 @@ export function ReflectionView({
         </div>
         <div className="vn-nvl__foot">
           <span className="vn-nvl__next-hint">
-            {atEnd ? 'Clique ou Espaço para continuar' : 'Clique ou Espaço para continuar'}
+            {atEnd ? (endPrimed ? 'Encerrar reflexão' : 'Confirmar leitura') : 'Clique ou Espaço para continuar'}
           </span>
           <span className="vn-adv__next vn-nvl__chevron" aria-hidden />
         </div>

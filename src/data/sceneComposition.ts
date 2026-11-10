@@ -10,6 +10,7 @@ import type { SceneObjectDef } from '../types/scene'
  *   landline       -> PoliceLandline        monitor       -> PoliceComputer
  *   notebook       -> InvestigationNotebook evidence-box  -> CaseFiles
  *   audio-station  -> AudioWorkbench        wall-map      -> LocationsMap
+ *   wall-board     -> InvestigationWallBoard (quadro de cortiça na parede)
  *
  * Todos os PNGs vêm de `scripts/build-hub-objects.mjs` (transparência real, sombra de contato
  * já assada, luz vinda do teto). Para trocar por recortes fotográficos mantenha nome e tamanho.
@@ -131,6 +132,24 @@ export const sceneObjects: SceneObjectDef[] = [
     label: 'Pasta do caso',
     ariaLabel: 'Pasta do caso',
     focusZoom: 1.5,
+  },
+  {
+    id: 'wall-board',
+    kind: 'image',
+    asset: '/assets/scene/hub/wall-investigation-board.png',
+    x: 36,
+    y: 96,
+    width: 448,
+    height: 348,
+    zIndex: 6,
+    interactive: true,
+    cursor: 'pointer',
+    hubTarget: 'wall-board',
+    hit: [0.06, 0.08, 0.9, 0.84],
+    label: 'Quadro investigativo',
+    ariaLabel: 'Quadro de cortiça na parede',
+    focusZoom: 1.72,
+    focusAnchor: [0.5, 0.42],
   },
   {
     id: 'notebook',

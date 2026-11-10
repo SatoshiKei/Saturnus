@@ -226,6 +226,19 @@
   margin: 0;
 }
 
+.wa-chat-header__profile-hit {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: transparent;
+  padding: 4px 0;
+  text-align: left;
+  cursor: pointer;
+}
+
 .wa-chat-header__title {
   display: flex;
   flex-direction: column;
@@ -945,6 +958,70 @@
     opacity: 1;
     transform: translateY(-3px);
   }
+}
+
+.wa-profile {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  background: #ededed;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.wa-profile__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: var(--phone-inset-top, 47px) 12px 10px;
+  background: #f6f6f6;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.wa-profile__hero {
+  padding: 24px 16px;
+  text-align: center;
+  background: #fff;
+  border-bottom: 8px solid #ededed;
+}
+
+.wa-profile__name {
+  margin: 12px 0 4px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.wa-profile__phone,
+.wa-profile__about {
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.wa-profile__meta {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: #fff;
+}
+
+.wa-profile__meta li {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid #e8e8e8;
+  font-size: 15px;
+}
+
+.wa-profile__label {
+  color: #666;
+}
+
+.wa-calls__number {
+  font-weight: 400;
+  color: #555;
+  font-size: 13px;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -138,6 +138,7 @@ export const block04DevCheckpoints: { id: string; label: string; actions: StoryA
       { type: 'addEvidence', id: 'andre_no_maralto_link' },
       { type: 'addHypothesis', id: 'hyp_andre_manipulating' },
       { type: 'setFlag', id: 'block04_chronology_search_unlocked', value: true },
+      { type: 'setFlag', id: 'block04_unknown_number_seen', value: true },
       { type: 'completeTask', id: 'task_interview_andre' },
       {
         type: 'addTask',
@@ -150,6 +151,7 @@ export const block04DevCheckpoints: { id: string; label: string; actions: StoryA
     id: 'b04-chronology-done',
     label: 'Comparação temporal concluída (linha vai tocar)',
     actions: [
+      { type: 'setFlag', id: 'block04_unknown_number_seen', value: true },
       { type: 'addDocument', id: 'doc-andre-ligacoes' },
       { type: 'addDocument', id: 'doc-numero-sem-nome' },
       { type: 'addEvidence', id: 'andre_authorized_calls' },

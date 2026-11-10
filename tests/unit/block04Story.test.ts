@@ -11,6 +11,7 @@ import { createInitialState } from '../../src/game/state/initialState'
 import { applyStoryActions } from '../../src/game/story/actions'
 import { runStoryEngine } from '../../src/game/story/engine'
 import { runPoliceSearch } from '../../src/game/search/runSearch'
+import { onUnknownCallerNumberSeen } from '../../src/game/story/block04PhoneHooks'
 import {
   __setStateForTests,
   dispatchActions,
@@ -137,6 +138,9 @@ describe('Bloco 4 — progressão', () => {
     finishAndreInterview()
     openDocument('doc-andre-ligacoes')
     expect(getInvestigationState().flags.block04_andre_chronology_done).toBeFalsy()
+    onUnknownCallerNumberSeen()
+    const hits = runPoliceSearch('99184', getInvestigationState()).hits
+    expect(hits.some((h) => h.documentId === 'doc-numero-sem-nome')).toBe(true)
     openDocument('doc-numero-sem-nome')
     let s = getInvestigationState()
     expect(s.contradictionsConfirmed.some((c) => c.id === 'contra_andre_night_hours')).toBe(true)

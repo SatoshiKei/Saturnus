@@ -54,6 +54,9 @@ export interface Contact {
   name: string
   avatarHue: number
   initials: string
+  /** Número completo quando relevante à investigação. */
+  phone?: string
+  about?: string
 }
 
 export interface ChatThread {

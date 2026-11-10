@@ -477,6 +477,42 @@ function calendarSvg() {
 }
 
 /* ------------------------------------------------------------------ */
+/* Quadro de cortiça na parede — teia investigativa                   */
+/* ------------------------------------------------------------------ */
+function investigationBoardSvg() {
+  const W = 448
+  const H = 348
+  const r = rng(8812)
+  let specks = ''
+  for (let i = 0; i < 140; i++) {
+    const x = 44 + r() * (W - 88)
+    const y = 48 + r() * (H - 96)
+    specks += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(0.6 + r() * 1.4).toFixed(2)}" fill="#5a4228" opacity="${(0.06 + r() * 0.14).toFixed(3)}"/>`
+  }
+  const body = `
+  <g transform="translate(8 14)" filter="url(#sh)" opacity=".55"><rect x="24" y="22" width="400" height="300" rx="4" fill="#000"/></g>
+  <rect x="20" y="18" width="408" height="312" rx="6" fill="#4a3728"/>
+  <rect x="26" y="24" width="396" height="300" rx="5" fill="#5c4632"/>
+  <rect x="36" y="34" width="376" height="280" rx="3" fill="#b8956a"/>
+  <rect x="36" y="34" width="376" height="280" rx="3" fill="url(#cork)"/>
+  ${specks}
+  <circle cx="${W / 2}" cy="12" r="4" fill="#2d3033"/>
+  <path d="M${W / 2} 16 L${W / 2 - 42} 34 M${W / 2} 16 L${W / 2 + 42} 34" stroke="#2d3033" stroke-width="1.2" opacity=".75"/>
+  <circle cx="52" cy="54" r="5.5" fill="#8a3a30"/><circle cx="50" cy="52" r="2" fill="#fff" opacity=".45"/>
+  <circle cx="${W - 52}" cy="54" r="5.5" fill="#8a3a30"/><circle cx="${W - 54}" cy="52" r="2" fill="#fff" opacity=".4"/>
+  <circle cx="52" cy="${H - 54}" r="5.5" fill="#8a3a30"/>
+  <circle cx="${W - 52}" cy="${H - 54}" r="5.5" fill="#8a3a30"/>
+  <text x="${W / 2}" y="${H - 18}" text-anchor="middle" font-family="Arial" font-size="9" fill="#4a3728" opacity=".55" letter-spacing="2">CASO 0001/2026</text>`
+  const defs = `
+  <filter id="corkGrain"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="4" seed="9"/><feColorMatrix type="saturate" values="0"/></filter>
+  <pattern id="cork" patternUnits="userSpaceOnUse" width="64" height="64">
+    <rect width="64" height="64" fill="#b8956a"/>
+    <rect width="64" height="64" filter="url(#corkGrain)" opacity="0.28"/>
+  </pattern>`
+  return wrap(W, H, body, defs)
+}
+
+/* ------------------------------------------------------------------ */
 /* Mapa impresso da cidade (arte vetorial reutilizada na tela de locais)*/
 /* ------------------------------------------------------------------ */
 function cityMapSvg() {
@@ -565,6 +601,7 @@ async function main() {
   await emit('coffee.png', coffeeSvg())
   await emit('desk-sheet-bo.png', deskSheetSvg('BOLETIM DE OCORRÊNCIA', '#4b6f78'))
   await emit('wall-calendar.png', calendarSvg(), { grainStrength: 20 })
+  await emit('wall-investigation-board.png', investigationBoardSvg(), { grainStrength: 22 })
   await wallMap()
   await writeFile(join(out, 'city-map.svg'), cityMapSvg())
   console.log('✓ city-map.svg')

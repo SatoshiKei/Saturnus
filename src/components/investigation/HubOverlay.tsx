@@ -5,6 +5,7 @@ import { CaseFiles } from './panels/CaseFilesPanel'
 import { LocationsMap } from './panels/LocationsPanel'
 import { PoliceComputer } from './panels/PoliceComputerPanel'
 import { PoliceLandline } from './panels/PoliceLandlinePanel'
+import { InvestigationWallBoard } from './panels/InvestigationWallBoard'
 import '../../styles/game-ui.css'
 
 interface HubOverlayProps {
@@ -30,6 +31,8 @@ export function HubOverlay({ panel, onClose }: HubOverlayProps) {
       return <AudioWorkbench onClose={onClose} />
     case 'landline':
       return <PoliceLandline onClose={onClose} />
+    case 'wall-board':
+      return <InvestigationWallBoard onClose={onClose} />
     default:
       return null
   }

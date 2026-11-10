@@ -7,6 +7,7 @@ export function ADVDialogue({
   canAdvance,
   onAdvance,
   continueLabel,
+  endPrimed,
   extra,
 }: {
   speaker?: string
@@ -14,6 +15,7 @@ export function ADVDialogue({
   canAdvance: boolean
   onAdvance: () => void
   continueLabel?: string
+  endPrimed?: boolean
   extra?: ReactNode
 }) {
   return (
@@ -23,6 +25,7 @@ export function ADVDialogue({
         className="vn-adv"
         data-testid="vn-advance-zone"
         data-advance={canAdvance}
+        data-end-primed={endPrimed || undefined}
         onClick={() => canAdvance && onAdvance()}
         onKeyDown={(e) => {
           if (canAdvance && (e.key === 'Enter' || e.key === ' ')) {

@@ -423,6 +423,106 @@
   font-size: 13px;
 }
 
+.diary-pin--keypad {
+  align-items: center;
+  text-align: center;
+}
+
+.diary-pin__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.diary-pin__dots {
+  display: flex;
+  gap: 12px;
+  margin: 16px 0 20px;
+}
+
+.diary-pin__dots span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #8e8e93;
+}
+
+.diary-pin__dots span[data-filled] {
+  background: #0a84ff;
+  border-color: #0a84ff;
+}
+
+.diary-pin__pad {
+  display: grid;
+  grid-template-columns: repeat(3, 72px);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.diary-pin__key {
+  width: 72px;
+  height: 72px;
+  border: 0;
+  border-radius: 50%;
+  background: #e9e9eb;
+  font-size: 28px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.diary-pin__pad-spacer {
+  width: 72px;
+  height: 72px;
+}
+
+.ios-photos-viewer {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: #000;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.ios-photos-viewer__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--phone-inset-top, 47px) 12px 10px;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.ios-photos-viewer__stage {
+  flex: 1;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.ios-photos-viewer__stage img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.ios-photos-viewer__nav {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 20px 28px;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.ios-photos-viewer__nav button {
+  border: 0;
+  background: none;
+  color: #0a84ff;
+  font-size: 17px;
+  cursor: pointer;
+}
+
 .diary-list {
   list-style: none;
   margin: 0;

@@ -1,4 +1,5 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useState } from 'react'
+import { DiaryPinKeypad } from './DiaryPinKeypad'
 import { block04DiaryEntries } from '../../data/block04/diaryEntries'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { dispatchActions, setFlag, tryDiaryPin } from '../../game/state/investigationStore'
@@ -55,8 +56,7 @@ function DiaryPinGate() {
   const [pin, setPin] = useState('')
   const [error, setError] = useState<string | null>(null)
 
-  const submit = (e: FormEvent) => {
-    e.preventDefault()
+  const submit = () => {
     const res = tryDiaryPin(pin)
     if (res === 'wrong') {
       playSfx('error')
@@ -73,34 +73,15 @@ function DiaryPinGate() {
   }
 
   return (
-    <form className="diary-pin" onSubmit={submit} data-testid="diary-pin-screen">
-      <p className="diary-pin__hint">local.priv.journal · protegido por código de 6 dígitos</p>
-      <label htmlFor="diary-pin" className="diary-pin__label">
-        Código de acesso
-      </label>
-      <input
-        id="diary-pin"
-        className="diary-pin__input"
-        value={pin}
-        onChange={(e) => {
-          setPin(e.target.value.replace(/\D/g, '').slice(0, 6))
-          setError(null)
-        }}
-        inputMode="numeric"
-        autoComplete="off"
-        maxLength={6}
-        placeholder="••••••"
-        data-testid="diary-pin-input"
-      />
-      <button type="submit" className="diary-pin__go" data-testid="diary-pin-submit" disabled={pin.length < 6}>
-        Desbloquear
-      </button>
-      {error ? (
-        <p className="diary-pin__error" role="alert" data-testid="diary-pin-error">
-          {error}
-        </p>
-      ) : null}
-    </form>
+    <DiaryPinKeypad
+      value={pin}
+      error={error}
+      onChange={(next) => {
+        setPin(next.replace(/\D/g, '').slice(0, 6))
+        setError(null)
+      }}
+      onSubmit={submit}
+    />
   )
 }
 

@@ -118,6 +118,14 @@
 .tr-refl__block {
   animation: tr-block 500ms ease both;
 }
+.tr-refl.tr-refl--out {
+  animation: tr-refl-out 520ms ease forwards;
+}
+@keyframes tr-refl-out {
+  to {
+    opacity: 0;
+  }
+}
 @keyframes tr-block {
   from {
     opacity: 0;

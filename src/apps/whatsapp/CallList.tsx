@@ -4,6 +4,7 @@ import { contactById } from '../../data/mockContacts'
 import type { Contact } from '../../types/messaging'
 import { phoneFeatureLocks } from '../../data/phoneFeatures'
 import { Avatar } from '../../components/Avatar'
+import { onUnknownCallerNumberSeen } from '../../game/story/block04PhoneHooks'
 
 interface CallListProps {
   variant: 'whatsapp' | 'phone'
@@ -29,11 +30,28 @@ export function CallList({ variant, device = 'augusto' }: CallListProps) {
           const contact = contactFor(entry.contactId)
           return (
             <li key={entry.id}>
-              <div className="wa-calls__row">
+              <div
+                className="wa-calls__row"
+                role={entry.contactId === 'unknown' && device === 'mariana' ? 'button' : undefined}
+                tabIndex={entry.contactId === 'unknown' && device === 'mariana' ? 0 : undefined}
+                onClick={() => {
+                  if (device !== 'mariana' || entry.contactId !== 'unknown') return
+                  onUnknownCallerNumberSeen()
+                }}
+                onKeyDown={(e) => {
+                  if (e.key !== 'Enter' && e.key !== ' ') return
+                  if (device !== 'mariana' || entry.contactId !== 'unknown') return
+                  e.preventDefault()
+                  onUnknownCallerNumberSeen()
+                }}
+              >
                 <Avatar contact={contact} size={44} />
                 <div className="wa-calls__body">
                   <span className={`wa-calls__name wa-calls__name--${entry.direction}`}>
                     {contact.name}
+                    {entry.contactId === 'unknown' && contact.phone ? (
+                      <span className="wa-calls__number"> · {contact.phone}</span>
+                    ) : null}
                   </span>
                   <span className="wa-calls__meta">
                     <CallDirectionIcon direction={entry.direction} video={entry.video} />

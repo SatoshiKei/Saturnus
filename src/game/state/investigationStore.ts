@@ -13,6 +13,7 @@ import {
 } from './gameSave'
 import { applyStoryActions } from '../story/actions'
 import { runStoryEngine } from '../story/engine'
+import { resetLinkBoardSession } from '../../app/uiStore'
 import { maxPersonStatus } from './personStatusOrder'
 import { clearAutosaveStorage, writeAutosaveSnapshot } from './saveSlots'
 
@@ -328,6 +329,7 @@ export function applyLoadedState(next: InvestigationState | GameSaveSnapshot) {
 export function resetGame() {
   state = createInitialState()
   clearAutosaveStorage()
+  resetLinkBoardSession()
   emit()
 }
 

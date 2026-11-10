@@ -410,5 +410,6 @@ export type HubPanel =
   | 'map'
   | 'audio-lab'
   | 'landline'
+  | 'wall-board'
   | 'mariana-phone'
   | 'augusto-phone'

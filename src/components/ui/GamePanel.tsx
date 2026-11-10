@@ -1,6 +1,6 @@
 import { useEffect, useRef, type ReactNode } from 'react'
 
-export type GamePanelVariant = 'paper' | 'terminal' | 'workbench' | 'console' | 'map'
+export type GamePanelVariant = 'paper' | 'terminal' | 'workbench' | 'console' | 'map' | 'cork'
 
 interface GamePanelProps {
   /** Título curto exibido na barra (ex.: "Pasta do caso") */
@@ -24,6 +24,7 @@ interface GamePanelProps {
  * - `workbench`: bancada forense de áudio
  * - `console`: telefone fixo institucional
  * - `map`: mapa da cidade
+ * - `cork`: quadro de cortiça na parede (teia radial)
  * Fecha com ESC, clique no véu ou botão de voltar. Animação curta (≈200 ms).
  */
 export function GamePanel({

@@ -100,3 +100,42 @@ export function takeNotebookFocus() {
   notebookFocus = null
   return f
 }
+
+const LINK_BOARD_KEY = 'saturnus-link-board-v1'
+
+export interface LinkBoardSession {
+  panX: number
+  panY: number
+  zoom: number
+  knownNodeIds: string[]
+}
+
+function defaultLinkBoardSession(): LinkBoardSession {
+  return { panX: 0, panY: 0, zoom: 1, knownNodeIds: [] }
+}
+
+export function loadLinkBoardSession(): LinkBoardSession {
+  try {
+    const raw = localStorage.getItem(LINK_BOARD_KEY)
+    if (!raw) return defaultLinkBoardSession()
+    return { ...defaultLinkBoardSession(), ...JSON.parse(raw) }
+  } catch {
+    return defaultLinkBoardSession()
+  }
+}
+
+export function saveLinkBoardSession(session: LinkBoardSession) {
+  try {
+    localStorage.setItem(LINK_BOARD_KEY, JSON.stringify(session))
+  } catch {
+    /* ignore */
+  }
+}
+
+export function resetLinkBoardSession() {
+  try {
+    localStorage.removeItem(LINK_BOARD_KEY)
+  } catch {
+    /* ignore */
+  }
+}

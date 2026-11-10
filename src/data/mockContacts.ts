@@ -8,7 +8,14 @@ export const mockContacts: Contact[] = [
   { id: 'paula', name: 'Paula', avatarHue: 330, initials: 'PA' },
   { id: 'fernanda', name: 'Fernanda', avatarHue: 18, initials: 'FE' },
   { id: 'hospital', name: 'Hospital — Enfermagem', avatarHue: 160, initials: 'HM' },
-  { id: 'unknown', name: 'Sem nome', avatarHue: 90, initials: '?' },
+  {
+    id: 'unknown',
+    name: 'Sem nome',
+    avatarHue: 90,
+    initials: '?',
+    phone: '+55 47 99184-2207',
+    about: 'Contato não salvo na agenda',
+  },
   { id: 'mariana', name: 'Mariana', avatarHue: 328, initials: 'MA' },
 ]
 

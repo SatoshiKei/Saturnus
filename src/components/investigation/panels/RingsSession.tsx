@@ -1,10 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
-  RING_CONTINUITY_CHECKS,
   RING_CONTINUITY_FRAMES,
   RING_SOURCES,
   RING_TRUE_ORDER,
-  type ContinuityCheckId,
   type RingSourceId,
   isRingOrderCorrect,
   rawOrderByTimestamp,
@@ -16,6 +14,7 @@ import {
 import { useInvestigation } from '../../../game/hooks/useInvestigation'
 import { resolveChatMediaSrc } from '../../../lib/characterSprites'
 import { playSfx } from '../../../lib/sfx'
+import { MorsaCctvReveal } from '../MorsaCctvReveal'
 
 /**
  * Puzzle 10 — Ordem dos Anéis.
@@ -31,12 +30,7 @@ export function RingsSession() {
   const [order, setOrder] = useState<RingSourceId[]>([])
   const [synced, setSynced] = useState(timelineDone)
   const [msg, setMsg] = useState<string | null>(null)
-  const [checks, setChecks] = useState<Record<ContinuityCheckId, boolean>>({
-    backpack: continuityDone,
-    radio: continuityDone,
-    timing: continuityDone,
-  })
-  const [hold, setHold] = useState(false)
+  const [showCctv, setShowCctv] = useState(false)
 
   useEffect(() => {
     if (timelineDone) setSynced(true)
@@ -46,8 +40,6 @@ export function RingsSession() {
     () => RING_SOURCES.filter((s) => !order.includes(s.id)),
     [order],
   )
-
-  const allChecks = RING_CONTINUITY_CHECKS.every((c) => checks[c.id])
 
   const applySync = () => {
     if (fullyDone || timelineDone) return
@@ -75,22 +67,6 @@ export function RingsSession() {
         setOrder([])
       }
     }
-  }
-
-  const toggleCheck = (id: ContinuityCheckId) => {
-    if (continuityDone || hold) return
-    playSfx('ui')
-    setChecks((prev) => ({ ...prev, [id]: !prev[id] }))
-  }
-
-  const confirmContinuity = () => {
-    if (!allChecks || continuityDone || hold) return
-    playSfx('unlock')
-    setHold(true)
-    window.setTimeout(() => {
-      onMorsaContinuityConfirmed()
-      setHold(false)
-    }, 900)
   }
 
   const raw = rawOrderByTimestamp().join(' → ')
@@ -146,68 +122,42 @@ export function RingsSession() {
         </button>
       ) : null}
 
-      {showContinuity ? (
-        <div className="rings-continuity" data-testid="rings-continuity">
-          <h4 className="pc-sub">Continuidade observada</h4>
-          <p className="aw-provisional__note">
-            Compare os registros. Marque os elementos que permanecem consistentes entre as fontes.
-          </p>
-          <div className="rings-continuity__frames" data-testid="rings-continuity-frames">
-            {RING_CONTINUITY_FRAMES.map((f) => (
-              <figure key={f.id} className="rings-continuity__frame" data-testid={`rings-frame-${f.id}`}>
-                <div className="rings-cctv">
-                  <img
-                    src={resolveChatMediaSrc(f.imageSrc)}
-                    alt={f.caption}
-                    className="rings-cctv__img"
-                  />
-                  <div className="rings-cctv__fx" aria-hidden />
-                  <div className="rings-cctv__noise" aria-hidden />
-                  <span className="rings-cctv__cam">{f.cameraId}</span>
-                  <span className="rings-cctv__time">{f.timeLabel}</span>
-                </div>
-                <figcaption>
-                  <strong>{f.timeLabel}</strong>
-                  <span>{f.caption}</span>
-                </figcaption>
-              </figure>
-            ))}
+      {showContinuity && !continuityDone ? (
+        <article className="rings-replay" data-testid="rings-replay-card">
+          <h4 className="pc-sub">Sequência reconstruída — câmeras do protesto</h4>
+          <div className="rings-replay__thumb">
+            <img
+              src={resolveChatMediaSrc(RING_CONTINUITY_FRAMES[0].imageSrc)}
+              alt=""
+              className="rings-replay__img"
+            />
+            <span className="rings-replay__label">{RING_CONTINUITY_FRAMES[0].cameraId}</span>
           </div>
-          <fieldset className="rings-continuity__checks" data-testid="rings-continuity-checks">
-            <legend>Correspondências observadas</legend>
-            {RING_CONTINUITY_CHECKS.map((c) => (
-              <label key={c.id} className="rings-continuity__check">
-                <input
-                  type="checkbox"
-                  data-testid={`rings-check-${c.id}`}
-                  checked={checks[c.id]}
-                  disabled={continuityDone || hold}
-                  onChange={() => toggleCheck(c.id)}
-                />
-                {c.label}
-              </label>
-            ))}
-          </fieldset>
-          {hold ? (
-            <p className="aw-provisional__note" data-testid="rings-continuity-hold">
-              Sequência alinhada…
-            </p>
-          ) : continuityDone ? (
-            <p className="aw-provisional__note" data-testid="rings-continuity-done">
-              Continuidade registrada. Feche a bancada.
-            </p>
-          ) : (
-            <button
-              type="button"
-              className="aw-provisional__go"
-              data-testid="rings-confirm-continuity"
-              disabled={!allChecks}
-              onClick={confirmContinuity}
-            >
-              Confirmar continuidade
-            </button>
-          )}
-        </div>
+          <p className="aw-provisional__note">
+            Registros sincronizados. Reproduza a passagem antes de registrar a conclusão.
+          </p>
+          <button
+            type="button"
+            className="aw-provisional__go"
+            data-testid="rings-replay-start"
+            onClick={() => setShowCctv(true)}
+          >
+            Reproduzir
+          </button>
+        </article>
+      ) : null}
+      {continuityDone && !fullyDone ? (
+        <p className="aw-provisional__note" data-testid="rings-continuity-done">
+          Continuidade registrada. Aguarde a reflexão na mesa.
+        </p>
+      ) : null}
+      {showCctv ? (
+        <MorsaCctvReveal
+          onComplete={() => {
+            setShowCctv(false)
+            onMorsaContinuityConfirmed()
+          }}
+        />
       ) : null}
 
       {showSolvedSummary ? (

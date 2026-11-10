@@ -8,7 +8,6 @@ import { organizeMarianaContactChronology } from '../../../game/story/block05Han
 import { organizeMemoryOnset } from '../../../game/story/block07Handlers'
 import { takeNotebookFocus } from '../../../app/uiStore'
 import { CasebookFilterBar } from '../CasebookFilterBar'
-import { EvidenceBoard } from '../EvidenceBoard'
 import type { Evidence, InvestigationState, Location, Person } from '../../../game/types'
 import {
   confidenceLabel,
@@ -23,7 +22,7 @@ import {
 } from '../../../lib/labels'
 import { GamePanel } from '../../ui/GamePanel'
 
-type Tab = 'people' | 'evidence' | 'locations' | 'timeline' | 'hypotheses' | 'contradictions' | 'board'
+type Tab = 'people' | 'evidence' | 'locations' | 'timeline' | 'hypotheses' | 'contradictions'
 
 const tabs: { id: Tab; label: string; hue: string }[] = [
   { id: 'people', label: 'Pessoas', hue: '#8f6a2c' },
@@ -32,7 +31,6 @@ const tabs: { id: Tab; label: string; hue: string }[] = [
   { id: 'timeline', label: 'Timeline', hue: '#4b5a6e' },
   { id: 'hypotheses', label: 'Hipóteses', hue: '#6e4b4b' },
   { id: 'contradictions', label: 'Contradições', hue: '#7a3a32' },
-  { id: 'board', label: 'Quadro', hue: '#3a4a5c' },
 ]
 
 /** Nunca vaza o id interno: itens ainda não reunidos aparecem como registro genérico. */
@@ -468,7 +466,7 @@ export function InvestigationNotebook({ onClose }: { onClose: () => void }) {
   const inv = useInvestigation()
   const [focus] = useState(() => takeNotebookFocus())
   const [tab, setTab] = useState<Tab>((focus?.tab as Tab | undefined) ?? 'people')
-  const [focusId, setFocusId] = useState<string | null>(focus?.id ?? null)
+  const [focusId] = useState<string | null>(focus?.id ?? null)
   const current = useMemo(() => tabs.find((t) => t.id === tab)!, [tab])
 
   return (
@@ -512,14 +510,6 @@ export function InvestigationNotebook({ onClose }: { onClose: () => void }) {
             <div className="nb-scroll">
               <ContradictionsTab inv={inv} />
             </div>
-          ) : null}
-          {tab === 'board' ? (
-            <EvidenceBoard
-              onOpen={(nextTab, id) => {
-                setFocusId(id)
-                setTab((nextTab as Tab) ?? 'evidence')
-              }}
-            />
           ) : null}
         </div>
       </div>

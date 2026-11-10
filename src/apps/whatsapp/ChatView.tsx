@@ -16,6 +16,8 @@ import type { ChatMessage } from '../../types/messaging'
 import { ChatComposer } from './ChatComposer'
 import { ImageLightbox } from './ImageLightbox'
 import { MessageBubble } from './MessageBubble'
+import { ChatProfileSheet } from './ChatProfileSheet'
+import { useGameHub } from '../../app/GameHubContext'
 
 interface ChatViewProps {
   chatId: string
@@ -24,6 +26,8 @@ interface ChatViewProps {
 
 export function ChatView({ chatId, onBack }: ChatViewProps) {
   const inv = useInvestigation()
+  const { phoneDevice } = useGameHub()
+  const [profileOpen, setProfileOpen] = useState(false)
   const chat = getChatById(chatId, inv)
   const script = chatScripts[chatId]
   const scriptChat = Boolean(script) && inv.phones.augusto.unlockedChatIds.includes(chatId)
@@ -170,8 +174,15 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
         <button type="button" className="wa-header__back" onClick={onBack} aria-label="Voltar à lista">
           ‹
         </button>
-        <Avatar contact={contact} size={36} />
-        <div className="wa-chat-header__title">
+        <button
+          type="button"
+          className="wa-chat-header__profile-hit"
+          data-testid="wa-chat-header-profile"
+          onClick={() => setProfileOpen(true)}
+          aria-label="Abrir dados do contato"
+        >
+          <Avatar contact={contact} size={36} />
+          <div className="wa-chat-header__title">
           <span className="wa-chat-header__name">{title}</span>
           {chat.isGroup ? (
             <span className="wa-chat-header__sub">toque para info do grupo</span>
@@ -180,7 +191,8 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
               {typing ? 'digitando…' : 'online'}
             </span>
           )}
-        </div>
+          </div>
+        </button>
         <div className="wa-chat-header__actions">
           <button
             type="button"
@@ -300,6 +312,15 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
           }
         />
       </footer>
+
+      {profileOpen ? (
+        <ChatProfileSheet
+          contact={contact}
+          chat={chat}
+          device={phoneDevice}
+          onClose={() => setProfileOpen(false)}
+        />
+      ) : null}
 
       {lightbox ? (
         <ImageLightbox

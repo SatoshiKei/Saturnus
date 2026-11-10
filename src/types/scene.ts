@@ -10,6 +10,7 @@ export type SceneHubTarget =
   | 'map'
   | 'audio-lab'
   | 'landline'
+  | 'wall-board'
   | 'mariana-phone'
   | 'augusto-phone'
 

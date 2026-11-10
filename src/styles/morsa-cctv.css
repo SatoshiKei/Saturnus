@@ -1,0 +1,100 @@
+.morsa-cctv {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  align-items: center;
+  justify-items: center;
+  background: radial-gradient(ellipse at center, #0d1218 0%, #040608 72%);
+  cursor: pointer;
+  transition: opacity 520ms ease;
+}
+
+.morsa-cctv--out {
+  opacity: 0;
+}
+
+.morsa-cctv__room {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.65));
+  pointer-events: none;
+}
+
+.morsa-cctv__feed,
+.morsa-cctv__thought,
+.morsa-cctv__name {
+  position: relative;
+  z-index: 1;
+  max-width: min(920px, 88vw);
+  margin: 0;
+  color: #e2dfd5;
+  text-align: center;
+}
+
+.morsa-cctv__screen {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid rgba(226, 223, 213, 0.2);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65);
+}
+
+.morsa-cctv__screen img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: contrast(1.08) saturate(0.85);
+}
+
+.morsa-cctv__badge,
+.morsa-cctv__stamp {
+  position: absolute;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  color: rgba(226, 223, 213, 0.9);
+  text-shadow: 0 0 8px #000;
+}
+
+.morsa-cctv__badge {
+  top: 0.65rem;
+  left: 0.75rem;
+}
+
+.morsa-cctv__stamp {
+  bottom: 0.65rem;
+  right: 0.75rem;
+}
+
+.morsa-cctv__feed figcaption {
+  margin-top: 0.85rem;
+  font-size: 1rem;
+  line-height: 1.45;
+  color: #cfcab8;
+}
+
+.morsa-cctv__thought {
+  font-size: 1.05rem;
+  line-height: 1.55;
+  font-style: italic;
+  padding: 0 1rem;
+}
+
+.morsa-cctv__name {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+.morsa-cctv__hint {
+  position: relative;
+  z-index: 2;
+  padding: 1rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #8d979e;
+}
