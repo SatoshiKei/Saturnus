@@ -927,40 +927,68 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-hospital-ricardo-freitas',
-    title: 'Hospital Municipal — atendimento / óbito (plantão)',
+    title: 'Hospital Municipal — registro de atendimento',
     category: 'Institucional',
-    issuer: 'Hospital Municipal — arquivo de plantão',
+    issuer: 'Hospital Municipal — arquivo médico',
     dateLabel: 'Plantão correspondente',
     system: 'consultas',
     blocks: [
       {
         id: 'b1',
-        text: 'Nome declarado: Ricardo Freitas. Atendido na madrugada do plantão cruzado com o período isolado. Óbito registrado na mesma madrugada.',
+        text: 'Paciente: Ricardo Freitas. Identidade declarada verbalmente; documento não apresentado. Contato familiar: não informado. Endereço: incompleto / não confirmado.',
       },
       {
         id: 'b2',
-        text: 'Documentação de identificação pobre. Descrição: desorientado, paranoico, difícil de identificar; falas desconexas. Nenhum profissional cita fato extraordinário.',
+        text: 'Entrada em agitação, ansiedade intensa, desorientação episódica e sinais físicos que justificaram observação. Permaneceu internado; óbito na madrugada. Resistência a procedimentos; dificuldade de obtenção de dados pessoais.',
       },
       {
         id: 'b3',
-        text: 'Pode não levar a lugar algum. Registro arquivado sem acompanhamento criminal.',
+        text: 'Observação administrativa: familiar não localizado durante a internação. Procedimentos posteriores sem reconhecimento imediato. Pertences relacionados e encaminhados conforme protocolo interno.',
       },
     ],
-    onOpen: [
-      { type: 'discoverPerson', id: 'ricardo', status: 'identified' },
-      { type: 'addEvidence', id: 'ricardo_freitas_died_that_shift' },
-      { type: 'addEvidence', id: 'ricardo_record_poor_id' },
-      { type: 'setFlag', id: 'block07_ricardo_found', value: true },
-      { type: 'completeTask', id: 'task_find_ricardo' },
-      { type: 'addHypothesis', id: 'hyp_ricardo_linked_to_onset' },
-      { type: 'setFlag', id: 'block07_ricardo_id_check_unlocked', value: true },
-      { type: 'setFlag', id: 'block07_ricardo_crosscheck_unlocked', value: true },
+    onOpen: [],
+  },
+  {
+    id: 'doc-forum-hvalenca',
+    title: 'Arquivo de fórum técnico — tópico de 2021',
+    category: 'Consultas (rede)',
+    issuer: 'Espelho arquivado / busca aberta',
+    dateLabel: '2021',
+    system: 'consultas',
+    blocks: [
       {
-        type: 'addTask',
-        id: 'task_confirm_ricardo_identity',
-        label: 'Confirmar a identidade de Ricardo Freitas',
+        id: 'b1',
+        text: 'Usuário: hvalenca. Pergunta sobre persistência de sessão, autenticação, cache e comportamento anômalo de sessão em infraestrutura.',
+      },
+      {
+        id: 'b2',
+        text: 'Resposta de hvalenca: texto tecnicamente competente sobre camada de sessão. Menção lateral: “Já vimos comportamento parecido no ambiente que mantemos na Aster Sistemas. No nosso caso o problema estava na camada de sessão, não no cliente.”',
+      },
+      {
+        id: 'b3',
+        text: 'Nenhuma identificação civil no tópico. Apenas nickname e referência incidental ao empregador.',
       },
     ],
+    onOpen: [],
+  },
+  {
+    id: 'doc-aster-admin',
+    title: 'Aster Sistemas — contato administrativo',
+    category: 'Consultas',
+    issuer: 'Junta comercial / arquivo empresarial',
+    system: 'consultas',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Aster Sistemas Ltda. — empresa reestruturada após 2022. Contato administrativo remanescente para arquivo de pessoal e incidentes internos da época.',
+      },
+      {
+        id: 'b2',
+        text: 'Ramal institucional para solicitações policiais: discar ASTER no telefone da delegacia.',
+      },
+    ],
+    leads: [{ type: 'phone', label: 'Administrativo', value: 'Ramal ASTER (fixo)' }],
+    onOpen: [{ type: 'setFlag', id: 'block07_aster_call_unlocked', value: true }],
   },
   {
     id: 'doc-ricardo-consulta-negativa',

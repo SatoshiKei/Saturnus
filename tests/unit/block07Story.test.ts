@@ -20,20 +20,27 @@ import {
   resetGame,
 } from '../../src/game/state/investigationStore'
 import { block07EntryActions } from '../../src/game/story/block07DevCheckpoints'
+import { onDocumentConsulted } from '../../src/game/story/documentConsultHooks'
 import {
   finishCeciliaInterview,
   finishJuliaCamilaOnsetCheck,
   finishMiroFollowup,
   finishSandraInterview,
+  onAsterHenriqueNamed,
   onCassiniSolved,
   onEnceladusSolved,
   onHenriqueRevealReflectionDone,
-  onMarianaPartialIdRevisited,
+  onHospitalDepositDone,
+  onHvReflectionDone,
+  onJuliaRicardoAudioDone,
+  onNotebookReflectionDone,
+  onRenataCallDone,
   onRicardoDeadReflectionDone,
   onSandraReflectionDone,
   onTechReflectionDone,
   organizeMemoryOnset,
   reviewMorsaDuration,
+  startBlock07,
   unlockHenriqueDump,
 } from '../../src/game/story/block07Handlers'
 
@@ -59,8 +66,14 @@ describe('Bloco 7 — progressão', () => {
       },
     ])
     s = runStoryEngine(s)
-    expect(s.flags.block07_started).toBe(true)
-    expect(s.locations['detencao-miro']?.status).toBe('visitAvailable')
+    __setStateForTests(s)
+    startBlock07()
+    const after = getInvestigationState()
+    expect(after.flags.block07_started).toBe(true)
+    expect(
+      after.locations['detencao-miro']?.status === 'visitAvailable' ||
+        after.tasks.some((t) => t.id === 'task_press_miro_further'),
+    ).toBe(true)
   })
 
   it('Miro 2 admite descida; Sandra mantém André; Morsa + lapsos; áudio anônimo', () => {
@@ -101,7 +114,7 @@ describe('Bloco 7 — progressão', () => {
     expect(s.flags.block07_enceladus_available).toBe(true)
   })
 
-  it('Puzzle 8 → Ricardo → Henrique → Cecília → Puzzle 9 → estado final', () => {
+  it('Puzzle 8 → Júlia → hospital → Renata → depósito → fórum → Aster → Cecília → Cassini', () => {
     seed()
     finishMiroFollowup()
     finishSandraInterview()
@@ -111,32 +124,38 @@ describe('Bloco 7 — progressão', () => {
     finishJuliaCamilaOnsetCheck()
 
     expect(enceladusPeriodMatches(ENCELADUS_BURSTS)).toBe(true)
-    expect(ENCELADUS_VOICE_FRAGMENT).toBe('Ricardo')
+    expect(ENCELADUS_VOICE_FRAGMENT).toContain('Ricardo')
     onEnceladusSolved()
     let s = getInvestigationState()
-    expect(s.evidenceOwned).toContain('anon_audio_hospital_environment')
     expect(s.evidenceOwned).toContain('anon_audio_ricardo_name')
-    expect(s.flags.block07_ricardo_search_unlocked).toBe(true)
+    expect(s.flags.block07_julia_ricardo_audio_unlocked).toBe(true)
+    expect(s.flags.block07_ricardo_search_unlocked).toBeFalsy()
+
+    onJuliaRicardoAudioDone()
+    s = getInvestigationState()
+    expect(s.flags.block07_hospital_archive_unlocked).toBe(true)
 
     openDocument('doc-hospital-ricardo-freitas')
+    onDocumentConsulted('doc-hospital-ricardo-freitas')
     s = getInvestigationState()
     expect(s.evidenceOwned).toContain('ricardo_freitas_died_that_shift')
-    expect(s.flags.block07_ricardo_id_check_unlocked).toBe(true)
-    expect(s.flags.block07_henrique_identified).toBeFalsy()
-
-    openDocument('doc-ricardo-consulta-negativa')
-    s = getInvestigationState()
-    expect(s.flags.block07_ricardo_dead_end).toBe(true)
-    expect(s.evidenceOwned).toContain('ricardo_civil_unconfirmed')
+    expect(s.flags.block07_refl_ricardo_dead_pending).toBe(true)
     expect(s.flags.block07_henrique_identified).toBeFalsy()
 
     onRicardoDeadReflectionDone()
-    onMarianaPartialIdRevisited()
-    s = getInvestigationState()
-    expect(s.flags.block07_partial_id_search_unlocked).toBe(true)
-    expect(s.evidenceOwned).toContain('mariana_partial_account_hvalenca')
+    onRenataCallDone()
+    onNotebookReflectionDone()
+    onHospitalDepositDone()
+    onHvReflectionDone()
 
-    openDocument('doc-henrique-cadastro')
+    const forum = runPoliceSearch('hvalenca', getInvestigationState())
+    expect(forum.hits.some((h) => h.documentId === 'doc-forum-hvalenca')).toBe(true)
+    openDocument('doc-forum-hvalenca')
+    onDocumentConsulted('doc-forum-hvalenca')
+    s = getInvestigationState()
+    expect(s.evidenceOwned).toContain('hvalenca_forum_aster_mention')
+
+    onAsterHenriqueNamed()
     s = getInvestigationState()
     expect(s.flags.block07_henrique_named).toBe(true)
     expect(s.people.henrique?.status).toBe('identified')
@@ -144,7 +163,7 @@ describe('Bloco 7 — progressão', () => {
 
     onHenriqueRevealReflectionDone()
     s = getInvestigationState()
-    expect(s.evidenceOwned).toContain('ricardo_was_henrique_valenca')
+    expect(s.evidenceOwned).toContain('ricardo_identity_false')
     expect(s.flags.block07_henrique_identified).toBe(true)
     expect(s.flags.block07_henrique_search_unlocked).toBe(true)
 

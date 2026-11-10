@@ -267,7 +267,8 @@ export const callScripts: CallScript[] = [
     id: 'call-hospital',
     speaker: 'Hospital Municipal — recepção',
     ext: 'HOSP',
-    available: (s) => !flag(s, 'block07_ricardo_search_unlocked'),
+    available: (s) =>
+      !flag(s, 'block07_hospital_archive_unlocked') || flag(s, 'block07_ricardo_found'),
     lines: [
       { who: 'other', text: 'Hospital Municipal, recepção.' },
       { who: 'augusto', text: 'Augusto Nogueira, Polícia Civil. Sobre a funcionária Mariana Silva: houve algum contato dela com o setor?' },
@@ -277,29 +278,59 @@ export const callScripts: CallScript[] = [
     repeat: [{ who: 'other', text: 'Sem novidades até agora, delegado.' }],
   },
   {
-    id: 'call-hospital-ricardo',
-    speaker: 'Hospital Municipal — arquivo de plantão',
-    ext: 'HOSP',
-    available: (s) => flag(s, 'block07_ricardo_search_unlocked'),
+    id: 'call-julia-ricardo-audio',
+    speaker: 'Júlia Martins',
+    contactId: 'contact-julia',
+    available: (s) => flag(s, 'block07_julia_ricardo_audio_unlocked') && !flag(s, 'block07_julia_ricardo_audio_done'),
     lines: [
-      { who: 'other', text: 'Hospital Municipal, arquivo de plantão.' },
+      { who: 'other', text: 'Alô?' },
+      { who: 'augusto', text: 'Júlia, escuta uma coisa pra mim. Depois eu explico de onde veio.' },
+      { who: 'other', text: '…Ricardo…? Volta um pouco — não no nome. Essa voz atrás. Acho que é a Renata.' },
+      { who: 'augusto', text: 'Renata Farias?' },
+      { who: 'other', text: 'Ela lembra: Ricardo era paciente antigo, da época dos plantões da Mariana. Depois daquele cara a Mariana ficou dias muito mal.' },
+      { who: 'augusto', text: 'Quero o arquivo dele.' },
+    ],
+    result: { label: 'Áudio conferido', detail: 'Renata reconhecida; paciente antigo ligado a Mariana.' },
+    onComplete: [{ type: 'completeCall', id: 'call-julia-ricardo-audio' }],
+    repeat: [{ who: 'other', text: 'Já ouvimos o trecho. Posso ajudar com o arquivo quando você pedir formalmente.' }],
+  },
+  {
+    id: 'call-renata-farias',
+    speaker: 'Renata Farias',
+    ext: 'REN',
+    available: (s) => flag(s, 'block07_renata_call_unlocked') && !flag(s, 'block07_renata_call_done'),
+    lines: [
+      { who: 'other', text: 'Alô?' },
+      { who: 'augusto', text: 'Delegado Augusto Nogueira. Sobre Ricardo Freitas — o prontuário é vazio. O que não está nele?' },
+      { who: 'other', text: 'Chegou assustado, olhava pra porta. Mariana insistiu que havia algo além de delírio. Ninguém parecia se importar com quem ele era.' },
+      { who: 'augusto', text: 'Algo concreto — comportamento.' },
+      { who: 'other', text: 'O notebook. Digitava o tempo todo, não deixava chegar perto. Se você quer o que sobrou dele, comece no depósito.' },
+    ],
+    result: { label: 'Depoimento', detail: 'Notebook no leito; pertences no depósito do hospital.' },
+    onComplete: [{ type: 'completeCall', id: 'call-renata-farias' }],
+    repeat: [{ who: 'other', text: 'Já contei o que lembro do plantão, delegado.' }],
+  },
+  {
+    id: 'call-hospital-ricardo',
+    speaker: 'Hospital Municipal — arquivo médico',
+    ext: 'HOSP',
+    available: (s) => flag(s, 'block07_hospital_archive_unlocked') && !flag(s, 'block07_ricardo_found'),
+    lines: [
+      { who: 'other', text: 'Arquivo médico, boa tarde.' },
       {
         who: 'augusto',
-        text: 'Augusto Nogueira, Polícia Civil. Preciso cruzar um nome — Ricardo — com o plantão noturno do período que estou isolando. Mariana Silva estava de plantão.',
+        text: 'Delegado Augusto Nogueira. Prontuário antigo — primeiro nome Ricardo, setor de observação. Tenho janela de plantão e funcionária do setor.',
       },
-      {
-        who: 'other',
-        text: 'Há um atendimento/óbito naquela madrugada sob Ricardo Freitas. Documentação pobre. Posso encaminhar o resumo ao sistema de consulta.',
-      },
+      { who: 'other', text: 'Um momento… Tenho um Ricardo Freitas. Documento não apresentado. Alta: óbito na madrugada.' },
+      { who: 'augusto', text: 'Encaminha o que puder disponibilizar formalmente.' },
     ],
     result: {
-      label: 'Registro encaminhado',
-      detail: 'Atendimento/óbito — Ricardo Freitas (plantão correspondente).',
+      label: 'Prontuário separado',
+      detail: 'Ricardo Freitas — identidade declarada, óbito no plantão.',
     },
     onComplete: [
       { type: 'completeCall', id: 'call-hospital-ricardo' },
       { type: 'addDocument', id: 'doc-hospital-ricardo-freitas' },
-      // Progressão formal: abrir o documento → `onRicardoRecordFound`.
     ],
     repeat: [
       {
@@ -308,6 +339,36 @@ export const callScripts: CallScript[] = [
       },
     ],
     notYet: [{ who: 'other', text: 'Sem pedido específico de plantão neste momento.' }],
+  },
+  {
+    id: 'call-aster-henrique',
+    speaker: 'Aster Sistemas — administrativo',
+    ext: 'ASTER',
+    available: (s) =>
+      flag(s, 'block07_aster_call_unlocked') && !flag(s, 'block07_henrique_named'),
+    lines: [
+      { who: 'other', text: 'Aster Sistemas, administrativo.' },
+      {
+        who: 'augusto',
+        text: 'Delegado Augusto Nogueira. Procuro alguém da equipe técnica por volta de 2021 — identificador hvalenca, iniciais H.V.',
+      },
+      { who: 'other', text: 'Espera… Tem um nome que pode ser. Henrique Valença. Não trabalha mais aqui.' },
+      {
+        who: 'augusto',
+        text: 'Quem trabalhou diretamente com ele?',
+      },
+      {
+        who: 'other',
+        text: 'Cecília Prado ficou na mesma equipe. Posso repassar o contato profissional atual mediante solicitação.',
+      },
+    ],
+    result: {
+      label: 'Nome recuperado',
+      detail: 'Henrique Valença — ex-Aster Sistemas; indicação Cecília Prado.',
+    },
+    onComplete: [{ type: 'completeCall', id: 'call-aster-henrique' }],
+    repeat: [{ who: 'other', text: 'Já passamos o que tínhamos sobre Henrique, delegado.' }],
+    notYet: [{ who: 'other', text: 'Sem abertura administrativa para essa consulta no momento.' }],
   },
   {
     id: 'call-central',

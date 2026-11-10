@@ -3,6 +3,7 @@ import {
   revisitEmergencyEntry,
 } from './block05Handlers'
 import {
+  onForumHvalencaOpened,
   onHenriqueCadastroOpened,
   onRicardoIdentityDeadEnd,
   onRicardoRecordFound,
@@ -97,9 +98,12 @@ export function onDocumentConsulted(docId: string) {
     unlockHenriqueDump()
   }
 
-  // B7: Ricardo hospital → confirmação civil → Henrique (cadastro).
+  // B7: prontuário hospitalar; fórum hvalenca; legado cadastral.
   if (docId === 'doc-hospital-ricardo-freitas') {
     onRicardoRecordFound()
+  }
+  if (docId === 'doc-forum-hvalenca') {
+    onForumHvalencaOpened()
   }
   if (docId === 'doc-ricardo-consulta-negativa') {
     onRicardoIdentityDeadEnd()

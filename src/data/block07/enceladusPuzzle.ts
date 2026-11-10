@@ -5,9 +5,11 @@
  */
 
 export const ENCELADUS_PERIOD_SEC = 12
-export const ENCELADUS_HOSPITAL_MATCH = 'Hospital Municipal — padrão de alarmes de monitor'
-export const ENCELADUS_VOICE_FRAGMENT = 'Ricardo'
-export const ENCELADUS_SHIFT_HINT = 'Plantão noturno — setor próximo à UTI / observação'
+export const ENCELADUS_HOSPITAL_MATCH =
+  'Hospital Municipal — setor de observação / proximidades da UTI'
+export const ENCELADUS_VOICE_FRAGMENT = '…Ricardo…'
+export const ENCELADUS_SHIFT_HINT =
+  'Fragmento vocal + voz feminina ao fundo (não identificada pelo puzzle)'
 
 export interface EnceladusBurst {
   id: string

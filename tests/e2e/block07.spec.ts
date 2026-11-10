@@ -33,14 +33,7 @@ test('Bloco 7 — Miro2, Sandra, Puzzle 8/9, estado final', async ({ page }) => 
   await dev(page, 'b07-sandra-ready', 'b07-after-sandra', 'b07-morsa-memory', 'b07-enceladus-done')
   save = await readSave(page)
   expect(save.evidenceOwned).toContain('anon_audio_ricardo_name')
-  expect(save.flags.block07_ricardo_search_unlocked).toBe(true)
-
-  await openHubObject(page, 'monitor')
-  await page.getByTestId('pc-nav-consultas').click()
-  await page.getByTestId('police-search-input').fill('ricardo')
-  await page.getByTestId('police-search-submit').click()
-  await expect(page.getByTestId('search-open-doc-hospital-ricardo-freitas')).toBeVisible()
-  await closeHub(page)
+  expect(save.flags.block07_julia_ricardo_audio_unlocked).toBe(true)
 
   await dev(page, 'b07-ricardo-henrique', 'b07-henrique-trail', 'b07-after-cecilia', 'b07-end')
   save = await readSave(page)

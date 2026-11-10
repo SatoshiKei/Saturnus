@@ -226,16 +226,35 @@ export function onEnceladusSolved() {
     { type: 'addEvidence', id: 'anon_audio_ricardo_name' },
     { type: 'addEvidence', id: 'anon_audio_shift_window' },
     { type: 'completeTask', id: 'task_anon_audio_enceladus' },
-    { type: 'setFlag', id: 'block07_ricardo_search_unlocked', value: true },
+    { type: 'setFlag', id: 'block07_julia_ricardo_audio_unlocked', value: true },
+    { type: 'unlockContact', contactId: 'contact-julia' },
     {
       type: 'addTask',
-      id: 'task_find_ricardo',
-      label: 'Cruzar o nome Ricardo com o hospital e o plantão correspondente',
+      id: 'task_julia_ricardo_audio',
+      label: 'Pedir a Júlia que escute o trecho reconstruído',
     },
   ])
 }
 
-/** Hospital / busca → Ricardo Freitas (banal). Próximo passo: confirmar identidade civil. */
+/** Júlia reconhece Renata; paciente antigo Ricardo ligado a Mariana. */
+export function onJuliaRicardoAudioDone() {
+  const s = getInvestigationState()
+  if (s.flags.block07_julia_ricardo_audio_done) return
+  dispatchActions([
+    { type: 'setFlag', id: 'block07_julia_ricardo_audio_done', value: true },
+    { type: 'addEvidence', id: 'renata_voice_on_burst' },
+    { type: 'addEvidence', id: 'ricardo_old_patient_mariana_shift' },
+    { type: 'completeTask', id: 'task_julia_ricardo_audio' },
+    { type: 'setFlag', id: 'block07_hospital_archive_unlocked', value: true },
+    {
+      type: 'addTask',
+      id: 'task_hospital_ricardo_chart',
+      label: 'Solicitar o prontuário de Ricardo no arquivo do hospital',
+    },
+  ])
+}
+
+/** Prontuário entregue pelo hospital (não por busca “Ricardo” no PC). */
 export function onRicardoRecordFound() {
   const s = getInvestigationState()
   if (s.flags.block07_ricardo_found) return
@@ -244,16 +263,9 @@ export function onRicardoRecordFound() {
     { type: 'discoverPerson', id: 'ricardo', status: 'identified' },
     { type: 'addEvidence', id: 'ricardo_freitas_died_that_shift' },
     { type: 'addEvidence', id: 'ricardo_record_poor_id' },
-    { type: 'completeTask', id: 'task_find_ricardo' },
+    { type: 'completeTask', id: 'task_hospital_ricardo_chart' },
     { type: 'addHypothesis', id: 'hyp_ricardo_linked_to_onset' },
-    { type: 'setFlag', id: 'block07_ricardo_id_check_unlocked', value: true },
-    // Softlock saves antigos que ainda olhavam `crosscheck_unlocked`.
-    { type: 'setFlag', id: 'block07_ricardo_crosscheck_unlocked', value: true },
-    {
-      type: 'addTask',
-      id: 'task_confirm_ricardo_identity',
-      label: 'Confirmar a identidade de Ricardo Freitas',
-    },
+    { type: 'setFlag', id: 'block07_refl_ricardo_dead_pending', value: true },
   ])
 }
 
@@ -277,12 +289,97 @@ export function onRicardoDeadReflectionDone() {
   dispatchActions([
     { type: 'setFlag', id: 'block07_ricardo_dead_reflection_done', value: true },
     { type: 'setFlag', id: 'block07_refl_ricardo_dead_pending', value: false },
-    { type: 'setFlag', id: 'block07_revisit_mariana_clue_unlocked', value: true },
+    { type: 'setFlag', id: 'block07_renata_call_unlocked', value: true },
     {
       type: 'addTask',
-      id: 'task_revisit_mariana_ricardo_clue',
-      label: 'Rever o material que Mariana reuniu — notas e dados do aparelho',
+      id: 'task_call_renata',
+      label: 'Ligar para Renata Farias sobre o paciente Ricardo',
     },
+  ])
+}
+
+export function onRenataCallDone() {
+  const s = getInvestigationState()
+  if (s.flags.block07_renata_call_done) return
+  dispatchActions([
+    { type: 'setFlag', id: 'block07_renata_call_done', value: true },
+    { type: 'addEvidence', id: 'ricardo_notebook_behavior' },
+    { type: 'completeTask', id: 'task_call_renata' },
+    { type: 'setFlag', id: 'block07_refl_notebook_pending', value: true },
+    { type: 'setFlag', id: 'block07_hospital_deposit_unlocked', value: true },
+    { type: 'unlockLocation', id: 'hospital', status: 'visitAvailable' },
+    {
+      type: 'addTask',
+      id: 'task_hospital_deposit',
+      label: 'Voltar ao hospital — depósito de pertences de Ricardo',
+    },
+  ])
+}
+
+export function onNotebookReflectionDone() {
+  const s = getInvestigationState()
+  if (s.flags.block07_notebook_reflection_done) return
+  dispatchActions([
+    { type: 'setFlag', id: 'block07_notebook_reflection_done', value: true },
+    { type: 'setFlag', id: 'block07_refl_notebook_pending', value: false },
+  ])
+}
+
+export function onHospitalDepositDone() {
+  const s = getInvestigationState()
+  if (s.flags.block07_hospital_deposit_done) return
+  dispatchActions([
+    { type: 'setFlag', id: 'block07_hospital_deposit_done', value: true },
+    { type: 'addEvidence', id: 'ricardo_belongings_no_laptop' },
+    { type: 'addEvidence', id: 'ricardo_handkerchief_hv' },
+    { type: 'addEvidence', id: 'mariana_partial_account_hvalenca' },
+    { type: 'completeTask', id: 'task_hospital_deposit' },
+    { type: 'setFlag', id: 'block07_refl_hv_pending', value: true },
+    { type: 'setFlag', id: 'block07_forum_search_unlocked', value: true },
+    {
+      type: 'addTask',
+      id: 'task_forum_hvalenca',
+      label: 'Buscar o nickname hvalenca em arquivo de fórum técnico',
+    },
+  ])
+}
+
+export function onHvReflectionDone() {
+  const s = getInvestigationState()
+  if (s.flags.block07_hv_reflection_done) return
+  dispatchActions([
+    { type: 'setFlag', id: 'block07_hv_reflection_done', value: true },
+    { type: 'setFlag', id: 'block07_refl_hv_pending', value: false },
+    { type: 'setFlag', id: 'block07_aster_search_unlocked', value: true },
+    { type: 'setFlag', id: 'block07_aster_call_unlocked', value: true },
+    {
+      type: 'addTask',
+      id: 'task_aster_henrique',
+      label: 'Contatar Aster Sistemas sobre o usuário hvalenca',
+    },
+  ])
+}
+
+export function onForumHvalencaOpened() {
+  const s = getInvestigationState()
+  if (s.flags.block07_forum_hvalenca_done) return
+  dispatchActions([
+    { type: 'setFlag', id: 'block07_forum_hvalenca_done', value: true },
+    { type: 'addEvidence', id: 'hvalenca_forum_aster_mention' },
+    { type: 'completeTask', id: 'task_forum_hvalenca' },
+  ])
+}
+
+/** Primeira vez que o nome completo aparece — via empresa, não cadastro civil. */
+export function onAsterHenriqueNamed() {
+  const s = getInvestigationState()
+  if (s.flags.block07_henrique_named) return
+  dispatchActions([
+    { type: 'setFlag', id: 'block07_henrique_named', value: true },
+    { type: 'discoverPerson', id: 'henrique', status: 'identified' },
+    { type: 'addEvidence', id: 'henrique_named_by_aster' },
+    { type: 'completeTask', id: 'task_aster_henrique' },
+    { type: 'setFlag', id: 'block07_refl_henrique_reveal_pending', value: true },
   ])
 }
 
@@ -326,13 +423,10 @@ export function onHenriqueCadastroOpened() {
 export function onHenriqueRevealReflectionDone() {
   const s = getInvestigationState()
   if (s.flags.block07_henrique_identified) return
-  dispatchActions([
+  const actions: StoryActionRef[] = [
     { type: 'setFlag', id: 'block07_henrique_identified', value: true },
     { type: 'setFlag', id: 'block07_refl_henrique_reveal_pending', value: false },
-    { type: 'addEvidence', id: 'ricardo_identity_false' },
-    { type: 'addEvidence', id: 'ricardo_was_henrique_valenca' },
     { type: 'discoverPerson', id: 'henrique', status: 'identified' },
-    { type: 'completeTask', id: 'task_crosscheck_ricardo_mariana' },
     { type: 'setFlag', id: 'block07_henrique_search_unlocked', value: true },
     {
       type: 'addTask',
@@ -346,10 +440,14 @@ export function onHenriqueRevealReflectionDone() {
       presentation: 'card',
       label: 'IDENTIDADE CONFIRMADA',
       title: 'Henrique Valença',
-      summary: 'Ricardo Freitas era um nome falso. A identidade real entra no caderno.',
-      refId: 'ricardo_was_henrique_valenca',
+      summary: 'Henrique Valença — nome completo pela Aster Sistemas, não pelo cadastro de Ricardo.',
+      refId: 'henrique_named_by_aster',
     },
-  ])
+  ]
+  if (!s.evidenceOwned.includes('ricardo_identity_false')) {
+    actions.push({ type: 'addEvidence', id: 'ricardo_identity_false' })
+  }
+  dispatchActions(actions)
 }
 
 /**

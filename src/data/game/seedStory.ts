@@ -686,6 +686,33 @@ export const seedSearchRules: SearchRule[] = [
     ],
   },
   {
+    id: 'block07_forum_hvalenca',
+    category: 'police',
+    requiredFlags: ['block07_forum_search_unlocked'],
+    requiredTerms: ['hvalenca'],
+    results: [
+      {
+        title: 'Arquivo de fórum técnico — usuário hvalenca (2021)',
+        snippet: 'Tópico arquivado sobre sessão e autenticação; menção a empregador.',
+        documentId: 'doc-forum-hvalenca',
+      },
+    ],
+  },
+  {
+    id: 'block07_aster',
+    category: 'police',
+    requiredFlags: ['block07_aster_search_unlocked'],
+    requiredTerms: ['aster'],
+    results: [
+      {
+        title: 'Aster Sistemas — contato administrativo',
+        snippet: 'Empresa reestruturada; arquivo de pessoal da época.',
+        documentId: 'doc-aster-admin',
+      },
+    ],
+  },
+  {
+    /** Legado — saves com pista parcial antiga. */
     id: 'block07_hvalenca',
     category: 'police',
     requiredFlags: ['block07_partial_id_search_unlocked'],

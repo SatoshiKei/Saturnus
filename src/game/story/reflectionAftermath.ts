@@ -17,6 +17,8 @@ import {
 import { onGeraldoReflectionDone, onMiroReflectionDone } from './block06Handlers'
 import {
   onHenriqueRevealReflectionDone,
+  onHvReflectionDone,
+  onNotebookReflectionDone,
   onRicardoDeadReflectionDone,
   onSandraReflectionDone,
   onTechReflectionDone,
@@ -54,6 +56,12 @@ export function afterReflectionComplete(reflectionId: string): void {
       break
     case 'refl-b07-ricardo-dead':
       onRicardoDeadReflectionDone()
+      break
+    case 'refl-b07-notebook':
+      onNotebookReflectionDone()
+      break
+    case 'refl-b07-hv':
+      onHvReflectionDone()
       break
     case 'refl-b07-henrique-reveal':
       onHenriqueRevealReflectionDone()

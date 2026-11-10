@@ -100,14 +100,14 @@ export function EnceladusSession() {
       ) : (
         <div data-testid="enceladus-solved">
           <p>
-            Ambiente: <strong>{ENCELADUS_HOSPITAL_MATCH}</strong>
+            Ambiente provável: <strong>{ENCELADUS_HOSPITAL_MATCH}</strong>
           </p>
-          <p>Janela: {ENCELADUS_SHIFT_HINT}</p>
           <p>
-            Fragmento de voz: <strong>{ENCELADUS_VOICE_FRAGMENT}</strong>
+            Fragmento vocal: <strong>{ENCELADUS_VOICE_FRAGMENT}</strong>
           </p>
+          <p>{ENCELADUS_SHIFT_HINT}</p>
           <p className="aw-provisional__note">
-            Hospital + período + nome. A busca nominal fica a cargo da investigação.
+            Próximo passo natural: falar com Júlia — não consultar “Ricardo” no computador.
           </p>
         </div>
       )}

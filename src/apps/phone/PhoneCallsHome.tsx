@@ -4,7 +4,11 @@ import { scriptByContact, type CallScript } from '../../data/calls'
 import { CallSession } from '../../components/investigation/CallSession'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { dispatchActions } from '../../game/state/investigationStore'
-import { deliverAnonWhatsApp } from '../../game/story/block07Handlers'
+import {
+  deliverAnonWhatsApp,
+  onJuliaRicardoAudioDone,
+  onRenataCallDone,
+} from '../../game/story/block07Handlers'
 import { markContactSeen, newContactIds } from '../../lib/contactsSeen'
 import { CallList } from '../whatsapp/CallList'
 
@@ -132,6 +136,8 @@ export function PhoneCallsHome({ onBack }: PhoneCallsHomeProps) {
               if (endedId === 'call-julia-onset') {
                 window.setTimeout(() => deliverAnonWhatsApp(), 700)
               }
+              if (endedId === 'call-julia-ricardo-audio') onJuliaRicardoAudioDone()
+              if (endedId === 'call-renata-farias') onRenataCallDone()
             }}
           />
         ) : (

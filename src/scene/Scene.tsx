@@ -24,6 +24,8 @@ import { Block01Opening } from '../components/story/Block01Opening'
 import { SceneRunner } from '../components/story/vn/SceneTransitions'
 import type { LocationSceneId } from '../app/GameHubContext'
 import { HospitalInterviewScene } from '../components/story/HospitalInterviewScene'
+import { HospitalDepositScene } from '../components/story/HospitalDepositScene'
+import { getInvestigationState } from '../game/state/investigationStore'
 import { VerticeInterviewScene } from '../components/story/VerticeInterviewScene'
 import { LucasInterviewScene } from '../components/story/LucasInterviewScene'
 import { NicoInterviewScene } from '../components/story/NicoInterviewScene'
@@ -58,8 +60,13 @@ const CAMERA_MS = 280
 
 function renderLocationScene(id: NonNullable<LocationSceneId>, close: () => void) {
   switch (id) {
-    case 'hospital':
+    case 'hospital': {
+      const b7 = getInvestigationState().flags
+      if (b7.block07_hospital_deposit_unlocked && !b7.block07_hospital_deposit_done) {
+        return <HospitalDepositScene onClose={close} />
+      }
       return <HospitalInterviewScene onClose={close} />
+    }
     case 'vertice':
       return <VerticeInterviewScene onClose={close} />
     case 'lucas':
@@ -105,6 +112,12 @@ function pendingSoloReflection(flags: Record<string, boolean>): string | null {
   if (flags.block07_refl_sandra_pending && !flags['refl-b07-sandra_seen']) return 'refl-b07-sandra'
   if (flags.block07_refl_ricardo_dead_pending && !flags['refl-b07-ricardo-dead_seen']) {
     return 'refl-b07-ricardo-dead'
+  }
+  if (flags.block07_refl_notebook_pending && !flags['refl-b07-notebook_seen']) {
+    return 'refl-b07-notebook'
+  }
+  if (flags.block07_refl_hv_pending && !flags['refl-b07-hv_seen']) {
+    return 'refl-b07-hv'
   }
   if (flags.block07_refl_henrique_reveal_pending && !flags['refl-b07-henrique-reveal_seen']) {
     return 'refl-b07-henrique-reveal'

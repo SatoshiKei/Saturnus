@@ -9,6 +9,7 @@ import {
 } from '../../../data/calls'
 import { useInvestigation } from '../../../game/hooks/useInvestigation'
 import { onHexCallsPreserved } from '../../../game/story/block04Handlers'
+import { onAsterHenriqueNamed, onRenataCallDone } from '../../../game/story/block07Handlers'
 import { playSfx } from '../../../lib/sfx'
 import { CallSession } from '../CallSession'
 import { HexCallScene } from '../HexCallScene'
@@ -50,6 +51,25 @@ export function PoliceLandline({ onClose }: { onClose: () => void }) {
     [inv.contacts],
   )
 
+  const directory = useMemo(() => {
+    const extra: { key: string; name: string; scriptId?: string }[] = []
+    if (inv.flags.block07_renata_call_unlocked) {
+      extra.push({ key: 'REN', name: 'Renata Farias (hospital)', scriptId: 'call-renata-farias' })
+    }
+    if (inv.flags.block07_aster_call_unlocked && !inv.flags.block07_henrique_named) {
+      extra.push({
+        key: 'ASTER',
+        name: 'Aster Sistemas — administrativo',
+        scriptId: 'call-aster-henrique',
+      })
+    }
+    return [...landlineDirectory, ...extra]
+  }, [
+    inv.flags.block07_renata_call_unlocked,
+    inv.flags.block07_aster_call_unlocked,
+    inv.flags.block07_henrique_named,
+  ])
+
   // Se o jogador saiu no meio da cena, as gravações ainda precisam chegar à bancada.
   useEffect(() => {
     if (inv.flags.block04_hex_call_answered && !inv.flags.block04_hex_received && !hexScene) {
@@ -68,6 +88,13 @@ export function PoliceLandline({ onClose }: { onClose: () => void }) {
     setSession(null)
     setNumber('')
     setLine('LINHA LIVRE')
+  }
+
+  const finishCall = () => {
+    const id = session?.id
+    endCall()
+    if (id === 'call-renata-farias') onRenataCallDone()
+    if (id === 'call-aster-henrique') onAsterHenriqueNamed()
   }
 
   const dialNumber = () => {
@@ -100,7 +127,7 @@ export function PoliceLandline({ onClose }: { onClose: () => void }) {
 
         <section className="ll-set" aria-label="Aparelho">
           {session ? (
-            <CallSession key={session.id} script={session} onEnd={endCall} />
+            <CallSession key={session.id} script={session} onEnd={finishCall} />
           ) : (
             <>
               <div className="ll-lcd" aria-live="polite" data-ringing={incoming}>
@@ -155,7 +182,7 @@ export function PoliceLandline({ onClose }: { onClose: () => void }) {
         <section className="ll-dir" aria-label="Ramais e agenda">
           <h3 className="ll-h">Ramais</h3>
           <ul>
-            {landlineDirectory.map((e) => (
+            {directory.map((e) => (
               <li key={e.key}>
                 <button
                   type="button"
@@ -164,7 +191,7 @@ export function PoliceLandline({ onClose }: { onClose: () => void }) {
                   onClick={() => {
                     let script =
                       (e.scriptId && callScripts.find((s) => s.id === e.scriptId)) || idleScript(e.name)
-                    if (e.key === 'HOSP' && inv.flags.block07_ricardo_search_unlocked) {
+                    if (e.key === 'HOSP' && inv.flags.block07_hospital_archive_unlocked) {
                       const ricardo = callScripts.find((s) => s.id === 'call-hospital-ricardo')
                       if (ricardo) script = ricardo
                     }
