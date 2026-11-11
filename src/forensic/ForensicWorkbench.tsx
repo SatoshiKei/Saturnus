@@ -3,20 +3,22 @@ import '../styles/forensic-workbench.css'
 import { ForensicAudioEngine } from './forensicAudio'
 import {
   captureNoiseProfile,
+  computeRecoveryMetrics,
   computeStemGains,
   createInitialUiState,
+  evaluateSegmentClarity,
   fmtTime,
   getActiveSource,
-  notchToneEffect,
   resetProcess,
-  transcriptionComplete,
+  speechRecoveryComplete,
   voiceSpansFromSource,
+  type SegmentClarity,
 } from './forensicEngine'
 import type {
   ForensicSession,
-  ForensicSource,
   ForensicUiState,
   ProcessParams,
+  RecoveredSpeechEntry,
   StemId,
   TrackRuntime,
 } from './forensicTypes'
@@ -32,20 +34,28 @@ export function ForensicWorkbench({
   onClose,
   onPuzzleComplete,
   completed,
+  recoveredSpeech: recoveredProp,
+  onSegmentRecovered,
 }: {
   session: ForensicSession
   fileNameBadge?: string
   onClose: () => void
   onPuzzleComplete?: () => void
   completed?: boolean
+  recoveredSpeech?: RecoveredSpeechEntry[]
+  onSegmentRecovered?: (entry: RecoveredSpeechEntry) => void
 }) {
-  const [ui, setUi] = useState<ForensicUiState>(() => createInitialUiState(session))
+  const [ui, setUi] = useState<ForensicUiState>(() =>
+    createInitialUiState(session, recoveredProp ?? []),
+  )
   const [showHelp, setShowHelp] = useState(false)
   const [status, setStatus] = useState<string | null>(null)
   const [timelineView, setTimelineView] = useState<'waveform' | 'spectrogram'>('waveform')
   const [measuredWave, setMeasuredWave] = useState<number[] | null>(null)
+  const [clarityDebug, setClarityDebug] = useState<SegmentClarity[]>([])
   const engineRef = useRef<ForensicAudioEngine | null>(null)
   const completedRef = useRef(false)
+  const holdRef = useRef<Record<string, number>>({})
   const showDebug = import.meta.env.DEV
 
   const source = getActiveSource(session, ui)
@@ -75,10 +85,15 @@ export function ForensicWorkbench({
   }, [source?.id])
 
   useEffect(() => {
+    if (!recoveredProp) return
+    setUi((u) => ({ ...u, recoveredSpeech: recoveredProp }))
+  }, [recoveredProp])
+
+  useEffect(() => {
     const eng = engineRef.current
     if (!eng || !source?.audio) return
-    void eng.loadAsset(source.audio, source.durationSec)
-  }, [source?.id, source?.audio, source?.durationSec])
+    void eng.loadAsset(source.audio, source.durationSec, source.speechSegments ?? [])
+  }, [source?.id, source?.audio, source?.durationSec, source?.speechSegments])
 
   useEffect(() => {
     const eng = engineRef.current
@@ -97,15 +112,99 @@ export function ForensicWorkbench({
     eng.applyProcess(process, profile, effectiveMute)
   }, [ui.process, ui.tracks, ui.activeNoiseProfileId, ui.noiseProfiles])
 
+  const processRef = useRef(ui.process)
+  const profileRef = useRef(
+    ui.noiseProfiles.find((p) => p.id === ui.activeNoiseProfileId) ?? null,
+  )
+  const recoveredRef = useRef(ui.recoveredSpeech)
+  processRef.current = ui.process
+  profileRef.current =
+    ui.noiseProfiles.find((p) => p.id === ui.activeNoiseProfileId) ?? null
+  recoveredRef.current = ui.recoveredSpeech
+
+  // Clarity hold → unlock automático (sem textbox).
+  useEffect(() => {
+    if (!source?.speechSegments?.length) return
+    const base: Record<StemId, number> = {
+      CORRUPTED_BASE: 1,
+      VOICE: 1,
+      BACKGROUND_NOISE: 1,
+      TONE_1700: 1,
+      VOCAL_DEBRIS: 1,
+      CLICKS: 1,
+    }
+    for (const stem of source.audio?.stems ?? []) base[stem.id] = stem.initialGain
+    const rules = { notch: source.audio?.notch, spectral: source.audio?.spectral }
+    const holdNeed = source.audio?.recovery?.unlockHoldSec ?? 0.7
+    const segments = source.speechSegments
+
+    let raf = 0
+    let last = performance.now()
+    const step = (now: number) => {
+      const dt = Math.min(0.05, (now - last) / 1000)
+      last = now
+      const unlocked = new Set(recoveredRef.current.map((r) => r.segmentId))
+      const rows = segments.map((seg) =>
+        evaluateSegmentClarity(
+          seg,
+          processRef.current,
+          profileRef.current,
+          base,
+          rules,
+          unlocked.has(seg.id),
+        ),
+      )
+      setClarityDebug(rows)
+      const nextUnlocks: RecoveredSpeechEntry[] = []
+      for (const row of rows) {
+        if (unlocked.has(row.segmentId)) {
+          holdRef.current[row.segmentId] = holdNeed
+          continue
+        }
+        if (row.clarityDb >= row.thresholdDb) {
+          holdRef.current[row.segmentId] = (holdRef.current[row.segmentId] ?? 0) + dt
+          if ((holdRef.current[row.segmentId] ?? 0) >= holdNeed) {
+            const seg = segments.find((s) => s.id === row.segmentId)!
+            nextUnlocks.push({
+              segmentId: seg.id,
+              text: seg.text,
+              startSec: seg.startSec,
+              unlockedAt: Date.now(),
+            })
+            unlocked.add(seg.id)
+          }
+        } else {
+          holdRef.current[row.segmentId] = 0
+        }
+      }
+      if (nextUnlocks.length) {
+        setUi((u) => {
+          const recoveredSpeech = [...u.recoveredSpeech]
+          for (const entry of nextUnlocks) {
+            if (!recoveredSpeech.some((r) => r.segmentId === entry.segmentId)) {
+              recoveredSpeech.push(entry)
+              onSegmentRecovered?.(entry)
+            }
+          }
+          recoveredSpeech.sort((a, b) => a.startSec - b.startSec)
+          return { ...u, recoveredSpeech }
+        })
+      }
+      raf = requestAnimationFrame(step)
+    }
+    raf = requestAnimationFrame(step)
+    return () => cancelAnimationFrame(raf)
+  }, [source?.id, source?.speechSegments, source?.audio, onSegmentRecovered])
+
   useEffect(() => {
     if (completed || completedRef.current || !onPuzzleComplete) return
-    if (!source?.transcription) return
-    if (transcriptionComplete(ui.transcriptionNotes, source.transcription)) {
+    if (!source?.speechSegments) return
+    if (speechRecoveryComplete(ui.recoveredSpeech, source.speechSegments)) {
       completedRef.current = true
       onPuzzleComplete()
       setStatus('Análise registrada no caderno de investigação.')
     }
-  }, [ui.transcriptionNotes, source?.transcription, completed, onPuzzleComplete])
+  }, [ui.recoveredSpeech, source?.speechSegments, completed, onPuzzleComplete])
 
   const patchUi = (patch: Partial<ForensicUiState>) => setUi((u) => ({ ...u, ...patch }))
   const patchProcess = (patch: Partial<ProcessParams>) =>
@@ -256,6 +355,7 @@ export function ForensicWorkbench({
             onReset={() => {
               stop()
               setUi((u) => resetProcess(u))
+              holdRef.current = {}
               setStatus(null)
             }}
           />
@@ -270,12 +370,21 @@ export function ForensicWorkbench({
           showHelp={showHelp}
           onToggleHelp={() => setShowHelp((v) => !v)}
           onProcess={patchProcess}
+          recoveredSpeech={ui.recoveredSpeech}
+          clarityDebug={showDebug ? clarityDebug : undefined}
           onCaptureProfile={() => {
+            const ideal = source?.audio?.recovery
+              ? {
+                  startSec: source.audio.recovery.idealProfileStartSec,
+                  endSec: source.audio.recovery.idealProfileEndSec,
+                }
+              : undefined
             const result = captureNoiseProfile(
               ui.selection,
               source?.noiseRegions,
               ui.noiseProfiles,
               voiceSpansFromSource(source),
+              ideal,
             )
             if (!result.ok) {
               setStatus('Selecione uma região na timeline antes de capturar o perfil.')
@@ -298,20 +407,30 @@ export function ForensicWorkbench({
               ],
             }))
           }
-          onNotes={(transcriptionNotes) => patchUi({ transcriptionNotes })}
           onCompare={(compareSourceA, compareSourceB) =>
             patchUi({ compareSourceA, compareSourceB })
           }
         />
       </div>
-      {showDebug && source?.audio ? <ForensicDebug source={source} ui={ui} /> : null}
+      {showDebug && source?.audio ? (
+        <ForensicDebug source={source} ui={ui} clarity={clarityDebug} />
+      ) : null}
       {status && <div className="fw-status">{status}</div>}
     </div>
   )
 }
 
-function ForensicDebug({ source, ui }: { source: ForensicSource; ui: ForensicUiState }) {
+function ForensicDebug({
+  source,
+  ui,
+  clarity,
+}: {
+  source: NonNullable<ReturnType<typeof getActiveSource>>
+  ui: ForensicUiState
+  clarity: SegmentClarity[]
+}) {
   const base: Record<StemId, number> = {
+    CORRUPTED_BASE: 1,
     VOICE: 1,
     BACKGROUND_NOISE: 1,
     TONE_1700: 1,
@@ -320,25 +439,32 @@ function ForensicDebug({ source, ui }: { source: ForensicSource; ui: ForensicUiS
   }
   for (const stem of source.audio?.stems ?? []) base[stem.id] = stem.initialGain
   const profile = ui.noiseProfiles.find((p) => p.id === ui.activeNoiseProfileId) ?? null
+  const metrics = computeRecoveryMetrics(ui.process, profile, source.audio?.notch)
   const gains = computeStemGains(base, ui.process, profile, {
     notch: source.audio?.notch,
     spectral: source.audio?.spectral,
   })
-  const notch = source.audio?.notch
-    ? notchToneEffect(
-        ui.process.notchCenterHz,
-        ui.process.notchReductionDb,
-        ui.process.notchWidthHz,
-        source.audio.notch,
-      )
-    : 0
   return (
     <div className="fw-debug" data-testid="forensic-debug">
-      <span>voiceGain {gains.VOICE.toFixed(3)}</span>
-      <span>noiseGain {gains.BACKGROUND_NOISE.toFixed(3)}</span>
-      <span>toneGain {gains.TONE_1700.toFixed(3)}</span>
-      <span>profileQuality {(profile?.qualityScore ?? 0).toFixed(3)}</span>
-      <span>notchEffectiveness {notch.toFixed(3)}</span>
+      <span>center {metrics.centerAccuracy.toFixed(3)}</span>
+      <span>depth {metrics.notchDepthEffect.toFixed(3)}</span>
+      <span>widthQ {metrics.notchWidthQuality.toFixed(3)}</span>
+      <span>notchEff {metrics.notchEffectiveness.toFixed(3)}</span>
+      <span>profileQ {metrics.noiseProfileQuality.toFixed(3)}</span>
+      <span>nre {metrics.noiseReductionEffect.toFixed(3)}</span>
+      <span>recovery {metrics.recoveryAmount.toFixed(3)}</span>
+      <span>corrupted {gains.CORRUPTED_BASE.toFixed(3)}</span>
+      <span>cleanBus {gains.VOICE.toFixed(3)}</span>
+      {clarity.map((c) => {
+        const seg = source.speechSegments?.find((s) => s.id === c.segmentId)
+        return (
+          <span key={c.segmentId}>
+            {(seg?.text ?? c.segmentId).toUpperCase()} score {c.clarityScore.toFixed(2)}/
+            {c.threshold.toFixed(2)}
+            {c.unlocked ? ' ✓' : ''}
+          </span>
+        )
+      })}
     </div>
   )
 }

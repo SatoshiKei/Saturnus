@@ -66,6 +66,7 @@ export function renderBackgroundNoise(
   seed: number,
   targetRmsDb: number,
   dropouts: DropoutEvent[] = [],
+  envelope: GainWindow[] = [],
 ): Float32Array {
   const rng = mulberry32(seed)
   const out = new Float32Array(frames)
@@ -84,6 +85,11 @@ export function renderBackgroundNoise(
     out[i] = white * 0.35 + low * 1.15 + band * 0.95
   }
   normalizeRms(out, targetRmsDb)
+  if (envelope.length) {
+    for (let i = 0; i < frames; i++) {
+      out[i]! *= envelopeAt(i / sampleRate, envelope, 0.12)
+    }
+  }
   applyDropouts(out, sampleRate, dropouts)
   return out
 }

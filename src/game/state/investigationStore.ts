@@ -61,6 +61,43 @@ export function setFlag(id: string, value = true) {
   dispatchActions([{ type: 'setFlag', id, value }])
 }
 
+/** Registra um segmento de fala recuperado na bancada. Persistente; não apaga no Reset processing. */
+export function markForensicSpeechRecovered(
+  evidenceId: string,
+  entry: { segmentId: string; text: string; startSec: number; unlockedAt?: number },
+) {
+  const bag = { ...(state.forensicRecoveredSpeech ?? {}) }
+  const list = [...(bag[evidenceId] ?? [])]
+  if (list.some((e) => e.segmentId === entry.segmentId)) return
+  list.push({
+    segmentId: entry.segmentId,
+    text: entry.text,
+    startSec: entry.startSec,
+    unlockedAt: entry.unlockedAt ?? Date.now(),
+  })
+  list.sort((a, b) => a.startSec - b.startSec)
+  commit({
+    ...state,
+    forensicRecoveredSpeech: { ...bag, [evidenceId]: list },
+  })
+}
+
+/** DEV: limpa fragments/completion da evidência forense. */
+export function resetForensicSpeechProgress(evidenceId: string) {
+  const bag = { ...(state.forensicRecoveredSpeech ?? {}) }
+  delete bag[evidenceId]
+  const flags = { ...state.flags }
+  if (evidenceId === 'emergency_call_raw') {
+    flags.block01_emergency_provisional = false
+  }
+  commit({
+    ...state,
+    forensicRecoveredSpeech: bag,
+    flags,
+    evidenceOwned: state.evidenceOwned.filter((id) => id !== 'emergency_call_restored'),
+  })
+}
+
 export function markDocumentRead(docId: string) {
   const prev = state.documents[docId] ?? { read: false, highlightedBlockIds: [] }
   commit({
@@ -254,6 +291,7 @@ export function migrateState(raw: InvestigationState): InvestigationState {
     callsDone: raw.callsDone ?? [],
     playTimeMs: raw.playTimeMs ?? 0,
     achievementUnlocks: raw.achievementUnlocks ?? {},
+    forensicRecoveredSpeech: raw.forensicRecoveredSpeech ?? {},
     contacts: { ...base.contacts, ...(raw.contacts ?? {}) },
     locations: { ...base.locations, ...(raw.locations ?? {}) },
     toastQueue: [],

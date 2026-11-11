@@ -28,6 +28,13 @@ export const seedAchievements: AchievementDef[] = [
     unlocked: (s) => s.audioSeen.length > 0,
   },
   {
+    id: 'ach-cassini-division',
+    title: 'DIVISÃO DE CASSINI',
+    description: 'Recuperou os cinco fragmentos inteligíveis da chamada de emergência.',
+    hint: 'Restaurar a ligação de emergência na bancada forense.',
+    unlocked: (s) => Boolean(s.flags.block01_emergency_provisional),
+  },
+  {
     id: 'ach-hospital',
     title: 'Plantão',
     description: 'A conversa no hospital foi registrada.',

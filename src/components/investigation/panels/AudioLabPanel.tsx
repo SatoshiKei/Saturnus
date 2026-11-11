@@ -5,6 +5,7 @@ import type { Evidence } from '../../../game/types'
 import { assetPath } from '../../../lib/assetPath'
 import { evidenceOriginLabel, evidenceSourceLabel, evidenceTypeLabel } from '../../../lib/labels'
 import { runProvisionalEmergencyAnalysis } from '../../../game/story/block01Handlers'
+import { markForensicSpeechRecovered } from '../../../game/state/investigationStore'
 import { runProvisionalRafaelForwardAnalysis } from '../../../game/story/block02Handlers'
 import { ForensicWorkbench } from '../../../forensic/ForensicWorkbench'
 import { getForensicSessionForEvidence } from '../../../forensic/forensicRegistry'
@@ -307,7 +308,11 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                       session={forensicSession}
                       fileNameBadge={current.displayFileName ?? current.title}
                       completed={emergencyProvisionalDone}
+                      recoveredSpeech={inv.forensicRecoveredSpeech?.[current.id] ?? []}
                       onClose={onClose}
+                      onSegmentRecovered={(entry) =>
+                        markForensicSpeechRecovered(current.id, entry)
+                      }
                       onPuzzleComplete={() => runProvisionalEmergencyAnalysis()}
                     />
                   )

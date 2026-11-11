@@ -5,9 +5,10 @@ import type {
   ForensicUiState,
   Marker,
   ProcessParams,
+  RecoveredSpeechEntry,
 } from '../forensicTypes'
 import { INSPECTOR_TABS } from '../forensicTypes'
-import { fmtTime } from '../forensicEngine'
+import { fmtTime, type SegmentClarity } from '../forensicEngine'
 
 const HELP: Record<string, string> = {
   Gain: 'Ajusta amplitude linear da seleção ou da faixa ativa (dB).',
@@ -115,11 +116,12 @@ export function Inspector({
   onCaptureProfile,
   onActivateProfile,
   onAddMarker,
-  onNotes,
   onCompare,
   sources,
   showHelp,
   onToggleHelp,
+  recoveredSpeech,
+  clarityDebug,
 }: {
   tab: ForensicInspectorTab
   onTab: (t: ForensicInspectorTab) => void
@@ -129,11 +131,12 @@ export function Inspector({
   onCaptureProfile: () => void
   onActivateProfile: (id: string) => void
   onAddMarker: (m: Omit<Marker, 'id'>) => void
-  onNotes: (text: string) => void
   onCompare: (a: string | null, b: string | null) => void
   sources: ForensicSource[]
   showHelp: boolean
   onToggleHelp: () => void
+  recoveredSpeech: RecoveredSpeechEntry[]
+  clarityDebug?: SegmentClarity[]
 }) {
   const p = ui.process
   const hasProfile = Boolean(ui.activeNoiseProfileId)
@@ -539,15 +542,49 @@ export function Inspector({
 
         {tab === 'notes' && (
           <div className="fw-panel">
-            <p className="fw-sec-title">Notes / Transcription</p>
-            <textarea
-              className="fw-notes"
-              value={ui.transcriptionNotes}
-              onChange={(e) => onNotes(e.target.value)}
-              rows={14}
-              placeholder="Registre trechos identificados…"
-              spellCheck={false}
-            />
+            <Section title="Recovered Speech">
+              {!recoveredSpeech.length ? (
+                <p className="fw-empty" data-testid="recovered-speech-empty">
+                  No intelligible speech recovered.
+                </p>
+              ) : (
+                <ul className="fw-recovered" data-testid="recovered-speech-list">
+                  {[...recoveredSpeech]
+                    .sort((a, b) => a.startSec - b.startSec)
+                    .map((entry) => (
+                      <li key={entry.segmentId} className="fw-recovered__item">
+                        <span className="fw-mono">{fmtTime(entry.startSec)}</span>
+                        <span className="fw-recovered__text">“{entry.text}”</span>
+                      </li>
+                    ))}
+                </ul>
+              )}
+              <p className="fw-muted">
+                Passive monitor — fragments appear when the signal is clear enough for a reliable transcript.
+              </p>
+            </Section>
+            {import.meta.env.DEV && clarityDebug?.length ? (
+              <Section title="DEV — segment clarity">
+                <ul className="fw-recovered fw-recovered--debug">
+                  {clarityDebug.map((c) => {
+                    const seg = source?.speechSegments?.find((s) => s.id === c.segmentId)
+                    return (
+                      <li key={c.segmentId} className="fw-mono">
+                        <div>{(seg?.text ?? c.segmentId).toUpperCase()}</div>
+                        <div>
+                          center {c.centerContribution.toFixed(2)} depth {c.depthContribution.toFixed(2)}{' '}
+                          width {c.widthContribution.toFixed(2)} noise {c.noiseContribution.toFixed(2)}
+                        </div>
+                        <div>
+                          score {c.clarityScore.toFixed(2)} / threshold {c.threshold.toFixed(2)}{' '}
+                          {c.unlocked ? 'UNLOCKED' : 'LOCKED'}
+                        </div>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </Section>
+            ) : null}
           </div>
         )}
       </div>

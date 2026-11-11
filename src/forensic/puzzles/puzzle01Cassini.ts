@@ -1,15 +1,21 @@
-import type { AudioClipConfig, DebrisFragment, ForensicSession, NotchRule, SpectralRule } from '../forensicTypes'
+import type {
+  AudioClipConfig,
+  DebrisFragment,
+  ForensicSession,
+  NotchRule,
+  SpectralRule,
+  SpeechSegment,
+} from '../forensicTypes'
 import { buildCompositeSpectrogram, buildCompositeSpectrum, buildCompositeWaveform } from '../forensicMix'
 
 const BASE = '/assets/audio/forensic/puzzle01'
 
 /**
  * Puzzle 1 — Divisão de Cassini.
- * O jogador vê um único arquivo: EMG_0803.wav / MASTER.
- * Os cinco MP3 e os stems (voz, ruído, 1700 Hz, debris, clicks) ficam só no dataset.
- * Não usa o WAV degradado antigo.
+ * Progressão: Center → Depth → Depth+ → Width → Noise Profile + Spectral.
  */
 const SRC = {
+  corrupted: `${BASE}/p01_corrupted_base.wav`,
   a: `${BASE}/p01_mariana_01_escute.mp3`,
   b: `${BASE}/p01_mariana_02_noite.mp3`,
   c: `${BASE}/p01_mariana_03_medo.mp3`,
@@ -18,14 +24,85 @@ const SRC = {
 } as const
 
 const CLIPS: AudioClipConfig[] = [
-  { id: 'c1', src: SRC.a, startSec: 4.0, durationSec: 2.508, gainDb: -18 },
-  { id: 'c2', src: SRC.b, startSec: 12.5, durationSec: 1.593, gainDb: -20 },
-  { id: 'c3', src: SRC.c, startSec: 22.0, durationSec: 1.045, gainDb: -15 },
-  { id: 'c4', src: SRC.d, startSec: 29.5, durationSec: 1.071, gainDb: -17 },
-  { id: 'c5', src: SRC.e, startSec: 38.5, durationSec: 0.967, gainDb: -13 },
+  { id: 'c1', src: SRC.a, startSec: 4.0, durationSec: 2.508, gainDb: -1 },
+  { id: 'c2', src: SRC.b, startSec: 12.5, durationSec: 1.593, gainDb: -2 },
+  { id: 'c3', src: SRC.c, startSec: 22.0, durationSec: 1.045, gainDb: 0 },
+  { id: 'c4', src: SRC.d, startSec: 29.5, durationSec: 1.071, gainDb: -1 },
+  { id: 'c5', src: SRC.e, startSec: 38.5, durationSec: 0.967, gainDb: 1 },
 ]
 
-/** Microfragmentos dos próprios clips. 40–120 ms, fora das cinco falas. */
+/**
+ * Pesos e thresholds calibrados para a progressão Center → Depth → Width → Noise.
+ * Score 0..1; unlock contínuo (não binário).
+ */
+export const puzzle01SpeechSegments: SpeechSegment[] = [
+  {
+    id: 'seg_escute',
+    clipId: 'c1',
+    text: 'escute isso até o fim',
+    startSec: 4.0,
+    durationSec: 2.508,
+    clarityThreshold: 0.9,
+    recoveryWeights: { center: 0.25, depth: 0.45, width: 0.3, noise: 0 },
+    voiceWeight: 0.95,
+    toneWeight: 2.8,
+    noiseWeight: 0.35,
+    debrisWeight: 0.4,
+  },
+  {
+    id: 'seg_noite',
+    clipId: 'c2',
+    text: 'desde aquela noite',
+    startSec: 12.5,
+    durationSec: 1.593,
+    clarityThreshold: 0.72,
+    recoveryWeights: { center: 0.05, depth: 0.05, width: 0.05, noise: 0.85 },
+    voiceWeight: 1.05,
+    toneWeight: 0.18,
+    noiseWeight: 2.4,
+    debrisWeight: 2.1,
+  },
+  {
+    id: 'seg_medo',
+    clipId: 'c3',
+    text: 'eu sentia medo',
+    startSec: 22.0,
+    durationSec: 1.045,
+    clarityThreshold: 0.68,
+    recoveryWeights: { center: 0.45, depth: 0.45, width: 0.1, noise: 0 },
+    voiceWeight: 1.1,
+    toneWeight: 1.15,
+    noiseWeight: 0.3,
+    debrisWeight: 0.35,
+  },
+  {
+    id: 'seg_confusa',
+    clipId: 'c4',
+    text: 'eu estava confusa',
+    startSec: 29.5,
+    durationSec: 1.071,
+    clarityThreshold: 0.78,
+    recoveryWeights: { center: 0.3, depth: 0.55, width: 0.15, noise: 0 },
+    voiceWeight: 1.0,
+    toneWeight: 1.85,
+    noiseWeight: 0.35,
+    debrisWeight: 0.4,
+  },
+  {
+    id: 'seg_lembro',
+    clipId: 'c5',
+    text: 'eu não lembro',
+    startSec: 38.5,
+    durationSec: 0.967,
+    clarityThreshold: 0.7,
+    recoveryWeights: { center: 0.8, depth: 0.15, width: 0.05, noise: 0 },
+    voiceWeight: 1.2,
+    toneWeight: 0.9,
+    noiseWeight: 0.22,
+    debrisWeight: 0.25,
+  },
+]
+
 const DEBRIS: DebrisFragment[] = [
   { src: SRC.a, sourceOffsetSec: 0.02, durationMs: 46, timelineSec: 2.28, gainDb: -22, reverse: false },
   { src: SRC.b, sourceOffsetSec: 0.04, durationMs: 52, timelineSec: 2.62, gainDb: -24, reverse: true },
@@ -33,6 +110,14 @@ const DEBRIS: DebrisFragment[] = [
   { src: SRC.c, sourceOffsetSec: 0.01, durationMs: 40, timelineSec: 7.55, gainDb: -18, reverse: true },
   { src: SRC.d, sourceOffsetSec: 0.08, durationMs: 88, timelineSec: 9.1, gainDb: -22, reverse: false },
   { src: SRC.e, sourceOffsetSec: 0.55, durationMs: 60, timelineSec: 10.85, gainDb: -20, reverse: true },
+  // Concentração de debris em torno de "desde aquela noite"
+  { src: SRC.b, sourceOffsetSec: 0.1, durationMs: 110, timelineSec: 12.35, gainDb: -10, reverse: false },
+  { src: SRC.b, sourceOffsetSec: 0.4, durationMs: 95, timelineSec: 12.55, gainDb: -8, reverse: true },
+  { src: SRC.a, sourceOffsetSec: 0.5, durationMs: 80, timelineSec: 12.75, gainDb: -11, reverse: true },
+  { src: SRC.b, sourceOffsetSec: 0.9, durationMs: 100, timelineSec: 13.05, gainDb: -9, reverse: false },
+  { src: SRC.c, sourceOffsetSec: 0.2, durationMs: 70, timelineSec: 13.35, gainDb: -12, reverse: true },
+  { src: SRC.b, sourceOffsetSec: 1.2, durationMs: 90, timelineSec: 13.7, gainDb: -10, reverse: true },
+  { src: SRC.d, sourceOffsetSec: 0.3, durationMs: 85, timelineSec: 14.0, gainDb: -11, reverse: false },
   { src: SRC.b, sourceOffsetSec: 1.35, durationMs: 64, timelineSec: 11.7, gainDb: -24, reverse: true },
   { src: SRC.a, sourceOffsetSec: 1.1, durationMs: 48, timelineSec: 14.35, gainDb: -21, reverse: true },
   { src: SRC.c, sourceOffsetSec: 0.62, durationMs: 78, timelineSec: 16.15, gainDb: -19, reverse: false },
@@ -52,17 +137,23 @@ const DEBRIS: DebrisFragment[] = [
 const VOICE_WINDOWS = CLIPS.map((c) => ({
   startSec: c.startSec,
   endSec: c.startSec + (c.durationSec ?? 0),
-  amplitude: Math.pow(10, ((c.gainDb ?? 0) + 18) / 28),
-  weight: Math.pow(10, ((c.gainDb ?? 0) + 20) / 24),
+  amplitude: 0.55 + 0.2 * Math.pow(10, ((c.gainDb ?? 0) + 4) / 28),
+  weight: 0.55 + 0.2 * Math.pow(10, ((c.gainDb ?? 0) + 4) / 24),
 }))
 
-/** Envelope do tom: mais forte nas falas difíceis, mais fraco nas fáceis. */
+/** Tom forte nas falas notch-dependentes; quase ausente em "noite". */
 const TONE_WINDOWS = [
-  { startSec: 3.85, endSec: 6.7, gain: 2.35, weight: 2.35 },
-  { startSec: 12.3, endSec: 14.3, gain: 2.75, weight: 2.75 },
-  { startSec: 21.85, endSec: 23.25, gain: 0.55, weight: 0.55 },
-  { startSec: 29.3, endSec: 30.8, gain: 1.45, weight: 1.45 },
-  { startSec: 38.25, endSec: 39.7, gain: 0.42, weight: 0.42 },
+  { startSec: 3.7, endSec: 6.9, gain: 2.85, weight: 2.85 },
+  { startSec: 12.2, endSec: 14.4, gain: 0.2, weight: 0.2 },
+  { startSec: 21.75, endSec: 23.35, gain: 1.25, weight: 1.25 },
+  { startSec: 29.2, endSec: 30.9, gain: 2.05, weight: 2.05 },
+  { startSec: 38.2, endSec: 39.75, gain: 1.05, weight: 1.05 },
+]
+
+/** Ruído elevado em "desde aquela noite". */
+const NOISE_ENVELOPE = [
+  { startSec: 0, endSec: 44, gain: 0.85 },
+  { startSec: 11.8, endSec: 14.8, gain: 2.55 },
 ]
 
 export const puzzle01NotchRule: NotchRule = {
@@ -71,19 +162,31 @@ export const puzzle01NotchRule: NotchRule = {
   strongEffectHz: 100,
   partialEffectHz: 200,
   tailHz: 280,
-  idealWidthHz: 160,
+  idealWidthHz: 180,
   wideWidthHz: 900,
-  fullReductionDb: 18,
-  maxAttenuationDb: 36,
+  fullReductionDb: 24,
+  maxAttenuationDb: 38,
 }
 
 export const puzzle01SpectralRule: SpectralRule = {
-  maxNoiseCutDb: 34,
-  noiseFloor: 0.15,
-  maxDebrisCutDb: 16,
-  debrisFloor: 0.28,
-  maxVoiceCutDb: 6,
+  maxNoiseCutDb: 36,
+  noiseFloor: 0.16,
+  maxDebrisCutDb: 22,
+  debrisFloor: 0.26,
+  maxVoiceCutDb: 8,
 }
+
+export const puzzle01Ideal = {
+  notchCenterHz: 1700,
+  notchWidthHz: 180,
+  notchReductionDb: -24,
+  profileStartSec: 0.3,
+  profileEndSec: 1.8,
+  spectralReduction: 72,
+  spectralSensitivity: 55,
+  spectralSmoothing: 30,
+  unlockHoldSec: 0.7,
+} as const
 
 const DURATION = 44
 
@@ -92,7 +195,7 @@ export const puzzle01CassiniSession: ForensicSession = {
   title: 'FORENSIC AUDIO / DIGITAL WORKSTATION',
   evidenceId: 'emergency_call_raw',
   completion: {
-    kind: 'transcription',
+    kind: 'speech-recovery',
     onCompleteAction: 'runProvisionalEmergencyAnalysis',
   },
   sources: [
@@ -137,31 +240,36 @@ export const puzzle01CassiniSession: ForensicSession = {
         sourceClock: undefined,
       },
       noiseRegions: [
-        { id: 'pre', startSec: 0.3, endSec: 2.0, minOverlapRatio: 0.7 },
-        { id: 'pre-wide', startSec: 0, endSec: 3.7, minOverlapRatio: 0.7 },
+        { id: 'ideal', startSec: 0.3, endSec: 1.8, minOverlapRatio: 0.7 },
+        { id: 'pre-wide', startSec: 0, endSec: 3.7, minOverlapRatio: 0.75 },
         { id: 'gap-a', startSec: 7.0, endSec: 12.1, minOverlapRatio: 0.7 },
         { id: 'gap-b', startSec: 14.4, endSec: 21.6, minOverlapRatio: 0.7 },
         { id: 'gap-c', startSec: 23.4, endSec: 29.1, minOverlapRatio: 0.7 },
         { id: 'gap-d', startSec: 31.0, endSec: 38.1, minOverlapRatio: 0.7 },
         { id: 'post', startSec: 39.9, endSec: 44.0, minOverlapRatio: 0.7 },
       ],
-      transcription: [
-        { id: 'p1', accepted: ['escute isso até o fim'] },
-        { id: 'p2', accepted: ['desde aquela noite'] },
-        { id: 'p3', accepted: ['eu sentia medo'] },
-        { id: 'p4', accepted: ['eu estava confusa'] },
-        { id: 'p5', accepted: ['eu não lembro'] },
-      ],
+      speechSegments: puzzle01SpeechSegments,
       audio: {
         sampleRate: 44100,
         channels: 1,
         seed: 3110803,
         notch: puzzle01NotchRule,
         spectral: puzzle01SpectralRule,
+        recovery: {
+          idealNotchCenterHz: puzzle01Ideal.notchCenterHz,
+          idealNotchWidthHz: puzzle01Ideal.notchWidthHz,
+          idealNotchReductionDb: puzzle01Ideal.notchReductionDb,
+          idealProfileStartSec: puzzle01Ideal.profileStartSec,
+          idealProfileEndSec: puzzle01Ideal.profileEndSec,
+          idealSpectralReduction: puzzle01Ideal.spectralReduction,
+          idealSpectralSensitivity: puzzle01Ideal.spectralSensitivity,
+          idealSpectralSmoothing: puzzle01Ideal.spectralSmoothing,
+          unlockHoldSec: puzzle01Ideal.unlockHoldSec,
+        },
         waveform: buildCompositeWaveform({
           durationSec: DURATION,
           seed: 3110803,
-          noiseFloor: 0.34,
+          noiseFloor: 0.42,
           voice: VOICE_WINDOWS,
         }),
         spectrum: buildCompositeSpectrum(puzzle01NotchRule.targetHz),
@@ -173,18 +281,25 @@ export const puzzle01CassiniSession: ForensicSession = {
         }),
         stems: [
           {
+            id: 'CORRUPTED_BASE',
+            kind: 'file',
+            initialGain: 1,
+            src: SRC.corrupted,
+          },
+          {
             id: 'VOICE',
             kind: 'clips',
             initialGain: 1,
-            matchRmsDb: -8,
+            matchRmsDb: -10,
             clips: CLIPS,
           },
           {
             id: 'BACKGROUND_NOISE',
             kind: 'noise',
-            initialGain: 1,
+            initialGain: 0.78,
             seed: 3110803,
-            targetRmsDb: -19,
+            targetRmsDb: -18,
+            envelope: NOISE_ENVELOPE,
             dropouts: [
               { timeSec: 8.9, durationMs: 45, gain: 0.2 },
               { timeSec: 17.4, durationMs: 35, gain: 0.15 },
@@ -195,14 +310,14 @@ export const puzzle01CassiniSession: ForensicSession = {
           {
             id: 'TONE_1700',
             kind: 'tone',
-            initialGain: 0.07,
+            initialGain: 0.12,
             frequencyHz: 1700,
             envelope: TONE_WINDOWS.map(({ startSec, endSec, gain }) => ({ startSec, endSec, gain })),
           },
           {
             id: 'VOCAL_DEBRIS',
             kind: 'debris',
-            initialGain: 0.7,
+            initialGain: 0.62,
             fragments: DEBRIS,
           },
           {

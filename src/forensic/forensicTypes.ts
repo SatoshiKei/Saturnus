@@ -19,6 +19,7 @@ export type ForensicInspectorTab =
   | 'notes'
 
 export type StemId =
+  | 'CORRUPTED_BASE'
   | 'VOICE'
   | 'BACKGROUND_NOISE'
   | 'TONE_1700'
@@ -109,9 +110,11 @@ export interface SpectralRule {
 
 export interface StemConfig {
   id: StemId
-  kind: 'clips' | 'tone' | 'noise' | 'clicks' | 'debris'
+  kind: 'file' | 'clips' | 'tone' | 'noise' | 'clicks' | 'debris'
   /** Ganho inicial (linear 0–1 ou >1). */
   initialGain: number
+  /** Arquivo contínuo (ex.: base corrompida de 44 s). */
+  src?: string
   clips?: AudioClipConfig[]
   /** Tom contínuo */
   frequencyHz?: number
@@ -126,6 +129,38 @@ export interface StemConfig {
   fragments?: DebrisFragment[]
   events?: ClickEvent[]
   dropouts?: DropoutEvent[]
+}
+
+/** Pesos de recuperação por segmento — a engine permanece genérica. */
+export interface SpeechRecoveryWeights {
+  center: number
+  depth: number
+  width: number
+  noise: number
+}
+
+/** Segmento de fala analisável — unlock automático por clareza, sem input do jogador. */
+export interface SpeechSegment {
+  id: string
+  text: string
+  startSec: number
+  durationSec: number
+  /** Id do clip limpo correspondente (ganho perceptivo por segmento). */
+  clipId?: string
+  /** Threshold 0..1 do score ponderado para registrar o trecho. */
+  clarityThreshold: number
+  recoveryWeights: SpeechRecoveryWeights
+  /**
+   * Nível relativo interno da voz limpa neste trecho (linear).
+   * Não aparece na UI; só afeta o áudio/percepção.
+   */
+  voiceWeight: number
+  /** Multiplicador do tom residual neste trecho (1 = base). */
+  toneWeight?: number
+  /** Multiplicador do ruído de fundo neste trecho. */
+  noiseWeight?: number
+  /** Multiplicador de debris neste trecho. */
+  debrisWeight?: number
 }
 
 export interface AudioAssetConfig {
@@ -144,6 +179,18 @@ export interface AudioAssetConfig {
   notch?: NotchRule
   /** Curva da redução espectral sobre ruído, debris e voz. */
   spectral?: SpectralRule
+  /** Alvos de calibração (só dataset / debug — não exibidos ao jogador). */
+  recovery?: {
+    idealNotchCenterHz: number
+    idealNotchWidthHz: number
+    idealNotchReductionDb: number
+    idealProfileStartSec: number
+    idealProfileEndSec: number
+    idealSpectralReduction: number
+    idealSpectralSensitivity: number
+    idealSpectralSmoothing: number
+    unlockHoldSec: number
+  }
 }
 
 export interface StructureBlock {
@@ -190,12 +237,6 @@ export interface NoiseRegion {
   minOverlapRatio: number
 }
 
-export interface TranscriptionFragment {
-  id: string
-  /** Formas aceitas (já normalizadas ou texto bruto). */
-  accepted: string[]
-}
-
 export interface ForensicSource {
   id: string
   filename: string
@@ -210,8 +251,8 @@ export interface ForensicSource {
   timing?: TimingData
   /** Regiões predominantemente de ruído (validação interna de Noise Profile). */
   noiseRegions?: NoiseRegion[]
-  /** Fragmentos para NOTES / TRANSCRIPTION quando o dataset exige. */
-  transcription?: TranscriptionFragment[]
+  /** Segmentos de fala recuperáveis automaticamente (Recovered Speech). */
+  speechSegments?: SpeechSegment[]
 }
 
 export interface ForensicSession {
@@ -222,10 +263,17 @@ export interface ForensicSession {
   evidenceId?: string
   /** Flag/handler de conclusão narrativa (opcional). */
   completion?: {
-    kind: 'transcription'
+    kind: 'speech-recovery'
     /** Chama handler externo quando completo. */
     onCompleteAction?: 'runProvisionalEmergencyAnalysis'
   }
+}
+
+export interface RecoveredSpeechEntry {
+  segmentId: string
+  text: string
+  startSec: number
+  unlockedAt: number
 }
 
 export interface NoiseProfileState {
@@ -298,7 +346,8 @@ export interface ForensicUiState {
   process: ProcessParams
   noiseProfiles: NoiseProfileState[]
   activeNoiseProfileId: string | null
-  transcriptionNotes: string
+  /** Segmentos já recuperados nesta sessão (espelha o save). */
+  recoveredSpeech: RecoveredSpeechEntry[]
   compareSourceA: string | null
   compareSourceB: string | null
   waveformZoomY: number

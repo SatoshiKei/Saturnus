@@ -108,6 +108,16 @@ export function runProvisionalEmergencyAnalysis() {
     { type: 'linkHypothesis', hypothesisId: 'hyp_kidnapping', evidenceId: 'emergency_call_restored', role: 'support' },
     { type: 'completeTask', id: 'task_listen_emergency' },
     { type: 'addTask', id: 'task_trace_emergency_call', label: 'Determinar como a chamada foi realizada' },
+    {
+      type: 'notifyInvestigationUpdate',
+      id: 'ach-cassini-division',
+      kind: 'evidence',
+      presentation: 'card',
+      label: 'CONQUISTA',
+      title: 'DIVISÃO DE CASSINI',
+      summary: 'Recuperou os cinco fragmentos inteligíveis da chamada de emergência.',
+      refId: 'emergency_call_restored',
+    },
   ])
 }
 

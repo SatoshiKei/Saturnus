@@ -1,0 +1,185 @@
+PUZZLE 01 — DIVISÃO DE CASSINI
+Bancada Forense / emergency_call_raw / EMG_0803.wav
+Documento de desenvolvimento — NÃO aparece para o jogador.
+Calibração progressiva: Center → Depth → Width → Noise Profile + Spectral.
+
+
+========================================================================
+ESTADO INICIAL
+========================================================================
+
+Arquivo: EMG_0803.wav (evidenceId: emergency_call_raw)
+
+Audível: material degradado (CORRUPTED_BASE = puzzle01_final.wav).
+Há indícios de voz; nenhuma frase é confiavelmente inteligível.
+
+Recovered Speech: "No intelligible speech recovered."
+
+Layers internos (só MASTER na UI):
+  CORRUPTED_BASE   1.00
+  VOICE (clips)    1.00  — presença por clip via score do segmento
+  BACKGROUND_NOISE 0.78  — envelope elevado em ~12.0–14.8 s
+  TONE_1700        0.12  — forte em escute/medo/confusa/lembro; ~0 em noite
+  VOCAL_DEBRIS     0.62  — cluster em torno de "desde aquela noite"
+  CLICKS           0.38
+
+
+========================================================================
+PROGRESSÃO (caminho normal)
+========================================================================
+
+Center correto (~1700 Hz)
+  → "eu não lembro"
+
+Reduction moderada (~−10 a −14 dB) com Center
+  → "eu sentia medo"
+
+Reduction maior (~−16 a −18 dB) com Center
+  → "eu estava confusa"
+
+Width correta (~180 Hz) + Reduction alta (~−20 a −24 dB)
+  → "escute isso até o fim"
+
+Noise Profile 00:00.30–00:01.80 + Spectral ~72/55/30
+  → "desde aquela noite"
+  → achievement DIVISÃO DE CASSINI
+
+
+========================================================================
+PASSO 1 — ANÁLISE
+========================================================================
+
+Analysis / Spectrogram → localizar pico ~1700 Hz.
+
+
+========================================================================
+PASSO 2 — NOTCH CENTER
+========================================================================
+
+Ideal: Center 1700 Hz
+
+Tolerâncias (centerAccuracy):
+  1650–1750 → muito alta
+  1600–1800 → boa
+  1500–1900 → parcial
+  fora      → baixa
+
+Apenas Center (Reduction ainda 0) desbloqueia:
+  00:38.5  "eu não lembro"
+
+Pesos do segmento:
+  center 0.80 | depth 0.15 | width 0.05 | noise 0.00
+  threshold 0.70
+
+
+========================================================================
+PASSO 3 — NOTCH REDUCTION (profundidade)
+========================================================================
+
+Ideal final: Reduction −24 dB (fullReductionDb = 24)
+
+~−12 dB (depth ≈ 0.50) com Center:
+  + 00:22.0  "eu sentia medo"
+  pesos: center 0.45 | depth 0.45 | width 0.10 | noise 0
+  threshold 0.68
+
+~−17 dB (depth ≈ 0.71) com Center:
+  + 00:29.5  "eu estava confusa"
+  pesos: center 0.30 | depth 0.55 | width 0.15 | noise 0
+  threshold 0.78
+
+
+========================================================================
+PASSO 4 — NOTCH WIDTH
+========================================================================
+
+Ideal: Width 180 Hz
+
+Faixa boa:     ~120–260 Hz  (widthQuality ≈ 1)
+Faixa aceitável: ~70–400 Hz
+Muito estreito (<~40 Hz) ou muito largo (>~800–900 Hz): qualidade baixa
+
+Com Center 1700 + Reduction ~−22/−24 + Width boa:
+  + 00:04.0  "escute isso até o fim"
+  pesos: center 0.25 | depth 0.45 | width 0.30 | noise 0
+  threshold 0.90
+
+Width ruim (ex.: 20 Hz) → este fragmento permanece LOCKED mesmo com −24 dB.
+
+
+========================================================================
+PASSO 5 — NOISE PROFILE + SPECTRAL (último fragmento)
+========================================================================
+
+OBRIGATÓRIO para "desde aquela noite".
+Notch completo sozinho NÃO desbloqueia este trecho (máx. 4 fragments).
+
+Região ideal do perfil:
+  start 00:00.30
+  end   00:01.80
+  → Capture profile
+
+Spectral ideal:
+  Reduction   72%
+  Sensitivity 55%
+  Smoothing   30%
+
+Pesos:
+  center 0.05 | depth 0.05 | width 0.05 | noise 0.85
+  threshold 0.72
+
+Mascaramento perceptivo deste trecho: BACKGROUND_NOISE + VOCAL_DEBRIS
+(tom quase ausente na envelope TONE_1700).
+
+
+========================================================================
+PASSO 6 — CONCLUSÃO
+========================================================================
+
+Cinco segmentos em forensicRecoveredSpeech[emergency_call_raw]
+  → runProvisionalEmergencyAnalysis
+  → flag block01_emergency_provisional
+  → evidence emergency_call_restored
+  → achievement ach-cassini-division / DIVISÃO DE CASSINI
+  → discovery card CONQUISTA
+
+Hold de unlock: ~0.70 s contínuos acima do threshold.
+Reset processing NÃO apaga fragments.
+
+
+========================================================================
+CALIBRAÇÃO MANUAL / MÉTRICA
+========================================================================
+
+1 bruto                         → 0 fragments
+2 Center 1700                   → eu não lembro
+3 Center + −12 dB               → + eu sentia medo
+4 Center + −17 dB               → + eu estava confusa
+5 Center + −24 + Width 180      → + escute isso até o fim  (sem noite)
+6 + Profile + Spectral 72/55/30 → + desde aquela noite + achievement
+
+NEG A: Notch completo sem profile → ≤4 fragments; noite LOCKED
+NEG B: Center 800 + profile + spectral → não completa os cinco
+
+
+========================================================================
+DEBUG / DEV MODE
+========================================================================
+
+Barra fw-debug + Notes → DEV — segment clarity:
+
+  centerAccuracy / notchDepthEffect / notchWidthQuality
+  noiseProfileQuality / noiseReductionEffect / recoveryAmount (auxiliar)
+
+Por segmento:
+  centerContribution
+  depthContribution
+  widthContribution
+  noiseContribution
+  clarityScore / threshold
+  LOCKED | UNLOCKED
+
+DEV reset: resetForensicSpeechProgress('emergency_call_raw')
+
+Dataset: src/forensic/puzzles/puzzle01Cassini.ts
+  puzzle01SpeechSegments / puzzle01Ideal / puzzle01NotchRule

@@ -383,6 +383,14 @@ export interface InvestigationState {
   playTimeMs?: number
   /** Primeiro instante em que cada conquista foi satisfeita. */
   achievementUnlocks?: Record<string, number>
+  /**
+   * Segmentos de fala recuperados na bancada forense, por evidenceId.
+   * Persiste no save; reset de processamento não apaga.
+   */
+  forensicRecoveredSpeech?: Record<
+    string,
+    { segmentId: string; text: string; startSec: number; unlockedAt: number }[]
+  >
 }
 
 export interface DiscoveryEvent {

@@ -1,6 +1,6 @@
 import type { AudioAssetConfig, ProcessParams, StemConfig, StemId } from './forensicTypes'
-import { computeStemGains } from './forensicEngine'
-import type { NoiseProfileState } from './forensicTypes'
+import { clipRecoveryGain, computeStemGains, evaluateSegmentClarity } from './forensicEngine'
+import type { NoiseProfileState, SpeechSegment } from './forensicTypes'
 import {
   clipPlaybackGain,
   renderBackgroundNoise,
@@ -50,6 +50,8 @@ export class ForensicAudioEngine {
   private decoded = new Map<string, WebAudioBuffer>()
   private procedural = new Map<StemId, WebAudioBuffer>()
   private clipGains = new Map<string, number>()
+  private clipGainNodes = new Map<string, GainNode>()
+  private speechSegments: SpeechSegment[] = []
   private debris: DebrisPiece[] = []
   private playing = false
   private startCtxTime = 0
@@ -154,11 +156,16 @@ export class ForensicAudioEngine {
     this.onWaveform = fn
   }
 
-  async loadAsset(asset: AudioAssetConfig, durationSec: number) {
+  async loadAsset(
+    asset: AudioAssetConfig,
+    durationSec: number,
+    speechSegments: SpeechSegment[] = [],
+  ) {
     const token = ++this.token
     this.ready = false
     this.asset = asset
     this.durationSec = durationSec
+    this.speechSegments = speechSegments
     this.loading = this.buildAsset(asset, durationSec, token)
     return this.loading
   }
@@ -171,6 +178,7 @@ export class ForensicAudioEngine {
 
     const srcs = new Set<string>()
     for (const stem of asset.stems) {
+      if (stem.src) srcs.add(stem.src)
       for (const clip of stem.clips ?? []) srcs.add(clip.src)
       for (const frag of stem.fragments ?? []) srcs.add(frag.src)
     }
@@ -184,13 +192,23 @@ export class ForensicAudioEngine {
     const layers: { data: Float32Array; gain: number; startSec: number }[] = []
 
     for (const stem of asset.stems) {
-      if (stem.kind === 'noise') {
+      if (stem.kind === 'file' && stem.src) {
+        const buf = this.decoded.get(stem.src)
+        if (!buf) continue
+        const mono = this.mono(buf)
+        // Pad / trim to session duration so seek/play stay in sync with other stems.
+        const data = new Float32Array(frames)
+        data.set(mono.subarray(0, Math.min(mono.length, frames)))
+        this.procedural.set(stem.id, this.bufferFrom(data, sampleRate))
+        layers.push({ data, gain: stem.initialGain, startSec: 0 })
+      } else if (stem.kind === 'noise') {
         const data = renderBackgroundNoise(
           frames,
           sampleRate,
           stem.seed ?? asset.seed ?? 1,
           stem.targetRmsDb ?? -24,
           stem.dropouts ?? [],
+          stem.envelope ?? [],
         )
         this.procedural.set(stem.id, this.bufferFrom(data, sampleRate))
         layers.push({ data, gain: stem.initialGain, startSec: 0 })
@@ -305,6 +323,7 @@ export class ForensicAudioEngine {
     this.lastApply = { process, profile, muted }
     if (!this.ctx || !this.filters || !this.master || !this.panNode || !this.asset) return
     const base: Record<StemId, number> = {
+      CORRUPTED_BASE: 1,
       VOICE: 1,
       BACKGROUND_NOISE: 1,
       TONE_1700: 1,
@@ -312,13 +331,31 @@ export class ForensicAudioEngine {
       CLICKS: 1,
     }
     for (const s of this.asset.stems) base[s.id] = s.initialGain
-    const gains = computeStemGains(base, process, profile, {
-      notch: this.asset.notch,
-      spectral: this.asset.spectral,
-    })
+    const rules = { notch: this.asset.notch, spectral: this.asset.spectral }
+    const gains = computeStemGains(base, process, profile, rules)
     for (const [id, g] of Object.entries(gains) as [StemId, number][]) {
       const node = this.stemGains.get(id)
       if (node) node.gain.value = muted ? 0 : g
+    }
+
+    // Presença limpa por fragmento — acompanha o score do segmento.
+    for (const stem of this.asset.stems) {
+      if (stem.kind !== 'clips') continue
+      for (const clip of stem.clips ?? []) {
+        const seg =
+          this.speechSegments.find((s) => s.clipId === clip.id) ??
+          this.speechSegments.find((s) => Math.abs(s.startSec - clip.startSec) < 0.05)
+        const baseClip = this.clipGains.get(clip.id) ?? Math.pow(10, (clip.gainDb ?? 0) / 20)
+        let mul = 0.04
+        if (seg && !process.bypass) {
+          const clarity = evaluateSegmentClarity(seg, process, profile, base, rules)
+          mul = clipRecoveryGain(clarity.clarityScore, seg.voiceWeight)
+        } else if (process.bypass) {
+          mul = 0.04
+        }
+        const node = this.clipGainNodes.get(clip.id)
+        if (node) node.gain.value = muted ? 0 : baseClip * mul
+      }
     }
 
     if (process.bypass) {
@@ -376,11 +413,13 @@ export class ForensicAudioEngine {
     this.startOffsetSec = start
     this.startCtxTime = this.ctx!.currentTime
     this.playing = true
+    this.clipGainNodes.clear()
 
     for (const stem of this.asset.stems) {
       const g = this.ctx!.createGain()
       g.gain.value = stem.initialGain
       this.stemGains.set(stem.id, g)
+      // Tom entra depois do Notch no bus; o restante (incl. base corrompida) passa pelos filtros.
       const dest = stem.kind === 'tone' ? this.toneBus : this.bus
       g.connect(dest)
       this.scheduleStem(stem, g, start)
@@ -406,7 +445,9 @@ export class ForensicAudioEngine {
         src.buffer = buf
         src.playbackRate.value = this.rate
         const clipGain = ctx.createGain()
-        clipGain.gain.value = this.clipGains.get(clip.id) ?? Math.pow(10, (clip.gainDb ?? 0) / 20)
+        const baseClip = this.clipGains.get(clip.id) ?? Math.pow(10, (clip.gainDb ?? 0) / 20)
+        clipGain.gain.value = baseClip * 0.04
+        this.clipGainNodes.set(clip.id, clipGain)
         src.connect(clipGain)
         clipGain.connect(dest)
         const offsetIntoClip = Math.max(0, fromSec - clip.startSec)
