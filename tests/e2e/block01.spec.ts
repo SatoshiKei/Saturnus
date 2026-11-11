@@ -27,10 +27,21 @@ test('Bloco 1 — fluxo principal por ferramentas físicas', async ({ page }) =>
   await closeHub(page)
   await dismissEvidenceCards(page)
 
-  // Bancada: restauração é operação do jogador.
+  // Bancada forense: o jogador registra a transcrição identificada.
   await openHubObject(page, 'audio-station')
   await page.getByTestId('audio-file-emergency_call_raw').click()
-  await page.getByTestId('emergency-provisional-analysis').click()
+  await expect(page.getByTestId('forensic-workbench')).toBeVisible()
+  await page.getByRole('tab', { name: 'NOTES' }).click()
+  await page.locator('.fw-notes').fill(
+    [
+      'escute isso até o fim',
+      'desde aquela noite',
+      'eu sentia medo',
+      'eu estava confusa',
+      'eu não lembro',
+    ].join('\n'),
+  )
+  await expect(page.getByText(/Análise registrada/i)).toBeVisible()
   await closeHub(page)
   await dismissEvidenceCards(page)
 

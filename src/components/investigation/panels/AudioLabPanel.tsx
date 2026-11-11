@@ -6,6 +6,8 @@ import { assetPath } from '../../../lib/assetPath'
 import { evidenceOriginLabel, evidenceSourceLabel, evidenceTypeLabel } from '../../../lib/labels'
 import { runProvisionalEmergencyAnalysis } from '../../../game/story/block01Handlers'
 import { runProvisionalRafaelForwardAnalysis } from '../../../game/story/block02Handlers'
+import { ForensicWorkbench } from '../../../forensic/ForensicWorkbench'
+import { getForensicSessionForEvidence } from '../../../forensic/forensicRegistry'
 import {
   runProvisionalJanusSync,
   runProvisionalSaturnaliaReconstruct,
@@ -297,6 +299,24 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
         <section className="aw-main">
           {current ? (
             <>
+              {(() => {
+                const forensicSession = getForensicSessionForEvidence(current.id)
+                if (forensicSession) {
+                  return (
+                    <ForensicWorkbench
+                      session={forensicSession}
+                      fileNameBadge={current.displayFileName ?? current.title}
+                      completed={emergencyProvisionalDone}
+                      onClose={onClose}
+                      onPuzzleComplete={() => runProvisionalEmergencyAnalysis()}
+                    />
+                  )
+                }
+                return null
+              })()}
+
+              {!getForensicSessionForEvidence(current.id) ? (
+                <>
               <div className="aw-scope" data-locked={blocked}>
                 <Waveform id={current.id} progress={progress} dim={blocked} />
                 {blocked ? (
@@ -338,30 +358,10 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                   {exportMsg}
                 </p>
               ) : null}
-
-              {current.id === 'emergency_call_raw' && current.puzzleMeta?.implementation === 'placeholder' ? (
-                <div className="aw-provisional" data-testid="emergency-provisional-panel">
-                  <p className="aw-provisional__note">
-                    Gravação degradada. Filtros de ruído e restauração automática disponíveis.
-                  </p>
-                  <button
-                    type="button"
-                    className="aw-provisional__go"
-                    data-testid="emergency-provisional-analysis"
-                    disabled={emergencyProvisionalDone}
-                    onClick={() => runProvisionalEmergencyAnalysis()}
-                  >
-                    {emergencyProvisionalDone ? 'Restauração concluída' : 'Restaurar gravação'}
-                  </button>
-                  {inv.evidenceOwned.includes('emergency_call_restored') ? (
-                    <blockquote className="aw-provisional__transcript">
-                      “…eu preciso…”, “…ele tá aqui…”, “…eu não consigo…”, “…não lembra…”
-                    </blockquote>
-                  ) : null}
-                </div>
+                </>
               ) : null}
 
-              {current.id === 'rafael_forward_from_mariana' &&
+              {!getForensicSessionForEvidence(current.id) && current.id === 'rafael_forward_from_mariana' &&
               current.puzzleMeta?.implementation === 'placeholder' ? (
                 <div className="aw-provisional" data-testid="rafael-forward-provisional-panel">
                   <p className="aw-provisional__note">
@@ -385,7 +385,7 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                 </div>
               ) : null}
 
-              {showJanus ? (
+              {!getForensicSessionForEvidence(current.id) && showJanus ? (
                 <div className="aw-orbit" data-testid="janus-provisional-panel">
                   <p className="aw-orbit__title">Sessão Janus / Epimetheus</p>
                   <p className="aw-provisional__note">
@@ -420,7 +420,7 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                 </div>
               ) : null}
 
-              {showSaturnalia ? (
+              {!getForensicSessionForEvidence(current.id) && showSaturnalia ? (
                 <div className="aw-orbit" data-testid="saturnalia-provisional-panel">
                   <p className="aw-orbit__title">Sessão Saturnalia</p>
                   <p className="aw-provisional__note">
@@ -451,15 +451,17 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                 </div>
               ) : null}
 
-              {showHexagon && hexCurrent ? <HexagonSession currentId={hexCurrent.id as HexNodeId} /> : null}
-              {showPastor ? <ShepherdMoonsSession /> : null}
-              {showEnceladus ? <EnceladusSession /> : null}
-              {showCassini ? <CassiniSession /> : null}
-              {showRings ? <RingsSession /> : null}
-              {showRotation ? <RotationSession /> : null}
-              {showMemory ? <MemorySession /> : null}
+              {!getForensicSessionForEvidence(current.id) && showHexagon && hexCurrent ? (
+                <HexagonSession currentId={hexCurrent.id as HexNodeId} />
+              ) : null}
+              {!getForensicSessionForEvidence(current.id) && showPastor ? <ShepherdMoonsSession /> : null}
+              {!getForensicSessionForEvidence(current.id) && showEnceladus ? <EnceladusSession /> : null}
+              {!getForensicSessionForEvidence(current.id) && showCassini ? <CassiniSession /> : null}
+              {!getForensicSessionForEvidence(current.id) && showRings ? <RingsSession /> : null}
+              {!getForensicSessionForEvidence(current.id) && showRotation ? <RotationSession /> : null}
+              {!getForensicSessionForEvidence(current.id) && showMemory ? <MemorySession /> : null}
 
-              {showUnknownAnalyze ? (
+              {!getForensicSessionForEvidence(current.id) && showUnknownAnalyze ? (
                 <div className="aw-orbit" data-testid="unknown-recording-panel">
                   <p className="aw-orbit__title">Contato sem nome</p>
                   <p className="aw-provisional__note">
@@ -480,6 +482,8 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                 </div>
               ) : null}
 
+              {!getForensicSessionForEvidence(current.id) ? (
+                <>
               <nav className="aw-modules" aria-label="Módulos de análise">
                 {modules.map((m) => (
                   <button
@@ -524,6 +528,8 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                   <p className="aw-empty">{activeModule.description}</p>
                 )}
               </div>
+                </>
+              ) : null}
             </>
           ) : (
             <p className="aw-empty aw-empty--big" data-testid="audio-no-selection">
