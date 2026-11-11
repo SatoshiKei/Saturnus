@@ -46,8 +46,65 @@ export interface AudioClipConfig {
   /** URL pública do asset */
   src: string
   startSec: number
-  /** Duração estimada do clip; se omitida, usa duração do buffer. */
+  /** Duração do clip em segundos (perfil de ruído e waveform). */
   durationSec?: number
+  /** Ganho relativo interno, em dB, aplicado depois de um level-match opcional. */
+  gainDb?: number
+}
+
+export interface GainWindow {
+  startSec: number
+  endSec: number
+  /** Multiplicador linear de amplitude. */
+  gain: number
+}
+
+export interface DebrisFragment {
+  src: string
+  sourceOffsetSec: number
+  durationMs: number
+  timelineSec: number
+  gainDb: number
+  reverse?: boolean
+}
+
+export interface ClickEvent {
+  timeSec: number
+  durationMs: number
+  /** Amplitude de pico antes do ganho do stem, 0–1. */
+  amplitude: number
+}
+
+export interface DropoutEvent {
+  timeSec: number
+  durationMs: number
+  /** Ganho linear no centro do dropout. */
+  gain: number
+}
+
+export interface NotchRule {
+  targetHz: number
+  /** Distância (Hz) até o alvo com efeito máximo. */
+  fullEffectHz: number
+  strongEffectHz: number
+  partialEffectHz: number
+  tailHz: number
+  idealWidthHz: number
+  wideWidthHz: number
+  /** |reduction| em dB que conta como profundidade total. */
+  fullReductionDb: number
+  /** Atenuação do stem tonal quando o efeito é 1. */
+  maxAttenuationDb: number
+}
+
+export interface SpectralRule {
+  maxNoiseCutDb: number
+  /** Piso linear do ruído — textura que permanece mesmo no máximo. */
+  noiseFloor: number
+  maxDebrisCutDb: number
+  debrisFloor: number
+  /** Corte de voz em dB com redução total e perfil completamente contaminado. */
+  maxVoiceCutDb: number
 }
 
 export interface StemConfig {
@@ -60,6 +117,15 @@ export interface StemConfig {
   frequencyHz?: number
   /** Ruído / clicks gerados proceduralmente */
   density?: number
+  seed?: number
+  /** RMS alvo do buffer procedural, em dBFS, antes do ganho do stem. */
+  targetRmsDb?: number
+  /** Level-match de cada clip para este RMS antes de `gainDb`. */
+  matchRmsDb?: number
+  envelope?: GainWindow[]
+  fragments?: DebrisFragment[]
+  events?: ClickEvent[]
+  dropouts?: DropoutEvent[]
 }
 
 export interface AudioAssetConfig {
@@ -73,6 +139,11 @@ export interface AudioAssetConfig {
   spectrum?: { frequencies: number[]; magnitudes: number[] }
   /** Espectrograma: rows = freq (baixo→alto), cols = tempo. */
   spectrogram?: { cols: number; rows: number; values: number[]; maxHz: number }
+  seed?: number
+  /** Curva do Notch sobre o stem tonal. Ausente = o filtro real segue sozinho. */
+  notch?: NotchRule
+  /** Curva da redução espectral sobre ruído, debris e voz. */
+  spectral?: SpectralRule
 }
 
 export interface StructureBlock {
@@ -164,6 +235,8 @@ export interface NoiseProfileState {
   endSec: number
   /** Interno — não exibido ao jogador. */
   quality: 'good' | 'contaminated'
+  /** 1 = seleção quase sem voz. Não exibido ao jogador. */
+  qualityScore?: number
   capturedAt: number
 }
 

@@ -55,7 +55,7 @@ export const seedEvidenceCatalog: Evidence[] = [
     sourceId: 'emergency_call_raw',
     integrity: 'unverified',
     description:
-      'Trechos reconhecidos: “eu preciso”, “ele tá aqui”, “eu não consigo”, “não lembra”. Identidade por voz não confirmada.',
+      'Trechos reconhecidos, ainda com ruído residual: “escute isso até o fim” (~00:04), “desde aquela noite” (~00:12), “eu sentia medo” (~00:22), “eu estava confusa” (~00:29), “eu não lembro” (~00:38). Identidade por voz não confirmada.',
     relatedPersonIds: ['mariana'],
     relatedLocationIds: [],
     relatedEventIds: ['evt_emergency_call'],

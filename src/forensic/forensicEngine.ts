@@ -4,8 +4,10 @@ import type {
   ForensicUiState,
   NoiseProfileState,
   NoiseRegion,
+  NotchRule,
   ProcessParams,
   SelectionRange,
+  SpectralRule,
   StemId,
   TrackRuntime,
 } from './forensicTypes'
@@ -64,65 +66,177 @@ export function getActiveSource(
   return session.sources.find((s) => s.id === ui.activeSourceId) ?? session.sources[0]
 }
 
-/** Efeito do Notch sobre o stem TONE_1700 (0 = sem efeito, 1 = máximo). */
-export function notchToneEffect(centerHz: number, reductionDb: number): number {
-  if (reductionDb >= -0.5) return 0
-  const dist = Math.abs(centerHz - 1700)
-  let strength = 0
-  if (dist <= 100) strength = 1
-  else if (dist <= 200) strength = 1 - (dist - 100) / 100
-  else strength = 0
-  const depth = Math.min(1, Math.abs(reductionDb) / 18)
-  return strength * depth
+/** Intervalos de voz a partir dos clips do dataset — sem nomes de frase. */
+export function voiceSpansFromSource(
+  source: ForensicSource | undefined,
+): { startSec: number; endSec: number }[] {
+  if (!source?.audio) return []
+  const spans: { startSec: number; endSec: number }[] = []
+  for (const stem of source.audio.stems) {
+    if (stem.kind !== 'clips') continue
+    for (const clip of stem.clips ?? []) {
+      const dur = clip.durationSec ?? 0
+      if (dur <= 0) continue
+      spans.push({ startSec: clip.startSec, endSec: clip.startSec + dur })
+    }
+  }
+  return spans
 }
 
-/** Ganho linear do stem TONE a partir do efeito de notch. */
-export function toneStemGain(baseGain: number, process: ProcessParams): number {
-  if (process.bypass) return baseGain
-  const effect = notchToneEffect(process.notchCenterHz, process.notchReductionDb)
-  // Reduz até ~-40 dB no stem quando efeito máximo.
-  const atten = Math.pow(10, (-40 * effect) / 20)
-  return baseGain * atten
+function smoothstep(t: number): number {
+  const x = Math.min(1, Math.max(0, t))
+  return x * x * (3 - 2 * x)
+}
+
+function lerp(a: number, b: number, t: number): number {
+  return a + (b - a) * t
+}
+
+function bandStrength(dist: number, rule: NotchRule): number {
+  const { fullEffectHz, strongEffectHz, partialEffectHz, tailHz } = rule
+  if (dist <= fullEffectHz) return 1
+  if (dist <= strongEffectHz) {
+    const t = smoothstep((dist - fullEffectHz) / Math.max(1, strongEffectHz - fullEffectHz))
+    return lerp(1, 0.82, t)
+  }
+  if (dist <= partialEffectHz) {
+    const t = smoothstep((dist - strongEffectHz) / Math.max(1, partialEffectHz - strongEffectHz))
+    return lerp(0.82, 0.36, t)
+  }
+  if (dist <= tailHz) {
+    const t = smoothstep((dist - partialEffectHz) / Math.max(1, tailHz - partialEffectHz))
+    return lerp(0.36, 0.04, t)
+  }
+  return 0.04 * Math.exp(-(dist - tailHz) / 70)
+}
+
+function widthFactor(widthHz: number, rule: NotchRule): number {
+  const narrow = rule.idealWidthHz * 0.4
+  const idealHi = rule.idealWidthHz * 2.2
+  if (widthHz <= 12) return 0.42
+  if (widthHz < narrow) return lerp(0.42, 1, (widthHz - 12) / Math.max(1, narrow - 12))
+  if (widthHz <= idealHi) return 1
+  if (widthHz >= rule.wideWidthHz) {
+    const over = Math.min(1, (widthHz - rule.wideWidthHz) / Math.max(1, rule.wideWidthHz))
+    return lerp(0.22, 0.08, over)
+  }
+  const t = smoothstep((widthHz - idealHi) / Math.max(1, rule.wideWidthHz - idealHi))
+  return lerp(1, 0.22, t)
 }
 
 /**
- * Mapeia Spectral Reduction % → atenuação dB do BACKGROUND_NOISE.
- * Profile contaminado reduz menos ruído e também atenua VOICE levemente.
+ * Efeito do Notch sobre o stem tonal (0 = nenhum, 1 = máximo).
+ * Centro, largura e redução entram juntos. Não é um teste de igualdade.
+ */
+export function notchToneEffect(
+  centerHz: number,
+  reductionDb: number,
+  widthHz: number,
+  rule: NotchRule,
+): number {
+  if (reductionDb > -0.25) return 0
+  const dist = Math.abs(centerHz - rule.targetHz)
+  const depth = Math.min(1, Math.abs(reductionDb) / Math.max(1, rule.fullReductionDb))
+  const effect = bandStrength(dist, rule) * widthFactor(widthHz, rule) * depth
+  return Math.max(0, Math.min(1, effect))
+}
+
+/** Ganho linear do stem tonal a partir da curva de notch. */
+export function toneStemGain(baseGain: number, process: ProcessParams, rule?: NotchRule): number {
+  if (process.bypass || !rule) return baseGain
+  const effect = notchToneEffect(
+    process.notchCenterHz,
+    process.notchReductionDb,
+    process.notchWidthHz,
+    rule,
+  )
+  const atten = Math.pow(10, (-rule.maxAttenuationDb * effect) / 20)
+  return baseGain * atten
+}
+
+/** Fallback genérico. O puzzle sobrescreve via dataset. */
+export const GENERIC_SPECTRAL_RULE: SpectralRule = {
+  maxNoiseCutDb: 34,
+  noiseFloor: 0.15,
+  maxDebrisCutDb: 16,
+  debrisFloor: 0.28,
+  maxVoiceCutDb: 6,
+}
+
+function profileQualityOf(profile: NoiseProfileState): number {
+  if (typeof profile.qualityScore === 'number') {
+    return Math.min(1, Math.max(0, profile.qualityScore))
+  }
+  return profile.quality === 'good' ? 1 : 0.28
+}
+
+/**
+ * Spectral Reduction atua em ruído e debris.
+ * Perfil contaminado também tira um pouco de clareza da voz.
+ * O piso impede que 100% deixe só a voz.
  */
 export function spectralStemGains(
   process: ProcessParams,
   profile: NoiseProfileState | null,
-): { noiseGain: number; voiceClarity: number } {
+  rule: SpectralRule = GENERIC_SPECTRAL_RULE,
+): { noiseGain: number; debrisGain: number; voiceClarity: number } {
   if (process.bypass || process.spectralReduction <= 0 || !profile) {
-    return { noiseGain: 1, voiceClarity: 1 }
+    return { noiseGain: 1, debrisGain: 1, voiceClarity: 1 }
   }
-  const t = process.spectralReduction / 100
-  const noiseDbGood = -4 * t - 8 * t * t // ~0 → -12 at 100%
-  const noiseDbContam = noiseDbGood * 0.45
-  const noiseDb = profile.quality === 'good' ? noiseDbGood : noiseDbContam
-  const voiceClarity =
-    profile.quality === 'contaminated' ? Math.pow(10, (-3 * t) / 20) : 1
+  const t = Math.min(1, Math.max(0, process.spectralReduction / 100))
+  const sens = Math.min(1, Math.max(0, process.spectralSensitivity / 100))
+  const smooth = Math.min(1, Math.max(0, process.spectralSmoothing / 100))
+  const q = profileQualityOf(profile)
+  const strength = t * (0.5 + 0.5 * sens) * (1 - 0.22 * smooth)
+  const noiseDb = -rule.maxNoiseCutDb * strength * (0.35 + 0.65 * q)
+  const debrisDb = -rule.maxDebrisCutDb * strength * (0.4 + 0.6 * q)
+  const voiceDb = -rule.maxVoiceCutDb * t * (1 - q) * (0.4 + 0.6 * sens) * (1 - 0.3 * smooth)
   return {
-    noiseGain: Math.pow(10, noiseDb / 20),
-    voiceClarity,
+    noiseGain: Math.max(rule.noiseFloor, Math.pow(10, noiseDb / 20)),
+    debrisGain: Math.max(rule.debrisFloor, Math.pow(10, debrisDb / 20)),
+    voiceClarity: Math.pow(10, voiceDb / 20),
   }
 }
 
 export function overlapRatio(sel: SelectionRange, region: NoiseRegion): number {
-  const a0 = sel.startSec
-  const a1 = sel.endSec
-  const b0 = region.startSec
-  const b1 = region.endSec
-  const overlap = Math.max(0, Math.min(a1, b1) - Math.max(a0, b0))
+  const a0 = Math.min(sel.startSec, sel.endSec)
+  const a1 = Math.max(sel.startSec, sel.endSec)
+  const overlap = Math.max(0, Math.min(a1, region.endSec) - Math.max(a0, region.startSec))
   const selDur = Math.max(0.001, a1 - a0)
   return overlap / selDur
+}
+
+/**
+ * 1 quando a seleção quase não contém voz; cai conforme a fala entra.
+ * Não classifica "certo/errado" para o jogador.
+ */
+export function profileQualityScore(
+  sel: SelectionRange,
+  spans: { startSec: number; endSec: number }[],
+): number {
+  const a0 = Math.min(sel.startSec, sel.endSec)
+  const a1 = Math.max(sel.startSec, sel.endSec)
+  const dur = Math.max(0.001, a1 - a0)
+  let voice = 0
+  for (const s of spans) {
+    voice += Math.max(0, Math.min(a1, s.endSec) - Math.max(a0, s.startSec))
+  }
+  const frac = Math.min(1, voice / dur)
+  let q = Math.exp(-4.2 * frac)
+  if (frac <= 0.02) q = Math.max(q, 0.98)
+  if (frac >= 0.35) q = Math.min(q, 0.22)
+  return Math.max(0, Math.min(1, q))
 }
 
 /** Classifica perfil internamente; não revela ao jogador. */
 export function classifyNoiseProfile(
   sel: SelectionRange,
   regions: NoiseRegion[] | undefined,
+  spans?: { startSec: number; endSec: number }[],
 ): 'good' | 'contaminated' {
+  if (spans?.length) {
+    return profileQualityScore(sel, spans) >= 0.72 ? 'good' : 'contaminated'
+  }
   if (!regions?.length) return 'contaminated'
   for (const r of regions) {
     if (overlapRatio(sel, r) >= r.minOverlapRatio) return 'good'
@@ -134,17 +248,24 @@ export function captureNoiseProfile(
   sel: SelectionRange | null,
   regions: NoiseRegion[] | undefined,
   existing: NoiseProfileState[],
+  spans?: { startSec: number; endSec: number }[],
 ): { ok: false; reason: 'no-selection' } | { ok: true; profile: NoiseProfileState } {
-  if (!sel || sel.endSec - sel.startSec < 0.05) {
+  if (!sel || Math.abs(sel.endSec - sel.startSec) < 0.05) {
     return { ok: false, reason: 'no-selection' }
   }
-  const quality = classifyNoiseProfile(sel, regions)
+  const qualityScore = spans?.length
+    ? profileQualityScore(sel, spans)
+    : classifyNoiseProfile(sel, regions) === 'good'
+      ? 0.98
+      : 0.22
+  const quality: NoiseProfileState['quality'] = qualityScore >= 0.72 ? 'good' : 'contaminated'
   const profile: NoiseProfileState = {
     id: `np-${existing.length + 1}-${Date.now()}`,
     name: `Profile ${existing.length + 1}`,
-    startSec: sel.startSec,
-    endSec: sel.endSec,
+    startSec: Math.min(sel.startSec, sel.endSec),
+    endSec: Math.max(sel.startSec, sel.endSec),
     quality,
+    qualityScore,
     capturedAt: Date.now(),
   }
   return { ok: true, profile }
@@ -167,26 +288,34 @@ export function transcriptionComplete(
   if (!entries.length) return false
   return fragments.every((frag) => {
     const accepted = frag.accepted.map(normalizeTranscript)
-    return entries.some((e) =>
-      accepted.some((a) => e === a || e.includes(a) || a.includes(e)),
-    )
+    return entries.some((e) => accepted.some((a) => e === a || e.includes(a)))
   })
 }
 
-/** Ganhos efetivos por stem (simulação determinística + process real parcial). */
+export interface StemProcessRules {
+  notch?: NotchRule
+  spectral?: SpectralRule
+}
+
+/** Ganhos efetivos por stem. O Gain do usuário escala todos. */
 export function computeStemGains(
   base: Record<StemId, number>,
   process: ProcessParams,
   profile: NoiseProfileState | null,
+  rules?: StemProcessRules,
 ): Record<StemId, number> {
-  const tone = toneStemGain(base.TONE_1700 ?? 1, process)
-  const { noiseGain, voiceClarity } = spectralStemGains(process, profile)
+  const tone = toneStemGain(base.TONE_1700 ?? 1, process, rules?.notch)
+  const { noiseGain, debrisGain, voiceClarity } = spectralStemGains(
+    process,
+    profile,
+    rules?.spectral,
+  )
   const master = process.bypass ? 1 : Math.pow(10, process.gainDb / 20)
   return {
     VOICE: (base.VOICE ?? 1) * voiceClarity * master,
     BACKGROUND_NOISE: (base.BACKGROUND_NOISE ?? 1) * noiseGain * master,
     TONE_1700: tone * master,
-    VOCAL_DEBRIS: (base.VOCAL_DEBRIS ?? 1) * master,
+    VOCAL_DEBRIS: (base.VOCAL_DEBRIS ?? 1) * debrisGain * master,
     CLICKS: (base.CLICKS ?? 1) * master,
   }
 }

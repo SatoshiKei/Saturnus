@@ -1004,6 +1004,19 @@
   background: var(--fw-panel);
 }
 
+.fw-debug {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35em 1.1em;
+  padding: 0.28em 0.85em;
+  border-top: 1px dashed var(--fw-line);
+  background: var(--fw-inset);
+  color: var(--text-faint);
+  font-family: ui-monospace, monospace;
+  font-size: 0.68em;
+  font-variant-numeric: tabular-nums;
+}
+
 .aw-main:has(.fw) {
   padding: 0;
   overflow: hidden;

@@ -3,16 +3,21 @@ import '../styles/forensic-workbench.css'
 import { ForensicAudioEngine } from './forensicAudio'
 import {
   captureNoiseProfile,
+  computeStemGains,
   createInitialUiState,
   fmtTime,
   getActiveSource,
+  notchToneEffect,
   resetProcess,
   transcriptionComplete,
+  voiceSpansFromSource,
 } from './forensicEngine'
 import type {
   ForensicSession,
+  ForensicSource,
   ForensicUiState,
   ProcessParams,
+  StemId,
   TrackRuntime,
 } from './forensicTypes'
 import { FileBrowser } from './components/FileBrowser'
@@ -38,12 +43,14 @@ export function ForensicWorkbench({
   const [showHelp, setShowHelp] = useState(false)
   const [status, setStatus] = useState<string | null>(null)
   const [timelineView, setTimelineView] = useState<'waveform' | 'spectrogram'>('waveform')
+  const [measuredWave, setMeasuredWave] = useState<number[] | null>(null)
   const engineRef = useRef<ForensicAudioEngine | null>(null)
   const completedRef = useRef(false)
+  const showDebug = import.meta.env.DEV
 
   const source = getActiveSource(session, ui)
   const duration = source?.durationSec ?? 0
-  const waveform = source?.audio?.waveform ?? []
+  const waveform = measuredWave ?? source?.audio?.waveform ?? []
   const fileLabel = fileNameBadge ?? source?.filename ?? '—'
   const channels =
     source?.metadata?.find((m) => m.key === 'channels')?.value ??
@@ -56,11 +63,16 @@ export function ForensicWorkbench({
     const eng = new ForensicAudioEngine()
     engineRef.current = eng
     eng.setTickHandler((t) => setUi((u) => ({ ...u, playheadSec: t })))
+    eng.setWaveformHandler((peaks) => setMeasuredWave(peaks))
     return () => {
       eng.dispose()
       engineRef.current = null
     }
   }, [])
+
+  useEffect(() => {
+    setMeasuredWave(null)
+  }, [source?.id])
 
   useEffect(() => {
     const eng = engineRef.current
@@ -263,6 +275,7 @@ export function ForensicWorkbench({
               ui.selection,
               source?.noiseRegions,
               ui.noiseProfiles,
+              voiceSpansFromSource(source),
             )
             if (!result.ok) {
               setStatus('Selecione uma região na timeline antes de capturar o perfil.')
@@ -291,7 +304,41 @@ export function ForensicWorkbench({
           }
         />
       </div>
+      {showDebug && source?.audio ? <ForensicDebug source={source} ui={ui} /> : null}
       {status && <div className="fw-status">{status}</div>}
+    </div>
+  )
+}
+
+function ForensicDebug({ source, ui }: { source: ForensicSource; ui: ForensicUiState }) {
+  const base: Record<StemId, number> = {
+    VOICE: 1,
+    BACKGROUND_NOISE: 1,
+    TONE_1700: 1,
+    VOCAL_DEBRIS: 1,
+    CLICKS: 1,
+  }
+  for (const stem of source.audio?.stems ?? []) base[stem.id] = stem.initialGain
+  const profile = ui.noiseProfiles.find((p) => p.id === ui.activeNoiseProfileId) ?? null
+  const gains = computeStemGains(base, ui.process, profile, {
+    notch: source.audio?.notch,
+    spectral: source.audio?.spectral,
+  })
+  const notch = source.audio?.notch
+    ? notchToneEffect(
+        ui.process.notchCenterHz,
+        ui.process.notchReductionDb,
+        ui.process.notchWidthHz,
+        source.audio.notch,
+      )
+    : 0
+  return (
+    <div className="fw-debug" data-testid="forensic-debug">
+      <span>voiceGain {gains.VOICE.toFixed(3)}</span>
+      <span>noiseGain {gains.BACKGROUND_NOISE.toFixed(3)}</span>
+      <span>toneGain {gains.TONE_1700.toFixed(3)}</span>
+      <span>profileQuality {(profile?.qualityScore ?? 0).toFixed(3)}</span>
+      <span>notchEffectiveness {notch.toFixed(3)}</span>
     </div>
   )
 }

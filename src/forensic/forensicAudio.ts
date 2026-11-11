@@ -1,15 +1,45 @@
 import type { AudioAssetConfig, ProcessParams, StemConfig, StemId } from './forensicTypes'
-import { computeStemGains, dbToLinear } from './forensicEngine'
+import { computeStemGains } from './forensicEngine'
 import type { NoiseProfileState } from './forensicTypes'
+import {
+  clipPlaybackGain,
+  renderBackgroundNoise,
+  renderClicks,
+  renderTone,
+  sliceFragment,
+} from './forensicMix'
+
+type WebAudioBuffer = AudioBuffer
+
+const EQ_FREQ: Record<string, number> = {
+  '125': 125,
+  '250': 250,
+  '500': 500,
+  '1k': 1000,
+  '2k': 2000,
+  '4k': 4000,
+  '8k': 8000,
+}
+
+interface DebrisPiece {
+  buffer: WebAudioBuffer
+  timelineSec: number
+  gain: number
+}
 
 /**
- * Motor de áudio híbrido: stems compostos na reprodução + Biquad real.
- * Stems de tom/ruído/clicks são gerados proceduralmente; voz usa clips.
+ * Motor de áudio: stems cacheados na sessão, Biquad real no bus de voz/ruído.
+ * O stem tonal entra depois do Notch para que centro, largura e redução
+ * o atenuem pela curva do dataset, sem um nulo booleano na senoide.
  */
 export class ForensicAudioEngine {
   private ctx: AudioContext | null = null
   private master: GainNode | null = null
   private panNode: StereoPannerNode | null = null
+  private bus: GainNode | null = null
+  private toneBus: GainNode | null = null
+  private eqNodes: { band: string; node: BiquadFilterNode }[] = []
+  private eqHead: BiquadFilterNode | null = null
   private filters: {
     hp: BiquadFilterNode
     lp: BiquadFilterNode
@@ -17,7 +47,10 @@ export class ForensicAudioEngine {
     notch: BiquadFilterNode
   } | null = null
   private stemGains = new Map<StemId, GainNode>()
-  private buffers = new Map<string, AudioBuffer>()
+  private decoded = new Map<string, WebAudioBuffer>()
+  private procedural = new Map<StemId, WebAudioBuffer>()
+  private clipGains = new Map<string, number>()
+  private debris: DebrisPiece[] = []
   private playing = false
   private startCtxTime = 0
   private startOffsetSec = 0
@@ -29,12 +62,25 @@ export class ForensicAudioEngine {
   private loopSel: { startSec: number; endSec: number } | null = null
   private anim: number | null = null
   private onTick: ((t: number) => void) | null = null
+  private onWaveform: ((peaks: number[]) => void) | null = null
+  private bpPassthrough = true
+  private ready = false
+  private disposed = false
+  private token = 0
+  private loading: Promise<void> | null = null
+  private lastApply: {
+    process: ProcessParams
+    profile: NoiseProfileState | null
+    muted: boolean
+  } | null = null
 
   async ensureCtx(): Promise<AudioContext> {
     if (!this.ctx) {
       this.ctx = new AudioContext()
       this.master = this.ctx.createGain()
       this.panNode = this.ctx.createStereoPanner()
+      this.bus = this.ctx.createGain()
+      this.toneBus = this.ctx.createGain()
       const hp = this.ctx.createBiquadFilter()
       hp.type = 'highpass'
       hp.frequency.value = 20
@@ -46,15 +92,31 @@ export class ForensicAudioEngine {
       bp.frequency.value = 1000
       bp.Q.value = 0.7
       const notch = this.ctx.createBiquadFilter()
-      notch.type = 'notch'
+      notch.type = 'peaking'
       notch.frequency.value = 1000
-      notch.Q.value = 10
+      notch.Q.value = 8
+      notch.gain.value = 0
       this.filters = { hp, lp, bp, notch }
-      // Chain: stems → sum → hp → lp → bp → notch → pan → master → dest
-      // bp is bypassed unless band meaningfully narrowed (handled in applyProcess)
+
+      const bands = Object.keys(EQ_FREQ)
+      let prev: AudioNode = notch
+      this.eqNodes = bands.map((band) => {
+        const eq = this.ctx!.createBiquadFilter()
+        eq.type = 'peaking'
+        eq.frequency.value = EQ_FREQ[band]!
+        eq.Q.value = 1
+        eq.gain.value = 0
+        prev.connect(eq)
+        prev = eq
+        return { band, node: eq }
+      })
+      this.eqHead = this.eqNodes[0]?.node ?? null
+      prev.connect(this.panNode)
+
+      this.bus.connect(hp)
       hp.connect(lp)
       lp.connect(notch)
-      notch.connect(this.panNode)
+      this.toneBus.connect(this.panNode)
       this.panNode.connect(this.master)
       this.master.connect(this.ctx.destination)
       this.bpPassthrough = true
@@ -63,10 +125,8 @@ export class ForensicAudioEngine {
     return this.ctx
   }
 
-  private bpPassthrough = true
-
   private reconnectFilterChain(useBandPass: boolean) {
-    if (!this.filters || !this.panNode) return
+    if (!this.filters || !this.eqHead) return
     const { lp, bp, notch } = this.filters
     try {
       lp.disconnect()
@@ -83,29 +143,156 @@ export class ForensicAudioEngine {
       lp.connect(notch)
       this.bpPassthrough = true
     }
-    notch.connect(this.panNode)
-  }
-
-  async loadAsset(asset: AudioAssetConfig, durationSec: number) {
-    await this.ensureCtx()
-    this.asset = asset
-    this.durationSec = durationSec
-    const ctx = this.ctx!
-    for (const stem of asset.stems) {
-      if (stem.clips) {
-        for (const clip of stem.clips) {
-          if (this.buffers.has(clip.src)) continue
-          const res = await fetch(clip.src)
-          const arr = await res.arrayBuffer()
-          const buf = await ctx.decodeAudioData(arr.slice(0))
-          this.buffers.set(clip.src, buf)
-        }
-      }
-    }
+    notch.connect(this.eqHead)
   }
 
   setTickHandler(fn: ((t: number) => void) | null) {
     this.onTick = fn
+  }
+
+  setWaveformHandler(fn: ((peaks: number[]) => void) | null) {
+    this.onWaveform = fn
+  }
+
+  async loadAsset(asset: AudioAssetConfig, durationSec: number) {
+    const token = ++this.token
+    this.ready = false
+    this.asset = asset
+    this.durationSec = durationSec
+    this.loading = this.buildAsset(asset, durationSec, token)
+    return this.loading
+  }
+
+  private async buildAsset(asset: AudioAssetConfig, durationSec: number, token: number) {
+    const ctx = await this.ensureCtx()
+    if (token !== this.token || this.disposed) return
+    const sampleRate = ctx.sampleRate
+    const frames = Math.max(1, Math.ceil(durationSec * sampleRate))
+
+    const srcs = new Set<string>()
+    for (const stem of asset.stems) {
+      for (const clip of stem.clips ?? []) srcs.add(clip.src)
+      for (const frag of stem.fragments ?? []) srcs.add(frag.src)
+    }
+    await Promise.all([...srcs].map((src) => this.decodeUrl(src, ctx)))
+    if (token !== this.token || this.disposed) return
+
+    this.procedural.clear()
+    this.clipGains.clear()
+    this.debris = []
+
+    const layers: { data: Float32Array; gain: number; startSec: number }[] = []
+
+    for (const stem of asset.stems) {
+      if (stem.kind === 'noise') {
+        const data = renderBackgroundNoise(
+          frames,
+          sampleRate,
+          stem.seed ?? asset.seed ?? 1,
+          stem.targetRmsDb ?? -24,
+          stem.dropouts ?? [],
+        )
+        this.procedural.set(stem.id, this.bufferFrom(data, sampleRate))
+        layers.push({ data, gain: stem.initialGain, startSec: 0 })
+      } else if (stem.kind === 'tone') {
+        const data = renderTone(frames, sampleRate, stem.frequencyHz ?? 1000, stem.envelope ?? [])
+        this.procedural.set(stem.id, this.bufferFrom(data, sampleRate))
+        layers.push({ data, gain: stem.initialGain, startSec: 0 })
+      } else if (stem.kind === 'clicks') {
+        const data = renderClicks(frames, sampleRate, stem.events ?? [], stem.seed ?? asset.seed ?? 1)
+        this.procedural.set(stem.id, this.bufferFrom(data, sampleRate))
+        layers.push({ data, gain: stem.initialGain, startSec: 0 })
+      } else if (stem.kind === 'clips') {
+        for (const clip of stem.clips ?? []) {
+          const buf = this.decoded.get(clip.src)
+          if (!buf) continue
+          const mono = this.mono(buf)
+          const g = clipPlaybackGain(mono, clip.gainDb ?? 0, stem.matchRmsDb)
+          this.clipGains.set(clip.id, g)
+          layers.push({ data: mono, gain: g * stem.initialGain, startSec: clip.startSec })
+        }
+      } else if (stem.kind === 'debris') {
+        for (const frag of stem.fragments ?? []) {
+          const buf = this.decoded.get(frag.src)
+          if (!buf) continue
+          const slice = sliceFragment(
+            this.mono(buf),
+            sampleRate,
+            frag.sourceOffsetSec,
+            frag.durationMs,
+            Boolean(frag.reverse),
+          )
+          const gain = Math.pow(10, frag.gainDb / 20)
+          this.debris.push({
+            buffer: this.bufferFrom(slice, sampleRate),
+            timelineSec: frag.timelineSec,
+            gain,
+          })
+          layers.push({ data: slice, gain: gain * stem.initialGain, startSec: frag.timelineSec })
+        }
+      }
+    }
+
+    if (token !== this.token || this.disposed) return
+    this.ready = true
+    this.onWaveform?.(this.peakWaveform(layers, durationSec, sampleRate))
+  }
+
+  private async decodeUrl(src: string, ctx: AudioContext) {
+    if (this.decoded.has(src)) return
+    try {
+      const res = await fetch(src)
+      if (!res.ok) throw new Error(String(res.status))
+      const arr = await res.arrayBuffer()
+      const buf = await ctx.decodeAudioData(arr.slice(0))
+      this.decoded.set(src, buf)
+    } catch {
+      console.warn('forensic audio: failed to decode', src)
+    }
+  }
+
+  private mono(buf: WebAudioBuffer): Float32Array {
+    const ch0 = buf.getChannelData(0)
+    const channels = buf.numberOfChannels || 1
+    if (channels <= 1) return ch0
+    const out = new Float32Array(ch0.length)
+    for (let c = 0; c < channels; c++) {
+      const d = buf.getChannelData(c)
+      for (let i = 0; i < d.length; i++) out[i]! += d[i]! / channels
+    }
+    return out
+  }
+
+  private bufferFrom(data: Float32Array, sampleRate: number): WebAudioBuffer {
+    const buf = this.ctx!.createBuffer(1, data.length, sampleRate)
+    const ch = buf.getChannelData(0)
+    if (ch.length === data.length) ch.set(data)
+    return buf
+  }
+
+  private peakWaveform(
+    layers: { data: Float32Array; gain: number; startSec: number }[],
+    duration: number,
+    sampleRate: number,
+    bars = 360,
+  ): number[] {
+    const peaks = new Float32Array(bars)
+    const step = 4
+    for (const layer of layers) {
+      const { data, gain, startSec } = layer
+      for (let i = 0; i < data.length; i += step) {
+        const t = startSec + i / sampleRate
+        if (t < 0 || t >= duration) continue
+        const b = Math.min(bars - 1, Math.floor((t / duration) * bars))
+        const a = Math.abs(data[i]! * gain)
+        if (a > peaks[b]!) peaks[b] = a
+      }
+    }
+    let max = 1e-6
+    for (let i = 0; i < peaks.length; i++) if (peaks[i]! > max) max = peaks[i]!
+    const out: number[] = []
+    for (let i = 0; i < peaks.length; i++) out.push(Math.max(0.035, peaks[i]! / max))
+    return out
   }
 
   getCurrentTime(): number {
@@ -115,6 +302,7 @@ export class ForensicAudioEngine {
   }
 
   applyProcess(process: ProcessParams, profile: NoiseProfileState | null, muted: boolean) {
+    this.lastApply = { process, profile, muted }
     if (!this.ctx || !this.filters || !this.master || !this.panNode || !this.asset) return
     const base: Record<StemId, number> = {
       VOICE: 1,
@@ -123,10 +311,11 @@ export class ForensicAudioEngine {
       VOCAL_DEBRIS: 1,
       CLICKS: 1,
     }
-    for (const s of this.asset.stems) {
-      base[s.id] = s.initialGain
-    }
-    const gains = computeStemGains(base, process, profile)
+    for (const s of this.asset.stems) base[s.id] = s.initialGain
+    const gains = computeStemGains(base, process, profile, {
+      notch: this.asset.notch,
+      spectral: this.asset.spectral,
+    })
     for (const [id, g] of Object.entries(gains) as [StemId, number][]) {
       const node = this.stemGains.get(id)
       if (node) node.gain.value = muted ? 0 : g
@@ -135,19 +324,17 @@ export class ForensicAudioEngine {
     if (process.bypass) {
       this.filters.hp.frequency.value = 20
       this.filters.lp.frequency.value = 20000
-      this.filters.notch.Q.value = 0.707
       this.filters.notch.gain.value = 0
       this.reconnectFilterChain(false)
+      for (const eq of this.eqNodes) eq.node.gain.value = 0
       this.panNode.pan.value = 0
-      this.master.gain.value = 1
       return
     }
 
     this.filters.hp.frequency.value = Math.max(20, process.highPassHz)
     this.filters.lp.frequency.value = Math.min(20000, process.lowPassHz)
 
-    const useBp =
-      process.bandPassLowHz > 40 || process.bandPassHighHz < 18000
+    const useBp = process.bandPassLowHz > 40 || process.bandPassHighHz < 18000
     if (useBp !== !this.bpPassthrough) this.reconnectFilterChain(useBp)
     if (useBp) {
       const center = (process.bandPassLowHz + process.bandPassHighHz) / 2
@@ -157,21 +344,20 @@ export class ForensicAudioEngine {
     }
 
     this.filters.notch.frequency.value = Math.max(20, process.notchCenterHz)
-    // Q ≈ center / width
     const q = process.notchCenterHz / Math.max(10, process.notchWidthHz)
-    this.filters.notch.Q.value = Math.min(100, Math.max(0.5, q))
+    this.filters.notch.Q.value = Math.min(40, Math.max(0.3, q))
+    this.filters.notch.gain.value = process.notchReductionDb
+
+    for (const eq of this.eqNodes) eq.node.gain.value = process.eqBands[eq.band] ?? 0
 
     this.panNode.pan.value = Math.max(-1, Math.min(1, process.pan / 100))
-    this.master.gain.value = muted ? 0 : 1
   }
 
   setPlaybackRate(rate: number) {
+    if (rate === this.rate) return
     const t = this.getCurrentTime()
     this.rate = rate
-    if (this.playing) {
-      void this.stopInternal(false)
-      void this.play(t, this.loop, this.loopSel)
-    }
+    if (this.playing) void this.play(t, this.loop, this.loopSel)
   }
 
   setLoop(loop: boolean, sel: { startSec: number; endSec: number } | null) {
@@ -180,9 +366,10 @@ export class ForensicAudioEngine {
   }
 
   async play(fromSec: number, loop: boolean, sel: { startSec: number; endSec: number } | null) {
+    if (this.loading) await this.loading
     await this.ensureCtx()
-    if (!this.asset || !this.filters) return
-    this.stopInternal(false)
+    if (!this.asset || !this.filters || !this.bus || !this.toneBus || !this.ready) return
+    this.stopInternal()
     this.loop = loop
     this.loopSel = sel
     const start = Math.max(0, fromSec)
@@ -190,18 +377,19 @@ export class ForensicAudioEngine {
     this.startCtxTime = this.ctx!.currentTime
     this.playing = true
 
-    const sum = this.ctx!.createGain()
-    sum.gain.value = 1
-    sum.connect(this.filters.hp)
-
     for (const stem of this.asset.stems) {
       const g = this.ctx!.createGain()
       g.gain.value = stem.initialGain
       this.stemGains.set(stem.id, g)
-      g.connect(sum)
+      const dest = stem.kind === 'tone' ? this.toneBus : this.bus
+      g.connect(dest)
       this.scheduleStem(stem, g, start)
     }
 
+    if (this.lastApply) {
+      const { process, profile, muted } = this.lastApply
+      this.applyProcess(process, profile, muted)
+    }
     this.tickLoop()
   }
 
@@ -209,15 +397,20 @@ export class ForensicAudioEngine {
     const ctx = this.ctx!
     if (stem.kind === 'clips' && stem.clips) {
       for (const clip of stem.clips) {
-        const buf = this.buffers.get(clip.src)
+        const buf = this.decoded.get(clip.src)
         if (!buf) continue
-        const clipEnd = clip.startSec + (clip.durationSec ?? buf.duration)
+        const clipDur = buf.duration
+        const clipEnd = clip.startSec + clipDur
         if (clipEnd <= fromSec) continue
         const src = ctx.createBufferSource()
         src.buffer = buf
         src.playbackRate.value = this.rate
-        src.connect(dest)
+        const clipGain = ctx.createGain()
+        clipGain.gain.value = this.clipGains.get(clip.id) ?? Math.pow(10, (clip.gainDb ?? 0) / 20)
+        src.connect(clipGain)
+        clipGain.connect(dest)
         const offsetIntoClip = Math.max(0, fromSec - clip.startSec)
+        if (offsetIntoClip >= clipDur) continue
         const when = ctx.currentTime + Math.max(0, (clip.startSec - fromSec) / this.rate)
         try {
           src.start(when, offsetIntoClip)
@@ -235,70 +428,65 @@ export class ForensicAudioEngine {
       return
     }
 
-    if (stem.kind === 'tone' && stem.frequencyHz) {
-      const osc = ctx.createOscillator()
-      osc.type = 'sine'
-      osc.frequency.value = stem.frequencyHz
-      const env = ctx.createGain()
-      env.gain.value = 1
-      osc.connect(env)
-      env.connect(dest)
-      osc.start(ctx.currentTime)
-      this.stopFns.push(() => {
+    if (stem.kind === 'debris') {
+      for (const piece of this.debris) {
+        const dur = piece.buffer.duration
+        const end = piece.timelineSec + dur
+        if (end <= fromSec) continue
+        const src = ctx.createBufferSource()
+        src.buffer = piece.buffer
+        src.playbackRate.value = this.rate
+        const g = ctx.createGain()
+        g.gain.value = piece.gain
+        src.connect(g)
+        g.connect(dest)
+        const offset = Math.max(0, fromSec - piece.timelineSec)
+        if (offset >= dur) continue
+        const when = ctx.currentTime + Math.max(0, (piece.timelineSec - fromSec) / this.rate)
         try {
-          osc.stop()
+          src.start(when, offset)
         } catch {
           /* ignore */
         }
-      })
+        this.stopFns.push(() => {
+          try {
+            src.stop()
+          } catch {
+            /* ignore */
+          }
+        })
+      }
       return
     }
 
-    if (stem.kind === 'noise' || stem.kind === 'debris' || stem.kind === 'clicks') {
-      const remaining = Math.max(0.1, this.durationSec - fromSec)
-      const frames = Math.ceil(ctx.sampleRate * remaining)
-      const buf = ctx.createBuffer(1, frames, ctx.sampleRate)
-      const data = buf.getChannelData(0)
-      const density = stem.density ?? 1
-      for (let i = 0; i < frames; i++) {
-        if (stem.kind === 'clicks') {
-          // Sparse clicks
-          data[i] = Math.random() < 0.0008 * density ? (Math.random() * 2 - 1) * 0.9 : 0
-        } else if (stem.kind === 'debris') {
-          data[i] =
-            Math.random() < 0.02 * density
-              ? (Math.random() * 2 - 1) * 0.35 * Math.sin(i / 40)
-              : (Math.random() * 2 - 1) * 0.02
-        } else {
-          data[i] = (Math.random() * 2 - 1) * 0.45 * density
-        }
-      }
-      const src = ctx.createBufferSource()
-      src.buffer = buf
-      src.playbackRate.value = this.rate
-      src.connect(dest)
-      src.start(ctx.currentTime)
-      this.stopFns.push(() => {
-        try {
-          src.stop()
-        } catch {
-          /* ignore */
-        }
-      })
+    const buf = this.procedural.get(stem.id)
+    if (!buf) return
+    if (fromSec >= buf.duration) return
+    const src = ctx.createBufferSource()
+    src.buffer = buf
+    src.playbackRate.value = this.rate
+    src.connect(dest)
+    try {
+      src.start(ctx.currentTime, fromSec)
+    } catch {
+      /* ignore */
     }
+    this.stopFns.push(() => {
+      try {
+        src.stop()
+      } catch {
+        /* ignore */
+      }
+    })
   }
 
   private tickLoop() {
     if (this.anim) cancelAnimationFrame(this.anim)
     const step = () => {
       if (!this.playing) return
-      let t = this.getCurrentTime()
-      const end =
-        this.loop && this.loopSel
-          ? this.loopSel.endSec
-          : this.durationSec
-      const start =
-        this.loop && this.loopSel ? this.loopSel.startSec : 0
+      const t = this.getCurrentTime()
+      const end = this.loop && this.loopSel ? this.loopSel.endSec : this.durationSec
+      const start = this.loop && this.loopSel ? this.loopSel.startSec : 0
       if (t >= end) {
         if (this.loop) {
           void this.play(start, true, this.loopSel)
@@ -316,13 +504,13 @@ export class ForensicAudioEngine {
 
   pause() {
     const t = this.getCurrentTime()
-    this.stopInternal(false)
+    this.stopInternal()
     this.startOffsetSec = t
     this.playing = false
   }
 
   stop() {
-    this.stopInternal(false)
+    this.stopInternal()
     this.startOffsetSec = 0
     this.playing = false
     this.onTick?.(0)
@@ -330,14 +518,14 @@ export class ForensicAudioEngine {
 
   seek(sec: number) {
     const was = this.playing
-    this.stopInternal(false)
+    this.stopInternal()
     this.startOffsetSec = Math.max(0, Math.min(this.durationSec, sec))
     this.playing = false
     if (was) void this.play(this.startOffsetSec, this.loop, this.loopSel)
     else this.onTick?.(this.startOffsetSec)
   }
 
-  private stopInternal(_resetOffset: boolean) {
+  private stopInternal() {
     for (const fn of this.stopFns) fn()
     this.stopFns = []
     this.stemGains.clear()
@@ -349,64 +537,17 @@ export class ForensicAudioEngine {
   }
 
   dispose() {
-    this.stopInternal(false)
+    this.disposed = true
+    this.token++
+    this.onTick = null
+    this.onWaveform = null
+    this.stopInternal()
     void this.ctx?.close()
     this.ctx = null
+    this.ready = false
   }
 
   isPlaying() {
     return this.playing
   }
 }
-
-export function buildDemoWaveform(seed: string, n = 220): number[] {
-  let s = 0
-  for (let i = 0; i < seed.length; i++) s = (s * 31 + seed.charCodeAt(i)) >>> 0
-  const out: number[] = []
-  for (let i = 0; i < n; i++) {
-    s = (s * 1664525 + 1013904223) >>> 0
-    const r = s / 4294967296
-    const env = 0.2 + 0.8 * Math.abs(Math.sin(i / 11))
-    out.push(Math.max(0.04, env * (0.3 + r * 0.7)))
-  }
-  return out
-}
-
-export function buildDemoSpectrum(peakHz = 1700): {
-  frequencies: number[]
-  magnitudes: number[]
-} {
-  const frequencies: number[] = []
-  const magnitudes: number[] = []
-  for (let hz = 50; hz <= 4000; hz += 25) {
-    frequencies.push(hz)
-    const dist = Math.abs(hz - peakHz)
-    const peak = Math.exp(-(dist * dist) / (2 * 80 * 80))
-    const floor = 0.08 + 0.05 * Math.sin(hz / 90)
-    magnitudes.push(Math.min(1, floor + peak * 0.92))
-  }
-  return { frequencies, magnitudes }
-}
-
-export function buildDemoSpectrogram(
-  durationSec: number,
-  peakHz = 1700,
-): { cols: number; rows: number; values: number[]; maxHz: number } {
-  const cols = 64
-  const rows = 32
-  const maxHz = 4000
-  const values: number[] = []
-  for (let r = 0; r < rows; r++) {
-    const hz = (r / (rows - 1)) * maxHz
-    for (let c = 0; c < cols; c++) {
-      const t = (c / cols) * durationSec
-      const dist = Math.abs(hz - peakHz)
-      const tone = Math.exp(-(dist * dist) / (2 * 90 * 90)) * 0.85
-      const noise = 0.12 + 0.08 * Math.sin(t * 3 + r)
-      values.push(Math.min(1, noise + tone))
-    }
-  }
-  return { cols, rows, values, maxHz }
-}
-
-export { dbToLinear }
