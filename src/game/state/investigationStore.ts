@@ -122,6 +122,14 @@ export function resetForensicSpeechProgress(evidenceId: string) {
     delete bag['rafael_forward_from_mariana']
     delete bag['rafael_audio_reply']
   }
+  if (evidenceId === 'rec_vtx_old_01') {
+    flags.block02_rings_provisional = false
+    evidenceOwned = evidenceOwned.filter(
+      (id) => id !== 'rec_vtx_set_nico_match' && id !== 'nico_dj_identified',
+    )
+    delete achievementUnlocks['ach-rings']
+    delete bag['rec_vtx_old_01']
+  }
   commit({
     ...state,
     forensicRecoveredSpeech: bag,

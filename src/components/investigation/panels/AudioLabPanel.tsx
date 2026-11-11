@@ -10,7 +10,10 @@ import {
   markForensicSpeechRecovered,
   resetForensicSpeechProgress,
 } from '../../../game/state/investigationStore'
-import { runProvisionalRafaelForwardAnalysis } from '../../../game/story/block02Handlers'
+import {
+  runProvisionalRafaelForwardAnalysis,
+  runProvisionalRingsAnalysis,
+} from '../../../game/story/block02Handlers'
 import { ForensicWorkbench } from '../../../forensic/ForensicWorkbench'
 import { getForensicSessionForEvidence } from '../../../forensic/forensicRegistry'
 import {
@@ -97,6 +100,7 @@ function analysisState(id: string, flags: Record<string, boolean>): AnalysisStat
   if (id === 'emergency_call_raw') return flags.block01_emergency_provisional ? 'done' : 'pending'
   if (id === 'rafael_forward_from_mariana' || id === 'rafael_audio_reply')
     return flags.block02_rafael_forward_provisional ? 'done' : 'pending'
+  if (id === 'rec_vtx_old_01') return flags.block02_rings_provisional ? 'done' : 'pending'
   if (id === 'nico_recording_booth' || id === 'nico_recording_portable')
     return flags.block03_janus_done ? 'done' : 'pending'
   if (id === 'livia_radio_archive_raw') return flags.block03_saturnalia_done ? 'done' : 'pending'
@@ -315,7 +319,10 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                     forensicSession.completion?.onCompleteAction ===
                     'runProvisionalRafaelForwardAnalysis'
                       ? Boolean(inv.flags.block02_rafael_forward_provisional)
-                      : emergencyProvisionalDone
+                      : forensicSession.completion?.onCompleteAction ===
+                          'runProvisionalRingsAnalysis'
+                        ? Boolean(inv.flags.block02_rings_provisional)
+                        : emergencyProvisionalDone
                   const containerState = inv.forensicContainerState?.[current.id]
                   return (
                     <ForensicWorkbench
@@ -334,11 +341,11 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                       }
                       onDevResetPuzzle={() => resetForensicSpeechProgress(current.id)}
                       onPuzzleComplete={() => {
-                        if (
-                          forensicSession.completion?.onCompleteAction ===
-                          'runProvisionalRafaelForwardAnalysis'
-                        ) {
+                        const action = forensicSession.completion?.onCompleteAction
+                        if (action === 'runProvisionalRafaelForwardAnalysis') {
                           runProvisionalRafaelForwardAnalysis()
+                        } else if (action === 'runProvisionalRingsAnalysis') {
+                          runProvisionalRingsAnalysis()
                         } else {
                           runProvisionalEmergencyAnalysis()
                         }

@@ -29,6 +29,10 @@ const HELP: Record<string, string> = {
   Structure: 'Displays container-level blocks and structural metadata.',
   'Rebuild Container':
     'Reconstructs the container using the current structural values and recalculates dependent integrity fields.',
+  'Tempo / Beat Analysis':
+    'Estimates tempo from the current timeline selection when stable analysis regions are available.',
+  'Link Source':
+    'Associates the active capture with a secondary source or administrative record using observed characteristics.',
 }
 
 function Tip({ name }: { name: string }) {
@@ -131,6 +135,8 @@ export function Inspector({
   onSelectStructurePage,
   onStructureSequence,
   onRebuildContainer,
+  onEstimateTempo,
+  onLinkSource,
 }: {
   tab: ForensicInspectorTab
   onTab: (t: ForensicInspectorTab) => void
@@ -151,6 +157,8 @@ export function Inspector({
   onSelectStructurePage?: (id: string) => void
   onStructureSequence?: (pageId: string, sequence: number) => void
   onRebuildContainer?: () => void
+  onEstimateTempo?: () => void
+  onLinkSource?: () => void
 }) {
   const p = ui.process
   const hasProfile = Boolean(ui.activeNoiseProfileId)
@@ -385,6 +393,29 @@ export function Inspector({
                 </p>
               ) : (
                 <p className="fw-empty">Shift+drag on the timeline to measure.</p>
+              )}
+            </Section>
+            <Section title="Tempo / Beat Analysis" tip="Tempo / Beat Analysis">
+              <button type="button" className="fw-btn" onClick={() => onEstimateTempo?.()}>
+                Selection tempo estimate
+              </button>
+              {ui.tempoEstimate ? (
+                <dl className="fw-meta" data-testid="tempo-estimate">
+                  <div>
+                    <dt>Estimated tempo</dt>
+                    <dd className="fw-mono">{ui.tempoEstimate.bpm.toFixed(1)} BPM</dd>
+                  </div>
+                  <div>
+                    <dt>Confidence</dt>
+                    <dd className="fw-mono">{ui.tempoEstimate.confidence}</dd>
+                  </div>
+                  <div>
+                    <dt>Window</dt>
+                    <dd className="fw-mono">{ui.tempoEstimate.windowSec.toFixed(2)} s</dd>
+                  </div>
+                </dl>
+              ) : (
+                <p className="fw-muted">Requires a sufficiently long selection on a stable region.</p>
               )}
             </Section>
           </div>
@@ -659,9 +690,90 @@ export function Inspector({
             {!ui.compareSourceA || !ui.compareSourceB ? (
               <p className="fw-empty fw-empty--center">Select two sources to compare.</p>
             ) : (
-              <p className="fw-muted">
-                Overlay / metadata / fingerprint — available when both sources have data.
-              </p>
+              (() => {
+                const a = sources.find((s) => s.id === ui.compareSourceA)
+                const b = sources.find((s) => s.id === ui.compareSourceB)
+                const side = (s: ForensicSource | undefined) => {
+                  if (!s) return null
+                  if (s.setRecord) {
+                    const r = s.setRecord
+                    return (
+                      <dl className="fw-meta">
+                        <div>
+                          <dt>Record</dt>
+                          <dd className="fw-mono">{r.setId}</dd>
+                        </div>
+                        <div>
+                          <dt>Operator</dt>
+                          <dd>{r.operatorLabel}</dd>
+                        </div>
+                        <div>
+                          <dt>BPM before</dt>
+                          <dd className="fw-mono">{r.bpmBefore.toFixed(1)}</dd>
+                        </div>
+                        <div>
+                          <dt>BPM after</dt>
+                          <dd className="fw-mono">{r.bpmAfter.toFixed(1)}</dd>
+                        </div>
+                        <div>
+                          <dt>Intervention</dt>
+                          <dd className="fw-mono">
+                            {r.interventionStartSec.toFixed(1)}–{r.interventionEndSec.toFixed(1)} s
+                          </dd>
+                        </div>
+                      </dl>
+                    )
+                  }
+                  const pre = s.tempoRegions?.find((t) => t.id === 'pre')
+                  const post = s.tempoRegions?.find((t) => t.id === 'post')
+                  return (
+                    <dl className="fw-meta">
+                      <div>
+                        <dt>File</dt>
+                        <dd className="fw-mono">{s.filename}</dd>
+                      </div>
+                      <div>
+                        <dt>Duration</dt>
+                        <dd className="fw-mono">{fmtTime(s.durationSec)}</dd>
+                      </div>
+                      <div>
+                        <dt>BPM before (measured)</dt>
+                        <dd className="fw-mono">{pre ? `${pre.bpm.toFixed(1)}` : '—'}</dd>
+                      </div>
+                      <div>
+                        <dt>BPM after (measured)</dt>
+                        <dd className="fw-mono">{post ? `${post.bpm.toFixed(1)}` : '—'}</dd>
+                      </div>
+                      <div>
+                        <dt>Markers</dt>
+                        <dd className="fw-mono">
+                          {ui.markers.length
+                            ? ui.markers.map((m) => fmtTime(m.timeSec)).join(', ')
+                            : '—'}
+                        </dd>
+                      </div>
+                    </dl>
+                  )
+                }
+                return (
+                  <div className="fw-compare" data-testid="compare-panel">
+                    <div>
+                      <strong>Source A</strong>
+                      {side(a)}
+                    </div>
+                    <div>
+                      <strong>Source B</strong>
+                      {side(b)}
+                    </div>
+                    <Section title="Link" tip="Link Source">
+                      <button type="button" className="fw-btn" onClick={() => onLinkSource?.()}>
+                        Link source
+                      </button>
+                      {ui.linkStatus ? <p className="fw-muted">{ui.linkStatus}</p> : null}
+                    </Section>
+                  </div>
+                )
+              })()
             )}
           </div>
         )}

@@ -7,10 +7,12 @@ import {
   computeStemGains,
   createInitialUiState,
   effectivePlayableUntil,
+  estimateTempoFromSelection,
   evaluateSegmentClarity,
   fileMetadataForContainer,
   fmtTime,
   getActiveSource,
+  linkSources,
   rebuildContainer,
   resetProcess,
   resolveStructurePages,
@@ -81,9 +83,13 @@ export function ForensicWorkbench({
   const showDebug = import.meta.env.DEV
 
   const source = getActiveSource(session, ui)
-  const playableUntil = effectivePlayableUntil(source, ui.containerRebuilt)
-  const duration = source?.durationSec ?? 0
-  const waveform = measuredWave ?? source?.audio?.waveform ?? []
+  /** Fonte com áudio para transport/timeline (registros de set não têm stems). */
+  const playbackSource = source?.audio
+    ? source
+    : session.sources.find((s) => s.audio) ?? source
+  const playableUntil = effectivePlayableUntil(playbackSource, ui.containerRebuilt)
+  const duration = playbackSource?.durationSec ?? 0
+  const waveform = measuredWave ?? playbackSource?.audio?.waveform ?? []
   const structurePages = resolveStructurePages(
     source,
     ui.structureSequences,
@@ -94,10 +100,14 @@ export function ForensicWorkbench({
   const fileLabel = fileNameBadge ?? source?.filename ?? '—'
   const channels =
     source?.metadata?.find((m) => m.key === 'channels')?.value ??
-    (source?.audio?.channels === 1 ? 'Mono' : source?.audio?.channels ? String(source.audio.channels) : '—')
+    (playbackSource?.audio?.channels === 1
+      ? 'Mono'
+      : playbackSource?.audio?.channels
+        ? String(playbackSource.audio.channels)
+        : '—')
   const sampleRate =
     source?.metadata?.find((m) => m.key === 'sampleRate')?.value ??
-    (source?.audio?.sampleRate ? `${source.audio.sampleRate} Hz` : '—')
+    (playbackSource?.audio?.sampleRate ? `${playbackSource.audio.sampleRate} Hz` : '—')
 
   useEffect(() => {
     const eng = new ForensicAudioEngine()
@@ -118,13 +128,13 @@ export function ForensicWorkbench({
 
   useEffect(() => {
     engineRef.current?.setPlayableUntil(
-      source?.containerPlayback ? playableUntil : null,
+      playbackSource?.containerPlayback ? playableUntil : null,
     )
-  }, [playableUntil, source?.containerPlayback])
+  }, [playableUntil, playbackSource?.containerPlayback])
 
   useEffect(() => {
     setMeasuredWave(null)
-  }, [source?.id])
+  }, [playbackSource?.id])
 
   useEffect(() => {
     if (!recoveredProp) return
@@ -133,9 +143,18 @@ export function ForensicWorkbench({
 
   useEffect(() => {
     const eng = engineRef.current
-    if (!eng || !source?.audio) return
-    void eng.loadAsset(source.audio, source.durationSec, source.speechSegments ?? [])
-  }, [source?.id, source?.audio, source?.durationSec, source?.speechSegments])
+    if (!eng || !playbackSource?.audio) return
+    void eng.loadAsset(
+      playbackSource.audio,
+      playbackSource.durationSec,
+      playbackSource.speechSegments ?? [],
+    )
+  }, [
+    playbackSource?.id,
+    playbackSource?.audio,
+    playbackSource?.durationSec,
+    playbackSource?.speechSegments,
+  ])
 
   useEffect(() => {
     const eng = engineRef.current
@@ -274,6 +293,10 @@ export function ForensicWorkbench({
       const required = completion.requireSpeechSegmentIds ?? []
       const have = new Set(ui.recoveredSpeech.map((r) => r.segmentId))
       if (!required.every((id) => have.has(id))) return
+    } else if (completion.kind === 'source-link') {
+      if (!ui.linkedSetSourceId) return
+      if (completion.correctSetSourceId && ui.linkedSetSourceId !== completion.correctSetSourceId)
+        return
     } else {
       return
     }
@@ -284,6 +307,7 @@ export function ForensicWorkbench({
     ui.recoveredSpeech,
     ui.containerRebuilt,
     ui.structureSequences,
+    ui.linkedSetSourceId,
     source?.speechSegments,
     source,
     session.completion,
@@ -364,7 +388,7 @@ export function ForensicWorkbench({
           />
           <div className="fw-tracks">
             <div className="fw-pane-h">Tracks</div>
-            {source?.tracks
+            {playbackSource?.tracks
               ?.filter((t) => t.visible)
               .map((t) => (
                 <TrackRow
@@ -407,9 +431,9 @@ export function ForensicWorkbench({
               markers={ui.markers}
               waveformZoomY={ui.waveformZoomY}
               viewMode={timelineView}
-              spectrogram={source?.audio?.spectrogram}
+              spectrogram={playbackSource?.audio?.spectrogram}
               unavailableFromSec={
-                source?.containerPlayback && !ui.containerRebuilt ? playableUntil : null
+                playbackSource?.containerPlayback && !ui.containerRebuilt ? playableUntil : null
               }
               onSeek={seek}
               onSelect={(selection) => patchUi({ selection })}
@@ -538,11 +562,39 @@ export function ForensicWorkbench({
           onCompare={(compareSourceA, compareSourceB) =>
             patchUi({ compareSourceA, compareSourceB })
           }
+          onEstimateTempo={() => {
+            const audioSrc =
+              session.sources.find((s) => s.audio && s.tempoRegions?.length) ?? source
+            const result = estimateTempoFromSelection(audioSrc, ui.selection)
+            if (!result.ok) {
+              setStatus(result.reason)
+              patchUi({ tempoEstimate: null })
+              return
+            }
+            patchUi({
+              tempoEstimate: {
+                bpm: result.bpm,
+                confidence: result.confidence,
+                windowSec: result.windowSec,
+              },
+            })
+            setStatus(`Estimated tempo ${result.bpm.toFixed(1)} BPM (${result.confidence})`)
+          }}
+          onLinkSource={() => {
+            const result = linkSources(session, ui.compareSourceA, ui.compareSourceB)
+            setUi((u) => ({
+              ...u,
+              linkStatus: result.message,
+              linkedSetSourceId: result.complete ? result.linkedSetId : u.linkedSetSourceId,
+            }))
+            setStatus(result.message)
+          }}
         />
       </div>
-      {showDebug && source?.audio ? (
+      {showDebug ? (
         <ForensicDebug
           source={source}
+          session={session}
           ui={ui}
           clarity={clarityDebug}
           playableUntil={playableUntil}
@@ -564,6 +616,9 @@ export function ForensicWorkbench({
                     rebuildStatus: null,
                     rebuildCount: 0,
                     recoveredSpeech: [],
+                    linkedSetSourceId: null,
+                    linkStatus: null,
+                    tempoEstimate: null,
                   }))
                   engineRef.current?.setPlayableUntil(
                     source?.containerPlayback?.damagedPlayableUntilSec ?? null,
@@ -581,19 +636,22 @@ export function ForensicWorkbench({
 
 function ForensicDebug({
   source,
+  session,
   ui,
   clarity,
   playableUntil,
   sequenceValid,
   onDevResetPuzzle,
 }: {
-  source: NonNullable<ReturnType<typeof getActiveSource>>
+  source: ReturnType<typeof getActiveSource>
+  session: ForensicSession
   ui: ForensicUiState
   clarity: SegmentClarity[]
   playableUntil: number
   sequenceValid: boolean
   onDevResetPuzzle?: () => void
 }) {
+  if (!source) return null
   const base: Record<StemId, number> = {
     FILE: 1,
     CORRUPTED_BASE: 1,
@@ -618,9 +676,26 @@ function ForensicDebug({
   const decodedDuration = effectivePlayableUntil(source, ui.containerRebuilt)
   const containerDuration =
     source.containerPlayback?.containerDurationSec ?? source.durationSec
+  const isRings = session.completion?.kind === 'source-link'
+  const recording = session.sources.find((s) => s.tempoRegions?.length)
   return (
     <div className="fw-debug" data-testid="forensic-debug">
-      {source.containerPlayback ? (
+      {isRings ? (
+        <>
+          <span>actualPreTempo {recording?.tempoRegions?.find((t) => t.id === 'pre')?.bpm ?? '—'}</span>
+          <span>actualPostTempo {recording?.tempoRegions?.find((t) => t.id === 'post')?.bpm ?? '—'}</span>
+          <span>djStart {recording?.tempoRegions ? '72.000' : '—'}</span>
+          <span>djEnd {recording?.tempoRegions ? '90.678' : '—'}</span>
+          <span>correctSetId {session.completion?.correctSetSourceId ?? '—'}</span>
+          <span>selectedSetId {ui.linkedSetSourceId ?? ui.compareSourceB ?? '—'}</span>
+          <span>puzzleComplete {String(Boolean(ui.linkedSetSourceId && ui.linkedSetSourceId === session.completion?.correctSetSourceId))}</span>
+          {onDevResetPuzzle ? (
+            <button type="button" className="fw-btn" data-testid="dev-reset-puzzle" onClick={onDevResetPuzzle}>
+              DEV reset puzzle
+            </button>
+          ) : null}
+        </>
+      ) : source.containerPlayback ? (
         <>
           <span>containerValid {String(ui.containerRebuilt && sequenceValid)}</span>
           <span>sequenceValid {String(sequenceValid)}</span>

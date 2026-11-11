@@ -42,6 +42,13 @@ export const seedAchievements: AchievementDef[] = [
     unlocked: (s) => Boolean(s.flags.block02_rafael_forward_provisional),
   },
   {
+    id: 'ach-rings',
+    title: 'ANÉIS',
+    description: 'Identificou o set correspondente à gravação antiga.',
+    hint: 'Comparar a gravação de balada com os registros de set do Vértice.',
+    unlocked: (s) => Boolean(s.flags.block02_rings_provisional),
+  },
+  {
     id: 'ach-hospital',
     title: 'Plantão',
     description: 'A conversa no hospital foi registrada.',

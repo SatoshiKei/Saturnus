@@ -49,10 +49,35 @@ export function finishVerticeArchive() {
   dispatchActions([
     { type: 'setFlag', id: 'block02_vertice_archive', value: true },
     { type: 'addDocument', id: 'doc-vertice-escala' },
+    // Gravação original + registros de set → Puzzle 03 (ANÉIS) identifica o operador.
+    { type: 'addEvidence', id: 'rec_vtx_old_01' },
+    { type: 'addTask', id: 'task_match_vertice_set', label: 'Identificar o set correspondente à gravação antiga' },
+    { type: 'completeTask', id: 'task_rafael_venue_staff' },
+  ])
+}
+
+/** Puzzle 03 — ANÉIS: gravação ligada ao set de Nico. */
+export function runProvisionalRingsAnalysis() {
+  const s = getInvestigationState()
+  if (s.flags.block02_rings_provisional) return
+  if (!s.evidenceOwned.includes('rec_vtx_old_01')) return
+  dispatchActions([
+    { type: 'setFlag', id: 'block02_rings_provisional', value: true },
     { type: 'addEvidence', id: 'nico_dj_identified' },
+    { type: 'addEvidence', id: 'rec_vtx_set_nico_match' },
     { type: 'discoverPerson', id: 'nico', status: 'identified' },
     { type: 'completeTask', id: 'task_vertice_dj' },
-    { type: 'completeTask', id: 'task_rafael_venue_staff' },
+    { type: 'completeTask', id: 'task_match_vertice_set' },
+    {
+      type: 'notifyInvestigationUpdate',
+      id: 'ach-rings',
+      kind: 'evidence',
+      presentation: 'card',
+      label: 'CONQUISTA',
+      title: 'ANÉIS',
+      summary: 'Identificou o set correspondente à gravação antiga.',
+      refId: 'rec_vtx_set_nico_match',
+    },
   ])
 }
 

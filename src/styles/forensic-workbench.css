@@ -1084,6 +1084,16 @@
   cursor: pointer;
 }
 
+.fw-compare {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.fw-compare > div {
+  display: grid;
+  gap: 0.35rem;
+}
+
 .fw-page-table tbody tr[data-active='true'] {
   background: rgba(180, 140, 80, 0.12);
 }

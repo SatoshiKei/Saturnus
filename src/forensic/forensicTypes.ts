@@ -265,6 +265,28 @@ export interface TimingData {
   referenceSourceId?: string
 }
 
+/** Região de tempo preparada no dataset — ferramenta genérica de Tempo. */
+export interface TempoRegion {
+  id: string
+  startSec: number
+  endSec: number
+  bpm: number
+  confidence: 'low' | 'medium' | 'high'
+}
+
+/** Registro administrativo/técnico comparável (sem áudio). */
+export interface SetRecordFields {
+  setId: string
+  operatorLabel: string
+  bpmBefore: number
+  bpmAfter: number
+  interventionStartSec: number
+  interventionEndSec: number
+  notes: string
+  /** Interno — nunca exibir como “correto”. */
+  isCorrectMatch?: boolean
+}
+
 export interface NoiseRegion {
   id: string
   startSec: number
@@ -291,6 +313,10 @@ export interface ForensicSource {
   speechSegments?: SpeechSegment[]
   /** Truncamento por container (Puzzle Structure). */
   containerPlayback?: ContainerPlaybackConfig
+  /** Regiões de tempo para Estimate tempo (Analysis). */
+  tempoRegions?: TempoRegion[]
+  /** Campos de registro de set (COMPARE / LINK SOURCE). */
+  setRecord?: SetRecordFields
 }
 
 export interface ForensicSession {
@@ -301,11 +327,16 @@ export interface ForensicSession {
   evidenceId?: string
   /** Flag/handler de conclusão narrativa (opcional). */
   completion?: {
-    kind: 'speech-recovery' | 'container-rebuild'
+    kind: 'speech-recovery' | 'container-rebuild' | 'source-link'
     /** Chama handler externo quando completo. */
-    onCompleteAction?: 'runProvisionalEmergencyAnalysis' | 'runProvisionalRafaelForwardAnalysis'
+    onCompleteAction?:
+      | 'runProvisionalEmergencyAnalysis'
+      | 'runProvisionalRafaelForwardAnalysis'
+      | 'runProvisionalRingsAnalysis'
     /** Segmentos obrigatórios além do rebuild (se houver). */
     requireSpeechSegmentIds?: string[]
+    /** source id do registro correto (source-link). */
+    correctSetSourceId?: string
   }
 }
 
@@ -401,6 +432,11 @@ export interface ForensicUiState {
   containerRebuilt: boolean
   rebuildStatus: string | null
   rebuildCount: number
+  /** Resultado da última estimativa de tempo (Analysis). */
+  tempoEstimate: { bpm: number; confidence: string; windowSec: number } | null
+  /** Feedback do último LINK SOURCE. */
+  linkStatus: string | null
+  linkedSetSourceId: string | null
 }
 
 export const DEFAULT_PROCESS: ProcessParams = {

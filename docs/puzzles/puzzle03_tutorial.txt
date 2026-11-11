@@ -1,0 +1,67 @@
+PUZZLE 03 — ANÉIS
+Dev only — não aparece para o jogador.
+Arquivo: REC_VTX_OLD_01.m4a (evidenceId: rec_vtx_old_01)
+Runtime: public/assets/audio/forensic/puzzle03/rec_vtx_old_01_final.mp3
+
+
+ORIGEM NARRATIVA IMEDIATA
+-------------------------
+Mariana → Rafael → Augusto
+Pergunta: em qual set/noite do Vértice a gravação foi feita?
+NÃO revela Elisa / André / Lucas / morte.
+
+
+ASSETS DE PRODUÇÃO
+------------------
+src/assets/audios/p3/
+  Give-Me-Everything-Tonight-Hardtekk-The-Dark-Triad-Song.mp3  (música)
+  DJ - Vértice.mp3                                             (fala integral)
+  club-crowd.mp3                                               (ambience)
+
+Script: tools/audio/build_puzzle03.py
+Timing: tools/audio/out/puzzle03_timing.json
+
+
+TEMPOS REAIS (construção)
+-------------------------
+Duração:           180.0 s (03:00)
+DJ start / end:    72.000 – 90.678 s  (fala ~18.678 s)
+BPM antes:         126.1
+BPM depois:        128.0
+Ducking:           residual gain 0.42 durante mic open
+
+
+COMO RESOLVER
+-------------
+1. Abrir REC_VTX_OLD_01.m4a na bancada.
+2. Selecionar trecho estável antes da voz (~8–68 s).
+3. Analysis → Selection tempo estimate → ~126.1 BPM.
+4. Ouvir / marcar intervenção do DJ (~72–91 s).
+5. Selecionar trecho estável depois (~96–150 s).
+6. Tempo estimate → ~128.0 BPM.
+7. Compare: gravação × cada VTX-SET-20-*.log
+8. Link source no registro compatível.
+
+
+CANDIDATOS
+----------
+VTX-SET-20-A  Operador A   126→126     intervenção ~70–88   → elimina (não sobe BPM)
+VTX-SET-20-B  Operador B   126→128     intervenção ~40–55   → elimina (janela errada)
+VTX-SET-20-C  Nico         126.1→128.0 intervenção ~72–90.7 → CORRETO
+VTX-SET-20-D  Operador C   128→128     intervenção ~71–89   → elimina (já 128 no início)
+
+
+CONCLUSÃO
+---------
+Link REC_VTX_OLD_01 → VTX-SET-20-C
+Finding: “Vértice — set operado por Nicolas “Nico” Prado Reis.”
+Flag: block02_rings_provisional
+Evidence: rec_vtx_set_nico_match + nico_dj_identified
+Achievement: ach-rings / ANÉIS
+Handler: runProvisionalRingsAnalysis
+
+
+DEV
+---
+actualPreTempo / actualPostTempo / djStart / djEnd /
+correctSetId / selectedSetId / puzzleComplete

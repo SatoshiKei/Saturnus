@@ -56,6 +56,71 @@ export function createInitialUiState(
     containerRebuilt: false,
     rebuildStatus: null,
     rebuildCount: 0,
+    tempoEstimate: null,
+    linkStatus: null,
+    linkedSetSourceId: null,
+  }
+}
+
+/** Estimate tempo from selection overlapping dataset tempoRegions. */
+export function estimateTempoFromSelection(
+  source: ForensicSource | undefined,
+  selection: SelectionRange | null,
+): { ok: false; reason: string } | { ok: true; bpm: number; confidence: string; windowSec: number } {
+  if (!selection) return { ok: false, reason: 'Select a timeline region first.' }
+  const a0 = Math.min(selection.startSec, selection.endSec)
+  const a1 = Math.max(selection.startSec, selection.endSec)
+  const windowSec = a1 - a0
+  if (windowSec < 4) return { ok: false, reason: 'Selection too short for tempo estimate (min ~4 s).' }
+  const regions = source?.tempoRegions ?? []
+  if (!regions.length) return { ok: false, reason: 'No tempo analysis data for this source.' }
+  let best: { bpm: number; confidence: string; overlap: number } | null = null
+  for (const r of regions) {
+    const overlap = Math.max(0, Math.min(a1, r.endSec) - Math.max(a0, r.startSec))
+    if (overlap / windowSec < 0.45) continue
+    if (!best || overlap > best.overlap) {
+      best = { bpm: r.bpm, confidence: r.confidence, overlap }
+    }
+  }
+  if (!best) return { ok: false, reason: 'Selection does not overlap a stable tempo region.' }
+  return { ok: true, bpm: best.bpm, confidence: best.confidence, windowSec }
+}
+
+/** LINK SOURCE — gravação ↔ registro (ordem A/B indiferente). Não revela o campo errado. */
+export function linkSources(
+  session: ForensicSession,
+  sourceAId: string | null,
+  sourceBId: string | null,
+): { ok: boolean; message: string; complete: boolean; linkedSetId: string | null } {
+  if (!sourceAId || !sourceBId) {
+    return { ok: false, message: 'Select two sources to link.', complete: false, linkedSetId: null }
+  }
+  const a = session.sources.find((s) => s.id === sourceAId)
+  const b = session.sources.find((s) => s.id === sourceBId)
+  const recording = a?.audio ? a : b?.audio ? b : undefined
+  const setSrc = a?.setRecord ? a : b?.setRecord ? b : undefined
+  if (!recording?.audio || !setSrc?.setRecord) {
+    return {
+      ok: false,
+      message: 'Link requires the capture on one side and a set record on the other.',
+      complete: false,
+      linkedSetId: null,
+    }
+  }
+  const correctId = session.completion?.correctSetSourceId
+  if (correctId && setSrc.id === correctId && setSrc.setRecord.isCorrectMatch) {
+    return {
+      ok: true,
+      message: 'Source characteristics correspond. Link registered.',
+      complete: true,
+      linkedSetId: setSrc.id,
+    }
+  }
+  return {
+    ok: false,
+    message: 'Observed timing characteristics do not fully correspond.',
+    complete: false,
+    linkedSetId: null,
   }
 }
 
@@ -794,6 +859,9 @@ export function resetProcess(ui: ForensicUiState): ForensicUiState {
     selectedStructurePageId: ui.selectedStructurePageId,
     rebuildStatus: ui.rebuildStatus,
     rebuildCount: ui.rebuildCount,
+    tempoEstimate: null,
+    linkStatus: ui.linkStatus,
+    linkedSetSourceId: ui.linkedSetSourceId,
   }
 }
 

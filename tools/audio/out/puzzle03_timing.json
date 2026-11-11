@@ -1,0 +1,25 @@
+{
+  "durationSec": 180.0,
+  "djStartSec": 72.0,
+  "djEndSec": 90.678,
+  "djDurationSec": 18.678,
+  "targetPreBpm": 126.0,
+  "targetPostBpm": 128.0,
+  "actualPreTempo": 126.1,
+  "actualPostTempo": 128.0,
+  "duckAmount": 0.42,
+  "preAnalysisWindow": { "startSec": 8.0, "endSec": 68.0 },
+  "postAnalysisWindow": { "startSec": 96.0, "endSec": 150.0 },
+  "assets": {
+    "music": "src/assets/audios/p3/Give-Me-Everything-Tonight-Hardtekk-The-Dark-Triad-Song.mp3",
+    "dj": "src/assets/audios/p3/DJ - Vértice.mp3",
+    "crowd": "src/assets/audios/p3/club-crowd.mp3"
+  },
+  "outputs": {
+    "reference": "tools/audio/out/puzzle03_reference_mix.wav",
+    "phoneCapture": "tools/audio/out/puzzle03_phone_capture.wav",
+    "finalMp3": "tools/audio/out/puzzle03_final.mp3",
+    "publicMp3": "public/assets/audio/forensic/puzzle03/rec_vtx_old_01_final.mp3",
+    "publicWav": "public/assets/audio/forensic/puzzle03/rec_vtx_old_01.wav"
+  }
+}
