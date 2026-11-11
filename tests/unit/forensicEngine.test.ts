@@ -3,8 +3,10 @@ import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 import {
   alwaysAvailableTabs,
+  CLEAN_VOICE_MAX_GAIN,
   captureNoiseProfile,
   centerAccuracy,
+  clipRecoveryGain,
   computeRecoveryMetrics,
   computeStemGains,
   createInitialUiState,
@@ -16,6 +18,9 @@ import {
   profileQualityScore,
   resetProcess,
   speechRecoveryComplete,
+  spectralStemGains,
+  voiceContaminationScore,
+  voiceDamageAmount,
   voiceSpansFromSource,
 } from '../../src/forensic/forensicEngine'
 import { DEFAULT_PROCESS, INSPECTOR_TABS } from '../../src/forensic/forensicTypes'
@@ -47,8 +52,37 @@ function goodProfile() {
     endSec: 1.8,
     quality: 'good' as const,
     qualityScore: 0.98,
+    voiceContamination: 0,
+    durationSec: 1.5,
     capturedAt: 1,
   }
+}
+
+function selectAllProfile() {
+  const sel = { startSec: 0, endSec: 44 }
+  const contam = voiceContaminationScore(sel, spans)
+  const q = profileQualityScore(sel, spans)
+  return {
+    id: 'all',
+    name: 'P',
+    startSec: 0,
+    endSec: 44,
+    quality: 'contaminated' as const,
+    qualityScore: q,
+    voiceContamination: contam,
+    durationSec: 44,
+    capturedAt: 1,
+  }
+}
+
+const fullNotch = {
+  ...DEFAULT_PROCESS,
+  notchCenterHz: 1700,
+  notchWidthHz: 180,
+  notchReductionDb: -24,
+  spectralReduction: 72,
+  spectralSensitivity: 55,
+  spectralSmoothing: 30,
 }
 
 function unlockedIds(process: typeof DEFAULT_PROCESS, profile: ReturnType<typeof goodProfile> | null) {
@@ -217,9 +251,104 @@ describe('independent tool metrics', () => {
       endSec: 7,
       quality: 'contaminated' as const,
       qualityScore: 0.2,
+      voiceContamination: 0.85,
+      durationSec: 3,
       capturedAt: 1,
     })
     expect(good).toBeGreaterThan(bad)
+  })
+
+  it('clean voice gain never exceeds calibrated max', () => {
+    expect(clipRecoveryGain(1, 1.2)).toBeLessThanOrEqual(CLEAN_VOICE_MAX_GAIN)
+    expect(clipRecoveryGain(0.3, 1)).toBeLessThan(clipRecoveryGain(0.7, 1))
+  })
+})
+
+describe('voice contamination / Select All', () => {
+  it('ideal quiet region has near-zero contamination', () => {
+    expect(voiceContaminationScore({ startSec: 0.3, endSec: 1.8 }, spans)).toBeLessThan(0.05)
+    expect(profileQualityScore({ startSec: 0.3, endSec: 1.8 }, spans)).toBeGreaterThan(0.9)
+  })
+
+  it('alternate quiet gap can also be a good profile', () => {
+    // gap between medo and confusa ≈ 23.4–29.1
+    const q = profileQualityScore({ startSec: 24.0, endSec: 28.5 }, spans)
+    expect(q).toBeGreaterThan(0.72)
+  })
+
+  it('Select All has high contamination and does not unlock noite', () => {
+    const all = selectAllProfile()
+    expect(all.voiceContamination).toBeGreaterThan(0.7)
+    expect(all.qualityScore).toBeLessThan(0.35)
+    const ids = unlockedIds(fullNotch, all)
+    expect(ids).not.toContain('seg_noite')
+    expect(ids.length).toBeLessThan(5)
+    const damage = voiceDamageAmount(fullNotch, all)
+    expect(damage).toBeGreaterThan(0.45)
+    const spectral = spectralStemGains(fullNotch, all, rules.spectral)
+    expect(spectral.voiceClarity).toBeLessThan(0.35)
+    const noite = evaluateSegmentClarity(
+      puzzle01SpeechSegments.find((s) => s.id === 'seg_noite')!,
+      fullNotch,
+      all,
+      base,
+      rules,
+    )
+    expect(noite.clarityScore).toBeLessThan(noite.threshold)
+    expect(noite.effectiveVoiceGain).toBeLessThan(0.25)
+  })
+
+  it('selecting desde aquela noite as profile damages that region', () => {
+    const sel = { startSec: 12.2, endSec: 14.2 }
+    const contam = voiceContaminationScore(sel, spans)
+    expect(contam).toBeGreaterThan(0.7)
+    const profile = {
+      id: 'noite-as-noise',
+      name: 'P',
+      startSec: sel.startSec,
+      endSec: sel.endSec,
+      quality: 'contaminated' as const,
+      qualityScore: profileQualityScore(sel, spans),
+      voiceContamination: contam,
+      durationSec: 2,
+      capturedAt: 1,
+    }
+    const process = { ...fullNotch }
+    expect(unlockedIds(process, profile)).not.toContain('seg_noite')
+    const spectral = spectralStemGains(process, profile, rules.spectral)
+    expect(spectral.voiceClarity).toBeLessThan(0.4)
+  })
+
+  it('captureNoiseProfile stores voiceContamination', () => {
+    const bad = captureNoiseProfile({ startSec: 0, endSec: 44 }, src.noiseRegions, [], spans)
+    expect(bad.ok).toBe(true)
+    if (bad.ok) {
+      expect(bad.profile.voiceContamination).toBeGreaterThan(0.7)
+      expect(bad.profile.quality).toBe('contaminated')
+    }
+    const good = captureNoiseProfile({ startSec: 0.3, endSec: 1.8 }, src.noiseRegions, [], spans)
+    expect(good.ok).toBe(true)
+    if (good.ok) {
+      expect(good.profile.voiceContamination).toBeLessThan(0.05)
+      expect(good.profile.quality).toBe('good')
+    }
+  })
+
+  it('full solution keeps residual degraded texture', () => {
+    const gains = computeStemGains(base, fullNotch, goodProfile(), rules)
+    expect(gains.CORRUPTED_BASE).toBeGreaterThan(0.3)
+    expect(gains.BACKGROUND_NOISE).toBeGreaterThan(0.15)
+    expect(gains.VOICE).toBeLessThan(0.7)
+    const noite = evaluateSegmentClarity(
+      puzzle01SpeechSegments.find((s) => s.id === 'seg_noite')!,
+      fullNotch,
+      goodProfile(),
+      base,
+      rules,
+    )
+    expect(noite.unlocked).toBe(true)
+    expect(noite.clarityScore).toBeLessThan(0.98)
+    expect(noite.effectiveVoiceGain).toBeLessThanOrEqual(CLEAN_VOICE_MAX_GAIN + 0.01)
   })
 })
 

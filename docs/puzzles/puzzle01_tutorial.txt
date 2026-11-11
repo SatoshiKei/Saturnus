@@ -114,10 +114,13 @@ PASSO 5 — NOISE PROFILE + SPECTRAL (último fragmento)
 OBRIGATÓRIO para "desde aquela noite".
 Notch completo sozinho NÃO desbloqueia este trecho (máx. 4 fragments).
 
-Região ideal do perfil:
+Região óbvia (sem fala):
   start 00:00.30
   end   00:01.80
   → Capture profile
+
+Qualquer outro intervalo limpo (~0.5–2.5 s sem voice segments) também pode
+funcionar — a qualidade NÃO exige só o intervalo inicial.
 
 Spectral ideal:
   Reduction   72%
@@ -126,10 +129,59 @@ Spectral ideal:
 
 Pesos:
   center 0.05 | depth 0.05 | width 0.05 | noise 0.85
-  threshold 0.72
+  threshold 0.78
 
-Mascaramento perceptivo deste trecho: BACKGROUND_NOISE + VOCAL_DEBRIS
-(tom quase ausente na envelope TONE_1700).
+Mascaramento: BACKGROUND_NOISE + VOCAL_DEBRIS (tom quase ausente).
+
+
+========================================================================
+PERFIL CONTAMINADO
+========================================================================
+
+voiceContamination (0..1) = overlap temporal da seleção com os 5 clips:
+  max(voiceFrac*2.4, voiceCoverage*0.98, …)
+
+noiseProfileQuality ≈ (1 − contamination) * durationQuality
+  duration boa: ~0.5–2.5 s
+  <0.2 s: amostra curta demais
+  muito longa: ok se limpa, mas aumenta chance de pegar fala
+
+Ao aplicar Spectral Reduction:
+
+  effectiveNoiseReduction ≈ requestedReduction * quality * curvas
+  voiceDamage ≈ requestedReduction * voiceContamination * curvas
+
+Resultado perceptivo:
+  perfil limpo     → noise↓↓  voice preservada
+  parcialmente     → noise↓   voice↓
+  muito contaminado→ noise↓   voice↓↓↓  (tudo no perfil vira “ruído”)
+
+TESTE NEGATIVO — Select All:
+  seleção 00:00 → 00:44
+  Capture Noise Profile
+  Spectral 72 / 55 / 30
+
+  RESULTADO:
+    voiceContamination alta
+    voz de Mariana bastante reduzida
+    "desde aquela noite" permanece LOCKED / ininteligível
+    áudio piora — sem mensagem “PERFIL INCORRETO”
+
+TESTE NEGATIVO — selecionar a própria fala (ex. 12.2–14.2):
+  aquela região fica ainda pior após a redução.
+
+
+========================================================================
+ÁUDIO FINAL (solução completa)
+========================================================================
+
+CLEAN_VOICE_MAX_GAIN = 0.62  (nunca master limpo)
+CORRUPTED_BASE residual ≈ 0.44 no máximo de recovery
+noiseFloor / debrisFloor mantêm hiss e textura
+tom residual mínimo ≈ 14% mesmo com Notch ideal
+
+clarityScore controla continuamente o ganho do clip limpo
+(cadência → sílabas → palavras → frase). Recovered Speech só no threshold.
 
 
 ========================================================================
@@ -143,7 +195,12 @@ Cinco segmentos em forensicRecoveredSpeech[emergency_call_raw]
   → achievement ach-cassini-division / DIVISÃO DE CASSINI
   → discovery card CONQUISTA
 
-Hold de unlock: ~0.70 s contínuos acima do threshold.
+Hold de unlock: ~0.70 s (ou ~75% da duração do clip) COM PLAYHEAD
+dentro do trecho, enquanto o áudio está tocando e clarity >= threshold.
+
+Só ajustar sliders SEM ouvir aquele trecho NÃO registra Recovered Speech.
+É preciso Play e passar pela região temporal de cada frase.
+
 Reset processing NÃO apaga fragments.
 
 
@@ -156,30 +213,28 @@ CALIBRAÇÃO MANUAL / MÉTRICA
 3 Center + −12 dB               → + eu sentia medo
 4 Center + −17 dB               → + eu estava confusa
 5 Center + −24 + Width 180      → + escute isso até o fim  (sem noite)
-6 + Profile + Spectral 72/55/30 → + desde aquela noite + achievement
+6 + Profile limpo + Spectral    → + desde aquela noite + achievement
 
-NEG A: Notch completo sem profile → ≤4 fragments; noite LOCKED
-NEG B: Center 800 + profile + spectral → não completa os cinco
+NEG A: Notch completo sem profile → ≤4; noite LOCKED
+NEG B: Center 800 + profile + spectral → não completa
+NEG C: Select All como profile → voz prejudicada; noite LOCKED
+NEG D: selecionar a fala como profile → aquela fala piora; noite LOCKED
 
 
 ========================================================================
 DEBUG / DEV MODE
 ========================================================================
 
-Barra fw-debug + Notes → DEV — segment clarity:
-
-  centerAccuracy / notchDepthEffect / notchWidthQuality
-  noiseProfileQuality / noiseReductionEffect / recoveryAmount (auxiliar)
+  center / depth / widthQ
+  profileQ / profileDur / voiceContam
+  nre / voiceDmg
+  corrupted / cleanBus
 
 Por segmento:
-  centerContribution
-  depthContribution
-  widthContribution
-  noiseContribution
-  clarityScore / threshold
-  LOCKED | UNLOCKED
+  center/depth/width/noise contributions
+  effectiveVoiceGain / effectiveMaskGain
+  clarity / threshold / LOCKED|UNLOCKED
 
 DEV reset: resetForensicSpeechProgress('emergency_call_raw')
 
 Dataset: src/forensic/puzzles/puzzle01Cassini.ts
-  puzzle01SpeechSegments / puzzle01Ideal / puzzle01NotchRule

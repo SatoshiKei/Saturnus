@@ -186,12 +186,16 @@ export function toneStemGain(baseGain: number, process: ProcessParams, rule?: No
 }
 
 export const GENERIC_SPECTRAL_RULE: SpectralRule = {
-  maxNoiseCutDb: 34,
-  noiseFloor: 0.18,
-  maxDebrisCutDb: 18,
-  debrisFloor: 0.3,
-  maxVoiceCutDb: 8,
+  maxNoiseCutDb: 32,
+  noiseFloor: 0.24,
+  maxDebrisCutDb: 20,
+  debrisFloor: 0.34,
+  /** Corte máximo da voz limpa quando o perfil está contaminado. */
+  maxVoiceCutDb: 28,
 }
+
+/** Teto perceptivo da voz limpa — inteligível ≠ cristalina. */
+export const CLEAN_VOICE_MAX_GAIN = 0.62
 
 function profileQualityOf(profile: NoiseProfileState): number {
   if (typeof profile.qualityScore === 'number') {
@@ -200,10 +204,48 @@ function profileQualityOf(profile: NoiseProfileState): number {
   return profile.quality === 'good' ? 1 : 0.28
 }
 
+function profileContaminationOf(profile: NoiseProfileState | null): number {
+  if (!profile) return 0
+  if (typeof profile.voiceContamination === 'number') return clamp01(profile.voiceContamination)
+  return profile.quality === 'good' ? 0 : 0.75
+}
+
 /**
- * Efeito de redução espectral 0–1.
- * Depende de Reduction / Sensitivity / Smoothing / profileQuality.
- * Perfil contaminado + 100% NÃO atinge o máximo.
+ * Contaminação por voz na seleção do perfil (0..1).
+ * Usa timestamps conhecidos dos segmentos — sem análise espectral.
+ */
+export function voiceContaminationScore(
+  sel: SelectionRange,
+  spans: { startSec: number; endSec: number }[],
+): number {
+  const a0 = Math.min(sel.startSec, sel.endSec)
+  const a1 = Math.max(sel.startSec, sel.endSec)
+  const dur = Math.max(0.001, a1 - a0)
+  let voiceOverlap = 0
+  let totalVoice = 0
+  for (const s of spans) {
+    const spanDur = Math.max(0, s.endSec - s.startSec)
+    totalVoice += spanDur
+    voiceOverlap += Math.max(0, Math.min(a1, s.endSec) - Math.max(a0, s.startSec))
+  }
+  const voiceFrac = Math.min(1, voiceOverlap / dur)
+  const voiceCoverage = totalVoice > 0 ? Math.min(1, voiceOverlap / totalVoice) : 0
+  // Select-all cobre quase toda a fala → contamination alta mesmo com voiceFrac ~15%.
+  return clamp01(Math.max(voiceFrac * 2.4, voiceCoverage * 0.98, voiceFrac >= 0.08 ? voiceCoverage * 0.85 + voiceFrac : voiceFrac * 1.6))
+}
+
+/** Qualidade por duração da amostra de ruído. */
+export function profileDurationQuality(durationSec: number): number {
+  if (durationSec < 0.2) return lerp(0.15, 0.45, durationSec / 0.2)
+  if (durationSec < 0.5) return lerp(0.45, 1, (durationSec - 0.2) / 0.3)
+  if (durationSec <= 2.5) return 1
+  if (durationSec <= 8) return lerp(1, 0.78, (durationSec - 2.5) / 5.5)
+  return lerp(0.78, 0.5, Math.min(1, (durationSec - 8) / 30))
+}
+
+/**
+ * Efeito útil de redução de ruído (0..1).
+ * requestedReduction * quality * curvas de sens/smooth.
  */
 export function noiseReductionEffect(
   process: ProcessParams,
@@ -211,41 +253,76 @@ export function noiseReductionEffect(
 ): number {
   if (process.bypass || process.spectralReduction <= 0 || !profile) return 0
   const q = profileQualityOf(profile)
+  const contam = profileContaminationOf(profile)
   const r = clamp01(process.spectralReduction / 100)
   const sens = process.spectralSensitivity
   const smooth = process.spectralSmoothing
   const sensScore = 1 - Math.min(1, Math.abs(sens - 55) / 70)
   const smoothScore = 1 - Math.min(1, Math.abs(smooth - 30) / 80)
-  // Redução acima de ~90% com perfil fraco perde eficiência.
   const overdrivePenalty = r > 0.9 ? lerp(1, 0.72, (r - 0.9) / 0.1) : 1
+  // Contaminação reduz o benefício líquido sobre o ruído.
+  const cleanFactor = (0.32 + 0.68 * q) * (1 - 0.72 * contam)
   return clamp01(
     r *
-      (0.28 + 0.72 * q) *
+      cleanFactor *
       (0.55 + 0.45 * sensScore) *
       (0.6 + 0.4 * smoothScore) *
-      overdrivePenalty,
+      overdrivePenalty *
+      1.12,
   )
 }
 
 /**
- * Spectral Reduction atua em ruído e debris.
- * Perfil contaminado também tira um pouco de clareza da voz limpa.
+ * Dano à voz limpa quando o perfil contém fala.
+ * voiceDamage ≈ requestedReduction * voiceContamination * curvas.
+ */
+export function voiceDamageAmount(
+  process: ProcessParams,
+  profile: NoiseProfileState | null,
+): number {
+  if (process.bypass || process.spectralReduction <= 0 || !profile) return 0
+  const contam = profileContaminationOf(profile)
+  if (contam <= 0.02) return 0
+  const r = clamp01(process.spectralReduction / 100)
+  const sens = 0.55 + 0.45 * (1 - Math.min(1, Math.abs(process.spectralSensitivity - 55) / 70))
+  return clamp01(r * contam * sens)
+}
+
+/**
+ * Spectral Reduction: ruído/debris descem com NRE; voz cai com voiceDamage.
  */
 export function spectralStemGains(
   process: ProcessParams,
   profile: NoiseProfileState | null,
   rule: SpectralRule = GENERIC_SPECTRAL_RULE,
-): { noiseGain: number; debrisGain: number; voiceClarity: number } {
-  const effect = noiseReductionEffect(process, profile)
-  if (effect <= 0) return { noiseGain: 1, debrisGain: 1, voiceClarity: 1 }
-  const q = profile ? profileQualityOf(profile) : 0
-  const noiseDb = -rule.maxNoiseCutDb * effect
-  const debrisDb = -rule.maxDebrisCutDb * effect
-  const voiceDb = -rule.maxVoiceCutDb * effect * (1 - q)
+): {
+  noiseGain: number
+  debrisGain: number
+  voiceClarity: number
+  effectiveNoiseReduction: number
+  voiceDamage: number
+} {
+  const nre = noiseReductionEffect(process, profile)
+  const damage = voiceDamageAmount(process, profile)
+  if (nre <= 0 && damage <= 0) {
+    return {
+      noiseGain: 1,
+      debrisGain: 1,
+      voiceClarity: 1,
+      effectiveNoiseReduction: 0,
+      voiceDamage: 0,
+    }
+  }
+  const noiseDb = -rule.maxNoiseCutDb * nre
+  const debrisDb = -rule.maxDebrisCutDb * nre
+  // Contaminação alta → corte forte da voz (tudo no perfil vira "ruído").
+  const voiceDb = -rule.maxVoiceCutDb * damage
   return {
     noiseGain: Math.max(rule.noiseFloor, Math.pow(10, noiseDb / 20)),
     debrisGain: Math.max(rule.debrisFloor, Math.pow(10, debrisDb / 20)),
     voiceClarity: Math.pow(10, voiceDb / 20),
+    effectiveNoiseReduction: nre,
+    voiceDamage: damage,
   }
 }
 
@@ -256,7 +333,10 @@ export interface RecoveryMetrics {
   notchEffectiveness: number
   noiseProfileQuality: number
   noiseReductionEffect: number
-  /** Métrica auxiliar (média) — não é o mecanismo principal de unlock. */
+  voiceContamination: number
+  voiceDamage: number
+  profileDuration: number
+  /** Métrica auxiliar — não é o mecanismo principal de unlock. */
   recoveryAmount: number
 }
 
@@ -270,6 +350,8 @@ export function computeRecoveryMetrics(
   notchRule?: NotchRule,
 ): RecoveryMetrics {
   const q = profile ? profileQualityOf(profile) : 0
+  const contam = profileContaminationOf(profile)
+  const dur = profile ? (profile.durationSec ?? Math.max(0, profile.endSec - profile.startSec)) : 0
   if (process.bypass) {
     return {
       centerAccuracy: 0,
@@ -278,6 +360,9 @@ export function computeRecoveryMetrics(
       notchEffectiveness: 0,
       noiseProfileQuality: q,
       noiseReductionEffect: 0,
+      voiceContamination: contam,
+      voiceDamage: 0,
+      profileDuration: dur,
       recoveryAmount: 0,
     }
   }
@@ -295,6 +380,7 @@ export function computeRecoveryMetrics(
       )
     : clamp01(center * (0.25 + 0.75 * depth) * (0.55 + 0.45 * width))
   const nre = noiseReductionEffect(process, profile)
+  const damage = voiceDamageAmount(process, profile)
   const recoveryAmount = clamp01(0.22 * center + 0.22 * depth + 0.18 * width + 0.38 * nre)
   return {
     centerAccuracy: center,
@@ -303,6 +389,9 @@ export function computeRecoveryMetrics(
     notchEffectiveness: notch,
     noiseProfileQuality: q,
     noiseReductionEffect: nre,
+    voiceContamination: contam,
+    voiceDamage: damage,
+    profileDuration: dur,
     recoveryAmount,
   }
 }
@@ -316,34 +405,26 @@ export function overlapRatio(sel: SelectionRange, region: NoiseRegion): number {
 }
 
 /**
- * Qualidade do perfil: ideal ≈ 0.30–1.80 s sem voz.
- * Seleção com fala → score baixo.
+ * Qualidade do perfil a partir de contamination + duração.
+ * Qualquer intervalo sem fala e com duração razoável pode ser bom
+ * (00:00.30–00:01.80 é só a região mais óbvia).
  */
 export function profileQualityScore(
   sel: SelectionRange,
   spans: { startSec: number; endSec: number }[],
-  ideal?: { startSec: number; endSec: number },
+  _ideal?: { startSec: number; endSec: number },
 ): number {
   const a0 = Math.min(sel.startSec, sel.endSec)
   const a1 = Math.max(sel.startSec, sel.endSec)
   const dur = Math.max(0.001, a1 - a0)
-  let voice = 0
-  for (const s of spans) {
-    voice += Math.max(0, Math.min(a1, s.endSec) - Math.max(a0, s.startSec))
-  }
-  const frac = Math.min(1, voice / dur)
-  let q = Math.exp(-4.6 * frac)
-  if (frac <= 0.02) q = Math.max(q, 0.92)
-  if (frac >= 0.3) q = Math.min(q, 0.2)
-
-  if (ideal) {
-    const idealOverlap =
-      Math.max(0, Math.min(a1, ideal.endSec) - Math.max(a0, ideal.startSec)) /
-      Math.max(0.001, ideal.endSec - ideal.startSec)
-    const coverage = Math.min(1, dur / Math.max(0.001, ideal.endSec - ideal.startSec))
-    const idealBonus = idealOverlap * Math.min(1, coverage) * (frac <= 0.05 ? 1 : 0.4)
-    q = Math.max(q, idealBonus)
-  }
+  const contam = voiceContaminationScore(sel, spans)
+  const durationQ = profileDurationQuality(dur)
+  // Sem voz → qualidade alta limitada pela duração.
+  const clean = clamp01(1 - contam)
+  let q = clean * durationQ
+  if (contam <= 0.02 && durationQ >= 0.9) q = Math.max(q, 0.94)
+  if (contam >= 0.35) q = Math.min(q, 0.28)
+  if (contam >= 0.7) q = Math.min(q, 0.12)
   return clamp01(q)
 }
 
@@ -373,6 +454,10 @@ export function captureNoiseProfile(
   if (!sel || Math.abs(sel.endSec - sel.startSec) < 0.05) {
     return { ok: false, reason: 'no-selection' }
   }
+  const startSec = Math.min(sel.startSec, sel.endSec)
+  const endSec = Math.max(sel.startSec, sel.endSec)
+  const durationSec = endSec - startSec
+  const voiceContamination = spans?.length ? voiceContaminationScore(sel, spans) : 0.5
   const qualityScore = spans?.length
     ? profileQualityScore(sel, spans, ideal)
     : classifyNoiseProfile(sel, regions) === 'good'
@@ -382,10 +467,12 @@ export function captureNoiseProfile(
   const profile: NoiseProfileState = {
     id: `np-${existing.length + 1}-${Date.now()}`,
     name: `Profile ${existing.length + 1}`,
-    startSec: Math.min(sel.startSec, sel.endSec),
-    endSec: Math.max(sel.startSec, sel.endSec),
+    startSec,
+    endSec,
     quality,
     qualityScore,
+    voiceContamination,
+    durationSec,
     capturedAt: Date.now(),
   }
   return { ok: true, profile }
@@ -399,7 +486,7 @@ export interface StemProcessRules {
 /**
  * Ganhos efetivos por stem.
  * Master Gain escala tudo — não melhora SNR.
- * A presença limpa por frase é aplicada nos clip gains (ver clipRecoveryGain).
+ * Voz limpa por frase: clipRecoveryGain (teto CLEAN_VOICE_MAX_GAIN).
  */
 export function computeStemGains(
   base: Record<StemId, number>,
@@ -414,18 +501,19 @@ export function computeStemGains(
     rules?.spectral,
   )
   const master = process.bypass ? 1 : Math.pow(10, process.gainDb / 20)
-  // Crossfade global suave — a inteligibilidade real vem dos clip multipliers.
   const notchProg = clamp01(
     metrics.centerAccuracy * 0.45 + metrics.notchDepthEffect * 0.35 + metrics.notchWidthQuality * 0.2,
   )
   const recovery = clamp01(0.55 * notchProg + 0.45 * metrics.noiseReductionEffect)
-  const corrupted = lerp(1, 0.28, recovery)
-  const cleanBus = lerp(0.35, 1, recovery) * voiceClarity
-  const tone =
-    (base.TONE_1700 ?? 1) *
-    (process.bypass || !rules?.notch
+  // Residuais altos de propósito — solução final ainda parece telefone degradado.
+  const corrupted = lerp(1, 0.44, recovery)
+  const cleanBus = lerp(0.22, 0.52, recovery) * voiceClarity
+  const toneAtten =
+    process.bypass || !rules?.notch
       ? 1
-      : Math.pow(10, (-(rules.notch.maxAttenuationDb) * metrics.notchEffectiveness) / 20))
+      : Math.pow(10, (-(rules.notch.maxAttenuationDb) * metrics.notchEffectiveness) / 20)
+  // Piso residual de interferência — nunca some por completo.
+  const tone = (base.TONE_1700 ?? 1) * Math.max(0.14, toneAtten)
 
   return {
     CORRUPTED_BASE: (base.CORRUPTED_BASE ?? 1) * corrupted * master,
@@ -433,29 +521,28 @@ export function computeStemGains(
     BACKGROUND_NOISE: (base.BACKGROUND_NOISE ?? 1) * noiseGain * master,
     TONE_1700: tone * master,
     VOCAL_DEBRIS: (base.VOCAL_DEBRIS ?? 1) * debrisGain * master,
-    CLICKS: (base.CLICKS ?? 1) * master,
+    CLICKS: (base.CLICKS ?? 1) * lerp(1, 0.55, recovery) * master,
   }
 }
 
 export interface SegmentClarity {
   segmentId: string
-  /** Contribuições 0..1 (peso × métrica). */
   centerContribution: number
   depthContribution: number
   widthContribution: number
   noiseContribution: number
-  /** Score ponderado 0..1. */
   clarityScore: number
   threshold: number
   unlocked: boolean
-  /** Alias legado para debug/UI antiga. */
+  effectiveVoiceGain: number
+  effectiveMaskGain: number
   clarityDb: number
   thresholdDb: number
 }
 
 /**
- * Score de recuperação por segmento — pesos vêm do dataset.
- * Contínuo (não binário). Gain master não conta.
+ * Score de recuperação por segmento — pesos do dataset.
+ * Contínuo. Contaminação do perfil reduz o benefício de noise e a voz efetiva.
  */
 export function evaluateSegmentClarity(
   segment: SpeechSegment,
@@ -466,15 +553,17 @@ export function evaluateSegmentClarity(
   alreadyUnlocked = false,
 ): SegmentClarity {
   const metrics = computeRecoveryMetrics(process, profile, rules?.notch)
+  const spectral = spectralStemGains(process, profile, rules?.spectral)
   const w = segment.recoveryWeights
+  // Noise útil só conta se o perfil não destrói a voz daquele trecho.
+  const noiseUseful = metrics.noiseReductionEffect * (1 - 0.85 * metrics.voiceContamination)
   const centerContribution = w.center * metrics.centerAccuracy
   const depthContribution = w.depth * metrics.notchDepthEffect
   const widthContribution = w.width * metrics.notchWidthQuality
-  const noiseContribution = w.noise * metrics.noiseReductionEffect
+  const noiseContribution = w.noise * noiseUseful
   let clarityScore = clamp01(
     centerContribution + depthContribution + widthContribution + noiseContribution,
   )
-  // Soft gates: se o segmento depende fortemente de uma ferramenta, ela precisa estar razoável.
   if (w.center >= 0.25 && metrics.centerAccuracy < 0.28) {
     clarityScore *= lerp(0.35, 1, metrics.centerAccuracy / 0.28)
   }
@@ -484,10 +573,25 @@ export function evaluateSegmentClarity(
   if (w.width >= 0.25 && metrics.notchWidthQuality < 0.35) {
     clarityScore *= lerp(0.4, 1, metrics.notchWidthQuality / 0.35)
   }
-  if (w.noise >= 0.5 && metrics.noiseReductionEffect < 0.25) {
-    clarityScore *= lerp(0.3, 1, metrics.noiseReductionEffect / 0.25)
+  if (w.noise >= 0.5 && noiseUseful < 0.25) {
+    clarityScore *= lerp(0.3, 1, noiseUseful / 0.25)
+  }
+  // Perfil contaminado não pode empurrar o score de fala via redução.
+  if (metrics.voiceContamination >= 0.35 && w.noise >= 0.4) {
+    clarityScore = Math.min(clarityScore, segment.clarityThreshold * 0.82)
   }
   clarityScore = clamp01(clarityScore)
+
+  const voiceMul = clipRecoveryGain(clarityScore, segment.voiceWeight) * spectral.voiceClarity
+  const toneMask =
+    lerp(1, 0.18, metrics.notchEffectiveness) * (segment.toneWeight ?? 1) * 0.35
+  const noiseMask = spectral.noiseGain * (segment.noiseWeight ?? 1) * 0.4
+  const debrisMask = spectral.debrisGain * (segment.debrisWeight ?? 1) * 0.35
+  const corruptedMask = lerp(0.9, 0.4, clarityScore) * 0.45
+  const effectiveMaskGain = Math.sqrt(
+    toneMask * toneMask + noiseMask * noiseMask + debrisMask * debrisMask + corruptedMask * corruptedMask,
+  )
+
   const threshold = segment.clarityThreshold
   return {
     segmentId: segment.id,
@@ -498,14 +602,23 @@ export function evaluateSegmentClarity(
     clarityScore,
     threshold,
     unlocked: alreadyUnlocked || clarityScore >= threshold,
+    effectiveVoiceGain: voiceMul,
+    effectiveMaskGain,
     clarityDb: clarityScore * 10,
     thresholdDb: threshold * 10,
   }
 }
 
-/** Multiplicador linear do clip limpo a partir do score do segmento. */
+/**
+ * Presença limpa progressiva (cadência → sílabas → palavras → frase).
+ * Teto ~0.62 — nunca master limpo.
+ */
 export function clipRecoveryGain(score: number, voiceWeight = 1): number {
-  return lerp(0.03, 1.15, clamp01(score)) * voiceWeight
+  const s = clamp01(score)
+  // Curva suave: 0.3→cadência, 0.5→sílabas, 0.7→palavras, ≥thr→frase.
+  const shaped = s * s * (3 - 2 * s)
+  const eased = lerp(shaped * 0.85, shaped, s)
+  return Math.min(CLEAN_VOICE_MAX_GAIN, lerp(0.012, CLEAN_VOICE_MAX_GAIN, eased) * Math.min(1.15, voiceWeight))
 }
 
 export function speechRecoveryComplete(

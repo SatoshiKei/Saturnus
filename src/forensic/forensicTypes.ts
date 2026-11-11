@@ -285,6 +285,10 @@ export interface NoiseProfileState {
   quality: 'good' | 'contaminated'
   /** 1 = seleção quase sem voz. Não exibido ao jogador. */
   qualityScore?: number
+  /** 0 = sem fala na amostra; 1 = amostra dominada por voz / cobre quase toda a fala. */
+  voiceContamination?: number
+  /** Duração da seleção usada no perfil. */
+  durationSec?: number
   capturedAt: number
 }
 

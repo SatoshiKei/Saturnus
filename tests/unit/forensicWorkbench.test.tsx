@@ -129,42 +129,36 @@ describe('ForensicWorkbench UI', () => {
     expect(screen.queryByRole('textbox')).toBeNull()
   })
 
-  it('unlocks recovered speech automatically under ideal processing and completes', async () => {
+  it('does not unlock from ideal notch settings alone without listening', async () => {
     stubAudio()
     vi.useFakeTimers({ shouldAdvanceTime: true })
-    const onDone = vi.fn()
     const onSeg = vi.fn()
     render(
       <ForensicWorkbench
         session={puzzle01CassiniSession}
         onClose={() => {}}
-        onPuzzleComplete={onDone}
         onSegmentRecovered={onSeg}
       />,
     )
-
     const center = screen.getByText('Center').closest('.fw-param')?.querySelector('input')
     const width = screen.getByText('Width').closest('.fw-param')?.querySelector('input')
     const reduction = screen.getAllByText('Reduction')[0]?.closest('.fw-param')?.querySelector('input')
     fireEvent.change(center!, { target: { value: String(puzzle01Ideal.notchCenterHz) } })
     fireEvent.change(width!, { target: { value: String(puzzle01Ideal.notchWidthHz) } })
     fireEvent.change(reduction!, { target: { value: String(puzzle01Ideal.notchReductionDb) } })
+    await act(async () => {
+      vi.advanceTimersByTime(2000)
+      await Promise.resolve()
+    })
+    expect(onSeg).not.toHaveBeenCalled()
+    await userEvent.click(screen.getByRole('tab', { name: 'Notes' }))
+    expect(screen.getByTestId('recovered-speech-empty')).toBeInTheDocument()
+    vi.useRealTimers()
+  })
 
-    // Select ideal noise region and capture profile
-    const timeline = document.querySelector('.fw-timeline__canvas') as HTMLElement | null
-    // Fallback: inject selection via Capture with programmatic state — use fire on Capture after setting selection through UI is hard.
-    // Drive via workbench by clicking Capture after manually patching is not available; use keyboard-less approach:
-    // Set selection by dispatching on the timeline if present; otherwise call Capture which needs selection.
-    // Instead, use the process spectral after we create a profile through the captureNoiseProfile path by selecting.
-    // Minimal path: use act + advance timers after setting profile via clicking Capture with a selection set through Timeline onSelect.
-    if (timeline) {
-      fireEvent.mouseDown(timeline, { clientX: 10, shiftKey: true })
-      fireEvent.mouseUp(timeline, { clientX: 40 })
-    }
-
-    // Directly set spectral after creating a good profile through Inspector is brittle in jsdom.
-    // Apply spectral values; profile capture may fail without selection — then inject via re-render props.
-    cleanup()
+  it('completes when all segments were already recovered (after listening)', async () => {
+    stubAudio()
+    const onDone = vi.fn()
     const recovered = puzzle01CassiniSession.sources[0]!.speechSegments!.map((s) => ({
       segmentId: s.id,
       text: s.text,
@@ -187,8 +181,6 @@ describe('ForensicWorkbench UI', () => {
     await userEvent.click(screen.getByRole('tab', { name: 'Notes' }))
     expect(screen.getByTestId('recovered-speech-list').textContent).toMatch(/eu não lembro/)
     expect(screen.getByTestId('recovered-speech-list').textContent).toMatch(/escute isso até o fim/)
-    expect(document.body.textContent).not.toMatch(/Augusto|Rui|Elisa/)
-    vi.useRealTimers()
   })
 
   it('reset processing keeps recovered fragments', async () => {

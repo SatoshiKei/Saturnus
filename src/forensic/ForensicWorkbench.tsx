@@ -117,12 +117,15 @@ export function ForensicWorkbench({
     ui.noiseProfiles.find((p) => p.id === ui.activeNoiseProfileId) ?? null,
   )
   const recoveredRef = useRef(ui.recoveredSpeech)
+  const playingRef = useRef(ui.playing)
   processRef.current = ui.process
   profileRef.current =
     ui.noiseProfiles.find((p) => p.id === ui.activeNoiseProfileId) ?? null
   recoveredRef.current = ui.recoveredSpeech
+  playingRef.current = ui.playing
 
-  // Clarity hold → unlock automático (sem textbox).
+  // Unlock só enquanto o playhead percorre o trecho com clareza suficiente.
+  // Só configurar sliders (sem ouvir) NÃO registra Recovered Speech.
   useEffect(() => {
     if (!source?.speechSegments?.length) return
     const base: Record<StemId, number> = {
@@ -137,12 +140,16 @@ export function ForensicWorkbench({
     const rules = { notch: source.audio?.notch, spectral: source.audio?.spectral }
     const holdNeed = source.audio?.recovery?.unlockHoldSec ?? 0.7
     const segments = source.speechSegments
+    const edgePad = 0.05
 
     let raf = 0
     let last = performance.now()
     const step = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000)
       last = now
+      const eng = engineRef.current
+      const playing = Boolean(playingRef.current && eng?.isPlaying())
+      const playhead = eng ? eng.getCurrentTime() : 0
       const unlocked = new Set(recoveredRef.current.map((r) => r.segmentId))
       const rows = segments.map((seg) =>
         evaluateSegmentClarity(
@@ -157,14 +164,19 @@ export function ForensicWorkbench({
       setClarityDebug(rows)
       const nextUnlocks: RecoveredSpeechEntry[] = []
       for (const row of rows) {
+        const seg = segments.find((s) => s.id === row.segmentId)!
         if (unlocked.has(row.segmentId)) {
           holdRef.current[row.segmentId] = holdNeed
           continue
         }
-        if (row.clarityDb >= row.thresholdDb) {
+        const inSegment =
+          playhead >= seg.startSec - edgePad &&
+          playhead <= seg.startSec + seg.durationSec + edgePad
+        const clearEnough = row.clarityScore >= row.threshold
+        if (playing && inSegment && clearEnough) {
+          const need = Math.min(holdNeed, Math.max(0.35, seg.durationSec * 0.75))
           holdRef.current[row.segmentId] = (holdRef.current[row.segmentId] ?? 0) + dt
-          if ((holdRef.current[row.segmentId] ?? 0) >= holdNeed) {
-            const seg = segments.find((s) => s.id === row.segmentId)!
+          if ((holdRef.current[row.segmentId] ?? 0) >= need) {
             nextUnlocks.push({
               segmentId: seg.id,
               text: seg.text,
@@ -173,7 +185,8 @@ export function ForensicWorkbench({
             })
             unlocked.add(seg.id)
           }
-        } else {
+        } else if (!clearEnough) {
+          // Configs ruins zeram o progresso; sair do trecho só pausa o acumulador.
           holdRef.current[row.segmentId] = 0
         }
       }
@@ -449,18 +462,19 @@ function ForensicDebug({
       <span>center {metrics.centerAccuracy.toFixed(3)}</span>
       <span>depth {metrics.notchDepthEffect.toFixed(3)}</span>
       <span>widthQ {metrics.notchWidthQuality.toFixed(3)}</span>
-      <span>notchEff {metrics.notchEffectiveness.toFixed(3)}</span>
       <span>profileQ {metrics.noiseProfileQuality.toFixed(3)}</span>
+      <span>profileDur {metrics.profileDuration.toFixed(2)}s</span>
+      <span>voiceContam {metrics.voiceContamination.toFixed(3)}</span>
       <span>nre {metrics.noiseReductionEffect.toFixed(3)}</span>
-      <span>recovery {metrics.recoveryAmount.toFixed(3)}</span>
+      <span>voiceDmg {metrics.voiceDamage.toFixed(3)}</span>
       <span>corrupted {gains.CORRUPTED_BASE.toFixed(3)}</span>
       <span>cleanBus {gains.VOICE.toFixed(3)}</span>
       {clarity.map((c) => {
         const seg = source.speechSegments?.find((s) => s.id === c.segmentId)
         return (
           <span key={c.segmentId}>
-            {(seg?.text ?? c.segmentId).toUpperCase()} score {c.clarityScore.toFixed(2)}/
-            {c.threshold.toFixed(2)}
+            {(seg?.text ?? c.segmentId).toUpperCase()} v{c.effectiveVoiceGain.toFixed(2)} m
+            {c.effectiveMaskGain.toFixed(2)} {c.clarityScore.toFixed(2)}/{c.threshold.toFixed(2)}
             {c.unlocked ? ' ✓' : ''}
           </span>
         )

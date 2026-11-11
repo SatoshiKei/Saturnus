@@ -576,7 +576,10 @@ export function Inspector({
                           width {c.widthContribution.toFixed(2)} noise {c.noiseContribution.toFixed(2)}
                         </div>
                         <div>
-                          score {c.clarityScore.toFixed(2)} / threshold {c.threshold.toFixed(2)}{' '}
+                          voiceGain {c.effectiveVoiceGain.toFixed(2)} maskGain {c.effectiveMaskGain.toFixed(2)}
+                        </div>
+                        <div>
+                          clarity {c.clarityScore.toFixed(2)} / threshold {c.threshold.toFixed(2)}{' '}
                           {c.unlocked ? 'UNLOCKED' : 'LOCKED'}
                         </div>
                       </li>

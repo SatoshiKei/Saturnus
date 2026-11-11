@@ -1,5 +1,5 @@
 import type { AudioAssetConfig, ProcessParams, StemConfig, StemId } from './forensicTypes'
-import { clipRecoveryGain, computeStemGains, evaluateSegmentClarity } from './forensicEngine'
+import { computeStemGains, evaluateSegmentClarity } from './forensicEngine'
 import type { NoiseProfileState, SpeechSegment } from './forensicTypes'
 import {
   clipPlaybackGain,
@@ -346,12 +346,13 @@ export class ForensicAudioEngine {
           this.speechSegments.find((s) => s.clipId === clip.id) ??
           this.speechSegments.find((s) => Math.abs(s.startSec - clip.startSec) < 0.05)
         const baseClip = this.clipGains.get(clip.id) ?? Math.pow(10, (clip.gainDb ?? 0) / 20)
-        let mul = 0.04
+        let mul = 0.02
         if (seg && !process.bypass) {
           const clarity = evaluateSegmentClarity(seg, process, profile, base, rules)
-          mul = clipRecoveryGain(clarity.clarityScore, seg.voiceWeight)
+          // effectiveVoiceGain já inclui voiceDamage do perfil contaminado.
+          mul = clarity.effectiveVoiceGain
         } else if (process.bypass) {
-          mul = 0.04
+          mul = 0.02
         }
         const node = this.clipGainNodes.get(clip.id)
         if (node) node.gain.value = muted ? 0 : baseClip * mul
