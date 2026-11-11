@@ -31,7 +31,7 @@ test('Bloco 1 — fluxo principal por ferramentas físicas', async ({ page }) =>
   await openHubObject(page, 'audio-station')
   await page.getByTestId('audio-file-emergency_call_raw').click()
   await expect(page.getByTestId('forensic-workbench')).toBeVisible()
-  await page.getByRole('tab', { name: 'NOTES' }).click()
+  await page.getByRole('tab', { name: 'Notes' }).click()
   await page.locator('.fw-notes').fill(
     [
       'escute isso até o fim',

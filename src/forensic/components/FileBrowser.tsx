@@ -12,7 +12,7 @@ export function FileBrowser({
 }) {
   return (
     <div className="fw-files">
-      <div className="fw-pane-h">FILES</div>
+      <div className="fw-pane-h">Files</div>
       <ul className="fw-files__list">
         {sources.map((s) => (
           <li key={s.id}>
@@ -22,9 +22,14 @@ export function FileBrowser({
               data-active={s.id === activeId}
               onClick={() => onSelect(s.id)}
             >
-              <span className="fw-file__name">{s.displayName ?? s.filename}</span>
-              <span className="fw-file__meta">
-                {s.type} · {fmtTime(s.durationSec)}
+              <span className="fw-file__icon" aria-hidden>
+                ⌁
+              </span>
+              <span className="fw-file__body">
+                <span className="fw-file__name">{s.displayName ?? s.filename}</span>
+                <span className="fw-file__meta">
+                  {s.type} · {fmtTime(s.durationSec)}
+                </span>
               </span>
             </button>
           </li>

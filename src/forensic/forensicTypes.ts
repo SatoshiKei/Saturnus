@@ -257,12 +257,12 @@ export const DEFAULT_PROCESS: ProcessParams = {
 export const PLAYBACK_RATES = [0.5, 0.75, 1, 1.25, 1.5] as const
 
 export const INSPECTOR_TABS: { id: ForensicInspectorTab; label: string }[] = [
-  { id: 'process', label: 'PROCESS' },
-  { id: 'analysis', label: 'ANALYSIS' },
-  { id: 'file', label: 'FILE' },
-  { id: 'structure', label: 'STRUCTURE' },
-  { id: 'packets', label: 'PACKETS' },
-  { id: 'timing', label: 'TIMING' },
-  { id: 'compare', label: 'COMPARE' },
-  { id: 'notes', label: 'NOTES' },
+  { id: 'process', label: 'Process' },
+  { id: 'analysis', label: 'Analysis' },
+  { id: 'file', label: 'File' },
+  { id: 'structure', label: 'Structure' },
+  { id: 'packets', label: 'Packets' },
+  { id: 'timing', label: 'Timing' },
+  { id: 'compare', label: 'Compare' },
+  { id: 'notes', label: 'Notes' },
 ]

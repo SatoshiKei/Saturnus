@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
+import '../styles/forensic-workbench.css'
 import { ForensicAudioEngine } from './forensicAudio'
 import {
   captureNoiseProfile,
   createInitialUiState,
+  fmtTime,
   getActiveSource,
   resetProcess,
   transcriptionComplete,
@@ -35,12 +37,20 @@ export function ForensicWorkbench({
   const [ui, setUi] = useState<ForensicUiState>(() => createInitialUiState(session))
   const [showHelp, setShowHelp] = useState(false)
   const [status, setStatus] = useState<string | null>(null)
+  const [timelineView, setTimelineView] = useState<'waveform' | 'spectrogram'>('waveform')
   const engineRef = useRef<ForensicAudioEngine | null>(null)
   const completedRef = useRef(false)
 
   const source = getActiveSource(session, ui)
   const duration = source?.durationSec ?? 0
   const waveform = source?.audio?.waveform ?? []
+  const fileLabel = fileNameBadge ?? source?.filename ?? '—'
+  const channels =
+    source?.metadata?.find((m) => m.key === 'channels')?.value ??
+    (source?.audio?.channels === 1 ? 'Mono' : source?.audio?.channels ? String(source.audio.channels) : '—')
+  const sampleRate =
+    source?.metadata?.find((m) => m.key === 'sampleRate')?.value ??
+    (source?.audio?.sampleRate ? `${source.audio.sampleRate} Hz` : '—')
 
   useEffect(() => {
     const eng = new ForensicAudioEngine()
@@ -120,11 +130,16 @@ export function ForensicWorkbench({
   return (
     <div className="fw" data-testid="forensic-workbench">
       <header className="fw-top">
-        <div>
-          <strong>{session.title}</strong>
-          <span className="fw-top__file">{fileNameBadge ?? source?.filename ?? '—'}</span>
+        <div className="fw-top__identity">
+          <span className="fw-top__app">Forensic Workbench</span>
+          <span className="fw-top__file">{fileLabel}</span>
+          <span className="fw-top__meta">
+            <span>{fmtTime(duration)}</span>
+            <span>{channels}</span>
+            <span>{sampleRate}</span>
+          </span>
         </div>
-        <button type="button" className="fw-btn" onClick={onClose}>
+        <button type="button" className="fw-btn fw-btn--ghost" onClick={onClose}>
           Fechar
         </button>
       </header>
@@ -152,7 +167,7 @@ export function ForensicWorkbench({
             }}
           />
           <div className="fw-tracks">
-            <div className="fw-pane-h">TRACKS</div>
+            <div className="fw-pane-h">Tracks</div>
             {source?.tracks
               ?.filter((t) => t.visible)
               .map((t) => (
@@ -160,14 +175,17 @@ export function ForensicWorkbench({
                   key={t.id}
                   name={t.name}
                   channel={t.channel}
-                  track={ui.tracks[t.id] ?? {
-                    id: t.id,
-                    mute: false,
-                    solo: false,
-                    gainDb: 0,
-                    pan: 0,
-                    visible: true,
-                  }}
+                  selected
+                  track={
+                    ui.tracks[t.id] ?? {
+                      id: t.id,
+                      mute: false,
+                      solo: false,
+                      gainDb: 0,
+                      pan: 0,
+                      visible: true,
+                    }
+                  }
                   onChange={(patch) =>
                     setUi((u) => ({
                       ...u,
@@ -182,33 +200,25 @@ export function ForensicWorkbench({
           </div>
         </aside>
 
-        <main className="fw-main">
-          <Timeline
-            durationSec={duration}
-            playheadSec={ui.playheadSec}
-            waveform={waveform}
-            zoom={ui.zoom}
-            selection={ui.selection}
-            markers={ui.markers}
-            waveformZoomY={ui.waveformZoomY}
-            onSeek={seek}
-            onSelect={(selection) => patchUi({ selection })}
-            onZoom={(zoom) => patchUi({ zoom })}
-          />
-          <label className="fw-wave-y">
-            Waveform Y
-            <input
-              type="range"
-              min={0.5}
-              max={3}
-              step={0.1}
-              value={ui.waveformZoomY}
-              onChange={(e) => patchUi({ waveformZoomY: Number(e.target.value) })}
+        <div className="fw-center">
+          <main className="fw-main">
+            <Timeline
+              durationSec={duration}
+              playheadSec={ui.playheadSec}
+              waveform={waveform}
+              zoom={ui.zoom}
+              selection={ui.selection}
+              markers={ui.markers}
+              waveformZoomY={ui.waveformZoomY}
+              viewMode={timelineView}
+              spectrogram={source?.audio?.spectrogram}
+              onSeek={seek}
+              onSelect={(selection) => patchUi({ selection })}
+              onZoom={(zoom) => patchUi({ zoom })}
+              onViewMode={setTimelineView}
+              onWaveformZoomY={(waveformZoomY) => patchUi({ waveformZoomY })}
             />
-          </label>
-        </main>
-
-        <div className="fw-bottom">
+          </main>
           <Transport
             playing={ui.playing}
             playheadSec={ui.playheadSec}
@@ -237,48 +247,49 @@ export function ForensicWorkbench({
               setStatus(null)
             }}
           />
-          <Inspector
-            tab={ui.inspectorTab}
-            onTab={(inspectorTab) => patchUi({ inspectorTab })}
-            source={source}
-            ui={ui}
-            sources={session.sources}
-            showHelp={showHelp}
-            onToggleHelp={() => setShowHelp((v) => !v)}
-            onProcess={patchProcess}
-            onCaptureProfile={() => {
-              const result = captureNoiseProfile(
-                ui.selection,
-                source?.noiseRegions,
-                ui.noiseProfiles,
-              )
-              if (!result.ok) {
-                setStatus('Selecione uma região na timeline antes de capturar o perfil.')
-                return
-              }
-              setUi((u) => ({
-                ...u,
-                noiseProfiles: [...u.noiseProfiles, result.profile],
-                activeNoiseProfileId: result.profile.id,
-              }))
-              setStatus(`Perfil capturado: ${result.profile.name}`)
-            }}
-            onActivateProfile={(id) => patchUi({ activeNoiseProfileId: id })}
-            onAddMarker={({ timeSec, label }) =>
-              setUi((u) => ({
-                ...u,
-                markers: [
-                  ...u.markers,
-                  { id: `m-${u.markers.length + 1}-${Date.now()}`, timeSec, label },
-                ],
-              }))
-            }
-            onNotes={(transcriptionNotes) => patchUi({ transcriptionNotes })}
-            onCompare={(compareSourceA, compareSourceB) =>
-              patchUi({ compareSourceA, compareSourceB })
-            }
-          />
         </div>
+
+        <Inspector
+          tab={ui.inspectorTab}
+          onTab={(inspectorTab) => patchUi({ inspectorTab })}
+          source={source}
+          ui={ui}
+          sources={session.sources}
+          showHelp={showHelp}
+          onToggleHelp={() => setShowHelp((v) => !v)}
+          onProcess={patchProcess}
+          onCaptureProfile={() => {
+            const result = captureNoiseProfile(
+              ui.selection,
+              source?.noiseRegions,
+              ui.noiseProfiles,
+            )
+            if (!result.ok) {
+              setStatus('Selecione uma região na timeline antes de capturar o perfil.')
+              return
+            }
+            setUi((u) => ({
+              ...u,
+              noiseProfiles: [...u.noiseProfiles, result.profile],
+              activeNoiseProfileId: result.profile.id,
+            }))
+            setStatus(`Perfil capturado: ${result.profile.name}`)
+          }}
+          onActivateProfile={(id) => patchUi({ activeNoiseProfileId: id })}
+          onAddMarker={({ timeSec, label }) =>
+            setUi((u) => ({
+              ...u,
+              markers: [
+                ...u.markers,
+                { id: `m-${u.markers.length + 1}-${Date.now()}`, timeSec, label },
+              ],
+            }))
+          }
+          onNotes={(transcriptionNotes) => patchUi({ transcriptionNotes })}
+          onCompare={(compareSourceA, compareSourceB) =>
+            patchUi({ compareSourceA, compareSourceB })
+          }
+        />
       </div>
       {status && <div className="fw-status">{status}</div>}
     </div>

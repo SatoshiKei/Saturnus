@@ -106,14 +106,14 @@ describe('ForensicWorkbench UI', () => {
       expect(screen.getByRole('tab', { name: tab.label })).toBeInTheDocument()
     }
 
-    await userEvent.click(screen.getByRole('tab', { name: 'STRUCTURE' }))
-    expect(screen.getByText(/não possui estrutura editável/i)).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('tab', { name: 'Structure' }))
+    expect(screen.getByText(/não possui estrutura editável|No editable structure/i)).toBeInTheDocument()
 
-    await userEvent.click(screen.getByRole('tab', { name: 'PACKETS' }))
-    expect(screen.getByText(/Nenhuma estrutura de pacotes/i)).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('tab', { name: 'Packets' }))
+    expect(screen.getByText(/Nenhuma estrutura de pacotes|No packet structure/i)).toBeInTheDocument()
 
-    await userEvent.click(screen.getByRole('tab', { name: 'COMPARE' }))
-    expect(screen.getByText(/Selecione duas fontes/i)).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('tab', { name: 'Compare' }))
+    expect(screen.getByText(/Selecione duas fontes|Select two sources/i)).toBeInTheDocument()
   })
 
   it('does not reveal final narrative context in the workbench', () => {

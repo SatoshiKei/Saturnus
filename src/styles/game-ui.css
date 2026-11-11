@@ -1,6 +1,6 @@
-/* ═══════════════════════════════════════════════════════════
-   GamePanel — base de todas as interfaces diegéticas
-   ═══════════════════════════════════════════════════════════ */
+﻿/* 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊・
+   GamePanel 窶・base de todas as interfaces diegﾃｩticas
+   笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊・*/
 .gp {
   position: absolute;
   inset: 0;
@@ -115,7 +115,7 @@
   overflow: auto;
 }
 
-/* ─── variantes ─── */
+/* 笏笏笏 variantes 笏笏笏 */
 .gp[data-variant='paper'] .gp__sheet {
   background:
     radial-gradient(ellipse at 50% 0%, rgba(255, 220, 160, 0.05), transparent 60%),
@@ -153,7 +153,7 @@
   padding: 1em 1.2em 1.2em;
 }
 
-/* cork: quadro físico na parede — moldura de madeira + superfície de cortiça */
+/* cork: quadro fﾃｭsico na parede 窶・moldura de madeira + superfﾃｭcie de cortiﾃｧa */
 .gp[data-variant='cork'] .gp__veil {
   background: radial-gradient(ellipse at 50% 38%, rgba(24, 18, 12, 0.35), rgba(8, 6, 4, 0.88));
 }
@@ -208,7 +208,7 @@
   min-height: 0;
 }
 
-/* ═══ Quadro de ligações (layout narrativo) ═══ */
+/* 笊絶武笊・Quadro de ligaﾃｧﾃｵes (layout narrativo) 笊絶武笊・*/
 .lb {
   display: flex;
   flex-direction: column;
@@ -454,7 +454,7 @@
   pointer-events: none;
 }
 
-/* terminal: tela de computador dentro de uma moldura de plástico */
+/* terminal: tela de computador dentro de uma moldura de plﾃ｡stico */
 .gp[data-variant='terminal'] .gp__sheet {
   width: min(94%, 1560px);
   height: 92%;
@@ -507,7 +507,7 @@
   color: #4f817c;
 }
 
-/* ═══════════════ Computador policial ═══════════════ */
+/* 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊・Computador policial 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊・*/
 .pc {
   display: grid;
   grid-template-columns: 13em 1fr;
@@ -784,7 +784,7 @@
   text-shadow: none;
 }
 
-/* ═══════════════ Pasta do caso ═══════════════ */
+/* 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊・Pasta do caso 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊・*/
 /* pasta manila aberta sobre a mesa */
 .cf-index {
   position: relative;
@@ -805,7 +805,7 @@
 }
 
 .cf-index::before {
-  content: 'CASO 0001/2026 · MARIANA SILVA';
+  content: 'CASO 0001/2026 ﾂｷ MARIANA SILVA';
   position: absolute;
   top: -1.9em;
   left: 2em;
@@ -1012,7 +1012,7 @@
   border-style: dashed;
 }
 
-/* ═══════════════ Caderno de investigação ═══════════════ */
+/* 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊・Caderno de investigaﾃｧﾃ｣o 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊・*/
 .nb {
   display: flex;
   flex-direction: column;
@@ -1488,7 +1488,7 @@
   color: var(--paper-muted);
 }
 
-/* ═══════════════ Mapa ═══════════════ */
+/* 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊・Mapa 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊・*/
 .lm {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 21em;
@@ -1647,7 +1647,7 @@
   cursor: not-allowed;
 }
 
-/* ═══════════════ Bancada de áudio ═══════════════ */
+/* 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊・Bancada de ﾃ｡udio 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊・*/
 .aw {
   display: grid;
   grid-template-columns: 19em 1fr;
@@ -2245,7 +2245,7 @@
   border-top: 1px solid rgba(121, 194, 189, 0.2);
 }
 
-/* ═══════════════ Telefone fixo da delegacia ═══════════════ */
+/* 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊・Telefone fixo da delegacia 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊・*/
 .ll {
   display: grid;
   grid-template-columns: 1fr 22em 1fr;
@@ -2416,7 +2416,7 @@
   font-size: 0.9em;
 }
 
-/* ═══════════════ Responsividade do painel ═══════════════ */
+/* 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊・Responsividade do painel 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊・*/
 @media (max-width: 1100px) {
   .nb-split,
   .lm,
@@ -2426,7 +2426,7 @@
   }
 }
 
-/* Documento: cabeçalho e pistas operacionais */
+/* Documento: cabeﾃｧalho e pistas operacionais */
 .cf-sheet {
   min-width: 0;
   overflow-wrap: anywhere;
@@ -2469,7 +2469,7 @@
   color: var(--paper-muted);
 }
 
-/* Caderno: lista fixa + conteúdo com rolagem independente */
+/* Caderno: lista fixa + conteﾃｺdo com rolagem independente */
 .nb-sheet {
   display: flex;
   flex-direction: column;
@@ -2546,7 +2546,7 @@
   overflow-wrap: anywhere;
 }
 
-/* Bancada: lista compacta + painel de detalhe, cada um com rolagem própria */
+/* Bancada: lista compacta + painel de detalhe, cada um com rolagem prﾃｳpria */
 .aw {
   grid-template-columns: 19em minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr);
@@ -2727,7 +2727,7 @@
   margin-top: 0.6em;
 }
 
-/* Ligações (CallSession) */
+/* Ligaﾃｧﾃｵes (CallSession) */
 .cs {
   display: flex;
   flex-direction: column;
@@ -2885,7 +2885,7 @@
   cursor: not-allowed;
 }
 
-/* Cena das seis ligações */
+/* Cena das seis ligaﾃｧﾃｵes */
 .hexcall-overlay {
   position: fixed;
   inset: 0;
@@ -2971,7 +2971,7 @@
   min-height: 0;
 }
 
-/* Filtros editoriais do caderno (Quadro / Evidências) */
+/* Filtros editoriais do caderno (Quadro / Evidﾃｪncias) */
 .cb-filter-bar {
   display: flex;
   flex-wrap: wrap;
@@ -3189,319 +3189,3 @@
   margin: 0.45em 0 0;
 }
 
-/* ??????????????? Forensic Workbench ??????????????? */
-.fw {
-  display: flex;
-  flex-direction: column;
-  height: min(78vh, 900px);
-  min-height: 520px;
-  color: var(--text-primary);
-  background:
-    linear-gradient(180deg, rgba(8, 14, 18, 0.55), rgba(4, 8, 10, 0.72)),
-    repeating-linear-gradient(0deg, transparent 0 11px, rgba(121, 194, 189, 0.03) 11px 12px);
-  border: 1px solid var(--border-subtle);
-}
-.fw-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1em;
-  padding: 0.55em 0.9em;
-  border-bottom: 1px solid var(--border-subtle);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  font-size: 0.78em;
-}
-.fw-top__file {
-  margin-left: 1em;
-  color: var(--accent-cold-dim);
-  text-transform: none;
-  letter-spacing: 0.02em;
-}
-.fw-grid {
-  display: grid;
-  grid-template-columns: 15em 1fr;
-  grid-template-rows: 1fr auto;
-  flex: 1;
-  min-height: 0;
-}
-.fw-side {
-  grid-row: 1 / 2;
-  border-right: 1px solid var(--border-subtle);
-  overflow: auto;
-  background: rgba(0, 0, 0, 0.28);
-}
-.fw-main {
-  grid-row: 1 / 2;
-  padding: 0.6em 0.8em;
-  overflow: auto;
-  min-width: 0;
-}
-.fw-bottom {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  border-top: 1px solid var(--border-subtle);
-  min-height: 240px;
-  max-height: 46vh;
-}
-.fw-pane-h {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5em;
-  padding: 0.45em 0.7em;
-  font-size: 0.68em;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--accent-cold-dim);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-.fw-files__list {
-  list-style: none;
-  margin: 0;
-  padding: 0.4em;
-  display: grid;
-  gap: 0.3em;
-}
-.fw-file {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1em;
-  width: 100%;
-  padding: 0.55em 0.65em;
-  text-align: left;
-  font: inherit;
-  color: inherit;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid transparent;
-  cursor: pointer;
-}
-.fw-file[data-active='true'] {
-  border-color: rgba(121, 194, 189, 0.45);
-  background: rgba(121, 194, 189, 0.08);
-}
-.fw-file__name { font-size: 0.88em; }
-.fw-file__meta { font-size: 0.72em; color: var(--text-muted); }
-.fw-track {
-  display: grid;
-  grid-template-columns: 1fr auto auto auto auto auto;
-  gap: 0.35em;
-  align-items: center;
-  padding: 0.45em 0.65em;
-  font-size: 0.75em;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-.fw-track[data-muted='true'] { opacity: 0.55; }
-.fw-track__name { font-weight: 600; letter-spacing: 0.06em; }
-.fw-track__tog, .fw-track__gain, .fw-track__pan, .fw-tog, .fw-rate, .fw-wave-y, .fw-field {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3em;
-  font-size: 0.75em;
-  color: var(--text-muted);
-}
-.fw-track input[type='range'] { width: 4.5em; }
-.fw-timeline__zoom { display: inline-flex; align-items: center; gap: 0.35em; }
-.fw-timeline__zoom button, .fw-btn {
-  font: inherit;
-  font-size: 0.78em;
-  letter-spacing: 0.06em;
-  color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--border-subtle);
-  padding: 0.35em 0.65em;
-  cursor: pointer;
-}
-.fw-btn:hover:not(:disabled) { filter: brightness(1.12); }
-.fw-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.fw-btn--ghost { background: transparent; }
-.fw-btn[data-active='true'] {
-  border-color: rgba(121, 194, 189, 0.55);
-  color: var(--accent-cold);
-}
-.fw-ruler {
-  position: relative;
-  height: 1.2em;
-  margin: 0 0.2em;
-  font-size: 0.65em;
-  color: var(--text-faint);
-}
-.fw-ruler span { position: absolute; transform: translateX(-50%); }
-.fw-wave-stage {
-  position: relative;
-  height: 9.5em;
-  margin: 0.2em;
-  background:
-    repeating-linear-gradient(90deg, rgba(121, 194, 189, 0.05) 0 1px, transparent 1px 2.8em),
-    rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  cursor: crosshair;
-  touch-action: none;
-}
-.fw-wave {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-.fw-wave rect { fill: rgba(121, 194, 189, 0.45); }
-.fw-wave rect[data-played='true'] { fill: rgba(180, 230, 220, 0.85); }
-.fw-playhead {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: #f2d28a;
-  transform: translateX(-1px);
-  pointer-events: none;
-}
-.fw-sel {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  background: rgba(121, 194, 189, 0.18);
-  border-left: 1px solid rgba(121, 194, 189, 0.55);
-  border-right: 1px solid rgba(121, 194, 189, 0.55);
-  pointer-events: none;
-}
-.fw-marker {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: rgba(242, 210, 138, 0.8);
-  pointer-events: none;
-}
-.fw-timeline__hint, .fw-muted {
-  margin: 0.35em 0.4em;
-  font-size: 0.72em;
-  color: var(--text-muted);
-}
-.fw-transport, .fw-inspector {
-  overflow: auto;
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
-}
-.fw-transport__row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.55em;
-  align-items: center;
-  padding: 0.55em 0.7em;
-}
-.fw-time { font-variant-numeric: tabular-nums; font-size: 0.8em; color: var(--text-muted); }
-.fw-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.2em;
-  padding: 0.35em;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-.fw-tab {
-  font: inherit;
-  font-size: 0.65em;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  background: transparent;
-  border: 1px solid transparent;
-  padding: 0.35em 0.5em;
-  cursor: pointer;
-}
-.fw-tab[data-active='true'] {
-  color: var(--accent-cold);
-  border-color: rgba(121, 194, 189, 0.35);
-  background: rgba(121, 194, 189, 0.08);
-}
-.fw-inspector__body { padding: 0.55em 0.7em 1em; }
-.fw-panel h4 {
-  margin: 0.85em 0 0.35em;
-  font-size: 0.72em;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--accent-cold-dim);
-}
-.fw-field {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 0.35em;
-  margin: 0.25em 0;
-}
-.fw-field input[type='number'], .fw-field select, .fw-rate select {
-  width: 6.5em;
-  font: inherit;
-  color: inherit;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid var(--border-subtle);
-  padding: 0.2em 0.35em;
-}
-.fw-eq {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.4em;
-}
-.fw-eq label {
-  display: grid;
-  gap: 0.15em;
-  font-size: 0.7em;
-  color: var(--text-muted);
-}
-.fw-eq input[type='range'] { width: 100%; }
-.fw-meta { margin: 0; display: grid; gap: 0.25em; }
-.fw-meta div { display: grid; grid-template-columns: 8em 1fr; gap: 0.4em; font-size: 0.78em; }
-.fw-meta dt { color: var(--text-muted); }
-.fw-meta dd { margin: 0; }
-.fw-notes {
-  width: 100%;
-  min-height: 10em;
-  resize: vertical;
-  font: inherit;
-  font-size: 0.85em;
-  line-height: 1.45;
-  color: inherit;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid var(--border-subtle);
-  padding: 0.55em;
-}
-.fw-spec, .fw-spectrum {
-  width: 100%;
-  height: 7em;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: rgba(180, 230, 220, 0.9);
-}
-.fw-spec rect { fill: rgba(121, 194, 189, 0.75); }
-.fw-profiles, .fw-markers { list-style: none; margin: 0.35em 0; padding: 0; display: grid; gap: 0.25em; }
-.fw-table { width: 100%; border-collapse: collapse; font-size: 0.75em; }
-.fw-table th, .fw-table td { border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding: 0.25em; text-align: left; }
-.fw-help {
-  margin: 0.4em 0.7em;
-  padding: 0.55em 0.7em;
-  font-size: 0.75em;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-.fw-help ul { margin: 0.4em 0 0; padding-left: 1.1em; }
-.fw-tip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.1em;
-  height: 1.1em;
-  margin-left: 0.25em;
-  border-radius: 50%;
-  border: 1px solid rgba(121, 194, 189, 0.4);
-  font-size: 0.7em;
-  color: var(--accent-cold-dim);
-  cursor: help;
-}
-.fw-status {
-  padding: 0.4em 0.8em;
-  font-size: 0.78em;
-  color: var(--accent-cold);
-  border-top: 1px solid var(--border-subtle);
-  background: rgba(121, 194, 189, 0.06);
-}
-.aw-main:has(.fw) {
-  padding: 0;
-  overflow: hidden;
-}

@@ -4,36 +4,41 @@ export function TrackRow({
   track,
   name,
   channel,
+  selected,
   onChange,
 }: {
   track: TrackRuntime
   name: string
   channel?: string
+  selected?: boolean
   onChange: (patch: Partial<TrackRuntime>) => void
 }) {
   return (
-    <div className="fw-track" data-muted={track.mute}>
+    <div className="fw-track" data-muted={track.mute} data-selected={selected}>
       <span className="fw-track__name" title={channel}>
         {name}
       </span>
-      <label className="fw-track__tog" title="Mute">
-        <input
-          type="checkbox"
-          checked={track.mute}
-          onChange={(e) => onChange({ mute: e.target.checked })}
-        />
+      <button
+        type="button"
+        className="fw-chip"
+        data-on={track.mute}
+        title="Mute"
+        aria-pressed={track.mute}
+        onClick={() => onChange({ mute: !track.mute })}
+      >
         M
-      </label>
-      <label className="fw-track__tog" title="Solo">
-        <input
-          type="checkbox"
-          checked={track.solo}
-          onChange={(e) => onChange({ solo: e.target.checked })}
-        />
+      </button>
+      <button
+        type="button"
+        className="fw-chip"
+        data-on={track.solo}
+        title="Solo"
+        aria-pressed={track.solo}
+        onClick={() => onChange({ solo: !track.solo })}
+      >
         S
-      </label>
-      <label className="fw-track__gain" title="Gain (dB)">
-        G
+      </button>
+      <label className="fw-track__ctrl" title="Gain (dB)">
         <input
           type="range"
           min={-24}
@@ -42,10 +47,9 @@ export function TrackRow({
           value={track.gainDb}
           onChange={(e) => onChange({ gainDb: Number(e.target.value) })}
         />
-        <span>{track.gainDb.toFixed(1)}</span>
+        <span className="fw-track__val">{track.gainDb.toFixed(1)}</span>
       </label>
-      <label className="fw-track__pan" title="Pan">
-        P
+      <label className="fw-track__ctrl" title="Pan">
         <input
           type="range"
           min={-100}
@@ -55,14 +59,16 @@ export function TrackRow({
           onChange={(e) => onChange({ pan: Number(e.target.value) })}
         />
       </label>
-      <label className="fw-track__tog" title="Visibility">
-        <input
-          type="checkbox"
-          checked={track.visible}
-          onChange={(e) => onChange({ visible: e.target.checked })}
-        />
+      <button
+        type="button"
+        className="fw-chip"
+        data-on={track.visible}
+        title="Visibility"
+        aria-pressed={track.visible}
+        onClick={() => onChange({ visible: !track.visible })}
+      >
         V
-      </label>
+      </button>
     </div>
   )
 }

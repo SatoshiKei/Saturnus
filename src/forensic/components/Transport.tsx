@@ -2,6 +2,13 @@ import { PLAYBACK_RATES } from '../forensicTypes'
 import { fmtTime } from '../forensicEngine'
 import type { SelectionRange } from '../forensicTypes'
 
+function fmtPrecise(sec: number): string {
+  const s = Math.max(0, sec)
+  const m = Math.floor(s / 60)
+  const r = s - m * 60
+  return `${String(m).padStart(2, '0')}:${r.toFixed(3).padStart(6, '0')}`
+}
+
 export function Transport({
   playing,
   playheadSec,
@@ -37,59 +44,93 @@ export function Transport({
   onBypass: (v: boolean) => void
   onReset: () => void
 }) {
+  const selDur = selection ? selection.endSec - selection.startSec : null
+
   return (
     <div className="fw-transport">
-      <div className="fw-pane-h">TRANSPORT</div>
-      <div className="fw-transport__row">
-        <button type="button" className="fw-btn" onClick={playing ? onPause : onPlay}>
-          {playing ? 'Pause' : 'Play'}
-        </button>
-        <button type="button" className="fw-btn" onClick={onStop}>
-          Stop
-        </button>
-        <label className="fw-tog">
-          <input type="checkbox" checked={loop} onChange={(e) => onLoop(e.target.checked)} />
-          Loop
-        </label>
+      <div className="fw-transport__controls">
         <button
           type="button"
-          className="fw-btn"
+          className="fw-icon-btn"
           disabled={!selection}
           onClick={onSkipSelStart}
-          title="Ir ao início da seleção"
+          title="Selection start"
         >
-          ⇤ Sel
+          ⇤
         </button>
         <button
           type="button"
-          className="fw-btn"
+          className="fw-icon-btn fw-icon-btn--primary"
+          onClick={playing ? onPause : onPlay}
+          title={playing ? 'Pause' : 'Play'}
+          aria-label={playing ? 'Pause' : 'Play'}
+        >
+          {playing ? '❚❚' : '▶'}
+        </button>
+        <button type="button" className="fw-icon-btn" onClick={onStop} title="Stop">
+          ■
+        </button>
+        <button
+          type="button"
+          className="fw-icon-btn"
           disabled={!selection}
           onClick={onSkipSelEnd}
-          title="Ir ao fim da seleção"
+          title="Selection end"
         >
-          Sel ⇥
+          ⇥
         </button>
-        <label className="fw-rate">
-          Speed
-          <select value={rate} onChange={(e) => onRate(Number(e.target.value))}>
-            {PLAYBACK_RATES.map((r) => (
-              <option key={r} value={r}>
-                {r.toFixed(2)}x
-              </option>
-            ))}
-          </select>
-        </label>
-        <span className="fw-time">
-          {fmtTime(playheadSec)} / {fmtTime(durationSec)}
-        </span>
+        <button
+          type="button"
+          className="fw-chip"
+          data-on={loop}
+          aria-pressed={loop}
+          title="Loop"
+          onClick={() => onLoop(!loop)}
+        >
+          ↺
+        </button>
       </div>
-      <div className="fw-transport__row">
-        <label className="fw-tog" title="Compara original sem processamento">
-          <input type="checkbox" checked={bypass} onChange={(e) => onBypass(e.target.checked)} />
-          BYPASS PROCESSING
-        </label>
+
+      <div className="fw-transport__time" aria-live="polite">
+        <span className="fw-transport__now">{fmtPrecise(playheadSec)}</span>
+        <span className="fw-transport__sep">/</span>
+        <span className="fw-transport__dur">{fmtTime(durationSec)}</span>
+      </div>
+
+      <label className="fw-transport__rate">
+        <select
+          className="fw-select"
+          value={rate}
+          onChange={(e) => onRate(Number(e.target.value))}
+          aria-label="Playback speed"
+        >
+          {PLAYBACK_RATES.map((r) => (
+            <option key={r} value={r}>
+              {r.toFixed(2)}x
+            </option>
+          ))}
+        </select>
+      </label>
+
+      {selDur != null && (
+        <span className="fw-transport__sel" title="Selection duration">
+          Sel {(selDur).toFixed(3)}s
+        </span>
+      )}
+
+      <div className="fw-transport__trail">
+        <button
+          type="button"
+          className="fw-chip"
+          data-on={bypass}
+          aria-pressed={bypass}
+          title="Bypass processing"
+          onClick={() => onBypass(!bypass)}
+        >
+          Bypass
+        </button>
         <button type="button" className="fw-btn fw-btn--ghost" onClick={onReset}>
-          Reset session
+          Reset
         </button>
       </div>
     </div>
