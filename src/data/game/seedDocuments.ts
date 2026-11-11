@@ -210,15 +210,78 @@ export const seedDocuments: Document[] = [
     dateLabel: 'Proc. 2020',
     system: 'autos',
     blocks: [
-      { id: 'b1', text: 'Chegada de Elisa e André ao Vértice: por volta das 23h (depoimentos concordantes).' },
-      { id: 'b2', text: 'Discussão entre os dois próxima ao bar: entre 00h30 e 01h (duas testemunhas).' },
+      {
+        id: 'b1',
+        text: 'Elisa Duarte estava no Vértice na Noite X. Amigos confirmam presença no salão até a madrugada.',
+      },
+      {
+        id: 'b2',
+        text: 'Discussão atribuída ao casal próxima ao bar: entre 00h30 e 01h (duas testemunhas). André não foi colocado, nos autos, como tendo permanecido no interior da casa após o intervalo da discussão.',
+      },
       {
         id: 'b3',
-        text: 'Elisa deixa o salão: entre 01h e 01h30. Horário de referência: registro sonoro da cabine.',
+        text: 'Amiga da vítima recorda que Elisa adiou a saída para ouvir “Avicii — Levels”. O set log da casa situa a transição/encerramento desse trecho aproximadamente às 01:16 (relógio do Vértice). A polícia usou esse marco como horário aproximado de saída de Elisa.',
       },
-      { id: 'b4', text: 'André reaparece na entrada: 01h40 (câmera da portaria).' },
+      {
+        id: 'b4',
+        text: 'Sandra Almeida relata ter visto, aproximadamente nesse intervalo, uma mulher de jaqueta clara e bolsa sendo seguida por um homem que ela acreditou reconhecer como André Silva. Posteriormente, ao retornar da busca por ajuda, vê apenas uma silhueta masculina deixando a região escura próxima ao guardrail — sem identificação facial.',
+      },
     ],
     onOpen: [{ type: 'addEvidence', id: 'elisa_original_chronology' }],
+  },
+  {
+    id: 'doc-elisa-amiga-levels',
+    title: 'Depoimento — amiga de Elisa (saída / Levels)',
+    category: 'Autos',
+    issuer: 'Vara Criminal — volume II',
+    dateLabel: 'Proc. 2020',
+    system: 'autos',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Testemunha — amiga de Elisa: declara que Elisa já havia se despedido e estava prestes a ir embora.',
+      },
+      {
+        id: 'b2',
+        text: 'Quando começou a tocar “Avicii — Levels”, Elisa comentou que ficaria só mais um pouco para ouvir aquele trecho — gostava muito da música. A testemunha lembra porque achou engraçado ela já ter se despedido e voltar por causa da música.',
+      },
+      {
+        id: 'b3',
+        text: 'Pouco depois, Elisa finalmente saiu. A testemunha situa a saída logo após aquele momento da programação.',
+      },
+    ],
+  },
+  {
+    id: 'doc-vertice-set-log-levels',
+    title: 'Set log — Avicii / Levels (arquivo histórico)',
+    category: 'Arquivo privado',
+    issuer: 'Boate Vértice — programação',
+    system: 'documentos',
+    blocks: [
+      { id: 'b1', text: '01:14:xx — Avicii — Levels' },
+      { id: 'b2', text: '01:16:00 — transição / encerramento' },
+      {
+        id: 'b3',
+        text: 'Horários conforme o sistema local de programação da casa. Não indica sincronização com relógio externo.',
+      },
+    ],
+  },
+  {
+    id: 'doc-vertice-clock-infra',
+    title: 'Nota técnica — referência de tempo da cabine',
+    category: 'Arquivo privado',
+    issuer: 'Boate Vértice — infraestrutura',
+    system: 'documentos',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'O recorder da cabine, os set logs e o sistema usado para timestamps da programação compartilhavam a mesma referência local de relógio da casa.',
+      },
+      {
+        id: 'b2',
+        text: 'Qualquer correção aplicada ao relógio local afeta, de forma equivalente, os horários rotulados nesses registros.',
+      },
+    ],
   },
   {
     id: 'doc-vertice-escala',
@@ -669,13 +732,13 @@ export const seedDocuments: Document[] = [
       {
         id: 'sec-alibi',
         heading: 'Álibi e cronologia',
-        text: 'Chegada ao Vértice por volta das 23h. Discussão junto ao bar entre 00h30 e 01h. Elisa deixa o salão entre 01h e 01h30. André reaparece na portaria às 01h40. André não apresentou álibi considerado confiável para o intervalo entre a saída de Elisa e o próprio reaparecimento. Inconsistências pontuais entre depoimentos de frequentadores foram anotadas; a cronologia oficial prevaleceu na sentença.',
+        text: 'Elisa estava no Vértice. Amiga lembra que ela adiou a saída para ouvir “Avicii — Levels”; o set log da casa situa a transição por volta das 01:16 do relógio interno. Sandra relata ter visto mulher semelhante à vítima sendo seguida aproximadamente nesse intervalo e, depois, uma figura masculina deixando a região escura. André não apresentou álibi considerado confiável para a madrugada. A condenação não depende de registro de entrada/saída de André no interior da balada.',
         extractableEvidenceId: 'elisa_weak_alibi',
       },
       {
         id: 'sec-testemunhas',
         heading: 'Testemunhas',
-        text: 'Ouvidos na fase policial: amigos da vítima, funcionários da Boate Vértice e o DJ Nicolas Prado Reis. Sandra Almeida afirmou ter visto, próximo à região da queda, alguém com porte semelhante ao de André Silva. A identificação visual não foi inequívoca.',
+        text: 'Ouvidos na fase policial: amigos da vítima, funcionários da Boate Vértice e o DJ Nicolas Prado Reis. Sandra Almeida: no primeiro avistamento, viu mulher de jaqueta clara e bolsa sendo seguida e acreditou reconhecer o homem como André Silva; não conhecia suficientemente outras frequentadoras para identificar a mulher. No retorno, viu apenas silhueta masculina na região do guardrail — sem rosto. A investigação original tratou os dois avistamentos como o mesmo homem.',
         extractableEvidenceId: 'elisa_lookalike_near_fall',
       },
       {
@@ -946,10 +1009,18 @@ export const seedDocuments: Document[] = [
     blocks: [
       {
         id: 'b1',
-        text: 'Sandra Almeida: testemunha que afirmou ter visto, retornando da região da queda, alguém com porte semelhante ao de André Silva.',
+        text: 'Primeiro avistamento: Sandra viu uma mulher de jaqueta clara carregando bolsa, seguida por um homem. Observou o homem com atenção suficiente e, depois, acreditou reconhecê-lo como André Silva. Não conhecia a mulher o bastante para identificá-la.',
       },
       {
         id: 'b2',
+        text: 'Preocupada, saiu para procurar um telefone. Não possuía relógio utilizável. O horário aproximado do primeiro evento foi reconstruído depois a partir do registro da ligação (~01:27), do percurso e da duração relatada — ordem de cerca de onze minutos entre o avistamento e o pedido de ajuda.',
+      },
+      {
+        id: 'b3',
+        text: 'Segundo avistamento: ao retornar, viu uma figura masculina saindo da área escura próxima ao guardrail. Não viu o rosto nem as roupas com clareza suficiente para identificação individual. Nunca afirmou tecnicamente ter reconhecido André nesse segundo momento; a investigação original assumiu que era o mesmo homem.',
+      },
+      {
+        id: 'b4',
         text: 'Depoimento repetido no inquérito, na instrução e no júri. Sem retratação nos autos.',
       },
     ],

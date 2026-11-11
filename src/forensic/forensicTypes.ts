@@ -263,6 +263,12 @@ export interface TimingData {
   driftPpm?: number
   syncMarker?: string
   referenceSourceId?: string
+  /** Rótulo absoluto do início do arquivo (ex.: 01:22:18 REAL). */
+  absoluteStartLabel?: string
+  /** Relógio da fonte no evento de sincronização (DJ). */
+  eventClockAtDj?: string
+  /** Stamp externo confiável (mensageria). */
+  externalStamp?: string
 }
 
 /** Região de tempo preparada no dataset — ferramenta genérica de Tempo. */
@@ -307,6 +313,11 @@ export interface ForensicSource {
   structure?: StructureData
   packets?: PacketData
   timing?: TimingData
+  /**
+   * Posição inicial desta fonte na timeline compartilhada (segundos).
+   * Usado com `sourceOffsets` para alinhamento multitrack.
+   */
+  timelineOriginSec?: number
   /** Regiões predominantemente de ruído (validação interna de Noise Profile). */
   noiseRegions?: NoiseRegion[]
   /** Segmentos de fala recuperáveis automaticamente (Recovered Speech). */
@@ -327,16 +338,27 @@ export interface ForensicSession {
   evidenceId?: string
   /** Flag/handler de conclusão narrativa (opcional). */
   completion?: {
-    kind: 'speech-recovery' | 'container-rebuild' | 'source-link'
+    kind: 'speech-recovery' | 'container-rebuild' | 'source-link' | 'clock-sync'
     /** Chama handler externo quando completo. */
     onCompleteAction?:
       | 'runProvisionalEmergencyAnalysis'
       | 'runProvisionalRafaelForwardAnalysis'
       | 'runProvisionalRingsAnalysis'
+      | 'runJanusEpimetheusAnalysis'
     /** Segmentos obrigatórios além do rebuild (se houver). */
     requireSpeechSegmentIds?: string[]
     /** source id do registro correto (source-link). */
     correctSetSourceId?: string
+    /** Offset de relógio esperado (clock-sync), em segundos. */
+    expectedOffsetSec?: number
+    /** Tolerância de alinhamento (clock-sync), em segundos. */
+    offsetToleranceSec?: number
+    /** Horário Vertice no set log (clock-sync). */
+    setLogVerticeTime?: string
+    /** Horário real após correção (clock-sync). */
+    correctedRealTime?: string
+    /** Finding obrigatório (clock-sync). */
+    findingText?: string
   }
 }
 
@@ -437,6 +459,16 @@ export interface ForensicUiState {
   /** Feedback do último LINK SOURCE. */
   linkStatus: string | null
   linkedSetSourceId: string | null
+  /** Offset horizontal por source id (segundos) na timeline compartilhada. */
+  sourceOffsets: Record<string, number>
+  /** Fonte usada como referência de relógio. */
+  timingReferenceSourceId: string | null
+  /** Diferença de relógio formalizada após sync válido (segundos). */
+  formalizedClockOffsetSec: number | null
+  /** Horário do set log após Apply clock correction. */
+  correctedSetTime: string | null
+  /** Finding técnico desbloqueado. */
+  findingUnlocked: boolean
 }
 
 export const DEFAULT_PROCESS: ProcessParams = {

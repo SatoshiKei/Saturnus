@@ -89,13 +89,13 @@ export const nicoBeats: Record<NicoTopicId, NicoBeat[]> = {
     { speaker: 'Augusto', text: 'Existem registros daquela noite?' },
     {
       speaker: 'Nico',
-      text: 'Tem.\nDuas gravações.\nUma que sai direto da mesa.\nOutra de um gravador portátil que a gente deixava ligado pra checar mix.',
+      text: 'Tem.\nA casa gravava o feed da mesa automaticamente.\nSet, controle técnico, arquivo de DJ.\nNão é câmera — é o áudio direto da cabine.',
       portrait: 'nico',
     },
     { speaker: 'Augusto', text: 'Você ainda guarda isso?' },
     {
       speaker: 'Nico',
-      text: 'Tenho cópia.\nNão é oficial, não foi pro processo.\nMas é daquela noite.',
+      text: 'Tenho cópia daquela noite.\nNão é oficial, não foi pro processo.\nMas é o feed da mesa.',
       portrait: 'nico',
     },
     { speaker: 'Augusto', text: 'Preciso ouvir.' },

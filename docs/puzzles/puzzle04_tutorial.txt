@@ -1,0 +1,104 @@
+Puzzle 04 — JANUS E EPIMETHEUS
+================================
+Documento de desenvolvimento. NÃO aparece ao jogador.
+
+
+LORE
+----
+Fonte A (phone ambient)
+  Origem canônica: registro de celular associado a Elisa → preservado por Lucas →
+  Mariana obtém → envia/extrai para Rafael → Augusto obtém.
+  No jogo: reutiliza a captura composta do Puzzle 03 (crowd + Mechanical Groove + DJ).
+  Relógio: referência externa confiável (stamp de mensageria / backup).
+  File start REAL 01:22:18 · evento DJ (t=72s) = 01:23:30 REAL.
+  External stamp: WA_MEDIA_RX 01:25:18 ↔ fim do arquivo.
+
+Fonte B (desk feed)
+  Nico fornece/permite acesso à gravação automática do feed da mesa do Vértice
+  (registro de sets / controle técnico / arquivo de DJs).
+  Som limpo, sem crowd relevante, pouca reverberação.
+  Relógio: sistema local da casa.
+  File start VÉRTICE 01:14:48 · evento DJ (t=72s) = 01:16:00 VÉRTICE.
+
+Depoimento da amiga (Testemunha — amiga de Elisa)
+  Elisa já tinha se despedido. Quando começou “Avicii — Levels”, voltou porque
+  gostava da música (“só mais um pouco”). Saiu logo depois.
+  Levels existe APENAS como referência textual/documental — sem áudio comercial.
+
+Papel de Sandra
+  ~01:16 REAL: vê mulher de jaqueta clara + bolsa sendo seguida; observa o homem e
+  depois acredita reconhecê-lo como André. Não identifica a mulher.
+  Sai ~11 min para pedir ajuda (ligação ~01:27 confiável).
+  Ao retornar: silhueta masculina na região do guardrail — sem rosto.
+  Nunca afirmou ter reconhecido André no segundo avistamento.
+
+Significado de Levels
+  Set log histórico: 01:14:xx Levels · 01:16:00 transição/encerramento (relógio Vertice).
+  Polícia ancorou saída de Elisa ≈ 01:16 Vertice via amiga + set log.
+  Infra da casa: recorder da cabine, set logs e timestamps de programação
+  compartilham a mesma referência local (documento técnico — NÃO diz o offset).
+
+
+TIMELINE REAL (canon)
+---------------------
+~01:16:00 REAL   Sandra vê Jana (jaqueta clara + bolsa) sendo seguida.
+~01:16:30        Jana percebe; Sandra vai buscar telefone.
+~01:18:00        Jana volta ao Vértice (lateral/fumódromo).
+~01:18–01:21     Jana entrega jaqueta + bolsa a Elisa.
+~01:21:30        Jana sai pelos fundos.
+01:23:30 REAL    Elisa sai pela frente com jaqueta/bolsa de Jana (= 01:16:00 Vertice).
+~01:27           Sandra pede ajuda (registro externo).
+~01:27–01:29     Elisa no guardrail; acidente.
+~01:29–01:31     Sandra retorna; vê só silhueta masculina.
+
+Offset canônico: Vertice atrasado +07:30 (não alterar sem necessidade séria).
+
+
+SOLUÇÃO (bancada)
+-----------------
+1. Abrir evidência nico_recording_booth → Forensic Workbench (Puzzle 04).
+2. Fontes: janus_phone + janus_desk (+ set log Levels, infra, janela Sandra).
+3. Identificar o mesmo evento (fala do DJ / transição 126→128 / Mechanical Groove).
+4. Alinhar com Time Offset / arraste horizontal na timeline multitrack.
+   Placement alinhado quando origemA+offA ≈ origemB+offB
+   (desk precisa ~+450 s de offset com origens 450 / 0).
+5. Correlation sobe (~0.94) quando alinhado; tolerância ±0.2 s.
+6. Timing → Formalize clock difference → +00:07:30.
+7. Apply clock correction no set log: 01:16:00 Vertice → 01:23:30 real.
+8. Compare/Timeline: Sandra ~01:16 real vs Elisa exit 01:23:30 real.
+9. Finding automático:
+   “Sandra não poderia ter visto Elisa no primeiro avistamento.”
+10. Achievement ach-janus-epimetheus.
+
+
+CONSEQUÊNCIA
+------------
+- A mulher vista por Sandra no primeiro avistamento não era Elisa.
+- Homem continua NÃO identificado (não nomear Miro).
+- André NÃO é inocentado (Sandra ainda acredita ter visto André no 1º avistamento).
+- Não afirmar “a mulher era Jana” no finding base (não linearidade).
+- Não depender de André ter estado dentro do Vértice.
+
+
+PRODUÇÃO DE ÁUDIO
+-----------------
+tools/audio/build_puzzle04.py
+  → tools/audio/out/puzzle04_phone_source.wav  (cópia da captura P03)
+  → tools/audio/out/puzzle04_desk_source.wav
+  → public/assets/audio/forensic/puzzle04/*
+
+Música in-universe: Mechanical Groove (asset de produção = mesma faixa do P03).
+DJ: DJ - Vértice.mp3
+Sem crowd na Fonte B. Sem áudio de Levels.
+
+
+DEV
+---
+sourceAReferenceTime, sourceBInternalTime, expectedOffset=+450s,
+currentOffset, placementDelta, correlation, offsetValid,
+correctedSetTime, sandraApproxTime, findingUnlocked.
+
+
+TESTES A–O
+----------
+Ver tests/unit/puzzle04Janus.test.ts e puzzle04Janus.workbench.test.tsx.

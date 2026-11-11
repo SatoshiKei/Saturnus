@@ -16,6 +16,11 @@ import {
   rebuildContainer,
   resetProcess,
   resolveStructurePages,
+  approximateTrackCorrelation,
+  clockSyncComplete,
+  clockSyncOffsetValid,
+  fmtClockOffset,
+  relativeSourceOffsetSec,
   speechRecoveryComplete,
   structureSequenceValid,
   voiceSpansFromSource,
@@ -87,9 +92,33 @@ export function ForensicWorkbench({
   const playbackSource = source?.audio
     ? source
     : session.sources.find((s) => s.audio) ?? source
+  const audioSources = session.sources.filter((s) => s.audio)
+  const isClockSync = session.completion?.kind === 'clock-sync'
   const playableUntil = effectivePlayableUntil(playbackSource, ui.containerRebuilt)
-  const duration = playbackSource?.durationSec ?? 0
+  const spanDuration = isClockSync
+    ? Math.max(
+        ...audioSources.map(
+          (s) =>
+            (s.timelineOriginSec ?? 0) +
+            (ui.sourceOffsets[s.id] ?? 0) +
+            s.durationSec,
+        ),
+        playbackSource?.durationSec ?? 0,
+        630,
+      )
+    : (playbackSource?.durationSec ?? 0)
+  const duration = spanDuration
   const waveform = measuredWave ?? playbackSource?.audio?.waveform ?? []
+  const syncPair = audioSources.length >= 2 ? [audioSources[0], audioSources[1]] : null
+  const placementDelta = syncPair
+    ? relativeSourceOffsetSec(syncPair[0], syncPair[1], ui.sourceOffsets)
+    : 0
+  const correlation = approximateTrackCorrelation(
+    placementDelta,
+    session.completion?.offsetToleranceSec ?? 0.2,
+  )
+  const offsetValid = isClockSync ? clockSyncOffsetValid(session, ui) : false
+  const expectedOffset = session.completion?.expectedOffsetSec ?? 450
   const structurePages = resolveStructurePages(
     source,
     ui.structureSequences,
@@ -297,6 +326,8 @@ export function ForensicWorkbench({
       if (!ui.linkedSetSourceId) return
       if (completion.correctSetSourceId && ui.linkedSetSourceId !== completion.correctSetSourceId)
         return
+    } else if (completion.kind === 'clock-sync') {
+      if (!clockSyncComplete(session, ui)) return
     } else {
       return
     }
@@ -308,8 +339,13 @@ export function ForensicWorkbench({
     ui.containerRebuilt,
     ui.structureSequences,
     ui.linkedSetSourceId,
+    ui.sourceOffsets,
+    ui.formalizedClockOffsetSec,
+    ui.correctedSetTime,
+    ui.findingUnlocked,
     source?.speechSegments,
     source,
+    session,
     session.completion,
     completed,
     onPuzzleComplete,
@@ -388,35 +424,70 @@ export function ForensicWorkbench({
           />
           <div className="fw-tracks">
             <div className="fw-pane-h">Tracks</div>
-            {playbackSource?.tracks
-              ?.filter((t) => t.visible)
-              .map((t) => (
-                <TrackRow
-                  key={t.id}
-                  name={t.name}
-                  channel={t.channel}
-                  selected
-                  track={
-                    ui.tracks[t.id] ?? {
-                      id: t.id,
-                      mute: false,
-                      solo: false,
-                      gainDb: 0,
-                      pan: 0,
-                      visible: true,
-                    }
-                  }
-                  onChange={(patch) =>
-                    setUi((u) => ({
-                      ...u,
-                      tracks: {
-                        ...u.tracks,
-                        [t.id]: { ...u.tracks[t.id]!, ...patch },
-                      },
-                    }))
-                  }
-                />
-              ))}
+            {(isClockSync ? audioSources : playbackSource ? [playbackSource] : []).flatMap((src) =>
+              (src.tracks ?? [])
+                .filter((t) => t.visible)
+                .map((t) => (
+                  <div key={`${src.id}-${t.id}`} className="fw-track-block">
+                    <TrackRow
+                      name={isClockSync ? `${t.name}` : t.name}
+                      channel={isClockSync ? src.filename : t.channel}
+                      selected={src.id === ui.activeSourceId}
+                      track={
+                        ui.tracks[t.id] ?? {
+                          id: t.id,
+                          mute: false,
+                          solo: false,
+                          gainDb: 0,
+                          pan: 0,
+                          visible: true,
+                        }
+                      }
+                      onChange={(patch) =>
+                        setUi((u) => ({
+                          ...u,
+                          tracks: {
+                            ...u.tracks,
+                            [t.id]: {
+                              ...(u.tracks[t.id] ?? {
+                                id: t.id,
+                                mute: false,
+                                solo: false,
+                                gainDb: 0,
+                                pan: 0,
+                                visible: true,
+                              }),
+                              ...patch,
+                            },
+                          },
+                        }))
+                      }
+                    />
+                    {isClockSync ? (
+                      <label className="fw-track-offset">
+                        Time offset
+                        <input
+                          type="number"
+                          step={0.05}
+                          data-testid={`track-offset-${src.id}`}
+                          value={ui.sourceOffsets[src.id] ?? 0}
+                          onChange={(e) => {
+                            const v = Number(e.target.value)
+                            setUi((u) => ({
+                              ...u,
+                              sourceOffsets: { ...u.sourceOffsets, [src.id]: v },
+                              formalizedClockOffsetSec: null,
+                              correctedSetTime: null,
+                              findingUnlocked: false,
+                            }))
+                          }}
+                        />
+                        <span className="fw-mono">s</span>
+                      </label>
+                    ) : null}
+                  </div>
+                )),
+            )}
           </div>
         </aside>
 
@@ -435,11 +506,38 @@ export function ForensicWorkbench({
               unavailableFromSec={
                 playbackSource?.containerPlayback && !ui.containerRebuilt ? playableUntil : null
               }
+              lanes={
+                isClockSync
+                  ? audioSources.map((s) => ({
+                      id: s.id,
+                      label: s.filename,
+                      waveform: s.audio?.waveform ?? [],
+                      startSec: (s.timelineOriginSec ?? 0) + (ui.sourceOffsets[s.id] ?? 0),
+                      durationSec: s.durationSec,
+                    }))
+                  : undefined
+              }
               onSeek={seek}
               onSelect={(selection) => patchUi({ selection })}
               onZoom={(zoom) => patchUi({ zoom })}
               onViewMode={setTimelineView}
               onWaveformZoomY={(waveformZoomY) => patchUi({ waveformZoomY })}
+              onLaneOffset={
+                isClockSync
+                  ? (laneId, nextStartSec) => {
+                      const src = audioSources.find((s) => s.id === laneId)
+                      if (!src) return
+                      const offset = nextStartSec - (src.timelineOriginSec ?? 0)
+                      setUi((u) => ({
+                        ...u,
+                        sourceOffsets: { ...u.sourceOffsets, [laneId]: offset },
+                        formalizedClockOffsetSec: null,
+                        correctedSetTime: null,
+                        findingUnlocked: false,
+                      }))
+                    }
+                  : undefined
+              }
             />
           </main>
           <Transport
@@ -562,6 +660,52 @@ export function ForensicWorkbench({
           onCompare={(compareSourceA, compareSourceB) =>
             patchUi({ compareSourceA, compareSourceB })
           }
+          clockSync={
+            isClockSync
+              ? {
+                  correlation,
+                  offsetValid,
+                  expectedOffsetSec: expectedOffset,
+                  placementDeltaSec: placementDelta,
+                  currentClockOffsetSec: expectedOffset,
+                  onFormalizeOffset: () => {
+                    if (!offsetValid) {
+                      setStatus('Alignment insufficient to formalize clock difference.')
+                      return
+                    }
+                    setUi((u) => ({
+                      ...u,
+                      formalizedClockOffsetSec: expectedOffset,
+                    }))
+                    setStatus(`Clock difference: ${fmtClockOffset(expectedOffset)}`)
+                  },
+                  onApplyClockCorrection: () => {
+                    if (ui.formalizedClockOffsetSec == null) {
+                      setStatus('Formalize clock difference before applying correction.')
+                      return
+                    }
+                    const corrected = session.completion?.correctedRealTime ?? '01:23:30'
+                    setUi((u) => ({
+                      ...u,
+                      correctedSetTime: corrected,
+                      findingUnlocked: true,
+                    }))
+                    setStatus(
+                      `Set log ${session.completion?.setLogVerticeTime ?? '01:16:00'} → ${corrected} real`,
+                    )
+                  },
+                  onSetTimingReference: (id) => patchUi({ timingReferenceSourceId: id }),
+                  onSetSourceOffset: (id, sec) =>
+                    setUi((u) => ({
+                      ...u,
+                      sourceOffsets: { ...u.sourceOffsets, [id]: sec },
+                      formalizedClockOffsetSec: null,
+                      correctedSetTime: null,
+                      findingUnlocked: false,
+                    })),
+                }
+              : undefined
+          }
           onEstimateTempo={() => {
             const audioSrc =
               session.sources.find((s) => s.audio && s.tempoRegions?.length) ?? source
@@ -677,10 +821,43 @@ function ForensicDebug({
   const containerDuration =
     source.containerPlayback?.containerDurationSec ?? source.durationSec
   const isRings = session.completion?.kind === 'source-link'
+  const isJanus = session.completion?.kind === 'clock-sync'
   const recording = session.sources.find((s) => s.tempoRegions?.length)
+  const audioPair = session.sources.filter((s) => s.audio)
+  const a = audioPair[0]
+  const b = audioPair[1]
+  const placement = a && b ? relativeSourceOffsetSec(a, b, ui.sourceOffsets) : 0
+  const corr = approximateTrackCorrelation(
+    placement,
+    session.completion?.offsetToleranceSec ?? 0.2,
+  )
   return (
     <div className="fw-debug" data-testid="forensic-debug">
-      {isRings ? (
+      {isJanus ? (
+        <>
+          <span>sourceAReferenceTime {a?.timing?.eventClockAtDj ?? '—'}</span>
+          <span>sourceBInternalTime {b?.timing?.eventClockAtDj ?? '—'}</span>
+          <span>expectedOffset = +{session.completion?.expectedOffsetSec ?? 450} s</span>
+          <span>
+            currentOffset{' '}
+            {a && b
+              ? Math.abs((a.timelineOriginSec ?? 0) - (b.timelineOriginSec ?? 0))
+              : '—'}
+          </span>
+          <span>placementDelta {placement.toFixed(3)}</span>
+          <span>correlation {corr.toFixed(3)}</span>
+          <span>offsetValid {String(clockSyncOffsetValid(session, ui))}</span>
+          <span>correctedSetTime {ui.correctedSetTime ?? '—'}</span>
+          <span>sandraApproxTime ~01:16</span>
+          <span>findingUnlocked {String(ui.findingUnlocked)}</span>
+          <span>formalizedClockOffsetSec {ui.formalizedClockOffsetSec ?? '—'}</span>
+          {onDevResetPuzzle ? (
+            <button type="button" className="fw-btn" data-testid="dev-reset-puzzle" onClick={onDevResetPuzzle}>
+              DEV reset puzzle
+            </button>
+          ) : null}
+        </>
+      ) : isRings ? (
         <>
           <span>actualPreTempo {recording?.tempoRegions?.find((t) => t.id === 'pre')?.bpm ?? '—'}</span>
           <span>actualPostTempo {recording?.tempoRegions?.find((t) => t.id === 'post')?.bpm ?? '—'}</span>

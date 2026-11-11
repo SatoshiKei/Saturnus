@@ -17,7 +17,7 @@ import {
 import { ForensicWorkbench } from '../../../forensic/ForensicWorkbench'
 import { getForensicSessionForEvidence } from '../../../forensic/forensicRegistry'
 import {
-  runProvisionalJanusSync,
+  runJanusEpimetheusAnalysis,
   runProvisionalSaturnaliaReconstruct,
 } from '../../../game/story/block03Handlers'
 import { onUnknownRecordingAnalyzed } from '../../../game/story/block04Handlers'
@@ -101,8 +101,7 @@ function analysisState(id: string, flags: Record<string, boolean>): AnalysisStat
   if (id === 'rafael_forward_from_mariana' || id === 'rafael_audio_reply')
     return flags.block02_rafael_forward_provisional ? 'done' : 'pending'
   if (id === 'rec_vtx_old_01') return flags.block02_rings_provisional ? 'done' : 'pending'
-  if (id === 'nico_recording_booth' || id === 'nico_recording_portable')
-    return flags.block03_janus_done ? 'done' : 'pending'
+  if (id === 'nico_recording_booth') return flags.block03_janus_done ? 'done' : 'pending'
   if (id === 'livia_radio_archive_raw') return flags.block03_saturnalia_done ? 'done' : 'pending'
   if (HEX_NODES.some((n) => n.evidenceId === id)) return flags.block04_hexagon_done ? 'done' : 'pending'
   if (id === 'unknown_contact_recording') return flags.block04_unknown_analyzed ? 'done' : 'pending'
@@ -128,11 +127,7 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
   const inv = useInvestigation()
   const emergencyProvisionalDone = inv.flags.block01_emergency_provisional
   const rafaelForwardProvisionalDone = inv.flags.block02_rafael_forward_provisional
-  const janusDone = inv.flags.block03_janus_done
   const saturnaliaDone = inv.flags.block03_saturnalia_done
-  const hasJanusPair =
-    inv.evidenceOwned.includes('nico_recording_booth') &&
-    inv.evidenceOwned.includes('nico_recording_portable')
   const hasHexSet = HEX_NODES.every((n) => inv.evidenceOwned.includes(n.evidenceId))
   // Mais recente primeiro (ordem de aquisição invertida).
   const hasRafaelForward = inv.evidenceOwned.includes('rafael_forward_from_mariana')
@@ -165,9 +160,6 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
   const current = allFiles.find((f) => f.id === sel)
-  const showJanus =
-    hasJanusPair &&
-    (current?.id === 'nico_recording_booth' || current?.id === 'nico_recording_portable')
   const showSaturnalia = current?.id === 'livia_radio_archive_raw'
   const hexCurrent = HEX_NODES.find((n) => n.evidenceId === current?.id)
   const showHexagon = hasHexSet && Boolean(hexCurrent)
@@ -322,7 +314,10 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                       : forensicSession.completion?.onCompleteAction ===
                           'runProvisionalRingsAnalysis'
                         ? Boolean(inv.flags.block02_rings_provisional)
-                        : emergencyProvisionalDone
+                        : forensicSession.completion?.onCompleteAction ===
+                            'runJanusEpimetheusAnalysis'
+                          ? Boolean(inv.flags.block03_janus_done)
+                          : emergencyProvisionalDone
                   const containerState = inv.forensicContainerState?.[current.id]
                   return (
                     <ForensicWorkbench
@@ -346,6 +341,8 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                           runProvisionalRafaelForwardAnalysis()
                         } else if (action === 'runProvisionalRingsAnalysis') {
                           runProvisionalRingsAnalysis()
+                        } else if (action === 'runJanusEpimetheusAnalysis') {
+                          runJanusEpimetheusAnalysis()
                         } else {
                           runProvisionalEmergencyAnalysis()
                         }
@@ -421,41 +418,6 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                   {inv.evidenceOwned.includes('rafael_recording_vertice_tag') ? (
                     <blockquote className="aw-provisional__transcript">
                       Vinheta parcialmente recuperada: “…Vértice…”
-                    </blockquote>
-                  ) : null}
-                </div>
-              ) : null}
-
-              {!getForensicSessionForEvidence(current.id) && showJanus ? (
-                <div className="aw-orbit" data-testid="janus-provisional-panel">
-                  <p className="aw-orbit__title">Sessão Janus / Epimetheus</p>
-                  <p className="aw-provisional__note">
-                    Duas gravações da mesma noite, cada uma com o relógio do seu aparelho. Os relógios
-                    divergem; as âncoras acústicas (batidas, vinhetas) podem ser alinhadas.
-                  </p>
-                  <div className="aw-orbit__tracks">
-                    <div>
-                      <p className="aw-orbit__label">Fonte A — cabine · relógio do aparelho</p>
-                      <Waveform id="nico_recording_booth" progress={0.42} />
-                    </div>
-                    <div>
-                      <p className="aw-orbit__label">Fonte B — portátil · relógio do aparelho</p>
-                      <Waveform id="nico_recording_portable" progress={0.58} dim />
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    className="aw-provisional__go"
-                    data-testid="janus-provisional-sync"
-                    disabled={janusDone || !hasJanusPair}
-                    onClick={() => runProvisionalJanusSync()}
-                  >
-                    {janusDone ? 'Âncoras alinhadas' : 'Alinhar âncoras'}
-                  </button>
-                  {janusDone ? (
-                    <blockquote className="aw-provisional__transcript">
-                      Alinhamento concluído: as âncoras coincidem com um deslocamento entre os relógios dos
-                      dois aparelhos.
                     </blockquote>
                   ) : null}
                 </div>

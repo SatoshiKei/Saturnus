@@ -15,12 +15,14 @@ export function finishNicoInterview() {
     { type: 'addEvidence', id: 'nico_mariana_visit' },
     { type: 'addEvidence', id: 'mariana_night_x_focus' },
     { type: 'addEvidence', id: 'nico_recording_booth' },
-    { type: 'addEvidence', id: 'nico_recording_portable' },
+    { type: 'addDocument', id: 'doc-vertice-set-log-levels' },
+    { type: 'addDocument', id: 'doc-vertice-clock-infra' },
+    { type: 'addDocument', id: 'doc-elisa-amiga-levels' },
     { type: 'completeTask', id: 'task_talk_nico' },
     {
       type: 'addTask',
       id: 'task_janus_sync',
-      label: 'Comparar as duas gravações da Noite X (bancada de áudio)',
+      label: 'Comparar a captura ambiente com o feed da mesa (bancada forense)',
     },
     { type: 'setFlag', id: 'block03_janus_available', value: true },
     markVisited,
@@ -28,18 +30,18 @@ export function finishNicoInterview() {
 }
 
 /**
- * Puzzle 4 — Janus/Epimetheus (placeholder).
- * TODO(puzzle-04): substituir por cross-correlation / alinhamento de waveform real.
+ * Puzzle 4 — JANUS E EPIMETHEUS
+ * Alinhamento das fontes + correção do set log + finding temporal.
  */
-export function runProvisionalJanusSync() {
+export function runJanusEpimetheusAnalysis() {
   const s = getInvestigationState()
   if (s.flags.block03_janus_done) return
   if (!s.evidenceOwned.includes('nico_recording_booth')) return
-  if (!s.evidenceOwned.includes('nico_recording_portable')) return
   dispatchActions([
     { type: 'setFlag', id: 'block03_janus_done', value: true },
     { type: 'addEvidence', id: 'vertice_clocks_unsynced' },
     { type: 'addEvidence', id: 'vertice_timeline_inconsistent' },
+    { type: 'addEvidence', id: 'sandra_first_sighting_not_elisa' },
     { type: 'addEvidence', id: 'mariana_revising_elisa_chronology' },
     { type: 'completeTask', id: 'task_janus_sync' },
     { type: 'addHypothesis', id: 'hyp_andre_imprecise_chronology' },
@@ -61,7 +63,22 @@ export function runProvisionalJanusSync() {
       id: 'task_reanalyze_mariana_files',
       label: 'Reexaminar gravações recentes no celular de Mariana',
     },
+    {
+      type: 'notifyInvestigationUpdate',
+      id: 'ach-janus-epimetheus',
+      kind: 'evidence',
+      presentation: 'card',
+      label: 'CONQUISTA',
+      title: 'JANUS E EPIMETHEUS',
+      summary: 'Sincronizou duas fontes independentes da noite do Vértice.',
+      refId: 'sandra_first_sighting_not_elisa',
+    },
   ])
+}
+
+/** @deprecated Prefer runJanusEpimetheusAnalysis — mantido para checkpoints legados. */
+export function runProvisionalJanusSync() {
+  runJanusEpimetheusAnalysis()
 }
 
 /** Reanálise diegética — arquivo que já existia no aparelho ganha contexto. */

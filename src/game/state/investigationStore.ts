@@ -130,6 +130,17 @@ export function resetForensicSpeechProgress(evidenceId: string) {
     delete achievementUnlocks['ach-rings']
     delete bag['rec_vtx_old_01']
   }
+  if (evidenceId === 'nico_recording_booth') {
+    flags.block03_janus_done = false
+    evidenceOwned = evidenceOwned.filter(
+      (id) =>
+        id !== 'vertice_clocks_unsynced' &&
+        id !== 'vertice_timeline_inconsistent' &&
+        id !== 'sandra_first_sighting_not_elisa',
+    )
+    delete achievementUnlocks['ach-janus-epimetheus']
+    delete bag['nico_recording_booth']
+  }
   commit({
     ...state,
     forensicRecoveredSpeech: bag,

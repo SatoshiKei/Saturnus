@@ -1,0 +1,40 @@
+{
+  "durationSec": 180.0,
+  "djStartSec": 72.0,
+  "djEndSec": 90.678,
+  "djDurationSec": 18.678,
+  "expectedOffsetSec": 450.0,
+  "inUniverseMusicLabel": "Mechanical Groove",
+  "syncEvent": "DJ voice + 126\u2192128 transition",
+  "sourceA": {
+    "role": "phone ambient",
+    "clock": "external messaging / real",
+    "fileStartReal": "01:22:18",
+    "djEventReal": "01:23:30",
+    "externalStamp": "WA_MEDIA_RX 01:25:18 \u2194 file end",
+    "timelineOriginSec": 450.0
+  },
+  "sourceB": {
+    "role": "desk feed",
+    "clock": "Vertice local",
+    "fileStartVertice": "01:14:48",
+    "djEventVertice": "01:16:00",
+    "timelineOriginSec": 0.0
+  },
+  "setLog": {
+    "levelsTransitionVertice": "01:16:00",
+    "correctedReal": "01:23:30"
+  },
+  "assets": {
+    "music": "src\\assets\\audios\\p3\\Give-Me-Everything-Tonight-Hardtekk-The-Dark-Triad-Song.mp3",
+    "dj": "src\\assets\\audios\\p3\\DJ - V\u00e9rtice.mp3",
+    "phoneReusedFrom": "tools\\audio\\out\\puzzle03_phone_capture.wav"
+  },
+  "outputs": {
+    "phone": "tools\\audio\\out\\puzzle04_phone_source.wav",
+    "desk": "tools\\audio\\out\\puzzle04_desk_source.wav",
+    "publicPhone": "public\\assets\\audio\\forensic\\puzzle04\\puzzle04_phone_source.wav",
+    "publicDesk": "public\\assets\\audio\\forensic\\puzzle04\\puzzle04_desk_source.wav",
+    "publicDeskMp3": "public\\assets\\audio\\forensic\\puzzle04\\puzzle04_desk_source.mp3"
+  }
+}

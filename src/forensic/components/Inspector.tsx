@@ -9,7 +9,13 @@ import type {
   StructurePage,
 } from '../forensicTypes'
 import { INSPECTOR_TABS } from '../forensicTypes'
-import { fmtTime, type SegmentClarity } from '../forensicEngine'
+import {
+  approximateTrackCorrelation,
+  fmtClockOffset,
+  fmtTime,
+  relativeSourceOffsetSec,
+  type SegmentClarity,
+} from '../forensicEngine'
 
 const HELP: Record<string, string> = {
   Gain: 'Ajusta amplitude linear da seleção ou da faixa ativa (dB).',
@@ -137,6 +143,7 @@ export function Inspector({
   onRebuildContainer,
   onEstimateTempo,
   onLinkSource,
+  clockSync,
 }: {
   tab: ForensicInspectorTab
   onTab: (t: ForensicInspectorTab) => void
@@ -159,6 +166,17 @@ export function Inspector({
   onRebuildContainer?: () => void
   onEstimateTempo?: () => void
   onLinkSource?: () => void
+  clockSync?: {
+    correlation: number
+    offsetValid: boolean
+    expectedOffsetSec: number
+    placementDeltaSec: number
+    currentClockOffsetSec: number
+    onFormalizeOffset: () => void
+    onApplyClockCorrection: () => void
+    onSetTimingReference: (id: string | null) => void
+    onSetSourceOffset: (id: string, sec: number) => void
+  }
 }) {
   const p = ui.process
   const hasProfile = Boolean(ui.activeNoiseProfileId)
@@ -627,7 +645,7 @@ export function Inspector({
         )}
 
         {tab === 'timing' && (
-          <div className="fw-panel">
+          <div className="fw-panel" data-testid="timing-panel">
             <dl className="fw-meta">
               <div>
                 <dt>Source duration</dt>
@@ -651,7 +669,113 @@ export function Inspector({
                   <dd className="fw-mono">{source.timing.sourceClock}</dd>
                 </div>
               )}
+              {source?.timing?.absoluteStartLabel && (
+                <div>
+                  <dt>File start</dt>
+                  <dd className="fw-mono">{source.timing.absoluteStartLabel}</dd>
+                </div>
+              )}
+              {source?.timing?.eventClockAtDj && (
+                <div>
+                  <dt>Event clock (sync marker region)</dt>
+                  <dd className="fw-mono">{source.timing.eventClockAtDj}</dd>
+                </div>
+              )}
+              {source?.timing?.externalStamp && (
+                <div>
+                  <dt>External stamp</dt>
+                  <dd className="fw-mono">{source.timing.externalStamp}</dd>
+                </div>
+              )}
             </dl>
+            {clockSync ? (
+              <Section title="Clock tools" tip="Link Source">
+                <label className="fw-inline fw-inline--stack">
+                  Reference source
+                  <select
+                    className="fw-select"
+                    data-testid="timing-reference-source"
+                    value={ui.timingReferenceSourceId ?? ''}
+                    onChange={(e) => clockSync.onSetTimingReference(e.target.value || null)}
+                  >
+                    <option value="">—</option>
+                    {sources
+                      .filter((s) => s.audio)
+                      .map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.filename}
+                        </option>
+                      ))}
+                  </select>
+                </label>
+                {sources
+                  .filter((s) => s.audio)
+                  .map((s) => (
+                    <label key={s.id} className="fw-inline fw-inline--stack">
+                      Offset · {s.filename}
+                      <input
+                        className="fw-select"
+                        type="number"
+                        step={0.05}
+                        data-testid={`timing-offset-${s.id}`}
+                        value={ui.sourceOffsets[s.id] ?? 0}
+                        onChange={(e) => clockSync.onSetSourceOffset(s.id, Number(e.target.value))}
+                      />
+                    </label>
+                  ))}
+                <dl className="fw-meta">
+                  <div>
+                    <dt>Placement delta</dt>
+                    <dd className="fw-mono">{clockSync.placementDeltaSec.toFixed(3)} s</dd>
+                  </div>
+                  <div>
+                    <dt>Correlation</dt>
+                    <dd className="fw-mono" data-testid="timing-correlation">
+                      {clockSync.correlation.toFixed(2)}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Clock difference</dt>
+                    <dd className="fw-mono" data-testid="timing-clock-difference">
+                      {ui.formalizedClockOffsetSec != null
+                        ? fmtClockOffset(ui.formalizedClockOffsetSec)
+                        : clockSync.offsetValid
+                          ? 'ready'
+                          : '—'}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Corrected time</dt>
+                    <dd className="fw-mono" data-testid="timing-corrected-time">
+                      {ui.correctedSetTime ?? '—'}
+                    </dd>
+                  </div>
+                </dl>
+                <button
+                  type="button"
+                  className="fw-btn"
+                  data-testid="formalize-clock-offset"
+                  disabled={!clockSync.offsetValid}
+                  onClick={clockSync.onFormalizeOffset}
+                >
+                  Formalize clock difference
+                </button>
+                <button
+                  type="button"
+                  className="fw-btn"
+                  data-testid="apply-clock-correction"
+                  disabled={ui.formalizedClockOffsetSec == null}
+                  onClick={clockSync.onApplyClockCorrection}
+                >
+                  Apply clock correction
+                </button>
+                {ui.findingUnlocked ? (
+                  <p className="fw-muted" data-testid="timing-finding">
+                    Finding: Sandra não poderia ter visto Elisa no primeiro avistamento.
+                  </p>
+                ) : null}
+              </Section>
+            ) : null}
           </div>
         )}
 
@@ -755,6 +879,15 @@ export function Inspector({
                     </dl>
                   )
                 }
+                const bothAudio = Boolean(a?.audio && b?.audio)
+                const delta =
+                  bothAudio && a && b
+                    ? relativeSourceOffsetSec(a, b, ui.sourceOffsets)
+                    : null
+                const corr =
+                  delta == null
+                    ? null
+                    : approximateTrackCorrelation(delta, 0.2)
                 return (
                   <div className="fw-compare" data-testid="compare-panel">
                     <div>
@@ -765,6 +898,40 @@ export function Inspector({
                       <strong>Source B</strong>
                       {side(b)}
                     </div>
+                    {bothAudio ? (
+                      <dl className="fw-meta">
+                        <div>
+                          <dt>Placement delta</dt>
+                          <dd className="fw-mono">{delta!.toFixed(3)} s</dd>
+                        </div>
+                        <div>
+                          <dt>Correlation</dt>
+                          <dd className="fw-mono" data-testid="compare-correlation">
+                            {corr!.toFixed(2)}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt>A duration</dt>
+                          <dd className="fw-mono">{a ? fmtTime(a.durationSec) : '—'}</dd>
+                        </div>
+                        <div>
+                          <dt>B duration</dt>
+                          <dd className="fw-mono">{b ? fmtTime(b.durationSec) : '—'}</dd>
+                        </div>
+                        {ui.correctedSetTime ? (
+                          <>
+                            <div>
+                              <dt>Sandra window</dt>
+                              <dd className="fw-mono">~01:16 real</dd>
+                            </div>
+                            <div>
+                              <dt>Elisa exit (corrected)</dt>
+                              <dd className="fw-mono">{ui.correctedSetTime} real</dd>
+                            </div>
+                          </>
+                        ) : null}
+                      </dl>
+                    ) : null}
                     <Section title="Link" tip="Link Source">
                       <button type="button" className="fw-btn" onClick={() => onLinkSource?.()}>
                         Link source

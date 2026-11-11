@@ -49,6 +49,13 @@ export const seedAchievements: AchievementDef[] = [
     unlocked: (s) => Boolean(s.flags.block02_rings_provisional),
   },
   {
+    id: 'ach-janus-epimetheus',
+    title: 'JANUS E EPIMETHEUS',
+    description: 'Sincronizou duas fontes independentes da noite do Vértice.',
+    hint: 'Alinhar a captura ambiente com o feed da mesa na bancada forense.',
+    unlocked: (s) => Boolean(s.flags.block03_janus_done),
+  },
+  {
     id: 'ach-hospital',
     title: 'Plantão',
     description: 'A conversa no hospital foi registrada.',

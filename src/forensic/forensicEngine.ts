@@ -32,6 +32,11 @@ export function createInitialUiState(
       visible: t.visible,
     }
   }
+  const sourceOffsets: Record<string, number> = {}
+  for (const s of session.sources) {
+    sourceOffsets[s.id] = 0
+  }
+  const audioSources = session.sources.filter((s) => s.audio)
   return {
     activeSourceId: first?.id ?? null,
     inspectorTab: 'process',
@@ -48,8 +53,8 @@ export function createInitialUiState(
     noiseProfiles: [],
     activeNoiseProfileId: null,
     recoveredSpeech: [...recoveredSpeech],
-    compareSourceA: null,
-    compareSourceB: null,
+    compareSourceA: audioSources[0]?.id ?? null,
+    compareSourceB: audioSources[1]?.id ?? null,
     waveformZoomY: 1,
     structureSequences: {},
     selectedStructurePageId: first?.structure?.pages?.[0]?.id ?? null,
@@ -59,7 +64,90 @@ export function createInitialUiState(
     tempoEstimate: null,
     linkStatus: null,
     linkedSetSourceId: null,
+    sourceOffsets,
+    timingReferenceSourceId: audioSources[0]?.id ?? null,
+    formalizedClockOffsetSec: null,
+    correctedSetTime: null,
+    findingUnlocked: false,
   }
+}
+
+/** Posição absoluta da fonte na timeline compartilhada. */
+export function sourceTimelinePlacement(
+  source: ForensicSource | undefined,
+  offsets: Record<string, number>,
+): number {
+  if (!source) return 0
+  return (source.timelineOriginSec ?? 0) + (offsets[source.id] ?? 0)
+}
+
+/** Diferença de placement entre duas fontes (B − A). */
+export function relativeSourceOffsetSec(
+  a: ForensicSource | undefined,
+  b: ForensicSource | undefined,
+  offsets: Record<string, number>,
+): number {
+  return sourceTimelinePlacement(b, offsets) - sourceTimelinePlacement(a, offsets)
+}
+
+/**
+ * Correlação aproximada 0..1 a partir do desalinhamento de placement.
+ * Pico quando as faixas se sobrepõem no conteúdo (placement relativo ≈ 0).
+ */
+export function approximateTrackCorrelation(
+  placementDeltaSec: number,
+  toleranceSec = 0.2,
+): number {
+  const d = Math.abs(placementDeltaSec)
+  if (d <= toleranceSec) return 0.94 + Math.max(0, (toleranceSec - d) / Math.max(toleranceSec, 1e-6)) * 0.05
+  if (d <= 1) return 0.62 + (1 - d) * 0.3
+  if (d <= 5) return 0.31 * (1 - (d - 1) / 4)
+  return Math.max(0.02, 0.12 * Math.exp(-(d - 5) / 40))
+}
+
+export function clockSyncOffsetValid(
+  session: ForensicSession,
+  ui: ForensicUiState,
+): boolean {
+  const completion = session.completion
+  if (!completion || completion.kind !== 'clock-sync') return false
+  const expected = completion.expectedOffsetSec ?? 450
+  const tol = completion.offsetToleranceSec ?? 0.2
+  const audio = session.sources.filter((s) => s.audio)
+  if (audio.length < 2) return false
+  const a = audio[0]
+  const b = audio[1]
+  // Placement alinhado ⇒ origemA + offA ≈ origemB + offB
+  // Offset de relógio formal = (origemA − origemB) quando alinhados (canônico +450).
+  const placementDelta = Math.abs(relativeSourceOffsetSec(a, b, ui.sourceOffsets))
+  if (placementDelta > tol) return false
+  const clockOffset = Math.abs((a.timelineOriginSec ?? 0) - (b.timelineOriginSec ?? 0))
+  return Math.abs(clockOffset - expected) <= tol
+}
+
+export function clockSyncComplete(session: ForensicSession, ui: ForensicUiState): boolean {
+  const completion = session.completion
+  if (!completion || completion.kind !== 'clock-sync') return false
+  if (!clockSyncOffsetValid(session, ui)) return false
+  if (ui.formalizedClockOffsetSec == null) return false
+  const expected = completion.expectedOffsetSec ?? 450
+  if (Math.abs(ui.formalizedClockOffsetSec - expected) > (completion.offsetToleranceSec ?? 0.2))
+    return false
+  if (ui.correctedSetTime !== (completion.correctedRealTime ?? null)) return false
+  if (!ui.findingUnlocked) return false
+  return true
+}
+
+export function fmtClockOffset(sec: number): string {
+  const sign = sec >= 0 ? '+' : '−'
+  const abs = Math.abs(sec)
+  const h = Math.floor(abs / 3600)
+  const m = Math.floor((abs % 3600) / 60)
+  const s = Math.floor(abs % 60)
+  if (h > 0) {
+    return `${sign}${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+  }
+  return `${sign}${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
 }
 
 /** Estimate tempo from selection overlapping dataset tempoRegions. */
