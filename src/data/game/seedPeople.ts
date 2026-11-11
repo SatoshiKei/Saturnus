@@ -67,6 +67,15 @@ export const seedPeople: Person[] = [
     relatedPersonIds: ['mariana'],
   },
   {
+    id: 'marcelo',
+    name: 'Marcelo Viana',
+    status: 'mentioned',
+    occupation: 'Manutenção terceirizada (ex-Maralto)',
+    notes: ['Aparece em documentação histórica do terminal; red herring'],
+    relatedEvidenceIds: [],
+    relatedPersonIds: [],
+  },
+  {
     id: 'iara',
     name: 'Iara',
     status: 'mentioned',

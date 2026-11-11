@@ -7,8 +7,8 @@ import type { InvestigationState } from '../types'
 import { createInitialPhoneState } from '../story/actions'
 
 export const SAVE_KEY = 'saturnus-investigation-v1'
-/** v2: revisão transversal (documentos, descobertas, conversas e ligações com progresso). */
-export const STATE_VERSION = 2
+/** v3: early paths — searchTermsDiscovered gates cadastros; flavour visits; diary known≠PIN. */
+export const STATE_VERSION = 3
 
 const block01PreOwned = ['emergency_call_raw', 'mariana_phone'] as const
 

@@ -17,13 +17,34 @@ export interface TopicInterviewConfig<T extends string> {
   labels: Record<T, string>
   flags: Record<T, string>
   beats: Record<T, TopicBeat[]>
+  /**
+   * Pré-requisito por tópico: flag booleana OU id em `interviewTopicsUnlocked`.
+   * Sem entrada = tópico sempre disponível (comportamento legado).
+   */
+  topicRequires?: Partial<Record<T, string>>
   /** Flag que marca a conversa como concluída (não repetir o fechamento). */
   doneFlag: string
-  /** Executado uma única vez, quando o último assunto termina. */
+  /**
+   * Quando true, `finish` só roda se TODOS os topicIds estiverem feitos.
+   * Quando false (padrão com topicRequires), fecha ao esgotar os tópicos atualmente disponíveis.
+   */
+  finishRequiresAllTopics?: boolean
+  /** Executado uma única vez, quando o último assunto disponível termina. */
   finish: () => void
   /** Linha final se o jogador voltar à cena sem assuntos pendentes. */
   idleLine: string
   darkness?: number
+}
+
+function topicIsAvailable<T extends string>(
+  topic: T,
+  config: TopicInterviewConfig<T>,
+  inv: ReturnType<typeof useInvestigation>,
+): boolean {
+  const req = config.topicRequires?.[topic]
+  if (!req) return true
+  if (inv.flags[req]) return true
+  return inv.interviewTopicsUnlocked.includes(req)
 }
 
 interface Props<T extends string> {
@@ -53,6 +74,11 @@ export function TopicInterviewScene<T extends string>({ config, onClose }: Props
     return s
   }, [inv.flags, config])
 
+  const availableTopics = useMemo(
+    () => config.topicIds.filter((id) => topicIsAvailable(id, config, inv)),
+    [config, inv],
+  )
+
   const bg = assetPath(config.background)
   const dark = config.darkness ?? 0.55
 
@@ -60,9 +86,18 @@ export function TopicInterviewScene<T extends string>({ config, onClose }: Props
     (topic: T) => {
       setFlag(config.flags[topic], true)
       // Lê a store na hora — `doneTopics` do render pode estar defasado e impedir o fechamento.
-      const flags = getInvestigationState().flags
-      const allDone = config.topicIds.every((id) => flags[config.flags[id]])
-      if (allDone) {
+      const state = getInvestigationState()
+      const flags = state.flags
+      const availableNow = config.topicIds.filter((id) => {
+        const req = config.topicRequires?.[id]
+        if (!req) return true
+        if (flags[req]) return true
+        return state.interviewTopicsUnlocked.includes(req)
+      })
+      const availableDone = availableNow.every((id) => flags[config.flags[id]])
+      const allConfiguredDone = config.topicIds.every((id) => flags[config.flags[id]])
+      const shouldFinish = config.finishRequiresAllTopics ? allConfiguredDone : availableDone
+      if (shouldFinish) {
         if (!flags[config.doneFlag]) config.finish()
         // Vai direto à Reflexão (NVL) — não passa pela fala idle que pedia clique.
         leave()
@@ -74,7 +109,7 @@ export function TopicInterviewScene<T extends string>({ config, onClose }: Props
     [config, leave],
   )
 
-  const pending = config.topicIds.filter((id) => !doneTopics.has(id))
+  const pending = availableTopics.filter((id) => !doneTopics.has(id))
   const beats = activeTopic ? config.beats[activeTopic] : []
   const currentBeat = activeTopic ? beats[beatIndex] : null
   const portraitForBeat = useCallback(

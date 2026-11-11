@@ -42,8 +42,10 @@ export function HospitalInterviewScene({ onClose }: { onClose: () => void }) {
     if (inv.flags.block01_hospital_done) return
     dispatchActions([
       { type: 'setFlag', id: 'block01_hospital_done', value: true },
+      { type: 'setFlag', id: 'block01_renata_seen', value: true },
       { type: 'addEvidence', id: 'julia_kept_folder' },
       { type: 'addEvidence', id: 'camila_witness_note' },
+      { type: 'unlockContact', contactId: 'contact-fernanda' },
       { type: 'unlockLocation', id: 'hospital', status: 'visited' },
     ])
     setMode('outro')

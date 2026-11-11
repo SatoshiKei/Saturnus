@@ -70,8 +70,12 @@ describe('Bloco 4 — progressão', () => {
   it('Samuel é localizado por documentos: protestos → detidos → ficha com endereço', () => {
     seedBlock04Start()
     expect(runPoliceSearch('samuel', createInitialState()).hits.length).toBe(0)
-    // Antes da relação de detidos, a consulta por nome ainda não retorna a ficha.
-    expect(runPoliceSearch('samuel', getInvestigationState()).hits.length).toBe(0)
+    // Após Saturnalia o nome já é conhecido — a ficha cadastral fica pesquisável.
+    expect(
+      runPoliceSearch('samuel', getInvestigationState()).hits.some(
+        (h) => h.documentId === 'doc-samuel-ficha',
+      ),
+    ).toBe(true)
 
     const protests = runPoliceSearch('Maralto', getInvestigationState())
     expect(protests.hits.some((h) => h.documentId === 'doc-protesto-detidos')).toBe(true)
@@ -179,12 +183,13 @@ describe('Bloco 4 — progressão', () => {
     expect(s.flags.block04_forensics_unlocked).toBe(true)
   })
 
-  it('perícia: só atende com o puzzle resolvido; laudo libera o acesso; PIN errado falha, 481526 abre', () => {
+  it('perícia: pode ser pedida cedo; laudo libera o acesso; PIN errado falha, 481526 abre', () => {
     seedBlock04Start()
     const call = callScripts.find((c) => c.id === 'call-pericia-device')!
-    expect(call.available(getInvestigationState())).toBe(false)
+    // Análise de pacotes pode ser solicitada antes do Hexágono.
+    expect(call.available(getInvestigationState())).toBe(true)
 
-    // Antes do laudo não há acesso forense e o PIN é recusado como "locked".
+    // Antes do laudo o PIN ainda não abre o diário.
     expect(tryDiaryPin(HEX_PIN)).toBe('locked')
     expect(getInvestigationState().phones.mariana.diaryUnlocked).toBeFalsy()
 
@@ -195,6 +200,7 @@ describe('Bloco 4 — progressão', () => {
     openDocument('doc-laudo-forense')
     let s = getInvestigationState()
     expect(s.flags.block04_forensics_access).toBe(true)
+    expect(s.flags.diary_package_known).toBe(true)
     expect(s.evidenceOwned).toContain('hidden_app_detected')
     expect(s.phones.mariana.diaryUnlocked).toBeFalsy()
     expect(s.evidenceOwned).not.toContain('hidden_diary_recovered')

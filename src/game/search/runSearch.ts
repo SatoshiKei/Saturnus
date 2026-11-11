@@ -1,13 +1,7 @@
 import { seedSearchRules } from '../../data/game/seedStory'
+import { knowsAllTerms, normalizeTerm } from '../knowledge/knownTerms'
+import { withKnownTermsFromFlags } from '../knowledge/seedTermsFromFlags'
 import type { InvestigationState } from '../types'
-
-function normalizeTerm(t: string) {
-  return t
-    .trim()
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/\p{M}/gu, '')
-}
 
 export interface SearchHit {
   ruleId: string
@@ -17,6 +11,8 @@ export interface SearchHit {
 }
 
 export function runPoliceSearch(query: string, state: InvestigationState) {
+  // Flags legadas (*_search_unlocked) contam como conhecimento na consulta.
+  const knowledge = withKnownTermsFromFlags(state)
   const terms = query.split(/\s+/).map(normalizeTerm).filter((t) => t.length >= 2)
 
   const hits: SearchHit[] = []
@@ -24,6 +20,7 @@ export function runPoliceSearch(query: string, state: InvestigationState) {
 
   for (const rule of seedSearchRules) {
     if (rule.requiredFlags?.some((f) => !state.flags[f])) continue
+    if (rule.requiredKnownTerms?.length && !knowsAllTerms(knowledge, rule.requiredKnownTerms)) continue
     const required = rule.requiredTerms.map(normalizeTerm)
     if (!required.every((r) => terms.some((t) => t.includes(r) || r.includes(t)))) continue
     for (const r of rule.results) {

@@ -19,6 +19,11 @@ const config: TopicInterviewConfig<SandraTopicId> = {
   labels: sandraTopicLabels,
   flags: sandraTopicFlags,
   beats: sandraBeats,
+  /** Confrontar com Miro só depois da admissão na detenção. */
+  topicRequires: {
+    miro: 'block07_miro_followup_done',
+  },
+  finishRequiresAllTopics: false,
   doneFlag: 'block07_sandra_interview_done',
   finish: finishSandraInterview,
   idleLine: 'Eu já disse o que vi.',

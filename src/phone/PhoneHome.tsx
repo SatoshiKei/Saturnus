@@ -63,7 +63,8 @@ export function PhoneHome() {
 
   useEffect(() => {
     setPage(0)
-    scrollerRef.current?.scrollTo({ left: 0 })
+    const el = scrollerRef.current
+    if (el && typeof el.scrollTo === 'function') el.scrollTo({ left: 0 })
   }, [phoneDevice])
 
   const launch = (id: PhoneAppId) => {

@@ -9,8 +9,10 @@ import { sceneBackgrounds } from '../../data/sceneIntros'
 import { portraitSrcForStory } from '../../lib/characterSprites'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { finishJanaInterview } from '../../game/story/block05Handlers'
+import { isJanaEarlyVisit } from '../../game/story/earlyPathHandlers'
 import { TopicInterviewScene, type TopicInterviewConfig } from './TopicInterviewScene'
 import { JanaFollowupScene } from './JanaFollowupScene'
+import { JanaEarlyInterviewScene } from './JanaEarlyInterviewScene'
 
 const config: TopicInterviewConfig<JanaTopicId> = {
   testId: 'jana-scene',
@@ -33,6 +35,9 @@ export function JanaInterviewScene({ onClose }: { onClose: () => void }) {
     !inv.flags.block06_jana_followup_done
   ) {
     return <JanaFollowupScene onClose={onClose} />
+  }
+  if (isJanaEarlyVisit(inv)) {
+    return <JanaEarlyInterviewScene onClose={onClose} />
   }
   return <TopicInterviewScene config={config} onClose={onClose} />
 }

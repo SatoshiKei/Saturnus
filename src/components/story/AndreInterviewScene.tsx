@@ -21,6 +21,11 @@ const config: TopicInterviewConfig<AndreTopicId> = {
   labels: andreTopicLabels,
   flags: andreTopicFlags,
   beats: andreBeats,
+  /** Maralto/protestos só depois de Saturnalia — não na primeira visita pós-Autos. */
+  topicRequires: {
+    maralto: 'block03_saturnalia_done',
+  },
+  finishRequiresAllTopics: false,
   doneFlag: 'block04_andre_interview_done',
   finish: finishAndreInterview,
   idleLine: 'O tempo de visita acabou.',

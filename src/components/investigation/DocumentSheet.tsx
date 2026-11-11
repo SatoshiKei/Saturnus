@@ -81,6 +81,12 @@ export function DocumentSheet({ docId, onBack, backLabel = '‹ Voltar' }: Docum
               const actions: Parameters<typeof extractFromDocument>[2] = []
               if (block.extractableEvidenceId) {
                 actions.push({ type: 'addEvidence', id: block.extractableEvidenceId })
+                if (block.extractableEvidenceId === 'elisa_lookalike_near_fall') {
+                  actions.push(
+                    { type: 'discoverSearchTerm', term: 'sandra' },
+                    { type: 'discoverPerson', id: 'sandra', status: 'identified' },
+                  )
+                }
               }
               if (block.extractAction) actions.push(block.extractAction)
               if (doc.id === 'doc-bo-inicial' && block.id === 'b5') {

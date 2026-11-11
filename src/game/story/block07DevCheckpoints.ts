@@ -53,6 +53,7 @@ export const block07EntryActions: StoryActionRef[] = [
   { type: 'addEvidence', id: 'miro_descended_fall_area' },
   { type: 'addEvidence', id: 'miro_recovered_jana_bag' },
   { type: 'setFlag', id: 'block07_sandra_search_unlocked', value: true },
+  { type: 'discoverSearchTerm', term: 'sandra' },
   {
     type: 'replaceTasks',
     tasks: [

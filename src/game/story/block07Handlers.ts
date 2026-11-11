@@ -49,7 +49,10 @@ export function finishMiroFollowup() {
     { type: 'unlockLocation', id: 'detencao-miro', status: 'visited' },
     { type: 'updateHypothesis', id: 'hyp_miro_followed_to_fall', state: 'confirmed' },
     { type: 'addHypothesis', id: 'hyp_miro_may_be_involved_elisa' },
+    { type: 'setFlag', id: 'theory_miro_killed_elisa_pending', value: true },
     { type: 'setFlag', id: 'block07_sandra_search_unlocked', value: true },
+    { type: 'discoverSearchTerm', term: 'sandra' },
+    { type: 'unlockLocation', id: 'sandra-casa', status: 'visitAvailable' },
     {
       type: 'addTask',
       id: 'task_locate_sandra',
@@ -61,31 +64,54 @@ export function finishMiroFollowup() {
 export function finishSandraInterview() {
   const s = getInvestigationState()
   const mark = { type: 'unlockLocation' as const, id: 'sandra-casa', status: 'visited' as const }
+  const hasMiroContext =
+    Boolean(s.flags.block07_sandra_miro) || Boolean(s.flags.block07_miro_followup_done)
   if (s.flags.block07_sandra_interview_done) {
+    // Retorno pós-Miro: tópico Miro pode ter ficado pendente na 1ª visita.
+    if (hasMiroContext && !s.evidenceOwned.includes('sandra_acknowledges_miro_possibility')) {
+      dispatchActions([
+        { type: 'addEvidence', id: 'sandra_acknowledges_miro_possibility' },
+        {
+          type: 'linkHypothesis',
+          hypothesisId: 'hyp_lookalike_may_not_be_andre',
+          evidenceId: 'miro_descended_fall_area',
+          role: 'support',
+        },
+        { type: 'setFlag', id: 'block07_refl_sandra_pending', value: true },
+        mark,
+      ])
+      return
+    }
     if (s.locations['sandra-casa']?.status === 'visitAvailable') dispatchActions([mark])
     return
   }
-  dispatchActions([
+  const actions: StoryActionRef[] = [
     { type: 'setFlag', id: 'block07_sandra_interview_done', value: true },
     { type: 'discoverPerson', id: 'sandra', status: 'interviewed' },
     { type: 'addEvidence', id: 'sandra_still_identifies_andre' },
-    { type: 'addEvidence', id: 'sandra_acknowledges_miro_possibility' },
     { type: 'completeTask', id: 'task_talk_sandra' },
     mark,
-    {
-      type: 'linkHypothesis',
-      hypothesisId: 'hyp_lookalike_may_not_be_andre',
-      evidenceId: 'miro_descended_fall_area',
-      role: 'support',
-    },
     {
       type: 'linkHypothesis',
       hypothesisId: 'hyp_lookalike_may_not_be_andre',
       evidenceId: 'sandra_still_identifies_andre',
       role: 'contradict',
     },
-    { type: 'setFlag', id: 'block07_refl_sandra_pending', value: true },
-  ])
+  ]
+  if (hasMiroContext) {
+    actions.push(
+      { type: 'addEvidence', id: 'sandra_acknowledges_miro_possibility' },
+      {
+        type: 'linkHypothesis',
+        hypothesisId: 'hyp_lookalike_may_not_be_andre',
+        evidenceId: 'miro_descended_fall_area',
+        role: 'support',
+      },
+      { type: 'setFlag', id: 'block07_refl_sandra_pending', value: true },
+    )
+  }
+  // 1ª visita só com Autos (sem Miro ainda): sem reflexão de Morsa — retorno completa.
+  dispatchActions(actions)
 }
 
 export function onSandraReflectionDone() {
@@ -328,7 +354,7 @@ export function onNotebookReflectionDone() {
 export function onHospitalDepositDone() {
   const s = getInvestigationState()
   if (s.flags.block07_hospital_deposit_done) return
-  dispatchActions([
+  const actions: StoryActionRef[] = [
     { type: 'setFlag', id: 'block07_hospital_deposit_done', value: true },
     { type: 'addEvidence', id: 'ricardo_belongings_no_laptop' },
     { type: 'addEvidence', id: 'ricardo_handkerchief_hv' },
@@ -336,12 +362,26 @@ export function onHospitalDepositDone() {
     { type: 'completeTask', id: 'task_hospital_deposit' },
     { type: 'setFlag', id: 'block07_refl_hv_pending', value: true },
     { type: 'setFlag', id: 'block07_forum_search_unlocked', value: true },
-    {
+    { type: 'discoverSearchTerm', term: 'hvalenca' },
+  ]
+  // Se hvalenca já foi pesquisado cedo, recontextualiza — não cria tarefa duplicada.
+  if (s.flags.block07_forum_hvalenca_done || s.flags.hvalenca_note_known) {
+    actions.push({ type: 'setFlag', id: 'block07_hvalenca_recontextualized', value: true })
+    if (!s.flags.block07_forum_hvalenca_done) {
+      actions.push({
+        type: 'addTask',
+        id: 'task_forum_hvalenca',
+        label: 'Buscar o nickname hvalenca em arquivo de fórum técnico',
+      })
+    }
+  } else {
+    actions.push({
       type: 'addTask',
       id: 'task_forum_hvalenca',
       label: 'Buscar o nickname hvalenca em arquivo de fórum técnico',
-    },
-  ])
+    })
+  }
+  dispatchActions(actions)
 }
 
 export function onHvReflectionDone() {
@@ -366,6 +406,7 @@ export function onForumHvalencaOpened() {
   dispatchActions([
     { type: 'setFlag', id: 'block07_forum_hvalenca_done', value: true },
     { type: 'addEvidence', id: 'hvalenca_forum_aster_mention' },
+    { type: 'discoverSearchTerm', term: 'aster' },
     { type: 'completeTask', id: 'task_forum_hvalenca' },
   ])
 }

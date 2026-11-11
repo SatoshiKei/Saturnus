@@ -7,8 +7,11 @@ import {
 } from '../../data/block04/samuelInterview'
 import { sceneBackgrounds } from '../../data/sceneIntros'
 import { portraitSrcForStory } from '../../lib/characterSprites'
+import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { finishSamuelInterview } from '../../game/story/block04Handlers'
+import { isSamuelAccidentalVisit } from '../../game/story/earlyPathHandlers'
 import { TopicInterviewScene, type TopicInterviewConfig } from './TopicInterviewScene'
+import { SamuelAccidentalScene } from './SamuelAccidentalScene'
 
 const config: TopicInterviewConfig<SamuelTopicId> = {
   testId: 'samuel-scene',
@@ -25,5 +28,9 @@ const config: TopicInterviewConfig<SamuelTopicId> = {
 }
 
 export function SamuelInterviewScene({ onClose }: { onClose: () => void }) {
+  const inv = useInvestigation()
+  if (isSamuelAccidentalVisit(inv)) {
+    return <SamuelAccidentalScene onClose={onClose} />
+  }
   return <TopicInterviewScene config={config} onClose={onClose} />
 }

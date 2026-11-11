@@ -1,3 +1,5 @@
+import { knowsTerm } from './knowledge/knownTerms'
+import { withKnownTermsFromFlags } from './knowledge/seedTermsFromFlags'
 import type { InvestigationState } from './types'
 
 /**
@@ -15,6 +17,7 @@ export const personRegistryFlag: Record<string, string> = {
   caio: 'block02_vertice_caio',
   livia: 'block03_maralto_researched',
   morsa: 'block03_saturnalia_done',
+  /** Samuel: Saturnalia OU visita acidental (Marcelo). */
   samuel: 'block03_saturnalia_done',
   jana: 'block05_jana_search_unlocked',
   geraldo: 'block06_geraldo_search_unlocked',
@@ -34,6 +37,76 @@ export const personRegistryFlag: Record<string, string> = {
 
 export function isPersonVisibleInRegistry(personId: string, inv: InvestigationState): boolean {
   if (personId === 'augusto') return false
+  if (personId === 'marcelo') {
+    return (
+      knowsTerm(inv, 'marcelo') ||
+      inv.people.marcelo?.status !== 'mentioned' ||
+      Boolean(inv.flags.marcelo_address_found)
+    )
+  }
+
+  // Jana: calendário / early / busca Elisa.
+  if (personId === 'jana') {
+    return (
+      Boolean(inv.flags.block05_jana_search_unlocked) ||
+      Boolean(inv.flags.jana_early_done) ||
+      Boolean(inv.flags.calendar_jana_examined) ||
+      knowsTerm(inv, 'jana') ||
+      inv.people.jana?.status === 'located' ||
+      inv.people.jana?.status === 'interviewed' ||
+      inv.people.jana?.status === 'contactable'
+    )
+  }
+
+  // Geraldo: calendário / early / autos Vértice.
+  if (personId === 'geraldo') {
+    return (
+      Boolean(inv.flags.block06_geraldo_search_unlocked) ||
+      Boolean(inv.flags.geraldo_early_done) ||
+      Boolean(inv.flags.calendar_geraldo_examined) ||
+      Boolean(inv.flags.geraldo_vertice_known) ||
+      knowsTerm(inv, 'geraldo') ||
+      inv.people.geraldo?.status === 'located' ||
+      inv.people.geraldo?.status === 'interviewed' ||
+      inv.people.geraldo?.status === 'contactable'
+    )
+  }
+
+  // Samuel: Saturnalia / protestos OU visita acidental.
+  if (personId === 'samuel') {
+    return (
+      Boolean(inv.flags.block03_saturnalia_done) ||
+      Boolean(inv.flags.block04_samuel_search_unlocked) ||
+      Boolean(inv.flags.samuel_accidental_done) ||
+      knowsTerm(inv, 'samuel') ||
+      inv.people.samuel?.status === 'located' ||
+      inv.people.samuel?.status === 'interviewed' ||
+      inv.people.samuel?.status === 'contactable'
+    )
+  }
+
+  // Sandra: testemunha nos autos (Elisa) — não só após Miro.
+  if (personId === 'sandra') {
+    return (
+      Boolean(inv.flags.block07_sandra_search_unlocked) ||
+      knowsTerm(inv, 'sandra') ||
+      inv.people.sandra?.status === 'located' ||
+      inv.people.sandra?.status === 'interviewed' ||
+      inv.people.sandra?.status === 'contactable'
+    )
+  }
+
+  // Elisa / André: só após Lucas (flag ou termo conhecido via Lucas).
+  if (personId === 'elisa' || personId === 'andre') {
+    return (
+      Boolean(inv.flags.block02_elisa_search_unlocked) ||
+      knowsTerm(inv, 'elisa') ||
+      inv.people.elisa?.status === 'identified' ||
+      inv.people.elisa?.status === 'located' ||
+      inv.people.elisa?.status === 'interviewed'
+    )
+  }
+
   const need = personRegistryFlag[personId]
   if (!need) return true
   if (inv.flags[need]) return true
@@ -76,7 +149,8 @@ export function repairInvestigationState(state: InvestigationState): Investigati
     next.phones.mariana.diaryUnlocked ||
     next.flags.block04_forensics_done ||
     next.flags.block04_diary_opened
-  const forensicsDone = next.flags.block04_forensics_access || diaryDone
+  const forensicsDone =
+    next.flags.block04_forensics_access || diaryDone || next.flags.diary_package_known
   if (forensicsDone) {
     const apps = next.phones.mariana.installedAppIds
     const needApp = !apps.includes('hidden-diary')
@@ -104,5 +178,5 @@ export function repairInvestigationState(state: InvestigationState): Investigati
     }
   }
 
-  return next
+  return withKnownTermsFromFlags(next)
 }

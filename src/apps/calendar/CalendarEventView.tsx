@@ -1,4 +1,9 @@
+import { useEffect } from 'react'
 import { mockCalendarEvents } from '../../data/mockCalendar'
+import {
+  onCalendarGeraldoExamined,
+  onCalendarJanaExamined,
+} from '../../game/story/earlyPathHandlers'
 
 interface CalendarEventViewProps {
   eventId: string
@@ -7,6 +12,11 @@ interface CalendarEventViewProps {
 
 export function CalendarEventView({ eventId, onBack }: CalendarEventViewProps) {
   const event = mockCalendarEvents.find((e) => e.id === eventId)
+
+  useEffect(() => {
+    if (eventId === 'ev-jana') onCalendarJanaExamined()
+    if (eventId === 'ev-bar') onCalendarGeraldoExamined()
+  }, [eventId])
 
   if (!event) {
     return <p>Evento não encontrado.</p>

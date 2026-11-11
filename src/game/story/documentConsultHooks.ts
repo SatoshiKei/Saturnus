@@ -17,7 +17,7 @@ import {
   noteOmitidoCompareSource,
   noteTrailConsult,
 } from './block09Handlers'
-import { getInvestigationState } from '../state/investigationStore'
+import { dispatchActions, getInvestigationState } from '../state/investigationStore'
 
 const MARALTO_SOURCES = new Set([
   'doc-cruzamento-maralto-elisa',
@@ -96,6 +96,15 @@ export function onDocumentConsulted(docId: string) {
     !s.flags.block07_cassini_available
   ) {
     unlockHenriqueDump()
+  }
+
+  // Samuel ficha após visita acidental (Marcelo) → recontextualização.
+  if (
+    docId === 'doc-samuel-ficha' &&
+    s.flags.samuel_accidental_done &&
+    !s.flags['refl-samuel-recontextualized_seen']
+  ) {
+    dispatchActions([{ type: 'setFlag', id: 'samuel_recontextualize_pending', value: true }])
   }
 
   // B7: prontuário hospitalar; fórum hvalenca; legado cadastral.

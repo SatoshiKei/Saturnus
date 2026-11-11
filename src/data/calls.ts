@@ -286,7 +286,10 @@ export const callScripts: CallScript[] = [
     speaker: 'Perícia — dispositivos móveis',
     ext: '212',
     available: (s) =>
-      flag(s, 'block04_forensics_unlocked') &&
+      (flag(s, 'block04_forensics_unlocked') ||
+        flag(s, 'block01_bo_registered') ||
+        flag(s, 'block01_complete')) &&
+      !flag(s, 'diary_package_known') &&
       !(flag(s, 'block08_guardrail_reexam_unlocked') && !flag(s, 'block08_guardrail_done')),
     lines: [
       { who: 'other', text: 'Perícia, dispositivos móveis.' },
@@ -404,6 +407,46 @@ export const callScripts: CallScript[] = [
     notYet: [{ who: 'other', text: 'Sem pedido específico de plantão neste momento.' }],
   },
   {
+    id: 'call-aster-early',
+    speaker: 'Aster Sistemas — administrativo',
+    ext: 'ASTER',
+    available: (s) =>
+      flag(s, 'block07_aster_early_call_unlocked') &&
+      !flag(s, 'block07_aster_call_unlocked') &&
+      !flag(s, 'block07_henrique_named'),
+    lines: [
+      { who: 'other', text: 'Aster Sistemas, administrativo.' },
+      {
+        who: 'augusto',
+        text: 'Delegado Augusto Nogueira. Tenho um nickname técnico — hvalenca — e uma menção à Aster em fórum antigo. Preciso identificar o usuário.',
+      },
+      {
+        who: 'other',
+        text: 'Username externo não identifica funcionário. Sem nome civil, caso formal ou fundamento concreto, não fornecemos dados de ex-colaboradores.',
+      },
+      { who: 'augusto', text: 'Mesmo com o vínculo à empresa no post?' },
+      {
+        who: 'other',
+        text: 'Mesmo assim. Volte quando tiver identificação suficiente.',
+      },
+    ],
+    result: {
+      label: 'Consulta recusada',
+      detail: 'Aster não identifica pessoa a partir de nickname apenas.',
+    },
+    onComplete: [
+      { type: 'completeCall', id: 'call-aster-early' },
+      { type: 'setFlag', id: 'block07_aster_early_refused', value: true },
+    ],
+    repeat: [
+      {
+        who: 'other',
+        text: 'Continua valendo: sem identificação civil, não abrimos arquivo de pessoal.',
+      },
+    ],
+    notYet: [{ who: 'other', text: 'Sem abertura administrativa para essa consulta no momento.' }],
+  },
+  {
     id: 'call-aster-henrique',
     speaker: 'Aster Sistemas — administrativo',
     ext: 'ASTER',
@@ -432,6 +475,110 @@ export const callScripts: CallScript[] = [
     onComplete: [{ type: 'completeCall', id: 'call-aster-henrique' }],
     repeat: [{ who: 'other', text: 'Já passamos o que tínhamos sobre Henrique, delegado.' }],
     notYet: [{ who: 'other', text: 'Sem abertura administrativa para essa consulta no momento.' }],
+  },
+  {
+    id: 'call-fernanda-memory',
+    speaker: 'Fernanda',
+    contactId: 'contact-fernanda',
+    available: (s) =>
+      flag(s, 'block01_hospital_done') && !flag(s, 'fernanda_memory_lapse_noted'),
+    lines: [
+      { who: 'other', text: 'Alô?' },
+      {
+        who: 'augusto',
+        text: 'Fernanda? Delegado Augusto Nogueira. Sobre a festa — Mariana tinha confirmado que ia?',
+      },
+      {
+        who: 'other',
+        // [TEXTO PENDENTE]
+        text: 'Tinha. Eu convidei, ela topou. Depois agiu como se nunca tivesse concordado.',
+      },
+      { who: 'augusto', text: 'Como se não lembrasse.' },
+      { who: 'other', text: 'É. Estranho. Mas eu não sei de mais nada.' },
+    ],
+    result: {
+      label: 'Conversa registrada',
+      detail: 'Fernanda: Mariana confirmou a festa e depois agiu como se não lembrasse.',
+    },
+    onComplete: [
+      { type: 'completeCall', id: 'call-fernanda-memory' },
+      { type: 'setFlag', id: 'fernanda_memory_lapse_noted', value: true },
+      { type: 'setFlag', id: 'theory_julia_pending', value: true },
+    ],
+    repeat: [{ who: 'other', text: 'Já falei o que eu sei da festa.' }],
+    notYet: [{ who: 'other', text: '…' }],
+  },
+  {
+    id: 'call-marcelo-close',
+    speaker: 'Marcelo Viana',
+    ext: 'MARC',
+    available: (s) =>
+      flag(s, 'marcelo_address_found') &&
+      !flag(s, 'marcelo_line_closed') &&
+      (flag(s, 'theory_maralto_retaliation_pending') ||
+        flag(s, 'block03_saturnalia_done') ||
+        flag(s, 'samuel_accidental_done')),
+    lines: [
+      { who: 'other', text: 'Pois não.' },
+      {
+        who: 'augusto',
+        text: 'Marcelo Viana? Delegado Augusto Nogueira. Sobre o período em que o senhor trabalhou no terminal Maralto.',
+      },
+      {
+        who: 'other',
+        // [TEXTO PENDENTE]
+        text: 'Saí por motivo profissional. Não conheço nenhuma Mariana Silva. Não tenho nada a acrescentar.',
+      },
+    ],
+    result: {
+      label: 'Linha encerrada',
+      detail: 'Marcelo Viana: saída banal; sem vínculo com Mariana.',
+    },
+    onComplete: [
+      { type: 'completeCall', id: 'call-marcelo-close' },
+      { type: 'setFlag', id: 'marcelo_line_closed', value: true },
+    ],
+    repeat: [{ who: 'other', text: 'Já respondi. Não tenho o que falar.' }],
+    notYet: [{ who: 'other', text: '…' }],
+  },
+  {
+    id: 'call-julia-pressure',
+    speaker: 'Júlia Martins',
+    contactId: 'contact-julia',
+    available: (s) =>
+      flag(s, 'theory_julia_pending') &&
+      flag(s, 'fernanda_memory_lapse_noted') &&
+      !flag(s, 'julia_pressure_done'),
+    lines: [
+      { who: 'other', text: 'Augusto?' },
+      {
+        who: 'augusto',
+        text: 'Júlia. Preciso que você me diga, com horário, o que Mariana pediu que você corrigisse — e o que ela esquecia sozinha.',
+      },
+      {
+        who: 'other',
+        // [TEXTO PENDENTE]
+        text: 'Você está me acusando de moldar a memória dela?',
+      },
+      {
+        who: 'augusto',
+        text: 'Estou perguntando. Houve algum lapso que aconteceu sem você por perto?',
+      },
+      {
+        who: 'other',
+        text: 'Sim. A festa da Fernanda. Eu nem sabia que ela tinha topado. Ela esqueceu sozinha.',
+      },
+    ],
+    result: {
+      label: 'Pressão registrada',
+      detail: 'Júlia irritada; lapso da festa ocorreu sem a participação dela.',
+    },
+    onComplete: [
+      { type: 'completeCall', id: 'call-julia-pressure' },
+      { type: 'setFlag', id: 'julia_pressure_done', value: true },
+    ],
+    repeat: [{ who: 'other', text: 'Já falei. Não vou repetir isso.' }],
+    notYet: [{ who: 'other', text: '…' }],
   },
   {
     id: 'call-central',

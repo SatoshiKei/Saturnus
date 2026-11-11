@@ -8,11 +8,11 @@ export const mockCalendarMonth = { year, month }
 export const mockCalendarEvents: CalendarEvent[] = [
   {
     id: 'ev-jana',
-    title: 'Encontrar Jana',
+    title: 'Encontrar Jana Ribeiro',
     date: `${year}-10-14`,
     time: '18:30',
     location: 'Praça lateral',
-    notes: 'Mock — sem significado narrativo.',
+    notes: 'Nome completo anotado. Conferir quem é.',
   },
   {
     id: 'ev-bar',
@@ -20,6 +20,7 @@ export const mockCalendarEvents: CalendarEvent[] = [
     date: `${year}-10-16`,
     time: '21:00',
     location: 'Centro',
+    notes: 'Geraldo — bar no centro. Mariana marcou.',
   },
   {
     id: 'ev-andre',

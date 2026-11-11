@@ -105,6 +105,24 @@ function renderLocationScene(id: NonNullable<LocationSceneId>, close: () => void
 }
 
 function pendingSoloReflection(flags: Record<string, boolean>): string | null {
+  if (flags.theory_julia_pending && !flags['refl-theory-julia-pressure_seen']) {
+    return 'refl-theory-julia-pressure'
+  }
+  if (flags.theory_andre_obsession_pending && !flags['refl-theory-andre-obsession_seen']) {
+    return 'refl-theory-andre-obsession'
+  }
+  if (flags.theory_maralto_retaliation_pending && !flags['refl-theory-maralto-retaliation_seen']) {
+    return 'refl-theory-maralto-retaliation'
+  }
+  if (flags.theory_human_manipulator_pending && !flags['refl-theory-human-manipulator_seen']) {
+    return 'refl-theory-human-manipulator'
+  }
+  if (flags.theory_miro_killed_elisa_pending && !flags['refl-theory-miro-killed-elisa_seen']) {
+    return 'refl-theory-miro-killed-elisa'
+  }
+  if (flags.samuel_recontextualize_pending && !flags['refl-samuel-recontextualized_seen']) {
+    return 'refl-samuel-recontextualized'
+  }
   if (flags.block05_refl_andre_pending && !flags['refl-b05-andre_seen']) return 'refl-b05-andre'
   if (flags.block05_refl_path_pending && !flags['refl-b05-path_seen']) return 'refl-b05-path'
   if (flags.block06_refl_geraldo_pending && !flags['refl-b06-geraldo_seen']) return 'refl-b06-geraldo'

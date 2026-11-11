@@ -351,7 +351,7 @@ export const seedSearchRules: SearchRule[] = [
   {
     id: 'block02_lucas_cadastro',
     category: 'police',
-    requiredFlags: ['block02_paula_chat_done'],
+    requiredKnownTerms: ['lucas'],
     requiredTerms: ['lucas'],
     results: [
       {
@@ -364,7 +364,7 @@ export const seedSearchRules: SearchRule[] = [
   {
     id: 'block02_elisa_process',
     category: 'police',
-    requiredFlags: ['block02_elisa_search_unlocked'],
+    requiredKnownTerms: ['elisa'],
     requiredTerms: ['elisa'],
     results: [
       {
@@ -382,7 +382,7 @@ export const seedSearchRules: SearchRule[] = [
   {
     id: 'block03_nico_cadastro',
     category: 'police',
-    requiredFlags: ['block03_nico_search_unlocked'],
+    requiredKnownTerms: ['nico'],
     requiredTerms: ['nico'],
     results: [
       {
@@ -395,7 +395,7 @@ export const seedSearchRules: SearchRule[] = [
   {
     id: 'block03_maralto_public',
     category: 'police',
-    requiredFlags: ['block03_maralto_search_unlocked'],
+    requiredKnownTerms: ['maralto'],
     requiredTerms: ['maralto'],
     results: [
       {
@@ -426,7 +426,7 @@ export const seedSearchRules: SearchRule[] = [
   {
     id: 'block04_protests_maralto',
     category: 'police',
-    requiredFlags: ['block04_started'],
+    requiredKnownTerms: ['maralto'],
     requiredTerms: ['maralto'],
     results: [
       {
@@ -444,7 +444,7 @@ export const seedSearchRules: SearchRule[] = [
   {
     id: 'block04_protests_term',
     category: 'police',
-    requiredFlags: ['block04_started'],
+    requiredKnownTerms: ['maralto'],
     requiredTerms: ['protesto'],
     results: [
       {
@@ -462,7 +462,7 @@ export const seedSearchRules: SearchRule[] = [
   {
     id: 'block04_samuel_cadastro',
     category: 'police',
-    requiredFlags: ['block04_samuel_search_unlocked'],
+    requiredKnownTerms: ['samuel'],
     requiredTerms: ['samuel'],
     results: [
       {
@@ -473,9 +473,22 @@ export const seedSearchRules: SearchRule[] = [
     ],
   },
   {
+    id: 'block04_marcelo_cadastro',
+    category: 'police',
+    requiredKnownTerms: ['marcelo'],
+    requiredTerms: ['marcelo'],
+    results: [
+      {
+        title: 'Consulta histórica — Marcelo Viana',
+        snippet: 'Registro antigo vinculado a operação no terminal Maralto.',
+        documentId: 'doc-marcelo-historico',
+      },
+    ],
+  },
+  {
     id: 'block04_andre_records',
     category: 'police',
-    requiredFlags: ['block04_andre_records_unlocked'],
+    requiredKnownTerms: ['andre'],
     requiredTerms: ['andre'],
     results: [
       {
@@ -530,9 +543,23 @@ export const seedSearchRules: SearchRule[] = [
     ],
   },
   {
+    id: 'block05_jana_cadastro_early',
+    category: 'police',
+    requiredKnownTerms: ['jana'],
+    requiredTerms: ['jana'],
+    results: [
+      {
+        title: 'Cadastro — Jana Ribeiro',
+        snippet: 'Consulta cadastral. Endereço residencial atual.',
+        documentId: 'doc-jana-cadastro',
+      },
+    ],
+  },
+  {
     id: 'block05_jana_witness',
     category: 'police',
-    requiredFlags: ['block05_jana_search_unlocked'],
+    /** Depoimento Elisa só quando Augusto já conhece Elisa (autos / Lucas). */
+    requiredKnownTerms: ['jana', 'elisa'],
     requiredTerms: ['jana'],
     results: [
       {
@@ -556,9 +583,23 @@ export const seedSearchRules: SearchRule[] = [
     ],
   },
   {
+    id: 'block06_geraldo_cadastro_early',
+    category: 'police',
+    requiredKnownTerms: ['geraldo'],
+    requiredTerms: ['geraldo'],
+    results: [
+      {
+        title: 'Cadastro — Geraldo Mota',
+        snippet: 'Consulta cadastral. Endereço residencial atual.',
+        documentId: 'doc-geraldo-cadastro',
+      },
+    ],
+  },
+  {
     id: 'block06_geraldo',
     category: 'police',
-    requiredFlags: ['block06_geraldo_search_unlocked'],
+    /** Depoimento / comanda / ficha Vértice só com Elisa nos autos. */
+    requiredKnownTerms: ['geraldo', 'elisa'],
     requiredTerms: ['geraldo'],
     results: [
       {
@@ -568,7 +609,7 @@ export const seedSearchRules: SearchRule[] = [
       },
       {
         title: 'Ficha — Geraldo Mota',
-        snippet: 'Consulta cadastral. Endereço atual.',
+        snippet: 'Consulta cadastral. Endereço atual. Vínculo antigo no Vértice.',
         documentId: 'doc-geraldo-ficha',
       },
       {
@@ -617,7 +658,7 @@ export const seedSearchRules: SearchRule[] = [
   {
     id: 'block07_sandra',
     category: 'police',
-    requiredFlags: ['block07_sandra_search_unlocked'],
+    requiredKnownTerms: ['sandra'],
     requiredTerms: ['sandra'],
     results: [
       {
@@ -688,7 +729,7 @@ export const seedSearchRules: SearchRule[] = [
   {
     id: 'block07_forum_hvalenca',
     category: 'police',
-    requiredFlags: ['block07_forum_search_unlocked'],
+    requiredKnownTerms: ['hvalenca'],
     requiredTerms: ['hvalenca'],
     results: [
       {
@@ -701,13 +742,26 @@ export const seedSearchRules: SearchRule[] = [
   {
     id: 'block07_aster',
     category: 'police',
-    requiredFlags: ['block07_aster_search_unlocked'],
+    requiredKnownTerms: ['aster'],
     requiredTerms: ['aster'],
     results: [
       {
         title: 'Aster Sistemas — contato administrativo',
         snippet: 'Empresa reestruturada; arquivo de pessoal da época.',
         documentId: 'doc-aster-admin',
+      },
+    ],
+  },
+  {
+    id: 'block_morsa_inconclusive',
+    category: 'police',
+    requiredKnownTerms: ['morsa'],
+    requiredTerms: ['morsa'],
+    results: [
+      {
+        title: 'Consulta — termo “Morsa”',
+        snippet: 'Resultados textuais demais; nenhuma pessoa cadastrada; sem correlação institucional clara.',
+        documentId: 'doc-morsa-inconclusive',
       },
     ],
   },

@@ -31,7 +31,11 @@ export function finishNicoFollowup() {
     { type: 'addEvidence', id: 'nico_believes_jacket_jana' },
     { type: 'completeTask', id: 'task_press_nico' },
     { type: 'setFlag', id: 'block05_jana_search_unlocked', value: true },
+    { type: 'discoverSearchTerm', term: 'jana' },
+    { type: 'discoverPerson', id: 'jana', status: 'identified' },
     { type: 'unlockLocation', id: 'titan', status: 'visited' },
+    // Reabre Jana se a visita precoce já tinha marcado o local como visitado.
+    { type: 'unlockLocation', id: 'jana-casa', status: 'visitAvailable' },
     {
       type: 'addTask',
       id: 'task_locate_jana',
@@ -74,6 +78,7 @@ export function onElisaReviewComplete() {
     { type: 'completeTask', id: 'task_review_elisa_autos' },
     { type: 'addHypothesis', id: 'hyp_mariana_needed_brother' },
     { type: 'setFlag', id: 'block05_refl_andre_pending', value: true },
+    { type: 'setFlag', id: 'theory_andre_obsession_pending', value: true },
     {
       type: 'addTask',
       id: 'task_weigh_maralto_line',

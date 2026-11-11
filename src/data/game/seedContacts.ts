@@ -46,4 +46,11 @@ export const seedContacts: Contact[] = [
     phone: '21 9xxxx-0001',
     unlocked: false,
   },
+  {
+    id: 'contact-fernanda',
+    personId: 'fernanda',
+    displayName: 'Fernanda',
+    phone: '21 9xxxx-5521',
+    unlocked: false,
+  },
 ]

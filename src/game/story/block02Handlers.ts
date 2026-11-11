@@ -51,11 +51,13 @@ export function finishLucasInterview() {
     if (s.locations.universidade?.status === 'visitAvailable') dispatchActions([markVisited])
     return
   }
-  dispatchActions([
+  const actions: StoryActionRef[] = [
     { type: 'setFlag', id: 'block02_lucas_interview_done', value: true },
     { type: 'addEvidence', id: 'lucas_knew_elisa' },
     { type: 'addEvidence', id: 'mariana_andre_innocence' },
     { type: 'discoverPerson', id: 'lucas', status: 'interviewed' },
+    { type: 'discoverPerson', id: 'elisa', status: 'identified' },
+    { type: 'discoverSearchTerm', term: 'elisa' },
     { type: 'setFlag', id: 'block02_elisa_search_unlocked', value: true },
     { type: 'addHypothesis', id: 'hyp_voluntary_disappearance' },
     {
@@ -65,5 +67,10 @@ export function finishLucasInterview() {
       role: 'support',
     },
     markVisited,
-  ])
+  ]
+  // Se Nico já foi visitado cedo, reabre o Titã para a conversa completa.
+  if (s.flags.nico_early_done) {
+    actions.push({ type: 'unlockLocation', id: 'titan', status: 'visitAvailable' })
+  }
+  dispatchActions(actions)
 }

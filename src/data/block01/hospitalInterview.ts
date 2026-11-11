@@ -34,6 +34,18 @@ export const hospitalTopicFlags: Record<HospitalTopicId, string> = {
 
 export const hospitalBeats: Record<HospitalTopicId, HospitalBeat[]> = {
   last_seen: [
+    // Aparição ambiental de Renata (sem pista) — jogador ouve o nome antes de Enceladus.
+    {
+      speaker: 'Camila',
+      text: 'Renata, o kit do posto B já foi conferido?',
+      portrait: 'camila',
+    },
+    {
+      speaker: 'Júlia',
+      // [TEXTO PENDENTE] — banalidade de plantão.
+      text: 'Renata leva agora.',
+      portrait: 'julia',
+    },
     { speaker: 'Augusto', text: 'Quando foi a última vez que vocês viram Mariana pessoalmente?' },
     { speaker: 'Júlia', text: 'Ontem. No fim da tarde.', portrait: 'julia' },
     { speaker: 'Camila', text: 'Eu vi ela saindo do plantão.', portrait: 'camila' },

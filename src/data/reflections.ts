@@ -19,6 +19,60 @@ export interface ReflectionDef {
 
 export const reflections: ReflectionDef[] = [
   {
+    id: 'refl-theory-julia-pressure',
+    background: HUB_REFLECTION_BACKGROUND,
+    blocks: [
+      'Mariana esquecia. Júlia corrigia. Camila confirmava horários. Fernanda dizia que ela tinha aceitado ir a uma festa e depois agia como se nunca tivesse concordado.',
+      'Era fácil imaginar Júlia preenchendo as lacunas — mesmo sem intenção criminosa. Mariana cognitiva e emocionalmente vulnerável; alguém próximo moldando a versão estável do que ela “tinha feito”.',
+      'Não dava para concluir isso como verdade. Só como hipótese que eu precisava testar.',
+    ],
+  },
+  {
+    id: 'refl-theory-andre-obsession',
+    background: HUB_REFLECTION_BACKGROUND,
+    blocks: [
+      'André tinha motivo. Relação ruim. Sem álibi. Sandra o identificou. Anos depois, Mariana reapareceu tentando desmontar a condenação.',
+      'Talvez ela tivesse desenvolvido uma obsessão tardia pela inocência do irmão — e ele, consciente ou não, a empurrasse para reabrir o processo.',
+      'A conta fechava demais para eu descartar. E demais para eu aceitar sem confrontar André.',
+    ],
+  },
+  {
+    id: 'refl-theory-maralto-retaliation',
+    background: HUB_REFLECTION_BACKGROUND,
+    blocks: [
+      'Mariana investigava uma empresa grande. Arquivos incompletos. Pessoas ligadas aos protestos não queriam falar. O endereço antigo de um encarregado me levou a um morador evasivo.',
+      'Talvez o desaparecimento tivesse relação com retaliação empresarial — ou com crimes antigos dos protestos que ninguém queria reabrir.',
+      'Não era teoria absurda. Era uma hipótese que o material histórico sustentava o suficiente para eu continuar testando.',
+    ],
+  },
+  {
+    id: 'refl-theory-human-manipulator',
+    background: HUB_REFLECTION_BACKGROUND,
+    blocks: [
+      'O diário, CHK_UNK, o número sem nome, as correções feitas a Mariana: alguém conhecia a rotina dela com profundidade demais.',
+      'Hacker, stalker, manipulador — uma hipótese humana dominante antes de qualquer outra explicação.',
+      'Ainda não era Henrique. Ainda não era O Omitido. Era a forma mais sóbria de ler o que eu tinha.',
+    ],
+  },
+  {
+    id: 'refl-theory-miro-killed-elisa',
+    background: HUB_REFLECTION_BACKGROUND,
+    blocks: [
+      'Miro admitiu seguir Elisa. Chegou perto da região da queda. Retirou a bolsa.',
+      'A leitura mais direta era simples: Miro matou Elisa.',
+      'Eu precisava levar isso a sério — e testar com Sandra — sem transformar a hipótese em sentença.',
+    ],
+  },
+  {
+    id: 'refl-samuel-recontextualized',
+    background: HUB_REFLECTION_BACKGROUND,
+    blocks: [
+      'Rua das Acácias, 118. Eu já tinha estado ali — procurando Marcelo Viana.',
+      'O homem que atendeu era Samuel Teixeira. Agora o nome voltava pelos protestos e pela linha Morsa.',
+      'Não era coincidência de endereço. Era a mesma pessoa, vista pela primeira vez sem o contexto certo.',
+    ],
+  },
+  {
     id: 'refl-lucas',
     sceneId: 'lucas',
     whenFlag: 'block02_lucas_interview_done',

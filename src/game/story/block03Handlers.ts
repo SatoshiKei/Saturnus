@@ -75,6 +75,7 @@ export function onMarianaMaraltoRecordingFound() {
     { type: 'addEvidence', id: 'mariana_investigating_protests' },
     { type: 'completeTask', id: 'task_reanalyze_mariana_files' },
     { type: 'setFlag', id: 'block03_maralto_search_unlocked', value: true },
+    { type: 'discoverSearchTerm', term: 'maralto' },
     {
       type: 'addTask',
       id: 'task_research_maralto',
@@ -105,6 +106,10 @@ export function finishLiviaInterview() {
     },
     markVisited,
   ])
+  // Import dinâmico evitado: flag lida no earlyPathHandlers.
+  if (getInvestigationState().flags.samuel_accidental_done) {
+    dispatchActions([{ type: 'setFlag', id: 'theory_maralto_retaliation_pending', value: true }])
+  }
 }
 
 /**
@@ -121,7 +126,9 @@ export function runProvisionalSaturnaliaReconstruct() {
     { type: 'addEvidence', id: 'morsa_unidentified' },
     { type: 'addEvidence', id: 'samuel_protest_lead' },
     { type: 'discoverPerson', id: 'morsa', status: 'identified' },
+    { type: 'discoverSearchTerm', term: 'morsa' },
     { type: 'discoverPerson', id: 'samuel', status: 'identified' },
+    { type: 'discoverSearchTerm', term: 'samuel' },
     { type: 'completeTask', id: 'task_saturnalia' },
     { type: 'setFlag', id: 'block03_complete', value: true },
     {
@@ -135,6 +142,14 @@ export function runProvisionalSaturnaliaReconstruct() {
       ],
     },
   ]
+  // Reabre André se a 1ª visita já ocorreu — tópico Maralto passa a existir.
+  if (s.flags.block04_andre_interview_done) {
+    actions.push({ type: 'unlockLocation', id: 'presidio', status: 'visitAvailable' })
+  }
+  // Saturnalia recontextualiza Samuel se a visita acidental já aconteceu.
+  if (s.flags.samuel_accidental_done) {
+    actions.push({ type: 'unlockLocation', id: 'samuel-casa', status: 'visitAvailable' })
+  }
   if (!s.flags.block03_maralto_no_link && !s.evidenceOwned.includes('maralto_no_elisa_link')) {
     actions.push(
       { type: 'addEvidence', id: 'maralto_no_elisa_link' },

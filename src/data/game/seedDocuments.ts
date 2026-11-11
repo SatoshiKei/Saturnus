@@ -138,10 +138,6 @@ export const seedDocuments: Document[] = [
         id: 'b2',
         text: 'Vínculo atual: Universidade — Faculdade de Comunicação, secretaria acadêmica.',
       },
-      {
-        id: 'b3',
-        text: 'Em 2020 constou em lista de alunos da instituição, no mesmo período em que Elisa Duarte frequentou atividades do campus.',
-      },
     ],
     leads: [
       {
@@ -288,11 +284,17 @@ export const seedDocuments: Document[] = [
         id: 'b2',
         text: 'Histórico público: protestos e confrontos durante a implantação do terminal. Cobertura jornalística da época. Arquivos oficiais da ocorrência incompletos.',
       },
+      {
+        id: 'b3',
+        text: 'Entre fornecedores da época: Marcelo Viana — manutenção terceirizada do terminal. Saiu da função pouco depois dos protestos.',
+      },
     ],
     onOpen: [
       { type: 'addEvidence', id: 'maralto_public_record' },
       { type: 'setFlag', id: 'block03_maralto_researched', value: true },
       { type: 'completeTask', id: 'task_research_maralto' },
+      { type: 'discoverPerson', id: 'marcelo', status: 'mentioned' },
+      { type: 'discoverSearchTerm', term: 'marcelo' },
       { type: 'addHypothesis', id: 'hyp_maralto_disappearance' },
       {
         type: 'linkHypothesis',
@@ -333,6 +335,51 @@ export const seedDocuments: Document[] = [
       { type: 'unlockContact', contactId: 'contact-livia' },
       { type: 'addTask', id: 'task_talk_livia', label: 'Falar com Lívia Serrano' },
     ],
+  },
+  {
+    id: 'doc-marcelo-historico',
+    title: 'Consulta histórica — Marcelo Viana',
+    category: 'Cadastro (pessoas)',
+    issuer: 'Sistema de consulta policial — arquivo',
+    system: 'consultas',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Nome: Marcelo Viana. Função à época: encarregado de manutenção terceirizada no terminal Maralto Granéis.',
+      },
+      {
+        id: 'b2',
+        text: 'Saiu da função / região pouco depois dos protestos. Sem condenação criminal registrada.',
+      },
+      {
+        id: 'b3',
+        text: 'Último endereço residencial constante no arquivo da época: Rua das Acácias, 118.',
+      },
+    ],
+    leads: [{ type: 'address', label: 'Endereço antigo', value: 'Rua das Acácias, 118' }],
+    onOpen: [
+      { type: 'discoverPerson', id: 'marcelo', status: 'located' },
+      { type: 'setFlag', id: 'marcelo_address_found', value: true },
+      { type: 'unlockLocation', id: 'samuel-casa', status: 'visitAvailable' },
+    ],
+  },
+  {
+    id: 'doc-morsa-inconclusive',
+    title: 'Consulta — termo “Morsa”',
+    category: 'Consulta',
+    issuer: 'Sistema de consulta policial',
+    system: 'consultas',
+    blocks: [
+      {
+        id: 'b1',
+        text: 'Busca textual pelo termo “Morsa”: ocorrências genéricas, alcunhas sem vínculo cadastral e menções em material de imprensa sem identificação civil.',
+      },
+      {
+        id: 'b2',
+        text: 'Nenhuma pessoa cadastrada sob esse nome. Nenhuma correlação institucional clara sem período, local ou outro filtro.',
+      },
+    ],
+    onOpen: [],
   },
   {
     id: 'doc-cruzamento-maralto-elisa',
@@ -536,6 +583,7 @@ export const seedDocuments: Document[] = [
     ],
     onOpen: [
       { type: 'addEvidence', id: 'hidden_app_detected' },
+      { type: 'setFlag', id: 'diary_package_known', value: true },
       { type: 'setFlag', id: 'block04_forensics_access', value: true },
       { type: 'setFlag', id: 'block04_diary_icon_revealed', value: true },
       { type: 'installApp', device: 'mariana', appId: 'hidden-diary' },
@@ -548,6 +596,22 @@ export const seedDocuments: Document[] = [
     ],
   },
   // ───────────────────────── Bloco 5 ─────────────────────────
+  {
+    id: 'doc-jana-cadastro',
+    title: 'Cadastro — Jana Ribeiro',
+    category: 'Cadastro (pessoas)',
+    issuer: 'Sistema de consulta policial',
+    system: 'consultas',
+    blocks: [
+      { id: 'b1', text: 'Nome: Jana Ribeiro. Sem antecedentes relevantes no cadastro atual.' },
+      { id: 'b2', text: 'Endereço residencial atualizado na última renovação de documentos.' },
+    ],
+    leads: [{ type: 'address', label: 'Endereço residencial', value: 'Rua do Sol, 47' }],
+    onOpen: [
+      { type: 'discoverPerson', id: 'jana', status: 'located' },
+      { type: 'unlockLocation', id: 'jana-casa', status: 'visitAvailable' },
+    ],
+  },
   {
     id: 'doc-elisa-jana',
     title: 'Depoimento arquivado — Jana Ribeiro',
@@ -611,7 +675,7 @@ export const seedDocuments: Document[] = [
       {
         id: 'sec-testemunhas',
         heading: 'Testemunhas',
-        text: 'Ouvidos na fase policial: amigos da vítima, funcionários da Boate Vértice e o DJ Nicolas Prado Reis. Uma testemunha afirmou ter visto, próximo à região da queda, alguém com porte semelhante ao de André Silva. A identificação visual não foi inequívoca.',
+        text: 'Ouvidos na fase policial: amigos da vítima, funcionários da Boate Vértice e o DJ Nicolas Prado Reis. Sandra Almeida afirmou ter visto, próximo à região da queda, alguém com porte semelhante ao de André Silva. A identificação visual não foi inequívoca.',
         extractableEvidenceId: 'elisa_lookalike_near_fall',
       },
       {
@@ -676,7 +740,28 @@ export const seedDocuments: Document[] = [
         text: 'Peça marcada para reexame. Cadastro atualizado disponível em consulta nominal.',
       },
     ],
-    onOpen: [{ type: 'discoverPerson', id: 'geraldo', status: 'identified' }],
+    onOpen: [
+      { type: 'discoverPerson', id: 'geraldo', status: 'identified' },
+      { type: 'discoverSearchTerm', term: 'geraldo' },
+      { type: 'setFlag', id: 'geraldo_vertice_known', value: true },
+      { type: 'unlockLocation', id: 'geraldo-casa', status: 'visitAvailable' },
+    ],
+  },
+  {
+    id: 'doc-geraldo-cadastro',
+    title: 'Cadastro — Geraldo Mota',
+    category: 'Cadastro (pessoas)',
+    issuer: 'Sistema de consulta policial',
+    system: 'consultas',
+    blocks: [
+      { id: 'b1', text: 'Nome: Geraldo Mota. Sem condenação criminal.' },
+      { id: 'b2', text: 'Endereço residencial atualizado na última renovação de documentos.' },
+    ],
+    leads: [{ type: 'address', label: 'Endereço residencial', value: 'Travessa das Palmeiras, 9' }],
+    onOpen: [
+      { type: 'discoverPerson', id: 'geraldo', status: 'located' },
+      { type: 'unlockLocation', id: 'geraldo-casa', status: 'visitAvailable' },
+    ],
   },
   {
     id: 'doc-geraldo-ficha',
@@ -988,7 +1073,10 @@ export const seedDocuments: Document[] = [
       },
     ],
     leads: [{ type: 'phone', label: 'Administrativo', value: 'Ramal ASTER (fixo)' }],
-    onOpen: [{ type: 'setFlag', id: 'block07_aster_call_unlocked', value: true }],
+    onOpen: [
+      // Contato cedo: só libera a linha; identificação de Henrique exige H.V. (onHvReflectionDone).
+      { type: 'setFlag', id: 'block07_aster_early_call_unlocked', value: true },
+    ],
   },
   {
     id: 'doc-ricardo-consulta-negativa',

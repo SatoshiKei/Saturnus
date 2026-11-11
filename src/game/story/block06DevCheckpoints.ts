@@ -20,6 +20,7 @@ export const block06EntryActions: StoryActionRef[] = [
   { type: 'setFlag', id: 'block06_entry_ready', value: true },
   { type: 'setFlag', id: 'block06_started', value: true },
   { type: 'setFlag', id: 'block06_geraldo_search_unlocked', value: true },
+  { type: 'discoverSearchTerm', term: 'geraldo' },
   { type: 'addDocument', id: 'doc-elisa-geraldo-depoimento' },
   { type: 'addHypothesis', id: 'hyp_deliberate_path' },
   { type: 'addEvidence', id: 'jana_confirms_jacket' },

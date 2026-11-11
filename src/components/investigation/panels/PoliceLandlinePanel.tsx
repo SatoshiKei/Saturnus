@@ -63,6 +63,15 @@ export function PoliceLandline({ onClose }: { onClose: () => void }) {
         name: 'Aster Sistemas — administrativo',
         scriptId: 'call-aster-henrique',
       })
+    } else if (
+      inv.flags.block07_aster_early_call_unlocked &&
+      !inv.flags.block07_henrique_named
+    ) {
+      extra.push({
+        key: 'ASTER',
+        name: 'Aster Sistemas — administrativo',
+        scriptId: 'call-aster-early',
+      })
     }
     if (inv.flags.block08_parts_call_unlocked && !inv.flags.block08_denis_contact_unlocked) {
       extra.push({ key: 'PECA', name: 'Peças / importados', scriptId: 'call-parts-jaguar-lead' })
@@ -70,15 +79,30 @@ export function PoliceLandline({ onClose }: { onClose: () => void }) {
     if (inv.flags.block08_detran_call_unlocked && !inv.flags.block08_detran_done) {
       extra.push({ key: 'DETRAN', name: 'DETRAN — frota histórica', scriptId: 'call-detran-jaguar' })
     }
+    if (
+      inv.flags.marcelo_address_found &&
+      !inv.flags.marcelo_line_closed &&
+      (inv.flags.samuel_accidental_done ||
+        inv.flags.theory_maralto_retaliation_pending ||
+        inv.flags.block03_saturnalia_done)
+    ) {
+      extra.push({ key: 'MARC', name: 'Marcelo Viana', scriptId: 'call-marcelo-close' })
+    }
     return [...landlineDirectory, ...extra]
   }, [
     inv.flags.block07_renata_call_unlocked,
     inv.flags.block07_aster_call_unlocked,
+    inv.flags.block07_aster_early_call_unlocked,
     inv.flags.block07_henrique_named,
     inv.flags.block08_parts_call_unlocked,
     inv.flags.block08_denis_contact_unlocked,
     inv.flags.block08_detran_call_unlocked,
     inv.flags.block08_detran_done,
+    inv.flags.marcelo_address_found,
+    inv.flags.marcelo_line_closed,
+    inv.flags.samuel_accidental_done,
+    inv.flags.theory_maralto_retaliation_pending,
+    inv.flags.block03_saturnalia_done,
   ])
 
   // Se o jogador saiu no meio da cena, as gravações ainda precisam chegar à bancada.

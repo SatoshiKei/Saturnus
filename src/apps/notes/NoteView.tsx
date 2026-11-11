@@ -1,5 +1,6 @@
 import { mockNotes } from '../../data/mockNotes'
 import { onNoteRead } from '../../game/story/block01Handlers'
+import { onHvalencaNoteRead } from '../../game/story/earlyPathHandlers'
 import { onMarianaPartialIdRevisited } from '../../game/story/block07Handlers'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { useEffect } from 'react'
@@ -19,7 +20,10 @@ export function NoteView({ noteId, onBack }: NoteViewProps) {
 
   useEffect(() => {
     if (note?.storyFlag) onNoteRead(note.storyFlag)
-    if (noteId === 'n-sess') onMarianaPartialIdRevisited()
+    if (noteId === 'n-sess') {
+      onHvalencaNoteRead()
+      onMarianaPartialIdRevisited()
+    }
   }, [note?.storyFlag, noteId])
 
   if (!note) {

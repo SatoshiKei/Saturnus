@@ -96,6 +96,6 @@ describe('Bloco 6 — progressão', () => {
     s = getInvestigationState()
     expect(s.flags.block06_complete).toBe(true)
     expect(s.flags.block07_entry_ready).toBe(true)
-    expect(s.tasks.some((t) => t.id === 'task_press_miro_further')).toBe(true)
+    expect(s.tasks.some((t) => t.id === 'task_locate_sandra')).toBe(true)
   })
 })

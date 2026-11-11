@@ -33,13 +33,20 @@ export function finishSamuelInterview() {
 
 export function finishAndreInterview() {
   const s = getInvestigationState()
-  if (s.flags.block04_andre_interview_done) return
-  dispatchActions([
+  const hasMaraltoContext =
+    Boolean(s.flags.block04_andre_maralto) || Boolean(s.flags.block03_saturnalia_done)
+  if (s.flags.block04_andre_interview_done) {
+    // Retorno pós-Saturnalia: tópico Maralto pode ter ficado pendente.
+    if (hasMaraltoContext && !s.evidenceOwned.includes('andre_no_maralto_link')) {
+      dispatchActions([{ type: 'addEvidence', id: 'andre_no_maralto_link' }])
+    }
+    return
+  }
+  const actions: StoryActionRef[] = [
     { type: 'setFlag', id: 'block04_andre_interview_done', value: true },
     { type: 'discoverPerson', id: 'andre', status: 'interviewed' },
     { type: 'addEvidence', id: 'andre_confirms_shift' },
     { type: 'addEvidence', id: 'andre_told_her_to_stop' },
-    { type: 'addEvidence', id: 'andre_no_maralto_link' },
     { type: 'completeTask', id: 'task_andre_visits' },
     { type: 'completeTask', id: 'task_interview_andre' },
     { type: 'unlockLocation', id: 'presidio', status: 'visited' },
@@ -62,7 +69,13 @@ export function finishAndreInterview() {
       id: 'task_check_andre_chronology',
       label: 'Comparar os horários dos contatos com os registros da unidade',
     },
-  ])
+  ]
+  // Happy path: Saturnalia já ocorreu antes da visita → Maralto disponível.
+  // Visita antecipada pós-Autos: Maralto fica para retorno.
+  if (hasMaraltoContext) {
+    actions.push({ type: 'addEvidence', id: 'andre_no_maralto_link' })
+  }
+  dispatchActions(actions)
 }
 
 /** A ligação anônima foi atendida: um áudio tocou, a linha caiu. */
@@ -97,17 +110,23 @@ export function onHexagonSolved() {
   const s = getInvestigationState()
   if (s.flags.block04_hexagon_done) return
   if (!HEX_EVIDENCE_IDS.every((id) => s.evidenceOwned.includes(id))) return
-  dispatchActions([
+  const actions: StoryActionRef[] = [
     { type: 'setFlag', id: 'block04_hexagon_done', value: true },
     { type: 'addEvidence', id: 'hex_phrase_recovered' },
     { type: 'completeTask', id: 'task_hexagon' },
     { type: 'setFlag', id: 'block04_forensics_unlocked', value: true },
-    {
+  ]
+  // Hexágono fornece o PIN; se o pacote ainda não foi pedido, leva naturalmente à perícia.
+  if (s.flags.diary_package_known) {
+    actions.push({ type: 'completeTask', id: 'task_phone_forensics' })
+  } else {
+    actions.push({
       type: 'addTask',
       id: 'task_phone_forensics',
       label: 'Pedir à Perícia uma análise do aparelho de Mariana',
-    },
-  ])
+    })
+  }
+  dispatchActions(actions)
 }
 
 export function onDiaryEntryRead(entryId: string, unlocksUnknown: boolean) {
@@ -193,6 +212,7 @@ export function onUnknownRecordingAnalyzed() {
       role: 'support',
     },
     { type: 'setFlag', id: 'block04_complete', value: true },
+    { type: 'setFlag', id: 'theory_human_manipulator_pending', value: true },
     {
       type: 'replaceTasks',
       tasks: [

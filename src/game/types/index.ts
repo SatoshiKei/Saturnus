@@ -327,8 +327,13 @@ export interface SearchRule {
   category: 'web' | 'news' | 'police' | 'case' | 'public' | 'internal'
   requiredTerms: string[]
   optionalTerms?: string[]
-  /** Todas as flags devem estar ativas para a regra valer. */
+  /** Todas as flags devem estar ativas para a regra valer (AND). */
   requiredFlags?: string[]
+  /**
+   * Augusto precisa conhecer estes termos (searchTermsDiscovered ou pessoa no caso).
+   * Substitui a maior parte dos `*_search_unlocked` para cadastros básicos.
+   */
+  requiredKnownTerms?: string[]
   results: { title: string; snippet: string; documentId?: string }[]
   discoverTerms?: string[]
 }

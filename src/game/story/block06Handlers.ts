@@ -9,6 +9,9 @@ export function startBlock06() {
   dispatchActions([
     { type: 'setFlag', id: 'block06_started', value: true },
     { type: 'setFlag', id: 'block06_geraldo_search_unlocked', value: true },
+    { type: 'discoverSearchTerm', term: 'geraldo' },
+    // Reabre Geraldo se a visita precoce já tinha marcado o local como visitado.
+    { type: 'unlockLocation', id: 'geraldo-casa', status: 'visitAvailable' },
   ])
 }
 
@@ -208,6 +211,7 @@ export function onMiroReflectionDone() {
     { type: 'setFlag', id: 'block07_entry_ready', value: true },
     { type: 'setFlag', id: 'block07_started', value: true },
     { type: 'setFlag', id: 'block07_sandra_search_unlocked', value: true },
+    { type: 'discoverSearchTerm', term: 'sandra' },
     {
       type: 'replaceTasks',
       tasks: [

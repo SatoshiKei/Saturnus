@@ -5,6 +5,7 @@ import { seedEvidenceCatalog } from '../../data/game/seedEvidence'
 import { block01MarianaChatIds } from '../../data/block01/marianaChats'
 import { appDefinitions } from '../../data/game/seedApps'
 import type { DiscoveryEvent, DiscoveryKind, InvestigationState, StoryActionRef } from '../types'
+import { nameSearchTokens } from '../knowledge/knownTerms'
 import { maxPersonStatus } from '../state/personStatusOrder'
 
 /** Prioridade entre notices no mesmo lote (maior vence). */
@@ -143,12 +144,19 @@ function applyOne(state: InvestigationState, action: StoryActionRef): Investigat
       const p = state.people[action.id]
       if (!p) return state
       const status = action.status ?? p.status
+      const tokens = [...nameSearchTokens(p.name), ...(p.aliases ?? []).flatMap(nameSearchTokens)]
+      const discovered = new Set(state.searchTermsDiscovered.map((t) => t.toLowerCase()))
+      const newTerms = tokens.filter((t) => !discovered.has(t))
       return {
         ...state,
         people: {
           ...state.people,
           [action.id]: { ...p, status: maxPersonStatus(p.status, status) },
         },
+        searchTermsDiscovered:
+          newTerms.length > 0
+            ? [...state.searchTermsDiscovered, ...newTerms]
+            : state.searchTermsDiscovered,
       }
     }
     case 'unlockLocation': {

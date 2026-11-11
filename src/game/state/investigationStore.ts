@@ -284,7 +284,7 @@ export function migrateState(raw: InvestigationState): InvestigationState {
     }
   } else if (raw.flags?.block04_forensics_access) {
     // Perícia já feita, PIN ainda pendente — revelar ícone no aparelho.
-    merged.flags = { ...merged.flags, block04_diary_icon_revealed: true }
+    merged.flags = { ...merged.flags, block04_diary_icon_revealed: true, diary_package_known: true }
     const apps = merged.phones.mariana.installedAppIds
     if (!apps.includes('hidden-diary')) {
       merged.phones = {
@@ -296,7 +296,8 @@ export function migrateState(raw: InvestigationState): InvestigationState {
       }
     }
   }
-  return merged
+
+  return repairInvestigationState(merged)
 }
 
 export function loadGame(): boolean {
@@ -345,6 +346,6 @@ export function devApply(actions: StoryActionRef[]) {
 
 /** Test hook */
 export function __setStateForTests(next: InvestigationState) {
-  state = next
+  state = repairInvestigationState(next)
   emit()
 }
