@@ -26,6 +26,8 @@ export type ChatMessage =
       from: 'me' | 'them'
       audioSrc: string
       durationSec: number
+      /** Se definido, o player para aqui (arquivo danificado / spoiler gate). */
+      playableUntilSec?: number
       timestamp: string
       status?: MessageDeliveryStatus
       showAvatar?: boolean

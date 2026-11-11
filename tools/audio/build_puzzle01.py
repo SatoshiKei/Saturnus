@@ -37,19 +37,19 @@ except ImportError:
 # Paths
 # ---------------------------------------------------------------------------
 ROOT = Path(__file__).resolve().parents[2]
-SRC_DIR = ROOT / "src" / "assets" / "audios"
+SRC_DIR = ROOT / "src" / "assets" / "audios" / "p1"
 OUT_DIR = ROOT / "tools" / "audio" / "out"
 
 # Correspondência determinada pelos nomes dos arquivos (apenas o clip de medo
 # usa o arquivo `eu sentia medo` — único MP3 restante e o único sobre medo;
 # o conteúdo afirmado pelo projeto é a frase `eu estava com medo`).
 CLIPS: dict[str, Path] = {
-    "escute isso até o fim": SRC_DIR / "mariana escute isso até o fim.mp3",
+    "escute isso até o fim": SRC_DIR / "mariana escute isso ate o fim.mp3",
     "desde aquela noite": SRC_DIR / "mariana - desde aquela noite.mp3",
     # Único MP3 de medo; nome no disco = "sentia", frase canônica = "eu estava com medo".
     "eu estava com medo": SRC_DIR / "mariana - eu sentia medo.mp3",
     "eu estava confusa": SRC_DIR / "mariana - eu estava confusa.mp3",
-    "eu não lembro": SRC_DIR / "mariana - eu não lembro.mp3",
+    "eu não lembro": SRC_DIR / "mariana - eu nao lembro.mp3",
 }
 
 # ---------------------------------------------------------------------------

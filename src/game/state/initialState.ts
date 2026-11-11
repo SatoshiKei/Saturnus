@@ -54,5 +54,6 @@ export function createInitialState(): InvestigationState {
     playTimeMs: 0,
     achievementUnlocks: {},
     forensicRecoveredSpeech: {},
+    forensicContainerState: {},
   }
 }

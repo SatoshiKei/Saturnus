@@ -11,6 +11,7 @@ import type {
   SpectralRule,
   SpeechSegment,
   StemId,
+  StructurePage,
   TrackRuntime,
 } from './forensicTypes'
 import { DEFAULT_PROCESS } from './forensicTypes'
@@ -50,7 +51,151 @@ export function createInitialUiState(
     compareSourceA: null,
     compareSourceB: null,
     waveformZoomY: 1,
+    structureSequences: {},
+    selectedStructurePageId: first?.structure?.pages?.[0]?.id ?? null,
+    containerRebuilt: false,
+    rebuildStatus: null,
+    rebuildCount: 0,
   }
+}
+
+/** CRC simulado a partir dos campos atuais da page. */
+export function simulatePageCrc(page: Pick<StructurePage, 'index' | 'sequence' | 'flags'>): string {
+  let h = (page.index + 1) * 0x45d9f3b
+  h ^= page.sequence * 0x27d4eb2d
+  const flags = page.flags === '—' ? '' : page.flags
+  for (let i = 0; i < flags.length; i++) h = (h * 33 + flags.charCodeAt(i)) >>> 0
+  return `0x${(h >>> 0).toString(16).padStart(8, '0')}`
+}
+
+/** Sequências efetivas (dataset + edits) — sem recalcular CRC. */
+function effectiveSequences(
+  source: ForensicSource | undefined,
+  sequences: Record<string, number>,
+): { id: string; sequence: number; expectedSequence?: number; originalSequence: number }[] {
+  return (source?.structure?.pages ?? []).map((p) => ({
+    id: p.id,
+    sequence: sequences[p.id] ?? p.sequence,
+    expectedSequence: p.expectedSequence,
+    originalSequence: p.sequence,
+  }))
+}
+
+export function structureSequenceValid(
+  source: ForensicSource | undefined,
+  sequences: Record<string, number>,
+): boolean {
+  const rule = source?.structure?.rebuildRule
+  if (!rule || rule.kind !== 'sequence-repair') return true
+  return effectiveSequences(source, sequences).every((p) => {
+    if (p.expectedSequence == null) return true
+    return p.sequence === p.expectedSequence
+  })
+}
+
+/**
+ * Pages efetivas com edits de sequence da UI.
+ * CRC só é recalculado / marcado valid após rebuild bem-sucedido.
+ * Editar sequence sozinho não “conserta” o CRC.
+ */
+export function resolveStructurePages(
+  source: ForensicSource | undefined,
+  sequences: Record<string, number>,
+  containerRebuilt = false,
+): StructurePage[] {
+  const pages = source?.structure?.pages ?? []
+  const allValid = structureSequenceValid(source, sequences)
+  return pages.map((p) => {
+    const sequence = sequences[p.id] ?? p.sequence
+    if (containerRebuilt && allValid) {
+      return {
+        ...p,
+        sequence,
+        storedCrc: simulatePageCrc({ index: p.index, sequence, flags: p.flags }),
+        crcStatus: 'valid' as const,
+      }
+    }
+    const edited = sequences[p.id] != null && sequences[p.id] !== p.sequence
+    const sequenceValid = p.expectedSequence == null || sequence === p.expectedSequence
+    // Dataset já marca mismatch na page corrompida; edits também invalidam até rebuild.
+    const crcStatus: StructurePage['crcStatus'] =
+      p.crcStatus === 'mismatch' || edited || !sequenceValid ? 'mismatch' : 'valid'
+    return {
+      ...p,
+      sequence,
+      storedCrc: p.storedCrc,
+      crcStatus,
+    }
+  })
+}
+
+export function effectivePlayableUntil(
+  source: ForensicSource | undefined,
+  containerRebuilt: boolean,
+): number {
+  const cfg = source?.containerPlayback
+  if (!cfg) return source?.durationSec ?? 0
+  return containerRebuilt ? cfg.containerDurationSec : cfg.damagedPlayableUntilSec
+}
+
+export interface RebuildResult {
+  ok: boolean
+  message: string
+  pages: StructurePage[]
+}
+
+/**
+ * REBUILD CONTAINER — genérico.
+ * Usa valores atuais; não “adivinha” a correção.
+ */
+export function rebuildContainer(
+  source: ForensicSource | undefined,
+  sequences: Record<string, number>,
+): RebuildResult {
+  const pages = resolveStructurePages(source, sequences)
+  if (!source?.structure?.canRebuild) {
+    return { ok: false, message: 'No rebuildable structure for this source.', pages }
+  }
+  const valid = structureSequenceValid(source, sequences)
+  if (!valid) {
+    return {
+      ok: false,
+      message: 'Container rebuilt with structural warnings.',
+      pages,
+    }
+  }
+  return {
+    ok: true,
+    message: 'Container rebuilt. Decode map reconstructed.',
+    pages: pages.map((p) => ({ ...p, crcStatus: 'valid' as const })),
+  }
+}
+
+export function fileMetadataForContainer(
+  source: ForensicSource | undefined,
+  containerRebuilt: boolean,
+): { key: string; label: string; value: string }[] {
+  const meta = [...(source?.metadata ?? [])]
+  const cfg = source?.containerPlayback
+  if (!cfg) return meta
+  const decoded = containerRebuilt ? cfg.containerDurationSec : cfg.damagedPlayableUntilSec
+  const fmt = (sec: number) => {
+    const m = Math.floor(sec / 60)
+    const r = sec - m * 60
+    return `${String(m).padStart(2, '0')}:${r.toFixed(3).padStart(6, '0')}`
+  }
+  return meta.map((f) => {
+    if (f.key === 'decodedDuration') {
+      return { ...f, value: fmt(decoded) }
+    }
+    if (f.key === 'decodeNote') {
+      return {
+        ...f,
+        value: containerRebuilt ? 'Decode complete.' : 'Decode ended before container EOF.',
+      }
+    }
+    return f
+  })
 }
 
 export function getActiveSource(
@@ -516,6 +661,7 @@ export function computeStemGains(
   const tone = (base.TONE_1700 ?? 1) * Math.max(0.14, toneAtten)
 
   return {
+    FILE: (base.FILE ?? 1) * master,
     CORRUPTED_BASE: (base.CORRUPTED_BASE ?? 1) * corrupted * master,
     VOICE: (base.VOICE ?? 1) * cleanBus * master,
     BACKGROUND_NOISE: (base.BACKGROUND_NOISE ?? 1) * noiseGain * master,
@@ -642,6 +788,12 @@ export function resetProcess(ui: ForensicUiState): ForensicUiState {
     markers: [],
     recoveredSpeech: ui.recoveredSpeech,
     waveformZoomY: 1,
+    // Structure / container repair is a finding — Reset processing does not undo it.
+    structureSequences: ui.structureSequences,
+    containerRebuilt: ui.containerRebuilt,
+    selectedStructurePageId: ui.selectedStructurePageId,
+    rebuildStatus: ui.rebuildStatus,
+    rebuildCount: ui.rebuildCount,
   }
 }
 

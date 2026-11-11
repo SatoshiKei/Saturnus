@@ -19,6 +19,7 @@ export type ForensicInspectorTab =
   | 'notes'
 
 export type StemId =
+  | 'FILE'
   | 'CORRUPTED_BASE'
   | 'VOICE'
   | 'BACKGROUND_NOISE'
@@ -161,6 +162,8 @@ export interface SpeechSegment {
   noiseWeight?: number
   /** Multiplicador de debris neste trecho. */
   debrisWeight?: number
+  /** Só pode desbloquear após rebuild válido do container. */
+  requiresContainerRebuild?: boolean
 }
 
 export interface AudioAssetConfig {
@@ -199,11 +202,44 @@ export interface StructureBlock {
   fields: MetadataField[]
 }
 
+/** Página/bloco estrutural genérico (Ogg, etc.). */
+export interface StructurePage {
+  id: string
+  index: number
+  offset: string
+  flags: string
+  granule: string
+  serial: string
+  sequence: number
+  /** Esperado — só dataset / DEV. */
+  expectedSequence?: number
+  segments: number
+  storedCrc: string
+  crcStatus: 'valid' | 'mismatch' | 'pending'
+  editableFields?: Array<'sequence'>
+}
+
+export interface StructureRebuildRule {
+  kind: 'sequence-repair'
+  corruptPageId: string
+  expectedSequence: number
+}
+
 export interface StructureData {
   kind: string
   emptyMessage?: string
   blocks?: StructureBlock[]
+  pages?: StructurePage[]
   canRebuild?: boolean
+  rebuildRule?: StructureRebuildRule
+}
+
+/** Controle de decode truncado por container danificado. */
+export interface ContainerPlaybackConfig {
+  /** Duração anunciada pelo container (metadados). */
+  containerDurationSec: number
+  /** Até onde o decoder chega com a estrutura danificada. */
+  damagedPlayableUntilSec: number
 }
 
 export interface PacketRow {
@@ -253,6 +289,8 @@ export interface ForensicSource {
   noiseRegions?: NoiseRegion[]
   /** Segmentos de fala recuperáveis automaticamente (Recovered Speech). */
   speechSegments?: SpeechSegment[]
+  /** Truncamento por container (Puzzle Structure). */
+  containerPlayback?: ContainerPlaybackConfig
 }
 
 export interface ForensicSession {
@@ -263,9 +301,11 @@ export interface ForensicSession {
   evidenceId?: string
   /** Flag/handler de conclusão narrativa (opcional). */
   completion?: {
-    kind: 'speech-recovery'
+    kind: 'speech-recovery' | 'container-rebuild'
     /** Chama handler externo quando completo. */
-    onCompleteAction?: 'runProvisionalEmergencyAnalysis'
+    onCompleteAction?: 'runProvisionalEmergencyAnalysis' | 'runProvisionalRafaelForwardAnalysis'
+    /** Segmentos obrigatórios além do rebuild (se houver). */
+    requireSpeechSegmentIds?: string[]
   }
 }
 
@@ -355,6 +395,12 @@ export interface ForensicUiState {
   compareSourceA: string | null
   compareSourceB: string | null
   waveformZoomY: number
+  /** Sequence overrides por page id (Structure). */
+  structureSequences: Record<string, number>
+  selectedStructurePageId: string | null
+  containerRebuilt: boolean
+  rebuildStatus: string | null
+  rebuildCount: number
 }
 
 export const DEFAULT_PROCESS: ProcessParams = {

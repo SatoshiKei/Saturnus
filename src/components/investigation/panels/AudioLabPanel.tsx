@@ -5,7 +5,11 @@ import type { Evidence } from '../../../game/types'
 import { assetPath } from '../../../lib/assetPath'
 import { evidenceOriginLabel, evidenceSourceLabel, evidenceTypeLabel } from '../../../lib/labels'
 import { runProvisionalEmergencyAnalysis } from '../../../game/story/block01Handlers'
-import { markForensicSpeechRecovered } from '../../../game/state/investigationStore'
+import {
+  markForensicContainerState,
+  markForensicSpeechRecovered,
+  resetForensicSpeechProgress,
+} from '../../../game/state/investigationStore'
 import { runProvisionalRafaelForwardAnalysis } from '../../../game/story/block02Handlers'
 import { ForensicWorkbench } from '../../../forensic/ForensicWorkbench'
 import { getForensicSessionForEvidence } from '../../../forensic/forensicRegistry'
@@ -91,7 +95,8 @@ const filters: { id: Filter; label: string }[] = [
 
 function analysisState(id: string, flags: Record<string, boolean>): AnalysisState {
   if (id === 'emergency_call_raw') return flags.block01_emergency_provisional ? 'done' : 'pending'
-  if (id === 'rafael_forward_from_mariana') return flags.block02_rafael_forward_provisional ? 'done' : 'pending'
+  if (id === 'rafael_forward_from_mariana' || id === 'rafael_audio_reply')
+    return flags.block02_rafael_forward_provisional ? 'done' : 'pending'
   if (id === 'nico_recording_booth' || id === 'nico_recording_portable')
     return flags.block03_janus_done ? 'done' : 'pending'
   if (id === 'livia_radio_archive_raw') return flags.block03_saturnalia_done ? 'done' : 'pending'
@@ -126,6 +131,7 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
     inv.evidenceOwned.includes('nico_recording_portable')
   const hasHexSet = HEX_NODES.every((n) => inv.evidenceOwned.includes(n.evidenceId))
   // Mais recente primeiro (ordem de aquisição invertida).
+  const hasRafaelForward = inv.evidenceOwned.includes('rafael_forward_from_mariana')
   const allFiles = [...inv.evidenceOwned]
     .reverse()
     .map((id) => inv.evidence[id])
@@ -133,7 +139,9 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
       (e): e is Evidence =>
         Boolean(e) &&
         // Só material sonoro ou sessão reconstruível — nunca laudo/hipótese/documento.
-        (e.type === 'audio' || Boolean(e.puzzleMeta)),
+        (e.type === 'audio' || Boolean(e.puzzleMeta)) &&
+        // Mesmo áudio IAPETUS: uma entrada só (preferir o forward se existir).
+        !(e.id === 'rafael_audio_reply' && hasRafaelForward),
     )
   const [filter, setFilter] = useState<Filter>('all')
   const isNew = (id: string) => !inv.audioSeen.includes(id)
@@ -303,17 +311,38 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
               {(() => {
                 const forensicSession = getForensicSessionForEvidence(current.id)
                 if (forensicSession) {
+                  const done =
+                    forensicSession.completion?.onCompleteAction ===
+                    'runProvisionalRafaelForwardAnalysis'
+                      ? Boolean(inv.flags.block02_rafael_forward_provisional)
+                      : emergencyProvisionalDone
+                  const containerState = inv.forensicContainerState?.[current.id]
                   return (
                     <ForensicWorkbench
                       session={forensicSession}
                       fileNameBadge={current.displayFileName ?? current.title}
-                      completed={emergencyProvisionalDone}
+                      completed={done}
                       recoveredSpeech={inv.forensicRecoveredSpeech?.[current.id] ?? []}
+                      containerRebuilt={containerState?.rebuilt}
+                      structureSequences={containerState?.sequences}
                       onClose={onClose}
                       onSegmentRecovered={(entry) =>
                         markForensicSpeechRecovered(current.id, entry)
                       }
-                      onPuzzleComplete={() => runProvisionalEmergencyAnalysis()}
+                      onContainerStateChange={(state) =>
+                        markForensicContainerState(current.id, state)
+                      }
+                      onDevResetPuzzle={() => resetForensicSpeechProgress(current.id)}
+                      onPuzzleComplete={() => {
+                        if (
+                          forensicSession.completion?.onCompleteAction ===
+                          'runProvisionalRafaelForwardAnalysis'
+                        ) {
+                          runProvisionalRafaelForwardAnalysis()
+                        } else {
+                          runProvisionalEmergencyAnalysis()
+                        }
+                      }}
                     />
                   )
                 }

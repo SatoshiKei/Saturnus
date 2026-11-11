@@ -15,12 +15,25 @@ export function onRafaelForwardAudioPlayed() {
 export function runProvisionalRafaelForwardAnalysis() {
   const s = getInvestigationState()
   if (s.flags.block02_rafael_forward_provisional) return
-  if (!s.evidenceOwned.includes('rafael_forward_from_mariana')) return
+  const hasSource =
+    s.evidenceOwned.includes('rafael_forward_from_mariana') ||
+    s.evidenceOwned.includes('rafael_audio_reply')
+  if (!hasSource) return
   dispatchActions([
     { type: 'setFlag', id: 'block02_rafael_forward_provisional', value: true },
     { type: 'addEvidence', id: 'rafael_recording_vertice_tag' },
     { type: 'unlockLocation', id: 'vertice', status: 'visitAvailable' },
     { type: 'addTask', id: 'task_vertice_dj', label: 'Descobrir quem trabalhava no Vértice quando a gravação foi feita' },
+    {
+      type: 'notifyInvestigationUpdate',
+      id: 'ach-iapetus',
+      kind: 'evidence',
+      presentation: 'card',
+      label: 'CONQUISTA',
+      title: 'IAPETUS',
+      summary: 'Reconstruiu a estrutura do áudio de Rafael.',
+      refId: 'rafael_recording_vertice_tag',
+    },
   ])
 }
 

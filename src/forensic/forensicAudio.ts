@@ -75,6 +75,8 @@ export class ForensicAudioEngine {
     profile: NoiseProfileState | null
     muted: boolean
   } | null = null
+  /** Limite de decode (container danificado). null = duração total. */
+  private playableUntilSec: number | null = null
 
   async ensureCtx(): Promise<AudioContext> {
     if (!this.ctx) {
@@ -323,6 +325,7 @@ export class ForensicAudioEngine {
     this.lastApply = { process, profile, muted }
     if (!this.ctx || !this.filters || !this.master || !this.panNode || !this.asset) return
     const base: Record<StemId, number> = {
+      FILE: 1,
       CORRUPTED_BASE: 1,
       VOICE: 1,
       BACKGROUND_NOISE: 1,
@@ -522,19 +525,26 @@ export class ForensicAudioEngine {
     })
   }
 
+  setPlayableUntil(sec: number | null) {
+    this.playableUntilSec = sec == null ? null : Math.max(0, sec)
+  }
+
   private tickLoop() {
     if (this.anim) cancelAnimationFrame(this.anim)
     const step = () => {
       if (!this.playing) return
       const t = this.getCurrentTime()
-      const end = this.loop && this.loopSel ? this.loopSel.endSec : this.durationSec
+      const limit =
+        this.playableUntilSec == null ? this.durationSec : Math.min(this.durationSec, this.playableUntilSec)
+      const end = this.loop && this.loopSel ? Math.min(this.loopSel.endSec, limit) : limit
       const start = this.loop && this.loopSel ? this.loopSel.startSec : 0
-      if (t >= end) {
-        if (this.loop) {
+      if (t >= end - 0.001) {
+        if (this.loop && !(this.playableUntilSec != null && end >= this.playableUntilSec - 0.001)) {
           void this.play(start, true, this.loopSel)
           return
         }
-        this.stop()
+        this.pause()
+        this.startOffsetSec = end
         this.onTick?.(end)
         return
       }
@@ -542,6 +552,17 @@ export class ForensicAudioEngine {
       this.anim = requestAnimationFrame(step)
     }
     this.anim = requestAnimationFrame(step)
+  }
+
+  seek(sec: number) {
+    const was = this.playing
+    this.stopInternal()
+    const limit =
+      this.playableUntilSec == null ? this.durationSec : Math.min(this.durationSec, this.playableUntilSec)
+    this.startOffsetSec = Math.max(0, Math.min(limit, sec))
+    this.playing = false
+    if (was) void this.play(this.startOffsetSec, this.loop, this.loopSel)
+    else this.onTick?.(this.startOffsetSec)
   }
 
   pause() {
@@ -556,15 +577,6 @@ export class ForensicAudioEngine {
     this.startOffsetSec = 0
     this.playing = false
     this.onTick?.(0)
-  }
-
-  seek(sec: number) {
-    const was = this.playing
-    this.stopInternal()
-    this.startOffsetSec = Math.max(0, Math.min(this.durationSec, sec))
-    this.playing = false
-    if (was) void this.play(this.startOffsetSec, this.loop, this.loopSel)
-    else this.onTick?.(this.startOffsetSec)
   }
 
   private stopInternal() {

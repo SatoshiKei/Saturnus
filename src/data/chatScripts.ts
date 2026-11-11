@@ -7,7 +7,13 @@ import type { StoryActionRef } from '../game/types'
  */
 export type ScriptReply =
   | { kind: 'text'; text: string }
-  | { kind: 'audio'; id: string; audioSrc: string; durationSec: number }
+  | {
+      kind: 'audio'
+      id: string
+      audioSrc: string
+      durationSec: number
+      playableUntilSec?: number
+    }
 
 export interface ScriptStep {
   /** Formulações possíveis (cosméticas) — tons distintos, não paráfrases. */
@@ -190,11 +196,20 @@ export const paulaScript: ChatScript = {
   ],
 }
 
-const RAFAEL_FORWARD_AUDIO: ScriptReply = {
+/** Asset real do áudio de Rafael (Puzzle 02 / IAPETUS). */
+export const RAFAEL_VERTICE_AUDIO_SRC =
+  '/assets/audio/forensic/puzzle02/rafael_1610_2147_full.mp3'
+/** Truncamento no WhatsApp — o final do Vértice só na bancada após rebuild. */
+export const RAFAEL_VERTICE_PLAYABLE_UNTIL_SEC = 19.85
+export const RAFAEL_VERTICE_DURATION_SEC = 31
+
+/** Áudio do forward Rafael → Augusto (Puzzle 02). Exportado para re-sincronizar saves antigos. */
+export const RAFAEL_FORWARD_AUDIO: Extract<ScriptReply, { kind: 'audio' }> = {
   kind: 'audio',
   id: 'r2-audio-forward',
-  audioSrc: '/assets/audio/rafael-forward-block02.wav',
-  durationSec: 34,
+  audioSrc: RAFAEL_VERTICE_AUDIO_SRC,
+  durationSec: RAFAEL_VERTICE_DURATION_SEC,
+  playableUntilSec: RAFAEL_VERTICE_PLAYABLE_UNTIL_SEC,
 }
 
 export const rafaelScript: ChatScript = {

@@ -19,6 +19,7 @@ export function Timeline({
   waveformZoomY,
   viewMode,
   spectrogram,
+  unavailableFromSec = null,
   onSeek,
   onSelect,
   onZoom,
@@ -34,6 +35,8 @@ export function Timeline({
   waveformZoomY: number
   viewMode: 'waveform' | 'spectrogram'
   spectrogram?: { cols: number; rows: number; values: number[]; maxHz: number }
+  /** Região após este tempo não decodifica (container danificado). */
+  unavailableFromSec?: number | null
   onSeek: (sec: number) => void
   onSelect: (sel: SelectionRange | null) => void
   onZoom: (z: number) => void
@@ -197,6 +200,16 @@ export function Timeline({
             })}
           </svg>
         )}
+        {unavailableFromSec != null && unavailableFromSec < durationSec ? (
+          <div
+            className="fw-unavailable"
+            style={{
+              left: `${(unavailableFromSec / visibleDur) * 100}%`,
+              width: `${((durationSec - unavailableFromSec) / visibleDur) * 100}%`,
+            }}
+            title="Region not decoded"
+          />
+        ) : null}
         {selection && (
           <div
             className="fw-sel"

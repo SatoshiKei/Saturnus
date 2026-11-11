@@ -1,7 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { contactById } from '../../data/mockContacts'
 import { getChatById } from '../../data/mockChats'
-import { chatScripts, formatClock, repliesForOption } from '../../data/chatScripts'
+import {
+  chatScripts,
+  formatClock,
+  RAFAEL_FORWARD_AUDIO,
+  RAFAEL_VERTICE_AUDIO_SRC,
+  RAFAEL_VERTICE_DURATION_SEC,
+  RAFAEL_VERTICE_PLAYABLE_UNTIL_SEC,
+  repliesForOption,
+} from '../../data/chatScripts'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { appendChatMessages, dispatchActions } from '../../game/state/investigationStore'
 import { onRafaelForwardAudioPlayed } from '../../game/story/block02Handlers'
@@ -22,6 +30,20 @@ import { useGameHub } from '../../app/GameHubContext'
 interface ChatViewProps {
   chatId: string
   onBack: () => void
+}
+
+/** Reaplica audioSrc/duração atuais em mensagens já persistidas no save. */
+function withLiveAudio(message: ChatMessage): ChatMessage {
+  if (message.kind !== 'audio') return message
+  if (message.id === RAFAEL_FORWARD_AUDIO.id || message.id === 'rf-audio-reply') {
+    return {
+      ...message,
+      audioSrc: RAFAEL_VERTICE_AUDIO_SRC,
+      durationSec: RAFAEL_VERTICE_DURATION_SEC,
+      playableUntilSec: RAFAEL_VERTICE_PLAYABLE_UNTIL_SEC,
+    }
+  }
+  return message
 }
 
 export function ChatView({ chatId, onBack }: ChatViewProps) {
@@ -131,6 +153,7 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
               from: 'them',
               audioSrc: r.audioSrc,
               durationSec: r.durationSec,
+              playableUntilSec: r.playableUntilSec,
               timestamp: stamp(1),
               showAvatar: true,
             },
@@ -231,22 +254,25 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
             {script?.emptyHint}
           </p>
         ) : null}
-        {visibleMessages.map((message) => (
+        {visibleMessages.map((message) => {
+          const live = withLiveAudio(message)
+          return (
           <MessageBubble
-            key={message.id}
-            message={message}
+            key={live.id}
+            message={live}
             contact={contact}
             allMessages={chat.messages}
             onImageOpen={(src, alt, caption) => setLightbox({ src, alt, caption })}
             onAudioPlay={
-              message.kind === 'audio' && message.id === 'rf-audio-reply'
+              live.kind === 'audio' && live.id === 'rf-audio-reply'
                 ? onRafaelAudioPlayed
-                : message.kind === 'audio' && message.id === 'r2-audio-forward'
+                : live.kind === 'audio' && live.id === 'r2-audio-forward'
                   ? onRafaelForwardAudioPlayed
                   : undefined
             }
           />
-        ))}
+          )
+        })}
         {typing ? (
           <div className="wa-row wa-row--in" data-testid="chat-typing">
             <span className="wa-row__avatar-spacer" />

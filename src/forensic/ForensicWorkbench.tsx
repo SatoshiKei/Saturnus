@@ -6,11 +6,16 @@ import {
   computeRecoveryMetrics,
   computeStemGains,
   createInitialUiState,
+  effectivePlayableUntil,
   evaluateSegmentClarity,
+  fileMetadataForContainer,
   fmtTime,
   getActiveSource,
+  rebuildContainer,
   resetProcess,
+  resolveStructurePages,
   speechRecoveryComplete,
+  structureSequenceValid,
   voiceSpansFromSource,
   type SegmentClarity,
 } from './forensicEngine'
@@ -36,6 +41,10 @@ export function ForensicWorkbench({
   completed,
   recoveredSpeech: recoveredProp,
   onSegmentRecovered,
+  containerRebuilt: containerRebuiltProp,
+  structureSequences: structureSequencesProp,
+  onContainerStateChange,
+  onDevResetPuzzle,
 }: {
   session: ForensicSession
   fileNameBadge?: string
@@ -44,10 +53,23 @@ export function ForensicWorkbench({
   completed?: boolean
   recoveredSpeech?: RecoveredSpeechEntry[]
   onSegmentRecovered?: (entry: RecoveredSpeechEntry) => void
+  containerRebuilt?: boolean
+  structureSequences?: Record<string, number>
+  onContainerStateChange?: (state: {
+    rebuilt: boolean
+    sequences: Record<string, number>
+  }) => void
+  /** DEV: reset completo do progresso do puzzle (structure + findings + completion). */
+  onDevResetPuzzle?: () => void
 }) {
-  const [ui, setUi] = useState<ForensicUiState>(() =>
-    createInitialUiState(session, recoveredProp ?? []),
-  )
+  const [ui, setUi] = useState<ForensicUiState>(() => {
+    const initial = createInitialUiState(session, recoveredProp ?? [])
+    return {
+      ...initial,
+      containerRebuilt: containerRebuiltProp ?? false,
+      structureSequences: structureSequencesProp ?? {},
+    }
+  })
   const [showHelp, setShowHelp] = useState(false)
   const [status, setStatus] = useState<string | null>(null)
   const [timelineView, setTimelineView] = useState<'waveform' | 'spectrogram'>('waveform')
@@ -59,8 +81,16 @@ export function ForensicWorkbench({
   const showDebug = import.meta.env.DEV
 
   const source = getActiveSource(session, ui)
+  const playableUntil = effectivePlayableUntil(source, ui.containerRebuilt)
   const duration = source?.durationSec ?? 0
   const waveform = measuredWave ?? source?.audio?.waveform ?? []
+  const structurePages = resolveStructurePages(
+    source,
+    ui.structureSequences,
+    ui.containerRebuilt,
+  )
+  const sequenceValid = structureSequenceValid(source, ui.structureSequences)
+  const fileMetadata = fileMetadataForContainer(source, ui.containerRebuilt)
   const fileLabel = fileNameBadge ?? source?.filename ?? '—'
   const channels =
     source?.metadata?.find((m) => m.key === 'channels')?.value ??
@@ -72,13 +102,25 @@ export function ForensicWorkbench({
   useEffect(() => {
     const eng = new ForensicAudioEngine()
     engineRef.current = eng
-    eng.setTickHandler((t) => setUi((u) => ({ ...u, playheadSec: t })))
+    eng.setTickHandler((t) =>
+      setUi((u) => {
+        const still = eng.isPlaying()
+        if (u.playing && !still) return { ...u, playheadSec: t, playing: false }
+        return { ...u, playheadSec: t }
+      }),
+    )
     eng.setWaveformHandler((peaks) => setMeasuredWave(peaks))
     return () => {
       eng.dispose()
       engineRef.current = null
     }
   }, [])
+
+  useEffect(() => {
+    engineRef.current?.setPlayableUntil(
+      source?.containerPlayback ? playableUntil : null,
+    )
+  }, [playableUntil, source?.containerPlayback])
 
   useEffect(() => {
     setMeasuredWave(null)
@@ -118,17 +160,22 @@ export function ForensicWorkbench({
   )
   const recoveredRef = useRef(ui.recoveredSpeech)
   const playingRef = useRef(ui.playing)
+  const rebuiltRef = useRef(ui.containerRebuilt)
+  const playableRef = useRef(playableUntil)
   processRef.current = ui.process
   profileRef.current =
     ui.noiseProfiles.find((p) => p.id === ui.activeNoiseProfileId) ?? null
   recoveredRef.current = ui.recoveredSpeech
   playingRef.current = ui.playing
+  rebuiltRef.current = ui.containerRebuilt
+  playableRef.current = playableUntil
 
   // Unlock só enquanto o playhead percorre o trecho com clareza suficiente.
   // Só configurar sliders (sem ouvir) NÃO registra Recovered Speech.
   useEffect(() => {
     if (!source?.speechSegments?.length) return
     const base: Record<StemId, number> = {
+      FILE: 1,
       CORRUPTED_BASE: 1,
       VOICE: 1,
       BACKGROUND_NOISE: 1,
@@ -172,8 +219,13 @@ export function ForensicWorkbench({
         const inSegment =
           playhead >= seg.startSec - edgePad &&
           playhead <= seg.startSec + seg.durationSec + edgePad
-        const clearEnough = row.clarityScore >= row.threshold
-        if (playing && inSegment && clearEnough) {
+        const structureReady = !seg.requiresContainerRebuild || rebuiltRef.current
+        // Trechos pós-boundary só existem no decode após rebuild.
+        const reachable = playhead <= playableRef.current + 0.08
+        const clearEnough = seg.requiresContainerRebuild
+          ? structureReady
+          : row.clarityScore >= row.threshold
+        if (playing && inSegment && clearEnough && reachable && structureReady) {
           const need = Math.min(holdNeed, Math.max(0.35, seg.durationSec * 0.75))
           holdRef.current[row.segmentId] = (holdRef.current[row.segmentId] ?? 0) + dt
           if ((holdRef.current[row.segmentId] ?? 0) >= need) {
@@ -211,13 +263,33 @@ export function ForensicWorkbench({
 
   useEffect(() => {
     if (completed || completedRef.current || !onPuzzleComplete) return
-    if (!source?.speechSegments) return
-    if (speechRecoveryComplete(ui.recoveredSpeech, source.speechSegments)) {
-      completedRef.current = true
-      onPuzzleComplete()
-      setStatus('Análise registrada no caderno de investigação.')
+    const completion = session.completion
+    if (!completion) return
+    if (completion.kind === 'speech-recovery') {
+      if (!source?.speechSegments) return
+      if (!speechRecoveryComplete(ui.recoveredSpeech, source.speechSegments)) return
+    } else if (completion.kind === 'container-rebuild') {
+      if (!ui.containerRebuilt) return
+      if (!structureSequenceValid(source, ui.structureSequences)) return
+      const required = completion.requireSpeechSegmentIds ?? []
+      const have = new Set(ui.recoveredSpeech.map((r) => r.segmentId))
+      if (!required.every((id) => have.has(id))) return
+    } else {
+      return
     }
-  }, [ui.recoveredSpeech, source?.speechSegments, completed, onPuzzleComplete])
+    completedRef.current = true
+    onPuzzleComplete()
+    setStatus('Análise registrada no caderno de investigação.')
+  }, [
+    ui.recoveredSpeech,
+    ui.containerRebuilt,
+    ui.structureSequences,
+    source?.speechSegments,
+    source,
+    session.completion,
+    completed,
+    onPuzzleComplete,
+  ])
 
   const patchUi = (patch: Partial<ForensicUiState>) => setUi((u) => ({ ...u, ...patch }))
   const patchProcess = (patch: Partial<ProcessParams>) =>
@@ -336,6 +408,9 @@ export function ForensicWorkbench({
               waveformZoomY={ui.waveformZoomY}
               viewMode={timelineView}
               spectrogram={source?.audio?.spectrogram}
+              unavailableFromSec={
+                source?.containerPlayback && !ui.containerRebuilt ? playableUntil : null
+              }
               onSeek={seek}
               onSelect={(selection) => patchUi({ selection })}
               onZoom={(zoom) => patchUi({ zoom })}
@@ -385,6 +460,46 @@ export function ForensicWorkbench({
           onProcess={patchProcess}
           recoveredSpeech={ui.recoveredSpeech}
           clarityDebug={showDebug ? clarityDebug : undefined}
+          structurePages={structurePages}
+          fileMetadata={fileMetadata}
+          onSelectStructurePage={(id) => patchUi({ selectedStructurePageId: id })}
+          onStructureSequence={(pageId, sequence) => {
+            setUi((u) => {
+              const structureSequences = { ...u.structureSequences, [pageId]: sequence }
+              onContainerStateChange?.({
+                rebuilt: false,
+                sequences: structureSequences,
+              })
+              return {
+                ...u,
+                structureSequences,
+                containerRebuilt: false,
+                rebuildStatus: null,
+              }
+            })
+          }}
+          onRebuildContainer={() => {
+            const result = rebuildContainer(source, ui.structureSequences)
+            setUi((u) => {
+              const next = {
+                ...u,
+                rebuildCount: u.rebuildCount + 1,
+                rebuildStatus: result.message,
+                containerRebuilt: result.ok,
+              }
+              onContainerStateChange?.({
+                rebuilt: result.ok,
+                sequences: u.structureSequences,
+              })
+              return next
+            })
+            setStatus(result.message)
+            if (result.ok) {
+              engineRef.current?.setPlayableUntil(
+                source?.containerPlayback?.containerDurationSec ?? null,
+              )
+            }
+          }}
           onCaptureProfile={() => {
             const ideal = source?.audio?.recovery
               ? {
@@ -426,7 +541,38 @@ export function ForensicWorkbench({
         />
       </div>
       {showDebug && source?.audio ? (
-        <ForensicDebug source={source} ui={ui} clarity={clarityDebug} />
+        <ForensicDebug
+          source={source}
+          ui={ui}
+          clarity={clarityDebug}
+          playableUntil={playableUntil}
+          sequenceValid={sequenceValid}
+          onDevResetPuzzle={
+            onDevResetPuzzle
+              ? () => {
+                  stop()
+                  holdRef.current = {}
+                  completedRef.current = false
+                  onDevResetPuzzle()
+                  setUi((u) => ({
+                    ...createInitialUiState(session, []),
+                    process: u.process,
+                    tracks: u.tracks,
+                    inspectorTab: u.inspectorTab,
+                    containerRebuilt: false,
+                    structureSequences: {},
+                    rebuildStatus: null,
+                    rebuildCount: 0,
+                    recoveredSpeech: [],
+                  }))
+                  engineRef.current?.setPlayableUntil(
+                    source?.containerPlayback?.damagedPlayableUntilSec ?? null,
+                  )
+                  setStatus('DEV: puzzle reset.')
+                }
+              : undefined
+          }
+        />
       ) : null}
       {status && <div className="fw-status">{status}</div>}
     </div>
@@ -437,12 +583,19 @@ function ForensicDebug({
   source,
   ui,
   clarity,
+  playableUntil,
+  sequenceValid,
+  onDevResetPuzzle,
 }: {
   source: NonNullable<ReturnType<typeof getActiveSource>>
   ui: ForensicUiState
   clarity: SegmentClarity[]
+  playableUntil: number
+  sequenceValid: boolean
+  onDevResetPuzzle?: () => void
 }) {
   const base: Record<StemId, number> = {
+    FILE: 1,
     CORRUPTED_BASE: 1,
     VOICE: 1,
     BACKGROUND_NOISE: 1,
@@ -457,23 +610,58 @@ function ForensicDebug({
     notch: source.audio?.notch,
     spectral: source.audio?.spectral,
   })
+  const pages = resolveStructurePages(source, ui.structureSequences, ui.containerRebuilt)
+  const crcValid = pages.length > 0 && pages.every((p) => p.crcStatus === 'valid')
+  const corruptPage = source.structure?.rebuildRule?.corruptPageId
+    ? pages.find((p) => p.id === source.structure?.rebuildRule?.corruptPageId)
+    : undefined
+  const decodedDuration = effectivePlayableUntil(source, ui.containerRebuilt)
+  const containerDuration =
+    source.containerPlayback?.containerDurationSec ?? source.durationSec
   return (
     <div className="fw-debug" data-testid="forensic-debug">
-      <span>center {metrics.centerAccuracy.toFixed(3)}</span>
-      <span>depth {metrics.notchDepthEffect.toFixed(3)}</span>
-      <span>widthQ {metrics.notchWidthQuality.toFixed(3)}</span>
-      <span>profileQ {metrics.noiseProfileQuality.toFixed(3)}</span>
-      <span>profileDur {metrics.profileDuration.toFixed(2)}s</span>
-      <span>voiceContam {metrics.voiceContamination.toFixed(3)}</span>
-      <span>nre {metrics.noiseReductionEffect.toFixed(3)}</span>
-      <span>voiceDmg {metrics.voiceDamage.toFixed(3)}</span>
-      <span>corrupted {gains.CORRUPTED_BASE.toFixed(3)}</span>
-      <span>cleanBus {gains.VOICE.toFixed(3)}</span>
+      {source.containerPlayback ? (
+        <>
+          <span>containerValid {String(ui.containerRebuilt && sequenceValid)}</span>
+          <span>sequenceValid {String(sequenceValid)}</span>
+          <span>crcValid {String(crcValid)}</span>
+          <span>decodedDuration {decodedDuration.toFixed(3)}</span>
+          <span>containerDuration {containerDuration.toFixed(3)}</span>
+          <span>playableUntil {playableUntil.toFixed(3)}</span>
+          <span>rebuildCount {ui.rebuildCount}</span>
+          {corruptPage ? (
+            <span>
+              page {corruptPage.index} expectedSequence:{' '}
+              {corruptPage.expectedSequence ?? '—'} currentSequence: {corruptPage.sequence}
+            </span>
+          ) : null}
+          {onDevResetPuzzle ? (
+            <button type="button" className="fw-btn" data-testid="dev-reset-puzzle" onClick={onDevResetPuzzle}>
+              DEV reset puzzle
+            </button>
+          ) : null}
+        </>
+      ) : (
+        <>
+          <span>center {metrics.centerAccuracy.toFixed(3)}</span>
+          <span>depth {metrics.notchDepthEffect.toFixed(3)}</span>
+          <span>widthQ {metrics.notchWidthQuality.toFixed(3)}</span>
+          <span>profileQ {metrics.noiseProfileQuality.toFixed(3)}</span>
+          <span>profileDur {metrics.profileDuration.toFixed(2)}s</span>
+          <span>voiceContam {metrics.voiceContamination.toFixed(3)}</span>
+          <span>nre {metrics.noiseReductionEffect.toFixed(3)}</span>
+          <span>voiceDmg {metrics.voiceDamage.toFixed(3)}</span>
+          <span>corrupted {gains.CORRUPTED_BASE.toFixed(3)}</span>
+          <span>cleanBus {gains.VOICE.toFixed(3)}</span>
+        </>
+      )}
       {clarity.map((c) => {
         const seg = source.speechSegments?.find((s) => s.id === c.segmentId)
+        // Não vazar spoiler: texto só depois do unlock.
+        const label = c.unlocked ? (seg?.text ?? c.segmentId) : c.segmentId
         return (
           <span key={c.segmentId}>
-            {(seg?.text ?? c.segmentId).toUpperCase()} v{c.effectiveVoiceGain.toFixed(2)} m
+            {label.toUpperCase()} v{c.effectiveVoiceGain.toFixed(2)} m
             {c.effectiveMaskGain.toFixed(2)} {c.clarityScore.toFixed(2)}/{c.threshold.toFixed(2)}
             {c.unlocked ? ' ✓' : ''}
           </span>

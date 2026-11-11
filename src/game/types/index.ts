@@ -391,6 +391,11 @@ export interface InvestigationState {
     string,
     { segmentId: string; text: string; startSec: number; unlockedAt: number }[]
   >
+  /** Estado estrutural da bancada (sequence edits / rebuild) por evidenceId. */
+  forensicContainerState?: Record<
+    string,
+    { rebuilt: boolean; sequences: Record<string, number> }
+  >
 }
 
 export interface DiscoveryEvent {

@@ -6,6 +6,7 @@ import type {
   Marker,
   ProcessParams,
   RecoveredSpeechEntry,
+  StructurePage,
 } from '../forensicTypes'
 import { INSPECTOR_TABS } from '../forensicTypes'
 import { fmtTime, type SegmentClarity } from '../forensicEngine'
@@ -25,6 +26,9 @@ const HELP: Record<string, string> = {
     'Aplica redução baseada no perfil de ruído capturado. Requer um Noise Profile ativo.',
   Reverse: 'Inverte a região ou clip previsto pelo dataset.',
   Fade: 'Envelope linear de entrada/saída.',
+  Structure: 'Displays container-level blocks and structural metadata.',
+  'Rebuild Container':
+    'Reconstructs the container using the current structural values and recalculates dependent integrity fields.',
 }
 
 function Tip({ name }: { name: string }) {
@@ -122,6 +126,11 @@ export function Inspector({
   onToggleHelp,
   recoveredSpeech,
   clarityDebug,
+  structurePages,
+  fileMetadata,
+  onSelectStructurePage,
+  onStructureSequence,
+  onRebuildContainer,
 }: {
   tab: ForensicInspectorTab
   onTab: (t: ForensicInspectorTab) => void
@@ -137,6 +146,11 @@ export function Inspector({
   onToggleHelp: () => void
   recoveredSpeech: RecoveredSpeechEntry[]
   clarityDebug?: SegmentClarity[]
+  structurePages?: StructurePage[]
+  fileMetadata?: { key: string; label: string; value: string }[]
+  onSelectStructurePage?: (id: string) => void
+  onStructureSequence?: (pageId: string, sequence: number) => void
+  onRebuildContainer?: () => void
 }) {
   const p = ui.process
   const hasProfile = Boolean(ui.activeNoiseProfileId)
@@ -379,20 +393,137 @@ export function Inspector({
         {tab === 'file' && (
           <div className="fw-panel">
             <dl className="fw-meta">
-              {(source?.metadata ?? []).map((f) => (
+              {(fileMetadata ?? source?.metadata ?? []).map((f) => (
                 <div key={f.key}>
                   <dt>{f.label}</dt>
                   <dd className="fw-mono">{f.value || '—'}</dd>
                 </div>
               ))}
-              {!source?.metadata?.length && <p className="fw-empty">No metadata.</p>}
+              {!(fileMetadata ?? source?.metadata)?.length && <p className="fw-empty">No metadata.</p>}
             </dl>
           </div>
         )}
 
         {tab === 'structure' && (
           <div className="fw-panel">
-            {source?.structure?.blocks?.length ? (
+            {structurePages?.length ? (
+              <>
+                <Section title="Structure" tip="Structure">
+                  <div className="fw-page-table-wrap">
+                    <table className="fw-page-table" data-testid="structure-page-table">
+                      <thead>
+                        <tr>
+                          <th>Page</th>
+                          <th>Offset</th>
+                          <th>Flags</th>
+                          <th>Granule</th>
+                          <th>Serial</th>
+                          <th>Sequence</th>
+                          <th>Segments</th>
+                          <th>Stored CRC</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {structurePages.map((p) => (
+                          <tr
+                            key={p.id}
+                            data-active={ui.selectedStructurePageId === p.id}
+                            data-testid={`structure-page-${p.index}`}
+                            onClick={() => onSelectStructurePage?.(p.id)}
+                          >
+                            <td className="fw-mono">{p.index}</td>
+                            <td className="fw-mono">{p.offset}</td>
+                            <td className="fw-mono">{p.flags}</td>
+                            <td className="fw-mono">{p.granule}</td>
+                            <td className="fw-mono">{p.serial}</td>
+                            <td className="fw-mono">{p.sequence}</td>
+                            <td className="fw-mono">{p.segments}</td>
+                            <td className="fw-mono">{p.storedCrc}</td>
+                            <td className="fw-mono">{p.crcStatus}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </Section>
+                {(() => {
+                  const selected =
+                    structurePages.find((p) => p.id === ui.selectedStructurePageId) ?? structurePages[0]
+                  if (!selected) return null
+                  const canEdit = selected.editableFields?.includes('sequence')
+                  return (
+                    <Section title={`Page ${selected.index}`}>
+                      <dl className="fw-meta">
+                        <div>
+                          <dt>Capture pattern</dt>
+                          <dd className="fw-mono">OggS</dd>
+                        </div>
+                        <div>
+                          <dt>Version</dt>
+                          <dd className="fw-mono">0</dd>
+                        </div>
+                        <div>
+                          <dt>Header flags</dt>
+                          <dd className="fw-mono">{selected.flags}</dd>
+                        </div>
+                        <div>
+                          <dt>Granule position</dt>
+                          <dd className="fw-mono">{selected.granule}</dd>
+                        </div>
+                        <div>
+                          <dt>Stream serial</dt>
+                          <dd className="fw-mono">{selected.serial}</dd>
+                        </div>
+                        <div>
+                          <dt>Page sequence</dt>
+                          <dd>
+                            {canEdit ? (
+                              <input
+                                className="fw-inline-num"
+                                type="number"
+                                value={selected.sequence}
+                                onChange={(e) =>
+                                  onStructureSequence?.(selected.id, Number(e.target.value))
+                                }
+                              />
+                            ) : (
+                              <span className="fw-mono">{selected.sequence}</span>
+                            )}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt>Stored CRC</dt>
+                          <dd className="fw-mono">{selected.storedCrc}</dd>
+                        </div>
+                        <div>
+                          <dt>Segment count</dt>
+                          <dd className="fw-mono">{selected.segments}</dd>
+                        </div>
+                        <div>
+                          <dt>CRC status</dt>
+                          <dd className="fw-mono">{selected.crcStatus}</dd>
+                        </div>
+                        {import.meta.env.DEV && selected.expectedSequence != null ? (
+                          <div>
+                            <dt>DEV expectedSequence</dt>
+                            <dd className="fw-mono">{selected.expectedSequence}</dd>
+                          </div>
+                        ) : null}
+                      </dl>
+                    </Section>
+                  )
+                })()}
+                {source?.structure?.canRebuild ? (
+                  <Section title="Rebuild" tip="Rebuild Container">
+                    <button type="button" className="fw-btn" onClick={() => onRebuildContainer?.()}>
+                      Rebuild container
+                    </button>
+                    {ui.rebuildStatus ? <p className="fw-muted">{ui.rebuildStatus}</p> : null}
+                  </Section>
+                ) : null}
+              </>
+            ) : source?.structure?.blocks?.length ? (
               <>
                 {source.structure.blocks.map((b) => (
                   <div key={b.id} className="fw-struct-block">
@@ -407,11 +538,6 @@ export function Inspector({
                     </dl>
                   </div>
                 ))}
-                {source.structure.canRebuild && (
-                  <button type="button" className="fw-btn">
-                    Rebuild container
-                  </button>
-                )}
               </>
             ) : (
               <p className="fw-empty fw-empty--center">
@@ -568,9 +694,10 @@ export function Inspector({
                 <ul className="fw-recovered fw-recovered--debug">
                   {clarityDebug.map((c) => {
                     const seg = source?.speechSegments?.find((s) => s.id === c.segmentId)
+                    const label = c.unlocked ? (seg?.text ?? c.segmentId) : c.segmentId
                     return (
                       <li key={c.segmentId} className="fw-mono">
-                        <div>{(seg?.text ?? c.segmentId).toUpperCase()}</div>
+                        <div>{label.toUpperCase()}</div>
                         <div>
                           center {c.centerContribution.toFixed(2)} depth {c.depthContribution.toFixed(2)}{' '}
                           width {c.widthContribution.toFixed(2)} noise {c.noiseContribution.toFixed(2)}

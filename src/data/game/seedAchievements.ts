@@ -35,6 +35,13 @@ export const seedAchievements: AchievementDef[] = [
     unlocked: (s) => Boolean(s.flags.block01_emergency_provisional),
   },
   {
+    id: 'ach-iapetus',
+    title: 'IAPETUS',
+    description: 'Reconstruiu a estrutura do áudio de Rafael.',
+    hint: 'Reparar a estrutura de um arquivo de áudio na bancada.',
+    unlocked: (s) => Boolean(s.flags.block02_rafael_forward_provisional),
+  },
+  {
     id: 'ach-hospital',
     title: 'Plantão',
     description: 'A conversa no hospital foi registrada.',

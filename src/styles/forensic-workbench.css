@@ -1045,6 +1045,59 @@
   gap: 0.25em;
 }
 
+.fw-unavailable {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(120, 90, 60, 0.18),
+    rgba(120, 90, 60, 0.18) 4px,
+    rgba(40, 32, 24, 0.35) 4px,
+    rgba(40, 32, 24, 0.35) 8px
+  );
+  border-left: 1px solid rgba(180, 140, 80, 0.55);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.fw-page-table-wrap {
+  overflow-x: auto;
+  margin-bottom: 0.6em;
+}
+
+.fw-page-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.72em;
+}
+
+.fw-page-table th,
+.fw-page-table td {
+  border-bottom: 1px solid var(--fw-line);
+  padding: 0.28em 0.35em;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.fw-page-table tbody tr {
+  cursor: pointer;
+}
+
+.fw-page-table tbody tr[data-active='true'] {
+  background: rgba(180, 140, 80, 0.12);
+}
+
+.fw-inline-num {
+  width: 4.5em;
+  background: var(--fw-inset);
+  border: 1px solid var(--fw-line);
+  color: var(--text-primary);
+  font-family: ui-monospace, monospace;
+  font-size: 0.95em;
+  padding: 0.15em 0.3em;
+}
+
 .aw-main:has(.fw) {
   padding: 0;
   overflow: hidden;

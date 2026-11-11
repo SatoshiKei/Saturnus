@@ -61,6 +61,23 @@ export function setFlag(id: string, value = true) {
   dispatchActions([{ type: 'setFlag', id, value }])
 }
 
+/** Persiste edits/rebuild de Structure por evidência. */
+export function markForensicContainerState(
+  evidenceId: string,
+  next: { rebuilt: boolean; sequences: Record<string, number> },
+) {
+  commit({
+    ...state,
+    forensicContainerState: {
+      ...(state.forensicContainerState ?? {}),
+      [evidenceId]: {
+        rebuilt: next.rebuilt,
+        sequences: { ...next.sequences },
+      },
+    },
+  })
+}
+
 /** Registra um segmento de fala recuperado na bancada. Persistente; não apaga no Reset processing. */
 export function markForensicSpeechRecovered(
   evidenceId: string,
@@ -86,15 +103,32 @@ export function markForensicSpeechRecovered(
 export function resetForensicSpeechProgress(evidenceId: string) {
   const bag = { ...(state.forensicRecoveredSpeech ?? {}) }
   delete bag[evidenceId]
+  const containers = { ...(state.forensicContainerState ?? {}) }
+  delete containers[evidenceId]
   const flags = { ...state.flags }
+  let evidenceOwned = state.evidenceOwned
+  const achievementUnlocks = { ...(state.achievementUnlocks ?? {}) }
   if (evidenceId === 'emergency_call_raw') {
     flags.block01_emergency_provisional = false
+    evidenceOwned = evidenceOwned.filter((id) => id !== 'emergency_call_restored')
+    delete achievementUnlocks['ach-cassini-division']
+  }
+  if (evidenceId === 'rafael_forward_from_mariana' || evidenceId === 'rafael_audio_reply') {
+    flags.block02_rafael_forward_provisional = false
+    evidenceOwned = evidenceOwned.filter((id) => id !== 'rafael_recording_vertice_tag')
+    delete achievementUnlocks['ach-iapetus']
+    delete containers['rafael_forward_from_mariana']
+    delete containers['rafael_audio_reply']
+    delete bag['rafael_forward_from_mariana']
+    delete bag['rafael_audio_reply']
   }
   commit({
     ...state,
     forensicRecoveredSpeech: bag,
+    forensicContainerState: containers,
     flags,
-    evidenceOwned: state.evidenceOwned.filter((id) => id !== 'emergency_call_restored'),
+    evidenceOwned,
+    achievementUnlocks,
   })
 }
 
@@ -292,6 +326,7 @@ export function migrateState(raw: InvestigationState): InvestigationState {
     playTimeMs: raw.playTimeMs ?? 0,
     achievementUnlocks: raw.achievementUnlocks ?? {},
     forensicRecoveredSpeech: raw.forensicRecoveredSpeech ?? {},
+    forensicContainerState: raw.forensicContainerState ?? {},
     contacts: { ...base.contacts, ...(raw.contacts ?? {}) },
     locations: { ...base.locations, ...(raw.locations ?? {}) },
     toastQueue: [],

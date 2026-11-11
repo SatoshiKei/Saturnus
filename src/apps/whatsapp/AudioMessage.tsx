@@ -23,12 +23,26 @@ export function AudioMessage({
   const [playing, setPlaying] = useState(false)
   const [progress, setProgress] = useState(0)
   const [speedIdx, setSpeedIdx] = useState(0)
+  const src = assetPath(message.audioSrc)
+  const limit =
+    message.playableUntilSec != null
+      ? Math.min(message.durationSec, message.playableUntilSec)
+      : message.durationSec
 
   useEffect(() => {
     const audio = audioRef.current
     if (!audio) return
     audio.playbackRate = SPEEDS[speedIdx]
   }, [speedIdx])
+
+  useEffect(() => {
+    const audio = audioRef.current
+    if (!audio) return
+    audio.pause()
+    audio.load()
+    setPlaying(false)
+    setProgress(0)
+  }, [src])
 
   const toggle = async () => {
     const audio = audioRef.current
@@ -48,13 +62,21 @@ export function AudioMessage({
   return (
     <div className="wa-audio" data-testid="audio-message">
       <audio
+        key={src}
         ref={audioRef}
-        src={assetPath(message.audioSrc)}
+        src={src}
         preload="metadata"
         onTimeUpdate={() => {
           const a = audioRef.current
-          if (!a?.duration) return
-          setProgress(a.currentTime / a.duration)
+          if (!a) return
+          const denom = Math.max(0.001, limit)
+          setProgress(Math.min(1, a.currentTime / denom))
+          if (a.currentTime >= limit - 0.05) {
+            a.pause()
+            a.currentTime = limit
+            setPlaying(false)
+            setProgress(1)
+          }
         }}
         onEnded={() => setPlaying(false)}
       />
@@ -78,7 +100,7 @@ export function AudioMessage({
           />
         ))}
       </div>
-      <span className="wa-audio__duration">{formatDuration(message.durationSec)}</span>
+      <span className="wa-audio__duration">{formatDuration(limit)}</span>
       <button type="button" className="wa-audio__speed" onClick={cycleSpeed} aria-label="Velocidade">
         {SPEEDS[speedIdx]}×
       </button>
