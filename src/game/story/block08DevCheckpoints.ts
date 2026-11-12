@@ -236,13 +236,13 @@ export const block08DevCheckpoints: { id: string; label: string; actions: StoryA
       {
         type: 'addTask',
         id: 'task_rotation_puzzle',
-        label: 'Sincronizar logs policiais da abordagem (bancada)',
+        label: 'Cruzar passagem ferroviária, CAD e rádios da abordagem (bancada)',
       },
     ],
   },
   {
     id: 'b08-rotation-done',
-    label: 'Puzzle 11 → indicativo',
+    label: 'Puzzle 11 → VTR-14',
     actions: [
       { type: 'setFlag', id: 'block08_rotation_done', value: true },
       { type: 'addEvidence', id: 'approach_callsign_reconstructed' },
@@ -251,7 +251,7 @@ export const block08DevCheckpoints: { id: string; label: string; actions: StoryA
       {
         type: 'addTask',
         id: 'task_lookup_callsign_scale',
-        label: `Consultar escala antiga do indicativo ${ROTATION_CALLSIGN}`,
+        label: `Consultar a escala da ${ROTATION_CALLSIGN}`,
       },
     ],
   },
@@ -260,6 +260,7 @@ export const block08DevCheckpoints: { id: string; label: string; actions: StoryA
     label: 'Fim do Bloco 8',
     actions: [
       { type: 'setFlag', id: 'block08_augusto_linked', value: true },
+      { type: 'setFlag', id: 'block08_augusto_revealed', value: true },
       { type: 'addEvidence', id: 'scale_links_callsign_to_augusto' },
       { type: 'addHypothesis', id: 'hyp_augusto_causal_in_chain' },
       { type: 'updateHypothesis', id: 'hyp_augusto_causal_in_chain', state: 'confirmed' },

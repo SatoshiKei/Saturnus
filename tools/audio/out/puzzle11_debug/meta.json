@@ -1,0 +1,26 @@
+{
+  "seed": 4111111,
+  "sampleRate": 22050,
+  "trainAsset": "src\\assets\\audios\\p11\\Train Sounds.mp3",
+  "crossingId": "PN-NORTE-03",
+  "crossingLabel": "Passagem de n\u00edvel Norte \u2014 setor auxiliar",
+  "trainWindow": {
+    "occupy": "01:12",
+    "clear": "01:18"
+  },
+  "cadIncident": {
+    "id": "CAD-1847",
+    "label": "Ve\u00edculo em chamas no acostamento \u2014 poss\u00edvel ocupante",
+    "time": "01:21",
+    "priority": "urgent",
+    "sector": "Via auxiliar norte / acostamento km 4"
+  },
+  "fingerprintThreshold": 0.72,
+  "audio": {
+    "reference": "/assets/audio/forensic/puzzle11/train_distant_radio_reference.wav",
+    "clean": "/assets/audio/forensic/puzzle11/train_reference_clean.wav",
+    "vtr14": "/assets/audio/forensic/puzzle11/vtr14_radio_window.wav",
+    "vtr08": "/assets/audio/forensic/puzzle11/vtr08_radio_window.wav",
+    "vtr21": "/assets/audio/forensic/puzzle11/vtr21_radio_window.wav"
+  }
+}

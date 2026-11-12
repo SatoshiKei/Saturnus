@@ -1402,24 +1402,29 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-escala-vtr14',
-    title: 'Escala antiga — indicativo VTR-14',
+    title: 'Escala de equipe — VTR-14',
     category: 'Arquivo institucional',
     issuer: 'Corporação — escala de equipes',
-    dateLabel: 'Noite X',
+    dateLabel: 'Madrugada do incidente',
     system: 'consultas',
     blocks: [
       {
         id: 'b1',
-        text: 'Indicativo VTR-14 — equipe da abordagem na via auxiliar no intervalo reconstruído.',
+        text: 'Viatura: VTR-14\nData: madrugada do incidente\nTurno: noturno',
       },
       {
         id: 'b2',
-        text: 'Escala nominativa: Augusto Nogueira constava na equipe daquela viatura na data e local.',
+        text: 'Responsável / condutor: Augusto Nogueira\nEquipe: Augusto Nogueira (condutor); apoio de turno conforme escala.',
+      },
+      {
+        id: 'b3',
+        text: '…\n\nEu parei o Rui.',
       },
     ],
     onOpen: [
       { type: 'addEvidence', id: 'scale_links_callsign_to_augusto' },
       { type: 'setFlag', id: 'block08_augusto_linked', value: true },
+      { type: 'setFlag', id: 'block08_augusto_revealed', value: true },
       { type: 'completeTask', id: 'task_lookup_callsign_scale' },
       { type: 'addHypothesis', id: 'hyp_augusto_causal_in_chain' },
       { type: 'updateHypothesis', id: 'hyp_augusto_causal_in_chain', state: 'confirmed' },

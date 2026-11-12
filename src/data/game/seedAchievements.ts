@@ -182,6 +182,14 @@ export const seedAchievements: AchievementDef[] = [
       Boolean(s.flags.block08_morsa_reveal_played || s.flags.block08_morsa_continuity_confirmed),
   },
   {
+    id: 'ach-rotacao-saturno',
+    title: 'ROTAÇÃO DE SATURNO',
+    description: 'Reconstruiu a abordagem não registrada antes do acidente.',
+    hint: 'Cruzar passagem ferroviária, ocorrência urgente e rádios até isolar a viatura.',
+    unlocked: (s) =>
+      Boolean(s.flags.block08_augusto_linked || s.flags.block08_augusto_revealed),
+  },
+  {
     id: 'ach-block8',
     title: 'A noite sem assassinato',
     description: 'A queda deixou de ser o que a sentença afirmou.',

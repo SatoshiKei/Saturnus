@@ -6,8 +6,8 @@ import {
 } from '../../src/data/block08/ringsPuzzle'
 import {
   ROTATION_CALLSIGN,
-  isRotationSynced,
-  resolveCallsignAfterSync,
+  evaluateRotationCase,
+  compareTrainFingerprints,
 } from '../../src/data/block08/rotationPuzzle'
 import { createInitialState } from '../../src/game/state/initialState'
 import { applyStoryActions } from '../../src/game/story/actions'
@@ -171,8 +171,18 @@ describe('Bloco 8 — progressão', () => {
     onAccidentReflectionDone()
     expect(getInvestigationState().flags.block08_rotation_available).toBe(true)
 
-    expect(isRotationSynced({ radio: 0, cad: -3, dispatch: -2, scale: 1 })).toBe(true)
-    expect(resolveCallsignAfterSync()).toBe(ROTATION_CALLSIGN)
+    const fp = compareTrainFingerprints('train_ref', 'vtr14')
+    expect(fp.match).toBe(true)
+    expect(fp.vehicleHit).toBe(ROTATION_CALLSIGN)
+    expect(
+      evaluateRotationCase({
+        crossingId: 'PN-NORTE-03',
+        cadId: 'CAD-1847',
+        avlUnitsOpened: ['VTR-14'],
+        fingerprintVehicle: 'VTR-14',
+        eliminated: ['VTR-08', 'VTR-21'],
+      }).canConfirm,
+    ).toBe(true)
     onRotationSolved()
     s = getInvestigationState()
     expect(s.evidenceOwned).toContain('approach_callsign_reconstructed')

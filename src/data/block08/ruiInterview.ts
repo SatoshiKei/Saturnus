@@ -55,17 +55,35 @@ export const ruiBeats: Record<RuiTopicId, RuiBeat[]> = {
     { speaker: 'Rui', text: 'Não.' },
     { speaker: 'Augusto', text: 'Apreendeu a chave?' },
     { speaker: 'Rui', text: 'Não.' },
-    { speaker: 'Augusto', text: 'O que fez?' },
-    { speaker: 'Rui', text: 'Mandou eu ir pra casa.' },
-    { speaker: 'Augusto', text: 'Só isso?' },
+    { speaker: 'Augusto', text: 'Por que te deixaram seguir?' },
     {
       speaker: 'Rui',
-      text: 'Eu falei que tinha bebido pouco.\n\nQue estava perto.\n\nQue ia devagar.\n\nEle ficou me olhando...\n\ndepois deixou.',
+      text: 'Eu estava atrasado.\n\nFiquei parado uns minutos numa passagem de nível…\n\num trem de carga enorme atravessando.\n\nQuando a cancela abriu, acelerei demais pra recuperar o tempo.',
+    },
+    {
+      speaker: 'Rui',
+      text: 'Pouco depois me pararam.\n\nEu estava claramente bêbado.\n\nComecei a discutir… a negociar…\n\ndizia que tinha bebido pouco, que estava perto, que ia devagar.',
+    },
+    {
+      speaker: 'Rui',
+      text: 'Aí o rádio deles começou a falar alto.\n\nAlgo de um carro pegando fogo no acostamento…\n\ne que talvez tivesse alguém lá dentro.',
+    },
+    {
+      speaker: 'Rui',
+      text: 'Mudou na hora.\n\nMandaram eu seguir.\n\nA viatura saiu no sentido contrário ao meu — eu olhei no retrovisor porque achei que iam voltar atrás.',
+    },
+    { speaker: 'Augusto', text: 'E você continuou.' },
+    {
+      speaker: 'Rui',
+      text: 'Continuei.\n\nPoucos minutos depois… a proteção.',
     },
   ],
   after: [
     { speaker: 'Augusto', text: 'Lembra quem era?' },
-    { speaker: 'Rui', text: 'Não.\n\nEra polícia. Para mim bastava isso.' },
+    {
+      speaker: 'Rui',
+      text: 'Não.\n\nNão lembro nome.\n\nNem número da viatura.\n\nEra polícia. Para mim bastava isso.',
+    },
     { speaker: 'Augusto', text: 'Depois você bateu.' },
     { speaker: 'Rui', text: 'Depois eu bati.' },
     { speaker: 'Rui', text: 'Delegado...\n\neu não sabia que aquilo ia matar alguém.' },

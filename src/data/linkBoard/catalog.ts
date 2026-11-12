@@ -531,7 +531,7 @@ export const LINK_BOARD_EDGES: LinkBoardEdgeDef[] = [
   { id: 'e-henrique-omitido', from: 'lb-henrique', to: 'lb-omitido', label: 'sessões', showWhen: [ev('omitido_named_in_records')] },
   { id: 'e-mariana-henrique', from: 'lb-mariana', to: 'lb-henrique', label: 'mesma linha', showWhen: [f('block07_henrique_identified')] },
   { id: 'e-augusto-mariana', from: 'lb-augusto', to: 'lb-mariana', label: 'delegado', showWhen: [f('block01_started')] },
-  { id: 'e-augusto-rui', from: 'lb-augusto', to: 'lb-rui', label: 'abordou', showWhen: [f('block08_rui_interview_done')] },
+  { id: 'e-augusto-rui', from: 'lb-augusto', to: 'lb-rui', label: 'abordou', showWhen: [f('block08_augusto_linked')] },
   { id: 'e-hyp-path', from: 'lb-hyp-path', to: 'lb-mariana', label: 'hipótese', style: 'dashed', showWhen: [f('block09_started')] },
   { id: 'e-hyp-unjust', from: 'lb-hyp-unjust', to: 'lb-andre', label: 'contesta', style: 'dashed', showWhen: [{ type: 'flag', id: 'block08_complete', value: true }] },
   {

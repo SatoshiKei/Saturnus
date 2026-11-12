@@ -347,7 +347,7 @@ export function onAccidentReflectionDone() {
     {
       type: 'addTask',
       id: 'task_rotation_puzzle',
-      label: 'Sincronizar logs policiais da abordagem (bancada)',
+      label: 'Cruzar passagem ferroviária, CAD e rádios da abordagem (bancada)',
     },
   ])
 }
@@ -363,7 +363,7 @@ export function onRotationSolved() {
     {
       type: 'addTask',
       id: 'task_lookup_callsign_scale',
-      label: `Consultar escala antiga do indicativo ${ROTATION_CALLSIGN}`,
+      label: `Consultar a escala da ${ROTATION_CALLSIGN}`,
     },
   ])
 }
@@ -373,6 +373,7 @@ export function onScaleLinksAugusto() {
   if (s.flags.block08_augusto_linked) return
   dispatchActions([
     { type: 'setFlag', id: 'block08_augusto_linked', value: true },
+    { type: 'setFlag', id: 'block08_augusto_revealed', value: true },
     { type: 'addEvidence', id: 'scale_links_callsign_to_augusto' },
     { type: 'completeTask', id: 'task_lookup_callsign_scale' },
     { type: 'addHypothesis', id: 'hyp_augusto_causal_in_chain' },

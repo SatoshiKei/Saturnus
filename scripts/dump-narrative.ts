@@ -61,7 +61,14 @@ import {
   RING_CONTINUITY_FRAMES,
   RING_CONTINUITY_CHECKS,
 } from '../src/data/block08/ringsPuzzle'
-import { ROTATION_LOGS, ROTATION_CALLSIGN } from '../src/data/block08/rotationPuzzle'
+import {
+  ROTATION_CALLSIGN,
+  ROTATION_CROSSINGS,
+  ROTATION_CAD,
+  ROTATION_VEHICLES,
+  CORRECT_CROSSING,
+  CAD_FLAME_ID,
+} from '../src/data/block08/rotationPuzzle'
 import { TRAIL_DISCOVERY_BEATS } from '../src/data/block09/trailDiscovery'
 import {
   MARIANA_CHAT_ID,
@@ -738,11 +745,15 @@ dumpBeats('Bia', sceneIntros.bia.lines, biaTopicLabels, biaBeats)
 dumpBeats('Rui', sceneIntros.rui.lines, ruiTopicLabels, ruiBeats)
 
 L('### Bancada — Rotação de Saturno')
-L(`Indicativo: **${ROTATION_CALLSIGN}**`)
-for (const l of ROTATION_LOGS) {
-  L(
-    `- ${l.system} t bruto ${l.rawTMin} offset ${l.offsetMin} · “${l.event}”${l.callsign ? ` · ${l.callsign}` : ''}`,
-  )
+L(`Viatura esperada: **${ROTATION_CALLSIGN}** · passagem **${CORRECT_CROSSING}** · CAD **${CAD_FLAME_ID}**`)
+for (const c of ROTATION_CROSSINGS) {
+  L(`- Passagem ${c.id}: ${c.label} (${c.sector})`)
+}
+for (const c of ROTATION_CAD) {
+  L(`- CAD ${c.id} ${c.time} [${c.priority}] ${c.summary}`)
+}
+for (const v of ROTATION_VEHICLES) {
+  L(`- ${v.id}: ${v.sectorStart} — ${v.activity}`)
 }
 
 L('### Reflexões (Bloco 8)')

@@ -1995,26 +1995,28 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'police_clock_drift_logs',
-    title: 'Logs policiais antigos — rádio, CAD, despacho (relógios com desvio)',
+    title: 'Pacote institucional — ferroviário, CAD, AVL e rádio (madrugada da abordagem)',
     type: 'digital',
     sourceType: 'case-file',
     originalOrDerived: 'original',
     integrity: 'questionable',
-    description: 'Sistemas com timestamps incompatíveis. Análise na bancada.',
+    description:
+      'Registros de passagens, ocorrência urgente, pontos AVL e trechos de rádio da janela. Análise na bancada.',
     relatedPersonIds: [],
     relatedLocationIds: [],
     relatedEventIds: [],
     exportable: true,
-    displayFileName: 'police_clocks_bundle.log',
+    displayFileName: 'approach_window_bundle.log',
     puzzleMeta: {
       puzzleId: 'puzzle-11-rotation',
-      implementation: 'placeholder',
+      implementation: 'full',
       completionEvidenceId: 'approach_callsign_reconstructed',
     },
   },
   {
     id: 'approach_callsign_reconstructed',
-    title: 'Indicativo da viatura reconstruído após sincronização',
+    title:
+      'VTR-14 realizou uma abordagem não registrada na rota de Rui pouco antes da colisão.',
     type: 'derived',
     sourceType: 'audio-lab',
     originalOrDerived: 'derived',
@@ -2026,7 +2028,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'scale_links_callsign_to_augusto',
-    title: 'Escala antiga: indicativo corresponde à equipe de Augusto',
+    title: 'Augusto Nogueira estava responsável pela VTR-14 naquela noite.',
     type: 'document',
     sourceType: 'case-file',
     originalOrDerived: 'original',

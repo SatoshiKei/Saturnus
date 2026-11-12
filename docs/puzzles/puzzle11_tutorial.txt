@@ -1,0 +1,129 @@
+PUZZLE 11 — ROTAÇÃO DE SATURNO
+Dev only — não aparece para o jogador.
+
+Motivação
+---------
+Depois de Bia/Rui, Rui admite: dirigia alcoolizado, bateu no guardrail,
+antes foi parado; o policial percebeu a bebida e mesmo assim liberou.
+Rui NÃO sabe nome, viatura, prefixo, placa.
+Augusto precisa descobrir qual equipe fez a abordagem.
+NÃO começar sabendo que foi VTR-14.
+
+
+Depoimento de Rui
+-----------------
+Pergunta-chave: “Por que te deixaram seguir?”
+Rui reconstrói: atrasado → trem longo na passagem → acelera → parado →
+discutindo → rádio com carro em chamas / possível ocupante → liberado →
+viatura sai no sentido contrário (olhou no retrovisor) → poucos minutos →
+guardrail.
+NÃO perguntar “lembra de algum trem?” / códigos CAD.
+Rui NÃO identifica Augusto nem VTR-14.
+
+
+Asset
+-----
+src/assets/audios/p11/Train Sounds.mp3  (obrigatório; não substituir)
+Derivados: public/assets/audio/forensic/puzzle11/
+  train_reference_clean.wav
+  train_distant_radio_reference.wav
+  vtr14_radio_window.wav   (trem distante misturado)
+  vtr08_radio_window.wav
+  vtr21_radio_window.wav
+
+
+Build
+-----
+python tools/audio/build_puzzle11_saturn_rotation.py
+Seed fixa: 4111111
+
+
+Passagem correta
+----------------
+PN-NORTE-03 — Passagem Norte / setor auxiliar
+Janela do trem: ocupação 01:12 · liberação 01:18
+Composição 4412 — carga longa
+
+
+Ocorrência CAD
+--------------
+CAD-1847 · 01:21 · urgente
+Veículo em chamas no acostamento — possível ocupante
+Unidades: nota genérica (“unidade próxima solicitada”) — NÃO “VTR-14 abandonou Rui”
+
+
+Candidatos
+----------
+VTR-08  — setor sul; rota incompatível com chamas
+VTR-21  — horário ok; longe da passagem norte
+VTR-14  — passagem + áudio do trem + direção + CAD-1847
+
+
+Fingerprint
+-----------
+Audio Fingerprint Compare: referência ferroviária × rádio da viatura
+Match forte só train_ref + vtr14 (≥ 0.72)
+Sem ENF, sem sliders, sem frequência manual
+
+
+AVL
+---
+Pontos pontuais (time / unit / location / heading / event)
+VTR-14: próximo PN-NORTE-03 → sentido contrário → acostamento CAD-1847
+
+
+Completion
+----------
+Passagem correta + CAD-1847 aberto + fingerprint VTR-14 + AVL VTR-14
+consultado + VTR-08 e VTR-21 marcados incompatíveis
+→ finding: “VTR-14 realizou uma abordagem não registrada…”
+Ainda NÃO revela Augusto.
+
+
+Escala
+------
+doc-escala-vtr14 no computador (após block08_scale_search_unlocked)
+Responsável / condutor: Augusto Nogueira
+Linha curta: “Eu parei o Rui.”
+Finding: “Augusto Nogueira estava responsável pela VTR-14 naquela noite.”
+
+
+Achievement
+-----------
+ROTAÇÃO DE SATURNO
+“Reconstruiu a abordagem não registrada antes do acidente.”
+Dispara após revelação (block08_augusto_linked)
+
+
+Flags / DEV
+-----------
+block08_rotation_available
+block08_rotation_done
+block08_scale_search_unlocked
+block08_augusto_linked / block08_augusto_revealed
+DEV (só import.meta.env.DEV): trainCrossingCandidate, trainWindow,
+cadIncidentSelected, candidateVehicles, trainFingerprintByVehicle,
+vehicleRouteCompatibility, vtr14Score, vtr14Confirmed, rosterOpened,
+augustoRevealed, puzzleComplete
+
+
+Dataset
+-------
+src/data/block08/rotationPuzzle.ts
+src/forensic/puzzles/puzzle11SaturnRotation.ts
+src/forensic/puzzles/puzzle11Meta.json
+
+
+UI
+--
+RotationSession na bancada (evidence police_clock_drift_logs)
+Sem painel exclusivo “Puzzle 11”; sem checklist ✓trem/✓ocorrência
+
+
+NÃO
+---
+offset/drift/freq/sliders/ENF/sirene extra
+entregar VTR-14 no CAD
+voz identificando Augusto no rádio
+popup “VOCÊ ERA O POLICIAL”
+achievement antes da escala

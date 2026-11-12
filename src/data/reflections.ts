@@ -449,10 +449,10 @@ export const reflections: ReflectionDef[] = [
       'O acidente já não era mais uma abstração.',
       'Rui dirigiu bêbado um carro que não deveria estar nas mãos dele, acertou o guardrail e foi embora. Horas depois Elisa encostou naquela mesma estrutura e ela cedeu.',
       'Mas havia uma etapa anterior.',
-      'Rui não chegou até o guardrail sem ser visto. Uma viatura o parou. O policial percebeu que ele tinha bebido e, ainda assim, decidiu deixá-lo seguir.',
-      'Rui não lembrava o nome. Depois de seis anos, eu não confiaria nem se lembrasse.',
+      'Ele ficou preso atrás de um trem. Saiu acelerando. Foi parado. O policial percebeu a bebida — e mesmo assim o liberou quando o rádio pediu uma emergência.',
+      'Rui não lembrava o nome. Nem o número da viatura. Depois de seis anos, eu não confiaria nem se lembrasse.',
       'Os registros da corporação eram outra coisa.',
-      'Se eu conseguisse corrigir os horários e identificar a viatura, saberia quem teve a chance de interromper aquela cadeia antes de ela começar.',
+      'Passagem, ocorrência, trajetos, o som de fundo num canal de rádio. Se eu cruzasse isso direito, saberia qual equipe teve a chance de interromper aquela cadeia antes de ela começar.',
     ],
   },
   {
@@ -460,6 +460,7 @@ export const reflections: ReflectionDef[] = [
     id: 'refl-b08-final',
     background: HUB_REFLECTION_BACKGROUND,
     blocks: [
+      'Eu parei o Rui.',
       'VTR-14.',
       'Li o indicativo outra vez.',
       'Depois o nome.',
