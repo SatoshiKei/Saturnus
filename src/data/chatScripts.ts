@@ -200,8 +200,8 @@ export const paulaScript: ChatScript = {
 export const RAFAEL_VERTICE_AUDIO_SRC =
   '/assets/audio/forensic/puzzle02/rafael_1610_2147_full.mp3'
 /** Truncamento no WhatsApp — o final do Vértice só na bancada após rebuild. */
-export const RAFAEL_VERTICE_PLAYABLE_UNTIL_SEC = 19.85
-export const RAFAEL_VERTICE_DURATION_SEC = 31
+export const RAFAEL_VERTICE_PLAYABLE_UNTIL_SEC = 22.26
+export const RAFAEL_VERTICE_DURATION_SEC = 33
 
 /** Áudio do forward Rafael → Augusto (Puzzle 02). Exportado para re-sincronizar saves antigos. */
 export const RAFAEL_FORWARD_AUDIO: Extract<ScriptReply, { kind: 'audio' }> = {

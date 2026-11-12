@@ -82,7 +82,7 @@ class FakeAudioContext {
   }
   decodeAudioData() {
     return Promise.resolve({
-      duration: 31.086,
+      duration: 33.411,
       getChannelData: () => new Float32Array(8),
       length: 8,
       numberOfChannels: 1,

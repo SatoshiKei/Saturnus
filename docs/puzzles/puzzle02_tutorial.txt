@@ -2,18 +2,18 @@ PUZZLE 02 — IAPETUS
 Dev only — não aparece para o jogador.
 Arquivo: rafael_1610_2147.ogg
 Evidências: rafael_audio_reply | rafael_forward_from_mariana
-Fonte: src/assets/audios/p2/Rafael - Vertice Full Audio.mp3
+Fonte: src/assets/audios/p2/Rafael - Vértice Full Audio - Novo.mp3
 Runtime: public/assets/audio/forensic/puzzle02/rafael_1610_2147_full.mp3
 
 
 O QUE ESTÁ ERRADO
 -----------------
-O áudio para em ~19.85 s (depois de “Já trabalhei com ele.”).
+O áudio para em ~22.26 s (depois de “Já trabalhei com ele.”).
 O final (Vértice) existe no arquivo, mas o container Ogg está quebrado.
 
 FILE mostra a pista:
-  Container duration  00:31.086
-  Decoded duration    00:19.850
+  Container duration  00:33.411
+  Decoded duration    00:22.260
 
 
 COMO RESOLVER
@@ -28,10 +28,10 @@ COMO RESOLVER
    (Só editar não basta; CRC ainda mismatch; playback ainda corta.)
 
 4. Rebuild container.
-   Certo (seq 5)  → decode completo, timeline até 31 s.
+   Certo (seq 5)  → decode completo, timeline até ~33.4 s.
    Errado (ex. 9) → “structural warnings”, continua truncado.
 
-5. Play no trecho depois de ~20 s e ouvir:
+5. Play no trecho depois de ~22.3 s e ouvir:
      “…isso aí foi gravado no Vértice…”
    Recovered Speech registra sozinho. Puzzle conclui.
 

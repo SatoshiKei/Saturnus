@@ -3,13 +3,13 @@ import { buildCompositeWaveform } from '../forensicMix'
 
 const FULL_SRC = '/assets/audio/forensic/puzzle02/rafael_1610_2147_full.mp3'
 
-/** Duração real do asset Rafael — Vértice Full Audio. */
-export const puzzle02ContainerDurationSec = 31.086
+/** Duração real do asset Rafael — Vértice Full Audio - Novo. */
+export const puzzle02ContainerDurationSec = 33.411
 /**
  * Truncamento após “…Já trabalhei com ele.”
  * Região do Vértice fica inacessível até rebuild.
  */
-export const puzzle02DamagedPlayableUntilSec = 19.85
+export const puzzle02DamagedPlayableUntilSec = 22.26
 
 const SERIAL = '0xA41C02F1'
 
@@ -69,8 +69,8 @@ export const puzzle02SpeechSegments = [
   {
     id: 'seg_vertice',
     text: 'isso aí foi gravado no Vértice',
-    startSec: 21.4,
-    durationSec: 2.4,
+    startSec: 25.74,
+    durationSec: 1.52,
     clarityThreshold: 0.55,
     recoveryWeights: { center: 0.25, depth: 0.25, width: 0.25, noise: 0.25 },
     voiceWeight: 1,
@@ -79,8 +79,8 @@ export const puzzle02SpeechSegments = [
   {
     id: 'seg_cabine',
     text: 'talvez dê pra descobrir quem tava na cabine',
-    startSec: 27.6,
-    durationSec: 2.8,
+    startSec: 31.3,
+    durationSec: 1.88,
     clarityThreshold: 0.55,
     recoveryWeights: { center: 0.25, depth: 0.25, width: 0.25, noise: 0.25 },
     voiceWeight: 1,
@@ -118,13 +118,13 @@ export const puzzle02IapetusSession: ForensicSession = {
         { key: 'filename', label: 'Filename', value: 'rafael_1610_2147.ogg' },
         { key: 'container', label: 'Container', value: 'Ogg' },
         { key: 'codec', label: 'Codec', value: 'Opus' },
-        { key: 'containerDuration', label: 'Container duration', value: '00:31.086' },
-        { key: 'decodedDuration', label: 'Decoded duration', value: '00:19.850' },
+        { key: 'containerDuration', label: 'Container duration', value: '00:33.411' },
+        { key: 'decodedDuration', label: 'Decoded duration', value: '00:22.260' },
         { key: 'channels', label: 'Channels', value: '1' },
         { key: 'sampleRate', label: 'Sample rate', value: '48000 Hz' },
         { key: 'created', label: 'Created', value: '2026-11-03 21:47:10' },
         { key: 'source', label: 'Source', value: 'WhatsApp · Rafael → Mariana' },
-        { key: 'size', label: 'Size', value: '512 KB' },
+        { key: 'size', label: 'Size', value: '539 KB' },
         { key: 'hash', label: 'Hash', value: 'sha1:9b1e…c4a2' },
         { key: 'decodeNote', label: 'Decode', value: 'Decode ended before container EOF.' },
       ],
@@ -158,8 +158,8 @@ export const puzzle02IapetusSession: ForensicSession = {
           seed: 16102147,
           noiseFloor: 0.12,
           voice: [
-            { startSec: 0.4, endSec: 19.6, amplitude: 0.75 },
-            { startSec: 20.0, endSec: 30.8, amplitude: 0.7 },
+            { startSec: 0.4, endSec: 22.2, amplitude: 0.75 },
+            { startSec: 22.8, endSec: 33.2, amplitude: 0.7 },
           ],
         }),
         stems: [

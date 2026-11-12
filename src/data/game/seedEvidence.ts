@@ -110,7 +110,7 @@ export const seedEvidenceCatalog: Evidence[] = [
     relatedEventIds: [],
     exportable: true,
     audioSrc: '/assets/audio/forensic/puzzle02/rafael_1610_2147_full.mp3',
-    durationSec: 31,
+    durationSec: 33,
     displayFileName: 'PTT-Rafael-01.11.ogg',
     puzzleMeta: {
       puzzleId: 'puzzle-02-iapetus',
@@ -155,7 +155,7 @@ export const seedEvidenceCatalog: Evidence[] = [
     relatedEventIds: [],
     exportable: true,
     audioSrc: '/assets/audio/forensic/puzzle02/rafael_1610_2147_full.mp3',
-    durationSec: 31,
+    durationSec: 33,
     displayFileName: 'rafael_1610_2147.ogg',
     puzzleMeta: {
       puzzleId: 'puzzle-02-iapetus',
@@ -178,7 +178,7 @@ export const seedEvidenceCatalog: Evidence[] = [
     relatedEventIds: [],
     exportable: true,
     audioSrc: '/assets/audio/forensic/puzzle02/rafael_1610_2147_full.mp3',
-    durationSec: 31,
+    durationSec: 33,
   },
   {
     id: 'mariana_vertice_visit',

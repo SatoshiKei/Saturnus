@@ -28,8 +28,8 @@ describe('Puzzle 02 — IAPETUS engine', () => {
     )
     expect(puzzle02DamagedPlayableUntilSec).toBeLessThan(puzzle02ContainerDurationSec)
     const meta = fileMetadataForContainer(source, false)
-    expect(meta.find((m) => m.key === 'containerDuration')?.value).toMatch(/31\.086/)
-    expect(meta.find((m) => m.key === 'decodedDuration')?.value).toMatch(/19\.850/)
+    expect(meta.find((m) => m.key === 'containerDuration')?.value).toMatch(/33\.411/)
+    expect(meta.find((m) => m.key === 'decodedDuration')?.value).toMatch(/22\.260/)
     expect(meta.find((m) => m.key === 'decodeNote')?.value).toMatch(/before container EOF/i)
   })
 
@@ -94,7 +94,7 @@ describe('Puzzle 02 — IAPETUS engine', () => {
     expect(corrupt.crcStatus).toBe('valid')
     expect(effectivePlayableUntil(source, true)).toBe(puzzle02ContainerDurationSec)
     const meta = fileMetadataForContainer(source, true)
-    expect(meta.find((m) => m.key === 'decodedDuration')?.value).toMatch(/31\.086/)
+    expect(meta.find((m) => m.key === 'decodedDuration')?.value).toMatch(/33\.411/)
     expect(meta.find((m) => m.key === 'decodeNote')?.value).toMatch(/Decode complete/i)
   })
 
