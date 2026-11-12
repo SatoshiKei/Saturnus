@@ -1247,18 +1247,22 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-henrique-incidente',
-    title: 'Incidente de segurança — relatório resumido',
+    title: 'INCIDENTE / SEGURANÇA — sessões não reconhecidas (H. Valença)',
     category: 'Consultas',
-    issuer: 'Arquivo setorial',
+    issuer: 'TI / Segurança da informação',
     system: 'consultas',
     blocks: [
       {
         id: 'b1',
-        text: 'Henrique reportou incidente de segurança: acessos anômalos, sessões que não fechavam, suspeita de observação.',
+        text: 'Ticket interno: sessões associadas às credenciais/contexto de H. Valença apareciam sem explicação. Horários e origens inconsistentes com o posto de trabalho.',
       },
       {
         id: 'b2',
-        text: 'A empresa tratou como problema pessoal / burnout. Alegações não comprovadas no relatório oficial.',
+        text: 'Ação: captura temporária de tráfego da estação/rede (~minutos) anexada ao ticket (hv_session_capture.pcap). Análise preliminar inconclusiva — possível comprometimento de credencial ou erro de sessão.',
+      },
+      {
+        id: 'b3',
+        text: 'Encerramento: usuário orientado a reautenticar/alterar senha. Investigação arquivada sem causa raiz confirmada.',
       },
     ],
     onOpen: [{ type: 'addEvidence', id: 'henrique_security_incident' }],
@@ -1287,18 +1291,18 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-henrique-pcap-note',
-    title: 'Material digital antigo — captura de rede (Henrique)',
+    title: 'Anexo de ticket — hv_session_capture.pcap',
     category: 'Perícia / forense',
-    issuer: 'Backup / cache recuperado — incidente de segurança',
+    issuer: 'Backup setorial — ticket de segurança H. Valença',
     system: 'pericia',
     blocks: [
       {
         id: 'b1',
-        text: 'Arquivo recuperado de backup setorial ligado ao incidente reportado por Henrique Valença. Dump contendo sessão de voz fragmentada.',
+        text: 'Arquivo preservado junto ao ticket de sessões não reconhecidas. Captura curta de tráfego da estação no período da investigação interna.',
       },
       {
         id: 'b2',
-        text: 'Pacotes RTP com timestamps, sequence numbers e SSRCs misturados. Encaminhado à bancada de áudio para reconstrução.',
+        text: 'Conteúdo: pacotes RTP (voz). Dois identificadores SSRC recorrentes; sequence numbers e timestamps exigem inspeção na bancada. Análise corporativa original: inconclusiva.',
       },
     ],
     onOpen: [],

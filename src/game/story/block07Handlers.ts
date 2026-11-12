@@ -593,7 +593,7 @@ export function unlockHenriqueDump() {
 
 export function onCassiniSolved() {
   const s = getInvestigationState()
-  if (s.flags.block07_complete) return
+  if (s.flags.block07_cassini_done) return
   const actions: StoryActionRef[] = [
     { type: 'setFlag', id: 'block07_cassini_done', value: true },
     { type: 'addEvidence', id: 'henrique_two_rtp_sessions' },
@@ -601,7 +601,6 @@ export function onCassiniSolved() {
     { type: 'addEvidence', id: 'system_similar_to_mariana_unknown' },
     { type: 'completeTask', id: 'task_cassini_puzzle' },
     { type: 'addHypothesis', id: 'hyp_unknown_tech_origin' },
-    { type: 'updateHypothesis', id: 'hyp_unknown_tech_origin', state: 'confirmed' },
     { type: 'addHypothesis', id: 'hyp_henrique_mariana_same_system' },
     {
       type: 'linkHypothesis',
@@ -612,6 +611,11 @@ export function onCassiniSolved() {
     { type: 'setFlag', id: 'block07_refl_tech_pending', value: true },
   ]
   dispatchActions(actions)
+}
+
+/** Alias Bancada (rtp-stream-separation). */
+export function runCassiniHuygensAnalysis() {
+  onCassiniSolved()
 }
 
 export function onTechReflectionDone() {

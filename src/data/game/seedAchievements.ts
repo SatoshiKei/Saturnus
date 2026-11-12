@@ -160,6 +160,13 @@ export const seedAchievements: AchievementDef[] = [
       Boolean(s.flags.block07_enceladus_done || s.evidenceOwned.includes('anon_audio_ricardo_name')),
   },
   {
+    id: 'ach-cassini-huygens',
+    title: 'CASSINI-HUYGENS',
+    description: 'Separou e reconstruiu as sessões de voz da captura de Henrique.',
+    hint: 'Separar SSRCs e ordenar o stream anômalo por sequence antes de reconstruir.',
+    unlocked: (s) => Boolean(s.flags.block07_cassini_done),
+  },
+  {
     id: 'ach-block7',
     title: 'O homem que não era Ricardo',
     description: 'A identidade no cadastro não sustentou o nome.',

@@ -1,0 +1,95 @@
+PUZZLE 09 — CASSINI-HUYGENS
+Dev only — não aparece para o jogador.
+
+Lore / origem
+-------------
+Cadeia: Ricardo → pertences → H.V. → hvalenca@ → fórum → empresa → Henrique → Cecília.
+Cecília: Henrique denunciou sessões/acessos que não reconhecia; abriu ticket interno.
+TI capturou tráfego da estação; backup preservado com o ticket.
+Augusto localiza via consulta (captura/pcap/dump) → doc-henrique-pcap-note → evidência henrique_rtp_capture.
+Cecília NÃO conhece o conteúdo das chamadas.
+
+
+Assets (não reescrever)
+-----------------------
+src/assets/audios/p9/H.V - Chamado.mp3     → Stream A (Henrique × colega)
+src/assets/audios/p9/H.V - O Omitido.mp3   → Stream B (Henrique × interlocutor anômalo)
+
+Build: python tools/audio/build_puzzle09_cassini_huygens.py
+
+
+Captura
+-------
+public/assets/audio/forensic/puzzle09/hv_session_capture.pcap
+UI name: hv_session_capture.pcap
+Codec: G.711 PCMU (μ-law) · 8 kHz · frames 40 ms
+~2704 pacotes RTP intercalados
+
+SSRC A (legítimo): 48A21C30
+SSRC B (anômalo):  91F47B12
+
+Jitter A: leve (±6 ms, poucos swaps locais)
+Jitter B: pesado (swaps + 3-cycles; sequence fora de ordem na captura)
+
+
+Cronologia documental
+---------------------
+Conversa normal (A) → Henrique abre ticket → captura → sessão anômala (B) na captura.
+
+
+Como jogar
+----------
+1. Abrir henrique_rtp_capture na Bancada → Packets.
+2. Perceber dois SSRC recorrentes.
+3. Filter SSRC A → Select visible → Create Stream From Selection.
+4. Reconstruct Audio → conversa técnica inteligível (prova o método).
+5. Filter SSRC B → Create Stream → Reconstruct (ordem de captura) → voz quebrada.
+6. Sort by Sequence → Reconstruct de novo → conversa anômala inteligível.
+7. Finding técnico registrado; achievement CASSINI-HUYGENS.
+
+
+Completion
+----------
+kind: rtp-stream-separation
+onCompleteAction: runCassiniHuygensAnalysis → onCassiniSolved
+Requer streamARecovered + streamBRecovered (B com order quality ≥ 0.9).
+
+
+Findings
+--------
+henrique_two_rtp_sessions:
+  Captura de Henrique contém uma sessão VoIP anômala separada do tráfego normal.
+
+henrique_talked_to_contextual_system:
+  O interlocutor demonstra conhecimento de informação que Henrique afirma existir
+  apenas em seu computador pessoal.
+
+Não nomear “O Omitido” nesta etapa.
+
+
+Achievement
+-----------
+ach-cassini-huygens · CASSINI-HUYGENS
+"Separou e reconstruiu as sessões de voz da captura de Henrique."
+Dispara com block07_cassini_done (após Stream B correto).
+
+
+DEV
+---
+packetCount · streamA SSRC · streamB SSRC · selectedSSRC
+streamAOrderQuality · streamBOrderQuality · sequenceErrors
+reconstructionQuality · streamARecovered · streamBRecovered · puzzleComplete
+
+
+DEBUG
+-----
+tools/audio/out/puzzle09_debug/
+  stream_a_correct.wav · stream_b_correct.wav
+  stream_b_capture_order.wav · mixed_capture_order.wav
+  packet_dump.tsv · hv_session_capture.pcap
+
+
+Dataset
+-------
+src/forensic/puzzles/puzzle09CassiniHuygens.ts
+src/forensic/puzzles/puzzle09Meta.json

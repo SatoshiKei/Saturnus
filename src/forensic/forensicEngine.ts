@@ -88,6 +88,16 @@ export function createInitialUiState(
     ricardoClarity: null,
     cycleAnalysisStatus: null,
     cycleDifferenceDone: false,
+    packetSort: 'index',
+    packetSsrcFilter: null,
+    selectedPacketIndexes: [],
+    derivedRtpStreams: [],
+    activeDerivedStreamId: null,
+    packetStatus: null,
+    streamARecovered: false,
+    streamBRecovered: false,
+    streamAOrderQuality: null,
+    streamBOrderQuality: null,
   }
 }
 
@@ -248,6 +258,149 @@ export function cycleDifferenceComplete(
   if (!need.length) return true
   const have = new Set(ui.recoveredSpeech.map((r) => r.segmentId))
   return need.every((id) => have.has(id))
+}
+
+/** Qualidade de ordenação: fração de pares consecutivos com seq+1. */
+export function computeRtpOrderQuality(
+  packets: Array<{ sequence?: number }>,
+): number {
+  if (packets.length < 2) return 0
+  let ok = 0
+  for (let i = 0; i < packets.length - 1; i++) {
+    const a = packets[i]?.sequence
+    const b = packets[i + 1]?.sequence
+    if (a != null && b != null && b === a + 1) ok++
+  }
+  return ok / (packets.length - 1)
+}
+
+export function sortPacketRows(
+  rows: import('./forensicTypes').PacketRow[],
+  sort: ForensicUiState['packetSort'],
+): import('./forensicTypes').PacketRow[] {
+  const copy = [...rows]
+  if (sort === 'time') {
+    copy.sort((a, b) => (a.timeSec ?? a.arrival ?? 0) - (b.timeSec ?? b.arrival ?? 0))
+  } else if (sort === 'sequence') {
+    copy.sort((a, b) => (a.sequence ?? 0) - (b.sequence ?? 0))
+  } else if (sort === 'ssrc') {
+    copy.sort((a, b) => String(a.ssrc ?? '').localeCompare(String(b.ssrc ?? '')) || a.index - b.index)
+  } else {
+    copy.sort((a, b) => a.index - b.index)
+  }
+  return copy
+}
+
+export function filterPacketRows(
+  rows: import('./forensicTypes').PacketRow[],
+  ssrcFilter: string | null,
+): import('./forensicTypes').PacketRow[] {
+  if (!ssrcFilter) return rows
+  return rows.filter((r) => r.ssrc === ssrcFilter)
+}
+
+export function createDerivedRtpStream(
+  rows: import('./forensicTypes').PacketRow[],
+  selectedIndexes: number[],
+  sortMode: ForensicUiState['packetSort'],
+  nextId: number,
+): { ok: boolean; message: string; stream?: import('./forensicTypes').DerivedRtpStream } {
+  const selected = rows.filter((r) => selectedIndexes.includes(r.index))
+  if (selected.length < 8) {
+    return { ok: false, message: 'Select more packets from a single SSRC.' }
+  }
+  const ssrcs = [...new Set(selected.map((r) => r.ssrc).filter(Boolean))] as string[]
+  if (ssrcs.length !== 1) {
+    return { ok: false, message: 'Selection spans multiple SSRCs — filter first.' }
+  }
+  const ssrc = ssrcs[0]!
+  const ordered =
+    sortMode === 'sequence'
+      ? [...selected].sort((a, b) => (a.sequence ?? 0) - (b.sequence ?? 0))
+      : sortMode === 'time'
+        ? [...selected].sort((a, b) => (a.timeSec ?? 0) - (b.timeSec ?? 0))
+        : [...selected].sort((a, b) => a.index - b.index)
+  const quality = computeRtpOrderQuality(ordered)
+  const mode = sortMode === 'sequence' ? 'sequence' : sortMode === 'time' ? 'time' : 'capture'
+  return {
+    ok: true,
+    message: `Stream ${String(nextId).padStart(2, '0')} created (${ordered.length} packets).`,
+    stream: {
+      id: `rtp-stream-${nextId}`,
+      label: `Stream ${String(nextId).padStart(2, '0')}`,
+      ssrc,
+      packetIndexes: ordered.map((r) => r.index),
+      orderQuality: quality,
+      sortMode: mode,
+      reconstructed: false,
+      audioSrc: null,
+    },
+  }
+}
+
+export function evaluateRtpReconstruction(
+  cfg: import('./forensicTypes').RtpStreamConfig,
+  stream: import('./forensicTypes').DerivedRtpStream,
+  allRows: import('./forensicTypes').PacketRow[],
+  /** Ordem ativa na tabela no momento do Reconstruct. */
+  activeSort: ForensicUiState['packetSort'],
+): {
+  ok: boolean
+  quality: number
+  audioSrc: string
+  isStreamA: boolean
+  isStreamB: boolean
+  message: string
+  orderedIndexes: number[]
+  sortMode: import('./forensicTypes').DerivedRtpStream['sortMode']
+} {
+  const ofSsrc = allRows.filter((r) => r.ssrc === stream.ssrc)
+  const ordered = sortPacketRows(ofSsrc, activeSort)
+  const quality = computeRtpOrderQuality(ordered)
+  const isStreamA = stream.ssrc === cfg.ssrcA
+  const isStreamB = stream.ssrc === cfg.ssrcB
+  const coherent = quality >= cfg.minOrderQuality
+  const sortMode =
+    activeSort === 'sequence' ? 'sequence' : activeSort === 'time' ? 'time' : 'capture'
+
+  let audioSrc = cfg.audio.mixedPreview
+  let message = 'Reconstruction produced unintelligible mix.'
+  if (isStreamA && coherent) {
+    audioSrc = cfg.audio.streamA
+    message = 'Stream reconstructed — speech intelligible.'
+  } else if (isStreamA && !coherent) {
+    audioSrc = cfg.audio.streamA
+    message = 'Stream partial — mild sequence errors remain.'
+  } else if (isStreamB && coherent) {
+    audioSrc = cfg.audio.streamB
+    message = 'Stream reconstructed — speech intelligible.'
+  } else if (isStreamB && !coherent) {
+    audioSrc = cfg.audio.streamBCaptureOrder
+    message = 'Stream contains speech but sequence order is wrong.'
+  }
+
+  // Stream A: aceitar qualidade alta mesmo com sort por captura (jitter leve).
+  const ok =
+    (isStreamA && quality >= Math.min(0.85, cfg.minOrderQuality)) ||
+    (isStreamB && coherent)
+  return {
+    ok,
+    quality,
+    audioSrc,
+    isStreamA,
+    isStreamB,
+    message,
+    orderedIndexes: ordered.map((r) => r.index),
+    sortMode,
+  }
+}
+
+export function rtpStreamSeparationComplete(
+  session: ForensicSession,
+  ui: ForensicUiState,
+): boolean {
+  if (session.completion?.kind !== 'rtp-stream-separation') return false
+  return ui.streamARecovered && ui.streamBRecovered
 }
 
 /** Qualidade da extração RF: overlap no canal oculto vs contaminação A/C. */

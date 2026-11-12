@@ -300,10 +300,20 @@ export interface ContainerPlaybackConfig {
 
 export interface PacketRow {
   index: number
+  /** Arrival time (seconds) — also exposed as Time. */
+  timeSec?: number
   arrival?: number
+  source?: string
+  destination?: string
+  protocol?: string
+  ssrc?: string
   sequence?: number
-  timestamp?: number
+  rtpTimestamp?: number
+  length?: number
+  /** Internal stream tag (A/B) — not a player-facing label. */
   stream?: string
+  frame?: number
+  timestamp?: number
   payload?: string
   status?: string
 }
@@ -311,6 +321,38 @@ export interface PacketRow {
 export interface PacketData {
   emptyMessage?: string
   rows?: PacketRow[]
+}
+
+/** Configuração RTP / separação de streams (Puzzle 09+). */
+export interface RtpStreamConfig {
+  ssrcA: string
+  ssrcB: string
+  codec: string
+  sampleRate: number
+  frameMs: number
+  minOrderQuality: number
+  audio: {
+    streamA: string
+    streamB: string
+    streamBCaptureOrder: string
+    mixedPreview: string
+  }
+  findings: {
+    separated: string
+    anomalousKnowledge: string
+  }
+}
+
+export interface DerivedRtpStream {
+  id: string
+  label: string
+  ssrc: string
+  /** Packet indexes in reconstruction order. */
+  packetIndexes: number[]
+  orderQuality: number
+  sortMode: 'capture' | 'sequence' | 'time'
+  reconstructed: boolean
+  audioSrc: string | null
 }
 
 export interface TimingData {
@@ -388,6 +430,8 @@ export interface ForensicSource {
   rfCapture?: RfCaptureConfig
   /** Análise de ciclos / repetição (Puzzle 08+). */
   cycleAnalysis?: CycleAnalysisConfig
+  /** Separação / reconstrução RTP (Puzzle 09+). */
+  rtpStreams?: RtpStreamConfig
 }
 
 export interface CycleAnalysisConfig {
@@ -435,6 +479,7 @@ export interface ForensicSession {
       | 'spectrogram-survey'
       | 'rf-channel-extract'
       | 'cycle-difference'
+      | 'rtp-stream-separation'
     /** Chama handler externo quando completo. */
     onCompleteAction?:
       | 'runProvisionalEmergencyAnalysis'
@@ -445,6 +490,7 @@ export interface ForensicSession {
       | 'runHexagonSpectrogramSurvey'
       | 'runShepherdMoonsExtract'
       | 'runEnceladusAnalysis'
+      | 'runCassiniHuygensAnalysis'
     /** Segmentos obrigatórios além do rebuild (se houver). */
     requireSpeechSegmentIds?: string[]
     /** source id do registro correto (source-link). */
@@ -596,6 +642,17 @@ export interface ForensicUiState {
   ricardoClarity: number | null
   cycleAnalysisStatus: string | null
   cycleDifferenceDone: boolean
+  /** Pacotes / RTP (Puzzle 09). */
+  packetSort: 'index' | 'time' | 'sequence' | 'ssrc'
+  packetSsrcFilter: string | null
+  selectedPacketIndexes: number[]
+  derivedRtpStreams: DerivedRtpStream[]
+  activeDerivedStreamId: string | null
+  packetStatus: string | null
+  streamARecovered: boolean
+  streamBRecovered: boolean
+  streamAOrderQuality: number | null
+  streamBOrderQuality: number | null
 }
 
 export const DEFAULT_PROCESS: ProcessParams = {

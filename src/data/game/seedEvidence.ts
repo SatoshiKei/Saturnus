@@ -1660,26 +1660,27 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'henrique_rtp_capture',
-    title: 'Captura de rede antiga — sessão de voz fragmentada (Henrique)',
+    title: 'Captura de rede — hv_session_capture.pcap',
     type: 'digital',
     sourceType: 'phone-forensics',
     originalOrDerived: 'original',
     integrity: 'questionable',
-    description: 'Dump/PCAP com pacotes RTP. Análise na bancada.',
+    description:
+      'Anexo ao ticket interno de segurança de H. Valença. Pacotes RTP intercalados. Origem: backup setorial.',
     relatedPersonIds: ['henrique'],
     relatedLocationIds: [],
     relatedEventIds: [],
     exportable: true,
-    displayFileName: 'henrique_session_mixed.pcap',
+    displayFileName: 'hv_session_capture.pcap',
     puzzleMeta: {
-      puzzleId: 'puzzle-09-cassini',
-      implementation: 'placeholder',
+      puzzleId: 'puzzle-09-cassini-huygens',
+      implementation: 'full',
       completionEvidenceId: 'henrique_two_rtp_sessions',
     },
   },
   {
     id: 'henrique_two_rtp_sessions',
-    title: 'Captura RTP — duas sessões (SSRCs) misturadas',
+    title: 'Captura de Henrique contém uma sessão VoIP anômala separada do tráfego normal',
     type: 'derived',
     sourceType: 'audio-lab',
     originalOrDerived: 'derived',
@@ -1691,7 +1692,8 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'henrique_talked_to_contextual_system',
-    title: 'Henrique interagía com sistema de conversa com memória/contexto incomum',
+    title:
+      'O interlocutor demonstra conhecimento de informação que Henrique afirma existir apenas em seu computador pessoal',
     type: 'derived',
     sourceType: 'audio-lab',
     originalOrDerived: 'derived',
@@ -1703,7 +1705,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'system_similar_to_mariana_unknown',
-    title: 'Sistema de Henrique — similaridade comportamental com interlocutor de Mariana',
+    title: 'Padrão de interlocução com contexto excessivo — paralelo com o caso Mariana',
     type: 'derived',
     sourceType: 'audio-lab',
     originalOrDerived: 'derived',

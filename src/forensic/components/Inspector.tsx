@@ -52,6 +52,12 @@ const HELP: Record<string, string> = {
     'Averages selected similar cycles into a reference pattern.',
   Difference:
     'Subtracts the common pattern from a target cycle and evaluates residual energy.',
+  Packets:
+    'Packet table for capture inspection. Sort and filter by technical fields; create derived streams from a selection.',
+  'Create Stream From Selection':
+    'Builds a derived stream from selected packets. Selection should share a single SSRC.',
+  'Reconstruct Audio':
+    'Renders audio from the active derived stream using the current packet order (sort). Wrong order yields wrong audio.',
 }
 
 function Tip({ name }: { name: string }) {
@@ -165,6 +171,14 @@ export function Inspector({
   onBuildCommonPattern,
   onSetDifferenceTarget,
   onApplyDifference,
+  onPacketSort,
+  onPacketSsrcFilter,
+  onTogglePacketSelect,
+  onSelectVisiblePackets,
+  onClearPacketSelection,
+  onCreateStreamFromSelection,
+  onSelectDerivedStream,
+  onReconstructAudio,
 }: {
   tab: ForensicInspectorTab
   onTab: (t: ForensicInspectorTab) => void
@@ -210,6 +224,14 @@ export function Inspector({
   onBuildCommonPattern?: () => void
   onSetDifferenceTarget?: (cycleIndex: number) => void
   onApplyDifference?: () => void
+  onPacketSort?: (sort: ForensicUiState['packetSort']) => void
+  onPacketSsrcFilter?: (ssrc: string | null) => void
+  onTogglePacketSelect?: (index: number) => void
+  onSelectVisiblePackets?: () => void
+  onClearPacketSelection?: () => void
+  onCreateStreamFromSelection?: () => void
+  onSelectDerivedStream?: (id: string) => void
+  onReconstructAudio?: () => void
 }) {
   const p = ui.process
   const hasProfile = Boolean(ui.activeNoiseProfileId)
@@ -785,42 +807,178 @@ export function Inspector({
         )}
 
         {tab === 'packets' && (
-          <div className="fw-panel">
+          <div className="fw-panel" data-testid="packets-panel">
             {source?.packets?.rows?.length ? (
               <>
-                <div className="fw-packet-tools">
-                  <label className="fw-inline">
-                    Sort by
-                    <select className="fw-select" defaultValue="index">
-                      <option value="index">Index</option>
-                      <option value="arrival">Arrival</option>
-                      <option value="sequence">Sequence</option>
-                    </select>
-                  </label>
-                  <button type="button" className="fw-btn">
-                    Build stream from selection
-                  </button>
-                </div>
-                <table className="fw-table">
-                  <thead>
-                    <tr>
-                      <th>Index</th>
-                      <th>Arrival</th>
-                      <th>Seq</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {source.packets.rows.map((r) => (
-                      <tr key={r.index}>
-                        <td className="fw-mono">{r.index}</td>
-                        <td className="fw-mono">{r.arrival ?? '—'}</td>
-                        <td className="fw-mono">{r.sequence ?? '—'}</td>
-                        <td>{r.status ?? '—'}</td>
+                <Section title="Packet capture" tip="Packets">
+                  <div className="fw-packet-tools">
+                    <label className="fw-inline">
+                      Sort by
+                      <select
+                        className="fw-select"
+                        data-testid="packet-sort"
+                        value={ui.packetSort}
+                        onChange={(e) =>
+                          onPacketSort?.(e.target.value as ForensicUiState['packetSort'])
+                        }
+                      >
+                        <option value="index">Index / capture</option>
+                        <option value="time">Time</option>
+                        <option value="sequence">Sequence</option>
+                        <option value="ssrc">SSRC</option>
+                      </select>
+                    </label>
+                    <label className="fw-inline">
+                      Filter SSRC
+                      <select
+                        className="fw-select"
+                        data-testid="packet-ssrc-filter"
+                        value={ui.packetSsrcFilter ?? ''}
+                        onChange={(e) => onPacketSsrcFilter?.(e.target.value || null)}
+                      >
+                        <option value="">All</option>
+                        {[...new Set(source.packets.rows.map((r) => r.ssrc).filter(Boolean))].map(
+                          (s) => (
+                            <option key={s} value={s!}>
+                              {s}
+                            </option>
+                          ),
+                        )}
+                      </select>
+                    </label>
+                  </div>
+                  <div className="fw-eq" style={{ marginTop: '0.4em' }}>
+                    <button type="button" className="fw-btn fw-btn--ghost" onClick={() => onSelectVisiblePackets?.()}>
+                      Select visible
+                    </button>
+                    <button type="button" className="fw-btn fw-btn--ghost" onClick={() => onClearPacketSelection?.()}>
+                      Clear selection
+                    </button>
+                    <button
+                      type="button"
+                      className="fw-btn"
+                      data-testid="create-stream-from-selection"
+                      onClick={() => onCreateStreamFromSelection?.()}
+                    >
+                      Create Stream From Selection
+                    </button>
+                  </div>
+                  <p className="fw-muted">
+                    Selected: {ui.selectedPacketIndexes.length} · Visible:{' '}
+                    {
+                      source.packets.rows.filter((r) =>
+                        ui.packetSsrcFilter ? r.ssrc === ui.packetSsrcFilter : true,
+                      ).length
+                    }
+                  </p>
+                </Section>
+                <div className="fw-packet-table-wrap" style={{ maxHeight: '22rem', overflow: 'auto' }}>
+                  <table className="fw-table" data-testid="packet-table">
+                    <thead>
+                      <tr>
+                        <th />
+                        <th>Time</th>
+                        <th>Source</th>
+                        <th>Destination</th>
+                        <th>Protocol</th>
+                        <th>SSRC</th>
+                        <th>Sequence</th>
+                        <th>RTP Timestamp</th>
+                        <th>Length</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {[...source.packets.rows]
+                        .filter((r) => (ui.packetSsrcFilter ? r.ssrc === ui.packetSsrcFilter : true))
+                        .sort((a, b) => {
+                          if (ui.packetSort === 'time')
+                            return (a.timeSec ?? 0) - (b.timeSec ?? 0)
+                          if (ui.packetSort === 'sequence')
+                            return (a.sequence ?? 0) - (b.sequence ?? 0)
+                          if (ui.packetSort === 'ssrc')
+                            return String(a.ssrc).localeCompare(String(b.ssrc)) || a.index - b.index
+                          return a.index - b.index
+                        })
+                        .slice(0, 400)
+                        .map((r) => {
+                          const selected = ui.selectedPacketIndexes.includes(r.index)
+                          return (
+                            <tr
+                              key={r.index}
+                              data-selected={selected}
+                              onClick={() => onTogglePacketSelect?.(r.index)}
+                              style={{ cursor: 'pointer' }}
+                            >
+                              <td>
+                                <input
+                                  type="checkbox"
+                                  checked={selected}
+                                  readOnly
+                                  aria-label={`Select packet ${r.index}`}
+                                />
+                              </td>
+                              <td className="fw-mono">{(r.timeSec ?? r.arrival ?? 0).toFixed(3)}</td>
+                              <td className="fw-mono">{r.source ?? '—'}</td>
+                              <td className="fw-mono">{r.destination ?? '—'}</td>
+                              <td>{r.protocol ?? 'RTP'}</td>
+                              <td className="fw-mono">{r.ssrc ?? '—'}</td>
+                              <td className="fw-mono">{r.sequence ?? '—'}</td>
+                              <td className="fw-mono">{r.rtpTimestamp ?? '—'}</td>
+                              <td className="fw-mono">{r.length ?? '—'}</td>
+                            </tr>
+                          )
+                        })}
+                    </tbody>
+                  </table>
+                  {source.packets.rows.filter((r) =>
+                    ui.packetSsrcFilter ? r.ssrc === ui.packetSsrcFilter : true,
+                  ).length > 400 ? (
+                    <p className="fw-muted">Showing first 400 visible rows — filter SSRC to refine.</p>
+                  ) : null}
+                </div>
+                <Section title="Derived streams" tip="Create Stream From Selection">
+                  {ui.derivedRtpStreams.length ? (
+                    <ul className="fw-profiles" data-testid="derived-rtp-streams">
+                      {ui.derivedRtpStreams.map((s) => (
+                        <li key={s.id}>
+                          <div
+                            className="fw-profile"
+                            data-active={ui.activeDerivedStreamId === s.id}
+                          >
+                            <button
+                              type="button"
+                              className="fw-btn fw-btn--ghost"
+                              onClick={() => onSelectDerivedStream?.(s.id)}
+                            >
+                              {s.label}
+                            </button>
+                            <span className="fw-profile__meta fw-mono">
+                              SSRC {s.ssrc} · order {(s.orderQuality * 100).toFixed(0)}% ·{' '}
+                              {s.sortMode}
+                              {s.reconstructed ? ' · reconstructed' : ''}
+                            </span>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="fw-empty">No derived streams yet.</p>
+                  )}
+                  <button
+                    type="button"
+                    className="fw-btn"
+                    data-testid="reconstruct-audio"
+                    disabled={!ui.activeDerivedStreamId}
+                    onClick={() => onReconstructAudio?.()}
+                  >
+                    Reconstruct Audio
+                  </button>
+                </Section>
+                {ui.packetStatus ? (
+                  <p className="fw-empty" role="status" data-testid="packet-status">
+                    {ui.packetStatus}
+                  </p>
+                ) : null}
               </>
             ) : (
               <p className="fw-empty fw-empty--center">

@@ -25,11 +25,10 @@ import {
   runHexagonSpectrogramSurvey,
 } from '../../../game/story/block04Handlers'
 import { runShepherdMoonsExtract } from '../../../game/story/block06Handlers'
-import { onEnceladusSolved } from '../../../game/story/block07Handlers'
+import { onCassiniSolved, onEnceladusSolved } from '../../../game/story/block07Handlers'
 import { markAudioSeen } from '../../../game/state/investigationStore'
 import { HEX_FILES, hexFileByEvidence } from '../../../data/block04/hexagonPuzzle'
 import { GamePanel } from '../../ui/GamePanel'
-import { CassiniSession } from './CassiniSession'
 import { RingsSession } from './RingsSession'
 import { RotationSession } from './RotationSession'
 import { MemorySession } from './MemorySession'
@@ -161,8 +160,6 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
 
   const current = allFiles.find((f) => f.id === sel)
   const hexFile = current ? hexFileByEvidence(current.id) : undefined
-  const showCassini =
-    Boolean(inv.flags.block07_cassini_available) && current?.id === 'henrique_rtp_capture'
   const showRings =
     Boolean(inv.flags.block08_rings_available) && current?.id === 'protest_heterogeneous_sources'
   const showRotation =
@@ -323,7 +320,10 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                                 : forensicSession.completion?.onCompleteAction ===
                                     'runEnceladusAnalysis'
                                   ? Boolean(inv.flags.block07_enceladus_done)
-                                  : emergencyProvisionalDone
+                                  : forensicSession.completion?.onCompleteAction ===
+                                      'runCassiniHuygensAnalysis'
+                                    ? Boolean(inv.flags.block07_cassini_done)
+                                    : emergencyProvisionalDone
                   const containerState = inv.forensicContainerState?.[current.id]
                   return (
                     <ForensicWorkbench
@@ -359,6 +359,8 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                           runShepherdMoonsExtract()
                         } else if (action === 'runEnceladusAnalysis') {
                           onEnceladusSolved()
+                        } else if (action === 'runCassiniHuygensAnalysis') {
+                          onCassiniSolved()
                         } else {
                           runProvisionalEmergencyAnalysis()
                         }
@@ -439,7 +441,6 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                 </div>
               ) : null}
 
-              {!getForensicSessionForEvidence(current.id) && showCassini ? <CassiniSession /> : null}
               {!getForensicSessionForEvidence(current.id) && showRings ? <RingsSession /> : null}
               {!getForensicSessionForEvidence(current.id) && showRotation ? <RotationSession /> : null}
               {!getForensicSessionForEvidence(current.id) && showMemory ? <MemorySession /> : null}

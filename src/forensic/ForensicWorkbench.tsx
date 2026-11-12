@@ -23,19 +23,24 @@ import {
   clipSequenceComplete,
   buildDerivedRfSource,
   cycleDifferenceComplete,
+  createDerivedRtpStream,
   evaluateCommonPatternSelection,
   evaluateCycleDifference,
   evaluateRfExtraction,
+  evaluateRtpReconstruction,
+  filterPacketRows,
   findSimilarCycleRegions,
   fmtClockOffset,
   relativeSourceOffsetSec,
   rfChannelExtractComplete,
+  rtpStreamSeparationComplete,
   speechRecoveryComplete,
   spectrogramSurveyComplete,
   structureSequenceValid,
   voiceSpansFromSource,
   type SegmentClarity,
 } from './forensicEngine'
+import { loadPuzzle09PacketRows } from './puzzles/puzzle09CassiniHuygens'
 import type {
   ForensicSession,
   ForensicSource,
@@ -111,15 +116,40 @@ export function ForensicWorkbench({
   } | null>(null)
   const [clarityDebug, setClarityDebug] = useState<SegmentClarity[]>([])
   const [extraSources, setExtraSources] = useState<ForensicSource[]>([])
+  const [hydratedPacketRows, setHydratedPacketRows] = useState<
+    import('./forensicTypes').PacketRow[] | null
+  >(null)
   const engineRef = useRef<ForensicAudioEngine | null>(null)
   const completedRef = useRef(false)
   const holdRef = useRef<Record<string, number>>({})
   const showDebug = import.meta.env.DEV
 
-  const liveSession = useMemo(
-    () => ({ ...session, sources: [...session.sources, ...extraSources] }),
-    [session, extraSources],
-  )
+  useEffect(() => {
+    if (session.completion?.kind !== 'rtp-stream-separation') return
+    let cancelled = false
+    void loadPuzzle09PacketRows()
+      .then((rows) => {
+        if (!cancelled) setHydratedPacketRows(rows)
+      })
+      .catch((err) => {
+        console.error(err)
+        if (!cancelled) setStatus('Failed to load packet capture table.')
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [session.completion?.kind, session.id])
+
+  const liveSession = useMemo(() => {
+    const sources = session.sources.map((s) => {
+      if (!hydratedPacketRows || !s.rtpStreams) return s
+      return {
+        ...s,
+        packets: { ...s.packets, rows: hydratedPacketRows, emptyMessage: undefined },
+      }
+    })
+    return { ...session, sources: [...sources, ...extraSources] }
+  }, [session, extraSources, hydratedPacketRows])
   const source = getActiveSource(liveSession, ui)
   /** Fonte com áudio para transport/timeline (registros de set não têm stems). */
   const playbackSource = source?.audio
@@ -375,6 +405,8 @@ export function ForensicWorkbench({
       if (!rfChannelExtractComplete(session, ui)) return
     } else if (completion.kind === 'cycle-difference') {
       if (!cycleDifferenceComplete(session, ui)) return
+    } else if (completion.kind === 'rtp-stream-separation') {
+      if (!rtpStreamSeparationComplete(session, ui)) return
     } else {
       return
     }
@@ -396,6 +428,8 @@ export function ForensicWorkbench({
     ui.rfExtracted,
     ui.rfExtractionQuality,
     ui.cycleDifferenceDone,
+    ui.streamARecovered,
+    ui.streamBRecovered,
     ui.recoveredSpeech,
     source?.speechSegments,
     source,
@@ -965,6 +999,138 @@ export function ForensicWorkbench({
             })
             setStatus(result.message)
           }}
+          onPacketSort={(sort) => patchUi({ packetSort: sort })}
+          onPacketSsrcFilter={(ssrc) =>
+            patchUi({ packetSsrcFilter: ssrc, selectedPacketIndexes: [] })
+          }
+          onTogglePacketSelect={(index) => {
+            setUi((u) => {
+              const has = u.selectedPacketIndexes.includes(index)
+              return {
+                ...u,
+                selectedPacketIndexes: has
+                  ? u.selectedPacketIndexes.filter((i) => i !== index)
+                  : [...u.selectedPacketIndexes, index],
+              }
+            })
+          }}
+          onSelectVisiblePackets={() => {
+            const rows = source?.packets?.rows ?? []
+            const visible = filterPacketRows(rows, ui.packetSsrcFilter)
+            patchUi({ selectedPacketIndexes: visible.map((r) => r.index) })
+          }}
+          onClearPacketSelection={() => patchUi({ selectedPacketIndexes: [] })}
+          onCreateStreamFromSelection={() => {
+            const rows = source?.packets?.rows ?? []
+            const result = createDerivedRtpStream(
+              rows,
+              ui.selectedPacketIndexes,
+              ui.packetSort,
+              ui.derivedRtpStreams.length + 1,
+            )
+            if (!result.ok || !result.stream) {
+              patchUi({ packetStatus: result.message })
+              setStatus(result.message)
+              return
+            }
+            setUi((u) => ({
+              ...u,
+              derivedRtpStreams: [...u.derivedRtpStreams, result.stream!],
+              activeDerivedStreamId: result.stream!.id,
+              packetStatus: result.message,
+            }))
+            setStatus(result.message)
+          }}
+          onSelectDerivedStream={(id) => patchUi({ activeDerivedStreamId: id })}
+          onReconstructAudio={() => {
+            const cfg = source?.rtpStreams
+            const rows = source?.packets?.rows ?? []
+            const stream = ui.derivedRtpStreams.find((s) => s.id === ui.activeDerivedStreamId)
+            if (!cfg || !stream) return
+            const result = evaluateRtpReconstruction(cfg, stream, rows, ui.packetSort)
+            setUi((u) => {
+              const derivedRtpStreams = u.derivedRtpStreams.map((s) =>
+                s.id === stream.id
+                  ? {
+                      ...s,
+                      orderQuality: result.quality,
+                      sortMode: result.sortMode,
+                      packetIndexes: result.orderedIndexes,
+                      reconstructed: true,
+                      audioSrc: result.audioSrc,
+                    }
+                  : s,
+              )
+              let streamARecovered = u.streamARecovered
+              let streamBRecovered = u.streamBRecovered
+              let streamAOrderQuality = u.streamAOrderQuality
+              let streamBOrderQuality = u.streamBOrderQuality
+              let recoveredSpeech = u.recoveredSpeech
+              if (result.isStreamA) {
+                streamAOrderQuality = result.quality
+                if (result.ok) streamARecovered = true
+              }
+              if (result.isStreamB) {
+                streamBOrderQuality = result.quality
+                if (result.ok) {
+                  streamBRecovered = true
+                  const text = cfg.findings.anomalousKnowledge
+                  if (!recoveredSpeech.some((r) => r.segmentId === 'cassini-anomalous')) {
+                    recoveredSpeech = [
+                      ...recoveredSpeech,
+                      {
+                        segmentId: 'cassini-anomalous',
+                        text,
+                        startSec: 0,
+                        unlockedAt: Date.now(),
+                      },
+                    ]
+                    onSegmentRecovered?.({
+                      segmentId: 'cassini-anomalous',
+                      text,
+                      startSec: 0,
+                      unlockedAt: Date.now(),
+                    })
+                  }
+                }
+              }
+              return {
+                ...u,
+                derivedRtpStreams,
+                streamARecovered,
+                streamBRecovered,
+                streamAOrderQuality,
+                streamBOrderQuality,
+                recoveredSpeech,
+                packetStatus: result.message,
+              }
+            })
+            if (result.audioSrc) {
+              const derived: ForensicSource = {
+                id: `derived-${stream.id}`,
+                filename: `${stream.label}.wav`,
+                displayName: `${stream.label} (reconstructed)`,
+                type: 'audio',
+                durationSec: result.isStreamB ? 63 : 46,
+                tracks: [
+                  { id: 'master', name: 'MASTER', channel: '1 / mono', visible: true, gainDb: 0, pan: 0 },
+                ],
+                audio: {
+                  sampleRate: cfg.sampleRate,
+                  channels: 1,
+                  seed: 0,
+                  waveform: Array.from({ length: 128 }, (_, i) => Math.sin(i / 7) * 0.2),
+                  stems: [{ id: 'FILE', kind: 'file', initialGain: 1, src: result.audioSrc }],
+                },
+              }
+              setExtraSources((prev) => {
+                const rest = prev.filter((s) => s.id !== derived.id)
+                return [...rest, derived]
+              })
+              patchUi({ activeSourceId: derived.id })
+            }
+            setStatus(result.message)
+          }}
         />
       </div>
       {showDebug ? (
@@ -1058,6 +1224,7 @@ function ForensicDebug({
   const isHexagon = session.completion?.kind === 'spectrogram-survey'
   const isShepherd = session.completion?.kind === 'rf-channel-extract'
   const isEnceladus = session.completion?.kind === 'cycle-difference'
+  const isCassiniHuygens = session.completion?.kind === 'rtp-stream-separation'
   const recording = session.sources.find((s) => s.tempoRegions?.length)
   const audioPair = session.sources.filter((s) => s.audio)
   const a = audioPair[0]
@@ -1069,7 +1236,40 @@ function ForensicDebug({
   )
   return (
     <div className="fw-debug" data-testid="forensic-debug">
-      {isEnceladus ? (
+      {isCassiniHuygens ? (
+        <>
+          <span>packetCount {session.sources[0]?.packets?.rows?.length ?? '—'}</span>
+          <span>streamA SSRC {session.sources[0]?.rtpStreams?.ssrcA ?? '—'}</span>
+          <span>streamB SSRC {session.sources[0]?.rtpStreams?.ssrcB ?? '—'}</span>
+          <span>selectedSSRC {ui.packetSsrcFilter ?? '—'}</span>
+          <span>streamAOrderQuality {ui.streamAOrderQuality?.toFixed(3) ?? '—'}</span>
+          <span>streamBOrderQuality {ui.streamBOrderQuality?.toFixed(3) ?? '—'}</span>
+          <span>
+            sequenceErrors{' '}
+            {ui.activeDerivedStreamId
+              ? (
+                  1 -
+                  (ui.derivedRtpStreams.find((s) => s.id === ui.activeDerivedStreamId)?.orderQuality ??
+                    0)
+                ).toFixed(3)
+              : '—'}
+          </span>
+          <span>
+            reconstructionQuality{' '}
+            {(
+              ui.derivedRtpStreams.find((s) => s.id === ui.activeDerivedStreamId)?.orderQuality ?? null
+            )?.toFixed(3) ?? '—'}
+          </span>
+          <span>streamARecovered {String(ui.streamARecovered)}</span>
+          <span>streamBRecovered {String(ui.streamBRecovered)}</span>
+          <span>puzzleComplete {String(rtpStreamSeparationComplete(session, ui))}</span>
+          {onDevResetPuzzle ? (
+            <button type="button" className="fw-btn" data-testid="dev-reset-puzzle" onClick={onDevResetPuzzle}>
+              DEV reset puzzle
+            </button>
+          ) : null}
+        </>
+      ) : isEnceladus ? (
         <>
           <span>expectedCycleDuration {session.sources[0]?.cycleAnalysis?.cycleSec ?? '—'}</span>
           <span>detectedRegions {ui.similarRegions.length}</span>
