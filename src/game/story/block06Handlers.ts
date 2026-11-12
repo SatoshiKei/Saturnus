@@ -96,22 +96,58 @@ export function onValterTrailComplete() {
   ])
 }
 
-export function onPastorMoonsSolved() {
+/**
+ * Extração correta do canal oculto na Bancada.
+ * Registra G17N / 23:40 sem revelar Galpão 17 (exige cruzamento com a tabela).
+ */
+export function onPastorHiddenExtracted() {
+  const s = getInvestigationState()
+  if (s.flags.block06_pastor_extracted) return
+  dispatchActions([
+    { type: 'setFlag', id: 'block06_pastor_extracted', value: true },
+    { type: 'addEvidence', id: 'pastor_token_g17n' },
+    { type: 'addEvidence', id: 'pastor_delivery_time_2340' },
+    {
+      type: 'addTask',
+      id: 'task_pastor_crossref',
+      label: 'Cruzar G17N com a tabela logística apreendida',
+    },
+  ])
+}
+
+/** Alias Bancada (rf-channel-extract). */
+export function runShepherdMoonsExtract() {
+  onPastorHiddenExtracted()
+}
+
+/**
+ * Cruzamento G17N ↔ tabela logística → Galpão 17 — Pátio Norte → operação.
+ * Idempotente; requer token recuperado do canal oculto.
+ */
+export function onPastorLogisticsCrossRef() {
   const s = getInvestigationState()
   if (s.flags.block06_pastor_done) return
+  if (!s.evidenceOwned.includes('pastor_token_g17n') && !s.flags.block06_pastor_extracted) return
   dispatchActions([
     { type: 'setFlag', id: 'block06_pastor_done', value: true },
-    { type: 'addEvidence', id: 'pastor_token_g17n' },
     { type: 'addEvidence', id: 'galpao17_operational_site' },
+    { type: 'addEvidence', id: 'pastor_delivery_finding' },
     { type: 'completeTask', id: 'task_pastor_moons' },
+    { type: 'completeTask', id: 'task_pastor_crossref' },
     { type: 'unlockLocation', id: PASTOR_LOCATION_ID, status: 'visitAvailable' },
     {
       type: 'addTask',
       id: 'task_valter_operation',
-      label: `Deflagrar operação no ponto ${PASTOR_TOKEN} — ${PASTOR_LOCATION_ID}`,
+      label: `Deflagrar operação no ponto ${PASTOR_TOKEN} — Galpão 17 — Pátio Norte`,
     },
     { type: 'setFlag', id: 'block06_operation_ready', value: true },
   ])
+}
+
+/** Compat: resolve extract + cross-ref (checkpoints / testes legados). */
+export function onPastorMoonsSolved() {
+  onPastorHiddenExtracted()
+  onPastorLogisticsCrossRef()
 }
 
 export function finishPoliceOperation() {

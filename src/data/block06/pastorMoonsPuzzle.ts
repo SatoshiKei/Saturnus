@@ -1,13 +1,29 @@
 /**
- * Puzzle 7 — Luas Pastoras (placeholder funcional).
+ * Puzzle 07 — Luas Pastoras
+ * Captura RF INTERCEPT_0511_RF_CAPTURE; canal oculto entre A e C → G17N / 23:40
+ * → tabela logística → Galpão 17 — Pátio Norte.
  *
- * Duas transmissões externas (A e C) delimitam um burst curto em B.
- * Quatro ciclos válidos, ordenados por sequence ID; cada burst:
- *   decoded = payload XOR senderId  → um caractere do token G17N.
- *
- * TODO(puzzle-07): demodulação/rádio digital reais; interface de ordenação mais rica.
+ * Dataset forense: src/forensic/puzzles/puzzle07ShepherdMoons.ts
  */
 
+export const PASTOR_TOKEN = 'G17N'
+export const PASTOR_LOCATION_LABEL = 'Galpão 17 — Pátio Norte'
+export const PASTOR_LOCATION_ID = 'galpao-17'
+export const PASTOR_DELIVERY_TIME = '23:40'
+
+export const PASTOR_CODE_TABLE: { token: string; place: string }[] = [
+  { token: 'K02S', place: 'Cais 02 — Sul' },
+  { token: 'G17N', place: PASTOR_LOCATION_LABEL },
+  { token: 'B08L', place: 'Box 08 — Leste' },
+]
+
+export const PASTOR_FREQUENCIES_MHZ = {
+  A: 462.525,
+  B: 462.575,
+  C: 462.625,
+} as const
+
+/** @deprecated Placeholder XOR — mantido só para testes legados que ainda importam. */
 export interface PastorCycle {
   id: string
   sequence: number
@@ -16,7 +32,7 @@ export interface PastorCycle {
   burstB: { time: string; radioId: string; senderId: number; payload: number }
 }
 
-/** Quatro ciclos na ordem correta (sequence 1→4). */
+/** @deprecated */
 export const PASTOR_CYCLES: PastorCycle[] = [
   {
     id: 'c1',
@@ -48,25 +64,22 @@ export const PASTOR_CYCLES: PastorCycle[] = [
   },
 ]
 
-export const PASTOR_TOKEN = 'G17N'
-export const PASTOR_LOCATION_LABEL = 'Galpão 17 — Pátio Norte'
-export const PASTOR_LOCATION_ID = 'galpao-17'
-
-export const PASTOR_CODE_TABLE: { token: string; place: string }[] = [
-  { token: 'K02S', place: 'Cais 02 — Sul' },
-  { token: 'G17N', place: PASTOR_LOCATION_LABEL },
-  { token: 'B08L', place: 'Box 08 — Leste' },
-]
-
+/** @deprecated */
 export function decodeBurst(senderId: number, payload: number): string {
   return String.fromCharCode(payload ^ senderId)
 }
 
+/** @deprecated */
 export function decodeCyclesInOrder(order: PastorCycle[]): string {
   return order.map((c) => decodeBurst(c.burstB.senderId, c.burstB.payload)).join('')
 }
 
+/** @deprecated */
 export function isPastorOrderCorrect(ids: string[]): boolean {
   if (ids.length !== PASTOR_CYCLES.length) return false
-  return ids.every((id, i) => id === PASTOR_CYCLES[i].id)
+  return ids.every((id, i) => id === PASTOR_CYCLES[i]!.id)
+}
+
+export function lookupPastorToken(token: string): string | null {
+  return PASTOR_CODE_TABLE.find((r) => r.token === token)?.place ?? null
 }

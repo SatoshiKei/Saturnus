@@ -73,6 +73,111 @@ export function createInitialUiState(
     sequenceAssembled: false,
     assembleStatus: null,
     spectrogramViewedSourceIds: [],
+    rfCenterMhz: null,
+    rfBandwidthMhz: null,
+    rfExtractionQuality: null,
+    rfHiddenOverlap: null,
+    rfExtracted: false,
+    rfDerivedSourceId: null,
+    rfStatus: null,
+  }
+}
+
+/** Qualidade da extração RF: overlap no canal oculto vs contaminação A/C. */
+export function evaluateRfExtraction(
+  rf: import('./forensicTypes').RfCaptureConfig,
+  centerMhz: number,
+  bandwidthMhz: number,
+): {
+  quality: number
+  hiddenOverlap: number
+  contamination: number
+  ok: boolean
+  message: string
+} {
+  const half = bandwidthMhz / 2
+  const lo = centerMhz - half
+  const hi = centerMhz + half
+  const hidden = rf.channels.find((c) => c.id === rf.hiddenChannelId)
+  if (!hidden) {
+    return { quality: 0, hiddenOverlap: 0, contamination: 1, ok: false, message: 'No hidden channel defined.' }
+  }
+  const tooNarrow = bandwidthMhz < rf.extract.minBandwidthMhz
+  const tooWide = bandwidthMhz > rf.extract.maxBandwidthMhz
+  const centerDist = Math.abs(centerMhz - rf.extract.hiddenCenterMhz)
+  const centerOk = centerDist <= rf.extract.toleranceMhz
+
+  // Fração dos bursts B cujo centro cai na banda
+  const bBursts = rf.bursts.filter((b) => b.channelId === rf.hiddenChannelId)
+  const bHit = bBursts.filter((b) => b.centerMhz >= lo && b.centerMhz <= hi)
+  const hiddenOverlap = bBursts.length ? bHit.length / bBursts.length : 0
+
+  const knownBursts = rf.bursts.filter((b) => rf.knownChannelIds.includes(b.channelId))
+  const knownHit = knownBursts.filter((b) => b.centerMhz >= lo && b.centerMhz <= hi)
+  const contamination = knownBursts.length ? knownHit.length / knownBursts.length : 0
+
+  let quality = hiddenOverlap * (1 - contamination * 0.85)
+  if (tooNarrow) quality *= 0.45
+  if (tooWide) quality *= 0.55
+  if (!centerOk) quality *= 0.35
+  // Bandwidth perto do ideal
+  const bwErr = Math.abs(bandwidthMhz - rf.extract.idealBandwidthMhz) / rf.extract.idealBandwidthMhz
+  quality *= Math.max(0.4, 1 - bwErr * 0.5)
+  quality = Math.max(0, Math.min(1, quality))
+
+  const ok = quality >= 0.62 && centerOk && !tooNarrow && hiddenOverlap >= 0.85
+  let message = 'Selection does not isolate a clean channel.'
+  if (tooNarrow) message = 'Bandwidth too narrow — parts of the signal are lost.'
+  else if (tooWide || contamination > 0.15) message = 'Bandwidth too wide — adjacent channels leak in.'
+  else if (!centerOk) message = 'Center frequency far from active energy.'
+  else if (ok) message = 'Channel extracted. Derived source added to Files.'
+  else if (hiddenOverlap > 0.5) message = 'Partial capture — adjust center or bandwidth.'
+
+  return { quality, hiddenOverlap, contamination, ok, message }
+}
+
+export function rfChannelExtractComplete(
+  session: ForensicSession,
+  ui: ForensicUiState,
+): boolean {
+  if (session.completion?.kind !== 'rf-channel-extract') return false
+  return Boolean(ui.rfExtracted && (ui.rfExtractionQuality ?? 0) >= 0.62)
+}
+
+export function buildDerivedRfSource(
+  rf: import('./forensicTypes').RfCaptureConfig,
+): ForensicSource {
+  const id = rf.extract.derivedSourceId
+  return {
+    id,
+    filename: `${id}.wav`,
+    displayName: rf.extract.derivedDisplayName,
+    type: 'audio',
+    durationSec: rf.durationSec,
+    tracks: [{ id: 'master', name: 'EXTRACT', channel: '1 / mono', visible: true, gainDb: 0, pan: 0 }],
+    metadata: [
+      { key: 'filename', label: 'Filename', value: `${id}.wav` },
+      {
+        key: 'center',
+        label: 'Center frequency',
+        value: `${rf.extract.hiddenCenterMhz.toFixed(3)} MHz`,
+      },
+      { key: 'kind', label: 'Kind', value: 'Extracted channel' },
+      { key: 'note', label: 'Note', value: 'Bursts only · temporal gaps preserved' },
+    ],
+    structure: { kind: 'wav', emptyMessage: 'No editable structure for this fragment.' },
+    audio: {
+      sampleRate: 44100,
+      channels: 1,
+      stems: [
+        {
+          id: 'FILE',
+          kind: 'file',
+          initialGain: 1,
+          src: rf.extract.derivedAudioSrc,
+        },
+      ],
+    },
   }
 }
 

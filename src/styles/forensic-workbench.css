@@ -1216,3 +1216,40 @@
   padding: 0;
   overflow: hidden;
 }
+
+.fw-rf {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.fw-rf__legend {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.68em;
+  color: var(--text-faint);
+  font-family: ui-monospace, monospace;
+}
+
+.fw-rf__plot {
+  width: 100%;
+  height: 220px;
+  background: #0a0806;
+  border: 1px solid var(--fw-line);
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.fw-rf__hint {
+  margin: 0;
+  font-size: 0.72em;
+  color: var(--text-faint);
+}
+
+.fw-rf__known {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  font-size: 0.7em;
+  color: var(--text-muted);
+  font-family: ui-monospace, monospace;
+}

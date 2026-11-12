@@ -15,8 +15,64 @@ export type ForensicInspectorTab =
   | 'structure'
   | 'packets'
   | 'timing'
+  | 'spectrum'
   | 'compare'
   | 'notes'
+
+/** Captura RF simulada (waterfall / extract channel) — genérica. */
+export interface RfChannelDef {
+  id: string
+  centerMhz: number
+  known: boolean
+  label?: string
+  nominalPower?: number
+}
+
+export interface RfBurstDef {
+  id: string
+  channelId: string
+  centerMhz: number
+  startSec: number
+  durationSec: number
+  power: number
+  audioSrc?: string
+}
+
+export interface RfWaterfallData {
+  cols: number
+  rows: number
+  freqMinMhz: number
+  freqMaxMhz: number
+  durationSec: number
+  /** row-major: row = time index, col = frequency index · 0..1 */
+  values: number[]
+}
+
+export interface RfCaptureConfig {
+  durationSec: number
+  freqMinMhz: number
+  freqMaxMhz: number
+  knownChannelIds: string[]
+  hiddenChannelId: string
+  channels: RfChannelDef[]
+  bursts: RfBurstDef[]
+  waterfall: RfWaterfallData
+  extract: {
+    hiddenCenterMhz: number
+    toleranceMhz: number
+    idealBandwidthMhz: number
+    minBandwidthMhz: number
+    maxBandwidthMhz: number
+    derivedSourceId: string
+    derivedAudioSrc: string
+    derivedDisplayName: string
+  }
+  findings?: {
+    token: string
+    timeLabel: string
+    locationLabel: string
+  }
+}
 
 export type StemId =
   | 'FILE'
@@ -328,6 +384,8 @@ export interface ForensicSource {
   tempoRegions?: TempoRegion[]
   /** Campos de registro de set (COMPARE / LINK SOURCE). */
   setRecord?: SetRecordFields
+  /** Captura RF / waterfall (Puzzle 07+). */
+  rfCapture?: RfCaptureConfig
 }
 
 export interface ForensicSession {
@@ -345,6 +403,7 @@ export interface ForensicSession {
       | 'clock-sync'
       | 'clip-sequence'
       | 'spectrogram-survey'
+      | 'rf-channel-extract'
     /** Chama handler externo quando completo. */
     onCompleteAction?:
       | 'runProvisionalEmergencyAnalysis'
@@ -353,6 +412,7 @@ export interface ForensicSession {
       | 'runJanusEpimetheusAnalysis'
       | 'runSaturnaliaReconstruct'
       | 'runHexagonSpectrogramSurvey'
+      | 'runShepherdMoonsExtract'
     /** Segmentos obrigatórios além do rebuild (se houver). */
     requireSpeechSegmentIds?: string[]
     /** source id do registro correto (source-link). */
@@ -487,6 +547,14 @@ export interface ForensicUiState {
   assembleStatus: string | null
   /** Sources cujo Spectrogram já foi aberto nesta sessão (Puzzle 06). */
   spectrogramViewedSourceIds: string[]
+  /** Seleção RF (Spectrum / Waterfall). */
+  rfCenterMhz: number | null
+  rfBandwidthMhz: number | null
+  rfExtractionQuality: number | null
+  rfHiddenOverlap: number | null
+  rfExtracted: boolean
+  rfDerivedSourceId: string | null
+  rfStatus: string | null
 }
 
 export const DEFAULT_PROCESS: ProcessParams = {
@@ -521,6 +589,7 @@ export const INSPECTOR_TABS: { id: ForensicInspectorTab; label: string }[] = [
   { id: 'structure', label: 'Structure' },
   { id: 'packets', label: 'Packets' },
   { id: 'timing', label: 'Timing' },
+  { id: 'spectrum', label: 'Spectrum' },
   { id: 'compare', label: 'Compare' },
   { id: 'notes', label: 'Notes' },
 ]

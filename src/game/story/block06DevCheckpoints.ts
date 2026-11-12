@@ -130,8 +130,11 @@ export const block06DevCheckpoints: { id: string; label: string; actions: StoryA
     id: 'b06-pastor-done',
     label: 'Puzzle 7 resolvido (G17N)',
     actions: [
+      { type: 'setFlag', id: 'block06_pastor_extracted', value: true },
       { type: 'setFlag', id: 'block06_pastor_done', value: true },
       { type: 'addEvidence', id: 'pastor_token_g17n' },
+      { type: 'addEvidence', id: 'pastor_delivery_time_2340' },
+      { type: 'addEvidence', id: 'pastor_delivery_finding' },
       { type: 'addEvidence', id: 'galpao17_operational_site' },
       { type: 'completeTask', id: 'task_pastor_moons' },
       { type: 'unlockLocation', id: PASTOR_LOCATION_ID, status: 'visitAvailable' },

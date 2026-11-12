@@ -24,10 +24,10 @@ import {
   onUnknownRecordingAnalyzed,
   runHexagonSpectrogramSurvey,
 } from '../../../game/story/block04Handlers'
+import { runShepherdMoonsExtract } from '../../../game/story/block06Handlers'
 import { markAudioSeen } from '../../../game/state/investigationStore'
 import { HEX_FILES, hexFileByEvidence } from '../../../data/block04/hexagonPuzzle'
 import { GamePanel } from '../../ui/GamePanel'
-import { ShepherdMoonsSession } from './ShepherdMoonsSession'
 import { EnceladusSession } from './EnceladusSession'
 import { CassiniSession } from './CassiniSession'
 import { RingsSession } from './RingsSession'
@@ -161,8 +161,6 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
 
   const current = allFiles.find((f) => f.id === sel)
   const hexFile = current ? hexFileByEvidence(current.id) : undefined
-  const showPastor =
-    Boolean(inv.flags.block06_pastor_available) && current?.id === 'valter_group_active_intercepts'
   const showEnceladus =
     Boolean(inv.flags.block07_enceladus_available) && current?.id === 'anon_hospital_burst_audio'
   const showCassini =
@@ -321,7 +319,10 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                             : forensicSession.completion?.onCompleteAction ===
                                 'runHexagonSpectrogramSurvey'
                               ? Boolean(inv.flags.block04_hexagon_done)
-                              : emergencyProvisionalDone
+                              : forensicSession.completion?.onCompleteAction ===
+                                  'runShepherdMoonsExtract'
+                                ? Boolean(inv.flags.block06_pastor_extracted)
+                                : emergencyProvisionalDone
                   const containerState = inv.forensicContainerState?.[current.id]
                   return (
                     <ForensicWorkbench
@@ -353,6 +354,8 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                           runSaturnaliaReconstruct()
                         } else if (action === 'runHexagonSpectrogramSurvey') {
                           runHexagonSpectrogramSurvey()
+                        } else if (action === 'runShepherdMoonsExtract') {
+                          runShepherdMoonsExtract()
                         } else {
                           runProvisionalEmergencyAnalysis()
                         }
@@ -433,7 +436,6 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                 </div>
               ) : null}
 
-              {!getForensicSessionForEvidence(current.id) && showPastor ? <ShepherdMoonsSession /> : null}
               {!getForensicSessionForEvidence(current.id) && showEnceladus ? <EnceladusSession /> : null}
               {!getForensicSessionForEvidence(current.id) && showCassini ? <CassiniSession /> : null}
               {!getForensicSessionForEvidence(current.id) && showRings ? <RingsSession /> : null}

@@ -947,7 +947,8 @@ export const seedDocuments: Document[] = [
       { id: 'b2', text: 'G17N — Galpão 17 — Pátio Norte' },
       { id: 'b3', text: 'B08L — Box 08 — Leste' },
     ],
-    onOpen: [{ type: 'addEvidence', id: 'galpao17_operational_site' }],
+    // Cruzamento com G17N: ver onDocumentConsulted → onPastorLogisticsCrossRef.
+    onOpen: [],
   },
   // ── Legado C1: anotações de raciocínio — não entram mais no fluxo jogável.
   // Saves antigos podem ainda tê-las em documentsOwned; evidências/flags vêm dos novos gatilhos.

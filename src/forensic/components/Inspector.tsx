@@ -16,6 +16,7 @@ import {
   relativeSourceOffsetSec,
   type SegmentClarity,
 } from '../forensicEngine'
+import { RfWaterfall } from './RfWaterfall'
 
 const HELP: Record<string, string> = {
   Gain: 'Ajusta amplitude linear da seleção ou da faixa ativa (dB).',
@@ -39,6 +40,10 @@ const HELP: Record<string, string> = {
     'Estimates tempo from the current timeline selection when stable analysis regions are available.',
   'Link Source':
     'Associates the active capture with a secondary source or administrative record using observed characteristics.',
+  Spectrum:
+    'Frequency–time history (waterfall). Drag a band to set center frequency and bandwidth, then Extract Channel.',
+  'Extract Channel':
+    'Derives a source containing energy from the selected frequency band. Too narrow loses signal; too wide mixes neighbours.',
 }
 
 function Tip({ name }: { name: string }) {
@@ -145,6 +150,8 @@ export function Inspector({
   onLinkSource,
   clockSync,
   clipSequenceTools,
+  onRfSelectBand,
+  onExtractChannel,
 }: {
   tab: ForensicInspectorTab
   onTab: (t: ForensicInspectorTab) => void
@@ -183,6 +190,8 @@ export function Inspector({
     onMove: (index: number, dir: -1 | 1) => void
     onAssemble: () => void
   }
+  onRfSelectBand?: (centerMhz: number, bandwidthMhz: number) => void
+  onExtractChannel?: () => void
 }) {
   const p = ui.process
   const hasProfile = Boolean(ui.activeNoiseProfileId)
@@ -691,6 +700,65 @@ export function Inspector({
                 {source?.packets?.emptyMessage ??
                   'No packet structure for this source.'}
               </p>
+            )}
+          </div>
+        )}
+
+        {tab === 'spectrum' && (
+          <div className="fw-panel" data-testid="spectrum-panel">
+            {source?.rfCapture && onRfSelectBand ? (
+              <>
+                <Section title="Spectrum / Waterfall" tip="Spectrum">
+                  <RfWaterfall
+                    rf={source.rfCapture}
+                    centerMhz={ui.rfCenterMhz}
+                    bandwidthMhz={ui.rfBandwidthMhz}
+                    onSelectBand={onRfSelectBand}
+                  />
+                </Section>
+                <Section title="Frequency selection">
+                  <dl className="fw-meta">
+                    <div>
+                      <dt>Center frequency</dt>
+                      <dd className="fw-mono" data-testid="rf-center">
+                        {ui.rfCenterMhz != null ? `${ui.rfCenterMhz.toFixed(3)} MHz` : '—'}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>Bandwidth</dt>
+                      <dd className="fw-mono" data-testid="rf-bandwidth">
+                        {ui.rfBandwidthMhz != null
+                          ? `${(ui.rfBandwidthMhz * 1000).toFixed(0)} kHz`
+                          : '—'}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>Signal</dt>
+                      <dd className="fw-mono">
+                        {ui.rfExtractionQuality != null
+                          ? `quality ${(ui.rfExtractionQuality * 100).toFixed(0)}%`
+                          : '—'}
+                      </dd>
+                    </div>
+                  </dl>
+                  <button
+                    type="button"
+                    className="fw-btn"
+                    data-testid="rf-extract-channel"
+                    disabled={ui.rfCenterMhz == null || ui.rfBandwidthMhz == null || ui.rfExtracted}
+                    onClick={() => onExtractChannel?.()}
+                  >
+                    {ui.rfExtracted ? 'Channel extracted' : 'Extract Channel'}
+                  </button>
+                  {ui.rfStatus ? (
+                    <p className="fw-empty" role="status" data-testid="rf-extract-status">
+                      {ui.rfStatus}
+                    </p>
+                  ) : null}
+                </Section>
+              </>
+            ) : (
+              <p className="fw-empty fw-empty--center">No spectrum capture for this source.</p>
             )}
           </div>
         )}

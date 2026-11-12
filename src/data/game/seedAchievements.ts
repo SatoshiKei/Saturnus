@@ -137,6 +137,14 @@ export const seedAchievements: AchievementDef[] = [
     unlocked: (s) => Boolean(s.flags.block05_complete),
   },
   {
+    id: 'ach-shepherd-moons',
+    title: 'LUAS PASTORAS',
+    description: 'Identificou a transmissão oculta entre os canais monitorados.',
+    hint: 'Extrair o canal intermediário e cruzar G17N com a tabela logística.',
+    unlocked: (s) =>
+      Boolean(s.flags.block06_pastor_extracted && s.flags.block06_pastor_done),
+  },
+  {
     id: 'ach-block6',
     title: 'A pessoa errada',
     description: 'A operação e a detenção mudaram o quadro.',

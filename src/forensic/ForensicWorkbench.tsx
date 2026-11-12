@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import '../styles/forensic-workbench.css'
 import { ForensicAudioEngine } from './forensicAudio'
 import {
@@ -21,8 +21,11 @@ import {
   clockSyncComplete,
   clockSyncOffsetValid,
   clipSequenceComplete,
+  buildDerivedRfSource,
+  evaluateRfExtraction,
   fmtClockOffset,
   relativeSourceOffsetSec,
+  rfChannelExtractComplete,
   speechRecoveryComplete,
   spectrogramSurveyComplete,
   structureSequenceValid,
@@ -31,6 +34,7 @@ import {
 } from './forensicEngine'
 import type {
   ForensicSession,
+  ForensicSource,
   ForensicUiState,
   ProcessParams,
   RecoveredSpeechEntry,
@@ -102,18 +106,25 @@ export function ForensicWorkbench({
     maxHz: number
   } | null>(null)
   const [clarityDebug, setClarityDebug] = useState<SegmentClarity[]>([])
+  const [extraSources, setExtraSources] = useState<ForensicSource[]>([])
   const engineRef = useRef<ForensicAudioEngine | null>(null)
   const completedRef = useRef(false)
   const holdRef = useRef<Record<string, number>>({})
   const showDebug = import.meta.env.DEV
 
-  const source = getActiveSource(session, ui)
+  const liveSession = useMemo(
+    () => ({ ...session, sources: [...session.sources, ...extraSources] }),
+    [session, extraSources],
+  )
+  const source = getActiveSource(liveSession, ui)
   /** Fonte com áudio para transport/timeline (registros de set não têm stems). */
   const playbackSource = source?.audio
     ? source
-    : session.sources.find((s) => s.audio) ?? source
-  const audioSources = session.sources.filter((s) => s.audio)
+    : liveSession.sources.find((s) => s.audio) ?? source
+  const audioSources = liveSession.sources.filter((s) => s.audio)
   const isClockSync = session.completion?.kind === 'clock-sync'
+  const rfCapture =
+    source?.rfCapture ?? liveSession.sources.find((s) => s.rfCapture)?.rfCapture ?? null
   const playableUntil = effectivePlayableUntil(playbackSource, ui.containerRebuilt)
   const spanDuration = isClockSync
     ? Math.max(
@@ -356,6 +367,8 @@ export function ForensicWorkbench({
       if (!clipSequenceComplete(session, ui)) return
     } else if (completion.kind === 'spectrogram-survey') {
       if (!spectrogramSurveyComplete(session, ui)) return
+    } else if (completion.kind === 'rf-channel-extract') {
+      if (!rfChannelExtractComplete(session, ui)) return
     } else {
       return
     }
@@ -374,6 +387,8 @@ export function ForensicWorkbench({
     ui.clipSequence,
     ui.sequenceAssembled,
     ui.spectrogramViewedSourceIds,
+    ui.rfExtracted,
+    ui.rfExtractionQuality,
     source?.speechSegments,
     source,
     session,
@@ -434,11 +449,11 @@ export function ForensicWorkbench({
       <div className="fw-grid">
         <aside className="fw-side">
           <FileBrowser
-            sources={session.sources}
+            sources={liveSession.sources}
             activeId={ui.activeSourceId}
             onSelect={(id) => {
               stop()
-              const src = session.sources.find((s) => s.id === id)
+              const src = liveSession.sources.find((s) => s.id === id)
               const tracks: Record<string, TrackRuntime> = {}
               for (const t of src?.tracks ?? []) {
                 tracks[t.id] = {
@@ -809,6 +824,46 @@ export function ForensicWorkbench({
             }))
             setStatus(result.message)
           }}
+          onRfSelectBand={(centerMhz, bandwidthMhz) => {
+            if (!rfCapture) return
+            const result = evaluateRfExtraction(rfCapture, centerMhz, bandwidthMhz)
+            setUi((u) => ({
+              ...u,
+              rfCenterMhz: centerMhz,
+              rfBandwidthMhz: bandwidthMhz,
+              rfExtractionQuality: result.quality,
+              rfHiddenOverlap: result.hiddenOverlap,
+              rfStatus: null,
+            }))
+          }}
+          onExtractChannel={() => {
+            if (!rfCapture || ui.rfCenterMhz == null || ui.rfBandwidthMhz == null) return
+            const result = evaluateRfExtraction(rfCapture, ui.rfCenterMhz, ui.rfBandwidthMhz)
+            if (!result.ok) {
+              setUi((u) => ({
+                ...u,
+                rfExtractionQuality: result.quality,
+                rfHiddenOverlap: result.hiddenOverlap,
+                rfStatus: result.message,
+              }))
+              setStatus(result.message)
+              return
+            }
+            const derived = buildDerivedRfSource(rfCapture)
+            setExtraSources((prev) =>
+              prev.some((s) => s.id === derived.id) ? prev : [...prev, derived],
+            )
+            setUi((u) => ({
+              ...u,
+              rfExtracted: true,
+              rfDerivedSourceId: derived.id,
+              rfExtractionQuality: result.quality,
+              rfHiddenOverlap: result.hiddenOverlap,
+              rfStatus: result.message,
+              activeSourceId: derived.id,
+            }))
+            setStatus(result.message)
+          }}
         />
       </div>
       {showDebug ? (
@@ -900,6 +955,7 @@ function ForensicDebug({
   const isJanus = session.completion?.kind === 'clock-sync'
   const isSaturnalia = session.completion?.kind === 'clip-sequence'
   const isHexagon = session.completion?.kind === 'spectrogram-survey'
+  const isShepherd = session.completion?.kind === 'rf-channel-extract'
   const recording = session.sources.find((s) => s.tempoRegions?.length)
   const audioPair = session.sources.filter((s) => s.audio)
   const a = audioPair[0]
@@ -911,7 +967,26 @@ function ForensicDebug({
   )
   return (
     <div className="fw-debug" data-testid="forensic-debug">
-      {isHexagon ? (
+      {isShepherd ? (
+        <>
+          <span>knownChannelA {session.sources[0]?.rfCapture?.channels.find((c) => c.id === 'A')?.centerMhz ?? '—'}</span>
+          <span>hiddenChannelB {session.sources[0]?.rfCapture?.extract.hiddenCenterMhz ?? '—'}</span>
+          <span>knownChannelC {session.sources[0]?.rfCapture?.channels.find((c) => c.id === 'C')?.centerMhz ?? '—'}</span>
+          <span>selectedFrequency {ui.rfCenterMhz ?? '—'}</span>
+          <span>selectedBandwidth {ui.rfBandwidthMhz ?? '—'}</span>
+          <span>hiddenChannelOverlap {ui.rfHiddenOverlap?.toFixed(3) ?? '—'}</span>
+          <span>extractionQuality {ui.rfExtractionQuality?.toFixed(3) ?? '—'}</span>
+          <span>G17N recovered {String(ui.rfExtracted)}</span>
+          <span>23:40 recovered {String(ui.rfExtracted)}</span>
+          <span>locationCrossReferenced — (document)</span>
+          <span>puzzleComplete {String(rfChannelExtractComplete(session, ui))}</span>
+          {onDevResetPuzzle ? (
+            <button type="button" className="fw-btn" data-testid="dev-reset-puzzle" onClick={onDevResetPuzzle}>
+              DEV reset puzzle
+            </button>
+          ) : null}
+        </>
+      ) : isHexagon ? (
         <>
           {(
             [

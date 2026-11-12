@@ -80,6 +80,7 @@ describe('Bloco 6 — progressão', () => {
     expect(isPastorOrderCorrect(PASTOR_CYCLES.map((c) => c.id))).toBe(true)
     onPastorMoonsSolved()
     expect(getInvestigationState().evidenceOwned).toContain('pastor_token_g17n')
+    expect(getInvestigationState().evidenceOwned).toContain('galpao17_operational_site')
     expect(getInvestigationState().locations['galpao-17']?.status).toBe('visitAvailable')
 
     finishPoliceOperation()

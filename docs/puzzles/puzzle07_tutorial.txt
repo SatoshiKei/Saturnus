@@ -1,0 +1,91 @@
+PUZZLE 07 — LUAS PASTORAS
+Dev only — não aparece para o jogador.
+
+Lore
+----
+Jana teme gente ligada ao grupo do velho/chefe.
+Registros: Válter, Miro (associado), interceptação contemporânea.
+Objetivo policial: onde será a próxima entrega → flagrante.
+Miro preso por crimes atuais; ligação Jana/Elisa só no interrogatório.
+
+
+Assets (não reescrever falas)
+-----------------------------
+src/assets/audios/p7/Capangas do Valter - Track A.mp3          → Canal A (cobrança)
+src/assets/audios/p7/Capangas do Valter - Secret Track B.mp3   → Canal oculto B (entrega)
+src/assets/audios/p7/Capangas do Valter - Track C.mp3          → Canal C (depósito)
+
+Build: python tools/audio/build_puzzle07_shepherd_moons.py
+Runtime: public/assets/audio/forensic/puzzle07/
+
+
+Captura
+-------
+INTERCEPT_0511_RF_CAPTURE · 240 s (4:00)
+Faixa: 462.480–462.670 MHz
+
+Frequências:
+  A (conhecido)  462.525 MHz  — potência alta
+  B (oculto)     462.575 MHz  — bursts fracos, intermitentes
+  C (conhecido)  462.625 MHz  — potência alta
+
+A captura bruta mistura A+C (B quase inaudível).
+Waterfall deriva do dataset time/frequency/power (não é I/Q real).
+
+
+Papel dos canais
+----------------
+A — dívida, juros, moto, documento, chefe (mundo; sem G17N)
+C — bens no depósito, geladeira, TVs, Corsa (ambiente; sem G17N)
+B — G / 1-7 / Norte / 23:40 → G17N + horário
+
+
+Como jogar
+----------
+1. Abrir valter_group_active_intercepts → Bancada.
+2. Inspector → Spectrum: waterfall (X=freq, Y=tempo).
+3. Perceber atividade entre os dois canais catalogados.
+4. Arrastar banda ~462.575 + bandwidth ~22 kHz.
+5. Extract Channel → DERIVED CHANNEL — 462.575 MHz.
+6. Ouvir bursts → G17N / 23:40.
+7. Abrir doc-tabela-logistica-g17n → Galpão 17 — Pátio Norte.
+8. Operação → prisão de Miro.
+
+
+Tolerâncias (extract)
+---------------------
+center ± 0.018 MHz de 462.575
+bandwidth ideal 0.022 MHz; min 0.012; max 0.045
+estreita demais → perde partes
+larga demais → vaza A/C
+
+
+Flags / actions
+---------------
+runShepherdMoonsExtract / onPastorHiddenExtracted
+  → block06_pastor_extracted, pastor_token_g17n, pastor_delivery_time_2340
+
+onPastorLogisticsCrossRef (ao consultar tabela com token)
+  → block06_pastor_done, galpao17_operational_site, pastor_delivery_finding
+  → unlock galpao-17, block06_operation_ready
+
+Achievement LUAS PASTORAS (ach-shepherd-moons):
+  extracted + pastor_done
+
+
+DEV
+---
+knownChannelA / hiddenChannelB / knownChannelC
+selectedFrequency / selectedBandwidth
+hiddenChannelOverlap / extractionQuality
+G17N recovered / 23:40 recovered
+locationCrossReferenced (documento)
+puzzleComplete
+
+
+NOTAS
+-----
+- Sem botão FIND HIDDEN CHANNEL.
+- Sem Notch/Noise Profile como solução.
+- Puzzles 01–06 intactos.
+- Frequências não codificam G17N.

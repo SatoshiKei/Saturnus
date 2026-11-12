@@ -2,6 +2,7 @@ import {
   onMaraltoLineWeighed,
   revisitEmergencyEntry,
 } from './block05Handlers'
+import { onPastorLogisticsCrossRef } from './block06Handlers'
 import {
   onForumHvalencaOpened,
   onHenriqueCadastroOpened,
@@ -87,6 +88,11 @@ export function onDocumentConsulted(docId: string) {
     MORSA_SOURCES.has(docId)
   ) {
     reviewMorsaDuration()
+  }
+
+  // B6: G17N do canal oculto × tabela logística → Galpão 17.
+  if (docId === 'doc-tabela-logistica-g17n') {
+    onPastorLogisticsCrossRef()
   }
 
   // Dump PCAP: abrir o laudo/nota forense libera Cassini (também via busca).
