@@ -44,6 +44,14 @@ const HELP: Record<string, string> = {
     'Frequency–time history (waterfall). Drag a band to set center frequency and bandwidth, then Extract Channel.',
   'Extract Channel':
     'Derives a source containing energy from the selected frequency band. Too narrow loses signal; too wide mixes neighbours.',
+  'Find Similar Regions':
+    'Searches the capture for regions whose envelope matches the current timeline selection.',
+  'Stack / Overlay':
+    'Lists matched regions with residual energy relative to a common pattern.',
+  'Build Common Pattern':
+    'Averages selected similar cycles into a reference pattern.',
+  Difference:
+    'Subtracts the common pattern from a target cycle and evaluates residual energy.',
 }
 
 function Tip({ name }: { name: string }) {
@@ -152,6 +160,11 @@ export function Inspector({
   clipSequenceTools,
   onRfSelectBand,
   onExtractChannel,
+  onFindSimilar,
+  onToggleReferenceCycle,
+  onBuildCommonPattern,
+  onSetDifferenceTarget,
+  onApplyDifference,
 }: {
   tab: ForensicInspectorTab
   onTab: (t: ForensicInspectorTab) => void
@@ -192,6 +205,11 @@ export function Inspector({
   }
   onRfSelectBand?: (centerMhz: number, bandwidthMhz: number) => void
   onExtractChannel?: () => void
+  onFindSimilar?: () => void
+  onToggleReferenceCycle?: (cycleIndex: number) => void
+  onBuildCommonPattern?: () => void
+  onSetDifferenceTarget?: (cycleIndex: number) => void
+  onApplyDifference?: () => void
 }) {
   const p = ui.process
   const hasProfile = Boolean(ui.activeNoiseProfileId)
@@ -428,6 +446,115 @@ export function Inspector({
                 <p className="fw-empty">Shift+drag on the timeline to measure.</p>
               )}
             </Section>
+            {source?.cycleAnalysis ? (
+              <>
+                <Section title="Find Similar Regions" tip="Find Similar Regions">
+                  <button
+                    type="button"
+                    className="fw-btn"
+                    data-testid="find-similar-regions"
+                    onClick={() => onFindSimilar?.()}
+                  >
+                    Find Similar Regions
+                  </button>
+                  {ui.similarRegions.length ? (
+                    <p className="fw-muted" data-testid="similar-regions-count">
+                      Similar regions: {ui.similarRegions.length}
+                    </p>
+                  ) : null}
+                </Section>
+                <Section title="Stack / Overlay" tip="Stack / Overlay">
+                  {ui.similarRegions.length ? (
+                    <ul className="fw-profiles" data-testid="cycle-stack-list">
+                      {ui.similarRegions.map((r) => {
+                        const score =
+                          source.cycleAnalysis!.differenceScores[r.cycleIndex] ?? 0
+                        return (
+                          <li key={r.cycleIndex}>
+                            <div className="fw-profile" data-active={ui.differenceTargetIndex === r.cycleIndex}>
+                              <span className="fw-profile__name">
+                                {fmtTime(r.startSec)} – {fmtTime(r.endSec)}
+                              </span>
+                              <span className="fw-profile__meta fw-mono">
+                                corr {r.correlation.toFixed(2)} · residual {score.toFixed(2)}
+                              </span>
+                              <div className="fw-eq" style={{ marginTop: '0.35em' }}>
+                                <button
+                                  type="button"
+                                  className="fw-btn fw-btn--ghost"
+                                  data-testid={`cycle-ref-${r.cycleIndex}`}
+                                  onClick={() => onToggleReferenceCycle?.(r.cycleIndex)}
+                                >
+                                  {ui.referenceCycleIndexes.includes(r.cycleIndex)
+                                    ? 'In reference'
+                                    : 'Add to reference'}
+                                </button>
+                                <button
+                                  type="button"
+                                  className="fw-btn fw-btn--ghost"
+                                  data-testid={`cycle-target-${r.cycleIndex}`}
+                                  onClick={() => onSetDifferenceTarget?.(r.cycleIndex)}
+                                >
+                                  {ui.differenceTargetIndex === r.cycleIndex ? 'Target' : 'Set target'}
+                                </button>
+                              </div>
+                            </div>
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  ) : (
+                    <p className="fw-empty">Run Find Similar first.</p>
+                  )}
+                </Section>
+                <Section title="Build Common Pattern" tip="Build Common Pattern">
+                  <p className="fw-muted">
+                    Reference cycles: {ui.referenceCycleIndexes.length || '—'}
+                  </p>
+                  <button
+                    type="button"
+                    className="fw-btn"
+                    data-testid="build-common-pattern"
+                    disabled={!ui.referenceCycleIndexes.length}
+                    onClick={() => onBuildCommonPattern?.()}
+                  >
+                    Build Common Pattern
+                  </button>
+                  {ui.commonPatternQuality != null ? (
+                    <p className="fw-mono">Pattern quality {(ui.commonPatternQuality * 100).toFixed(0)}%</p>
+                  ) : null}
+                </Section>
+                <Section title="Difference" tip="Difference">
+                  <button
+                    type="button"
+                    className="fw-btn"
+                    data-testid="apply-difference"
+                    disabled={ui.differenceTargetIndex == null || ui.commonPatternQuality == null}
+                    onClick={() => onApplyDifference?.()}
+                  >
+                    Difference / Subtract Reference
+                  </button>
+                  {ui.differenceQuality != null ? (
+                    <dl className="fw-meta">
+                      <div>
+                        <dt>Difference score</dt>
+                        <dd className="fw-mono">{ui.differenceQuality.toFixed(2)}</dd>
+                      </div>
+                      <div>
+                        <dt>Residual clarity</dt>
+                        <dd className="fw-mono">{(ui.ricardoClarity ?? 0).toFixed(2)}</dd>
+                      </div>
+                    </dl>
+                  ) : null}
+                </Section>
+                {ui.cycleAnalysisStatus ? (
+                  <p className="fw-empty" role="status" data-testid="cycle-analysis-status">
+                    {ui.cycleAnalysisStatus}
+                  </p>
+                ) : null}
+              </>
+            ) : null}
+
             <Section title="Tempo / Beat Analysis" tip="Tempo / Beat Analysis">
               <button type="button" className="fw-btn" onClick={() => onEstimateTempo?.()}>
                 Selection tempo estimate

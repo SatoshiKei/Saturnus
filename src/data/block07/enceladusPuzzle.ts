@@ -1,41 +1,35 @@
 /**
- * Puzzle 8 — Enceladus (placeholder funcional).
- * Rajadas periódicas num fundo quase silencioso → ambiente hospitalar + nome “Ricardo”.
- * TODO(puzzle-08): detecção real de periodicidade / match espectral com equipamentos.
+ * Puzzle 08 — Enceladus
+ * Repetição de ciclos → Find Similar → Common Pattern → Difference → “Ricardo”.
+ * Dataset forense: src/forensic/puzzles/puzzle08Enceladus.ts
  */
 
-export const ENCELADUS_PERIOD_SEC = 12
-export const ENCELADUS_HOSPITAL_MATCH =
-  'Hospital Municipal — setor de observação / proximidades da UTI'
-export const ENCELADUS_VOICE_FRAGMENT = '…Ricardo…'
-export const ENCELADUS_SHIFT_HINT =
-  'Fragmento vocal + voz feminina ao fundo (não identificada pelo puzzle)'
+export const ENCELADUS_VOICE_FRAGMENT = 'Ricardo'
+export const ENCELADUS_CYCLE_COUNT = 8
+export const ENCELADUS_CYCLE_SEC = 6
+export const ENCELADUS_ANOMALY_CYCLE = 6 // 1-based
+export const ENCELADUS_DURATION_SEC = 48
+export const ENCELADUS_UI_FILENAME = 'AUD_0008.wav'
 
+/** @deprecated Placeholder de rajadas — UI antiga removida. */
 export interface EnceladusBurst {
   id: string
   tSec: number
-  kind: 'equipment' | 'voice' | 'noise'
+  kind: 'equip' | 'voice' | 'noise'
   label: string
 }
 
+/** @deprecated */
 export const ENCELADUS_BURSTS: EnceladusBurst[] = [
-  { id: 'b1', tSec: 12, kind: 'equipment', label: 'alarme monitor (≈1 kHz)' },
-  { id: 'b2', tSec: 24, kind: 'equipment', label: 'bomba infusão (clique periódico)' },
-  { id: 'b3', tSec: 36, kind: 'voice', label: 'fragmento: “…Ricardo…”' },
-  { id: 'b4', tSec: 48, kind: 'equipment', label: 'alarme monitor' },
-  { id: 'b5', tSec: 60, kind: 'noise', label: 'passos / carrinho' },
-  { id: 'b6', tSec: 72, kind: 'equipment', label: 'bomba infusão' },
+  { id: 'b1', tSec: 6, kind: 'equip', label: 'ciclo' },
+  { id: 'b2', tSec: 12, kind: 'equip', label: 'ciclo' },
+  { id: 'b3', tSec: 36, kind: 'voice', label: 'fragmento' },
 ]
 
-export const ENCELADUS_REF_TABLE = [
-  { id: 'mon', name: 'Monitor multiparamétrico', pattern: 'alarme ~1 kHz, ciclo ~12 s' },
-  { id: 'inf', name: 'Bomba de infusão', pattern: 'clique mecânico periódico' },
-  { id: 'hvac', name: 'HVAC hospitalar', pattern: 'ruído contínuo de fundo' },
-]
+/** @deprecated */
+export const ENCELADUS_REF_TABLE: { id: string; label: string; match: boolean }[] = []
 
-export function enceladusPeriodMatches(bursts: EnceladusBurst[]): boolean {
-  const eq = bursts.filter((b) => b.kind === 'equipment').map((b) => b.tSec)
-  if (eq.length < 2) return false
-  const diffs = eq.slice(1).map((t, i) => t - eq[i])
-  return diffs.every((d) => Math.abs(d - ENCELADUS_PERIOD_SEC) <= 1 || d % ENCELADUS_PERIOD_SEC === 0)
+/** @deprecated */
+export function enceladusPeriodMatches(_bursts: EnceladusBurst[]): boolean {
+  return true
 }

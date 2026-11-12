@@ -22,7 +22,11 @@ import {
   clockSyncOffsetValid,
   clipSequenceComplete,
   buildDerivedRfSource,
+  cycleDifferenceComplete,
+  evaluateCommonPatternSelection,
+  evaluateCycleDifference,
   evaluateRfExtraction,
+  findSimilarCycleRegions,
   fmtClockOffset,
   relativeSourceOffsetSec,
   rfChannelExtractComplete,
@@ -369,6 +373,8 @@ export function ForensicWorkbench({
       if (!spectrogramSurveyComplete(session, ui)) return
     } else if (completion.kind === 'rf-channel-extract') {
       if (!rfChannelExtractComplete(session, ui)) return
+    } else if (completion.kind === 'cycle-difference') {
+      if (!cycleDifferenceComplete(session, ui)) return
     } else {
       return
     }
@@ -389,6 +395,8 @@ export function ForensicWorkbench({
     ui.spectrogramViewedSourceIds,
     ui.rfExtracted,
     ui.rfExtractionQuality,
+    ui.cycleDifferenceDone,
+    ui.recoveredSpeech,
     source?.speechSegments,
     source,
     session,
@@ -864,6 +872,99 @@ export function ForensicWorkbench({
             }))
             setStatus(result.message)
           }}
+          onFindSimilar={() => {
+            const cfg = source?.cycleAnalysis
+            if (!cfg) return
+            const result = findSimilarCycleRegions(cfg, ui.selection)
+            setUi((u) => ({
+              ...u,
+              similarRegions: result.regions,
+              cycleAnalysisStatus: result.message,
+              markers: result.regions.map((r, i) => ({
+                id: `sim-${i}-${r.cycleIndex}`,
+                timeSec: r.startSec,
+                label: '',
+              })),
+            }))
+            setStatus(result.message)
+          }}
+          onToggleReferenceCycle={(cycleIndex) => {
+            setUi((u) => {
+              const has = u.referenceCycleIndexes.includes(cycleIndex)
+              return {
+                ...u,
+                referenceCycleIndexes: has
+                  ? u.referenceCycleIndexes.filter((i) => i !== cycleIndex)
+                  : [...u.referenceCycleIndexes, cycleIndex],
+                commonPatternQuality: null,
+                cycleDifferenceDone: false,
+              }
+            })
+          }}
+          onBuildCommonPattern={() => {
+            const cfg = source?.cycleAnalysis
+            if (!cfg) return
+            const result = evaluateCommonPatternSelection(cfg, ui.referenceCycleIndexes)
+            setUi((u) => ({
+              ...u,
+              commonPatternQuality: result.quality,
+              cycleAnalysisStatus: result.message,
+            }))
+            setStatus(result.message)
+          }}
+          onSetDifferenceTarget={(cycleIndex) => {
+            setUi((u) => ({
+              ...u,
+              differenceTargetIndex: cycleIndex,
+              differenceQuality: null,
+              ricardoClarity: null,
+              cycleDifferenceDone: false,
+            }))
+          }}
+          onApplyDifference={() => {
+            const cfg = source?.cycleAnalysis
+            if (!cfg) return
+            const result = evaluateCycleDifference(
+              cfg,
+              ui.differenceTargetIndex,
+              ui.referenceCycleIndexes,
+              ui.commonPatternQuality,
+            )
+            setUi((u) => {
+              let recoveredSpeech = u.recoveredSpeech
+              let cycleDifferenceDone = u.cycleDifferenceDone
+              if (result.ok) {
+                const seg = cfg.recoveredSpeech
+                if (!recoveredSpeech.some((r) => r.segmentId === seg.segmentId)) {
+                  recoveredSpeech = [
+                    ...recoveredSpeech,
+                    {
+                      segmentId: seg.segmentId,
+                      text: seg.text,
+                      startSec: seg.startSec,
+                      unlockedAt: Date.now(),
+                    },
+                  ]
+                  onSegmentRecovered?.({
+                    segmentId: seg.segmentId,
+                    text: seg.text,
+                    startSec: seg.startSec,
+                    unlockedAt: Date.now(),
+                  })
+                }
+                cycleDifferenceDone = true
+              }
+              return {
+                ...u,
+                differenceQuality: result.quality,
+                ricardoClarity: result.ricardoClarity,
+                cycleAnalysisStatus: result.message,
+                recoveredSpeech,
+                cycleDifferenceDone,
+              }
+            })
+            setStatus(result.message)
+          }}
         />
       </div>
       {showDebug ? (
@@ -956,6 +1057,7 @@ function ForensicDebug({
   const isSaturnalia = session.completion?.kind === 'clip-sequence'
   const isHexagon = session.completion?.kind === 'spectrogram-survey'
   const isShepherd = session.completion?.kind === 'rf-channel-extract'
+  const isEnceladus = session.completion?.kind === 'cycle-difference'
   const recording = session.sources.find((s) => s.tempoRegions?.length)
   const audioPair = session.sources.filter((s) => s.audio)
   const a = audioPair[0]
@@ -967,7 +1069,24 @@ function ForensicDebug({
   )
   return (
     <div className="fw-debug" data-testid="forensic-debug">
-      {isShepherd ? (
+      {isEnceladus ? (
+        <>
+          <span>expectedCycleDuration {session.sources[0]?.cycleAnalysis?.cycleSec ?? '—'}</span>
+          <span>detectedRegions {ui.similarRegions.length}</span>
+          <span>selectedReferenceCycles {ui.referenceCycleIndexes.join(',') || '—'}</span>
+          <span>anomalyCycle {(session.sources[0]?.cycleAnalysis?.anomalyCycleIndex ?? 0) + 1}</span>
+          <span>commonPatternQuality {ui.commonPatternQuality?.toFixed(3) ?? '—'}</span>
+          <span>differenceQuality {ui.differenceQuality?.toFixed(3) ?? '—'}</span>
+          <span>ricardoClarity {ui.ricardoClarity?.toFixed(3) ?? '—'}</span>
+          <span>recovered {String(ui.recoveredSpeech.some((r) => r.text === 'Ricardo'))}</span>
+          <span>puzzleComplete {String(cycleDifferenceComplete(session, ui))}</span>
+          {onDevResetPuzzle ? (
+            <button type="button" className="fw-btn" data-testid="dev-reset-puzzle" onClick={onDevResetPuzzle}>
+              DEV reset puzzle
+            </button>
+          ) : null}
+        </>
+      ) : isShepherd ? (
         <>
           <span>knownChannelA {session.sources[0]?.rfCapture?.channels.find((c) => c.id === 'A')?.centerMhz ?? '—'}</span>
           <span>hiddenChannelB {session.sources[0]?.rfCapture?.extract.hiddenCenterMhz ?? '—'}</span>

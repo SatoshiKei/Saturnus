@@ -386,6 +386,36 @@ export interface ForensicSource {
   setRecord?: SetRecordFields
   /** Captura RF / waterfall (Puzzle 07+). */
   rfCapture?: RfCaptureConfig
+  /** Análise de ciclos / repetição (Puzzle 08+). */
+  cycleAnalysis?: CycleAnalysisConfig
+}
+
+export interface CycleAnalysisConfig {
+  cycleSec: number
+  cycleCount: number
+  anomalyCycleIndex: number
+  boundaries: Array<{ index: number; startSec: number; endSec: number }>
+  envelopes: number[][]
+  envelopeHopSec: number
+  differenceScores: number[]
+  findSimilar: {
+    minSelectionSec: number
+    maxSelectionSec: number
+    correlationThreshold: number
+    expectedMatches: number
+  }
+  commonPattern: {
+    minNormalCycles: number
+    anomalyPenalty: boolean
+  }
+  difference: {
+    minQuality: number
+    ricardoClarityThreshold: number
+    requireAnomalyTarget: boolean
+    requireCleanReference: boolean
+  }
+  recoveredSpeech: { segmentId: string; text: string; startSec: number }
+  residualPreviewSrc?: string
 }
 
 export interface ForensicSession {
@@ -404,6 +434,7 @@ export interface ForensicSession {
       | 'clip-sequence'
       | 'spectrogram-survey'
       | 'rf-channel-extract'
+      | 'cycle-difference'
     /** Chama handler externo quando completo. */
     onCompleteAction?:
       | 'runProvisionalEmergencyAnalysis'
@@ -413,6 +444,7 @@ export interface ForensicSession {
       | 'runSaturnaliaReconstruct'
       | 'runHexagonSpectrogramSurvey'
       | 'runShepherdMoonsExtract'
+      | 'runEnceladusAnalysis'
     /** Segmentos obrigatórios além do rebuild (se houver). */
     requireSpeechSegmentIds?: string[]
     /** source id do registro correto (source-link). */
@@ -555,6 +587,15 @@ export interface ForensicUiState {
   rfExtracted: boolean
   rfDerivedSourceId: string | null
   rfStatus: string | null
+  /** Ciclos / Find Similar (Puzzle 08). */
+  similarRegions: Array<{ cycleIndex: number; startSec: number; endSec: number; correlation: number }>
+  referenceCycleIndexes: number[]
+  differenceTargetIndex: number | null
+  commonPatternQuality: number | null
+  differenceQuality: number | null
+  ricardoClarity: number | null
+  cycleAnalysisStatus: string | null
+  cycleDifferenceDone: boolean
 }
 
 export const DEFAULT_PROCESS: ProcessParams = {

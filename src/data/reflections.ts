@@ -333,7 +333,8 @@ export const reflections: ReflectionDef[] = [
       'Renata lembrava daquele paciente anos depois porque lembrava do efeito que ele teve nela.',
       'E Mariana, antes de desaparecer, voltou a alguma coisa daquela época.',
       'Se eu quisesse entender por quê, o prontuário não bastava.',
-      'Eu precisava de alguém que tivesse estado naquela sala.',
+      'Renata tinha falado de inquietação, de um homem que não largava o que estava fazendo.',
+      'O depósito do hospital ainda guardava o que sobrou daquele leito.',
     ],
   },
   {

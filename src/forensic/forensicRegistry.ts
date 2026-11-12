@@ -9,6 +9,7 @@ import {
   puzzle06HexagonSession,
 } from './puzzles/puzzle06Hexagon'
 import { puzzle07ShepherdMoonsSession } from './puzzles/puzzle07ShepherdMoons'
+import { puzzle08EnceladusSession } from './puzzles/puzzle08Enceladus'
 
 /**
  * Registro de datasets por evidência.
@@ -24,6 +25,7 @@ const BY_EVIDENCE = new Map<string, ForensicSession>([
   [puzzle05SaturnaliaSession.evidenceId!, puzzle05SaturnaliaSession],
   ...puzzle06EvidenceIds.map((id) => [id, puzzle06HexagonSession] as const),
   [puzzle07ShepherdMoonsSession.evidenceId!, puzzle07ShepherdMoonsSession],
+  [puzzle08EnceladusSession.evidenceId!, puzzle08EnceladusSession],
 ])
 
 export function registerForensicSession(session: ForensicSession) {

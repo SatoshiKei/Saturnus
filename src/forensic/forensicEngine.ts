@@ -80,7 +80,174 @@ export function createInitialUiState(
     rfExtracted: false,
     rfDerivedSourceId: null,
     rfStatus: null,
+    similarRegions: [],
+    referenceCycleIndexes: [],
+    differenceTargetIndex: null,
+    commonPatternQuality: null,
+    differenceQuality: null,
+    ricardoClarity: null,
+    cycleAnalysisStatus: null,
+    cycleDifferenceDone: false,
   }
+}
+
+function pearson(a: number[], b: number[]): number {
+  const n = Math.min(a.length, b.length)
+  if (n < 4) return 0
+  let sa = 0
+  let sb = 0
+  for (let i = 0; i < n; i++) {
+    sa += a[i]!
+    sb += b[i]!
+  }
+  const ma = sa / n
+  const mb = sb / n
+  let num = 0
+  let da = 0
+  let db = 0
+  for (let i = 0; i < n; i++) {
+    const xa = a[i]! - ma
+    const xb = b[i]! - mb
+    num += xa * xb
+    da += xa * xa
+    db += xb * xb
+  }
+  const den = Math.sqrt(da * db)
+  return den < 1e-12 ? 0 : num / den
+}
+
+/** Find Similar Regions — correlação de envelopes entre ciclos. */
+export function findSimilarCycleRegions(
+  cfg: import('./forensicTypes').CycleAnalysisConfig,
+  selection: { startSec: number; endSec: number } | null,
+): {
+  ok: boolean
+  message: string
+  regions: Array<{ cycleIndex: number; startSec: number; endSec: number; correlation: number }>
+} {
+  if (!selection) {
+    return { ok: false, message: 'Select a region on the timeline first.', regions: [] }
+  }
+  const dur = selection.endSec - selection.startSec
+  if (dur < cfg.findSimilar.minSelectionSec) {
+    return { ok: false, message: 'Selection too short for reliable matching.', regions: [] }
+  }
+  if (dur > cfg.findSimilar.maxSelectionSec) {
+    return { ok: false, message: 'Selection spans too much — try one cycle.', regions: [] }
+  }
+  const mid = (selection.startSec + selection.endSec) / 2
+  const seedIdx = cfg.boundaries.findIndex((b) => mid >= b.startSec && mid < b.endSec)
+  if (seedIdx < 0) {
+    return { ok: false, message: 'Selection outside capture.', regions: [] }
+  }
+  const seedEnv = cfg.envelopes[seedIdx]!
+  const regions = cfg.boundaries.map((b, i) => {
+    const corr = pearson(seedEnv, cfg.envelopes[i]!)
+    return {
+      cycleIndex: i,
+      startSec: b.startSec,
+      endSec: b.endSec,
+      correlation: Math.max(0, corr),
+    }
+  })
+  const matches = regions.filter((r) => r.correlation >= cfg.findSimilar.correlationThreshold)
+  if (matches.length < 3) {
+    return {
+      ok: false,
+      message: 'Few similar regions — refine the selection.',
+      regions: matches,
+    }
+  }
+  return {
+    ok: true,
+    message: `Similar regions: ${matches.length}`,
+    regions: matches.sort((a, b) => a.startSec - b.startSec),
+  }
+}
+
+export function evaluateCommonPatternSelection(
+  cfg: import('./forensicTypes').CycleAnalysisConfig,
+  referenceIndexes: number[],
+): { quality: number; clean: boolean; message: string } {
+  const unique = [...new Set(referenceIndexes)].filter((i) => i >= 0 && i < cfg.cycleCount)
+  if (unique.length < cfg.commonPattern.minNormalCycles) {
+    return {
+      quality: 0,
+      clean: false,
+      message: `Need at least ${cfg.commonPattern.minNormalCycles} cycles in the reference.`,
+    }
+  }
+  const includesAnomaly = unique.includes(cfg.anomalyCycleIndex)
+  let quality = Math.min(1, unique.length / (cfg.cycleCount - 1))
+  if (includesAnomaly && cfg.commonPattern.anomalyPenalty) {
+    quality *= 0.45
+  }
+  const clean = !includesAnomaly && unique.length >= cfg.commonPattern.minNormalCycles
+  return {
+    quality,
+    clean,
+    message: includesAnomaly
+      ? 'Reference includes a divergent cycle — pattern quality degraded.'
+      : 'Common pattern built from selected cycles.',
+  }
+}
+
+export function evaluateCycleDifference(
+  cfg: import('./forensicTypes').CycleAnalysisConfig,
+  targetIndex: number | null,
+  referenceIndexes: number[],
+  patternQuality: number | null,
+): {
+  ok: boolean
+  quality: number
+  ricardoClarity: number
+  message: string
+} {
+  if (targetIndex == null) {
+    return { ok: false, quality: 0, ricardoClarity: 0, message: 'Select a target cycle for Difference.' }
+  }
+  const pat = evaluateCommonPatternSelection(cfg, referenceIndexes)
+  const pq = patternQuality ?? pat.quality
+  const isAnomaly = targetIndex === cfg.anomalyCycleIndex
+  const residual = cfg.differenceScores[targetIndex] ?? 0
+  const maxResidual = Math.max(...cfg.differenceScores)
+  const residualNorm = residual / (maxResidual + 1e-9)
+
+  let quality = pq * (isAnomaly ? 0.55 + 0.45 * residualNorm : 0.25 * residualNorm)
+  let ricardoClarity = 0
+  if (isAnomaly && pat.clean) {
+    ricardoClarity = Math.min(1, 0.35 + pq * 0.7)
+    quality = Math.max(quality, ricardoClarity)
+  } else if (isAnomaly && !pat.clean) {
+    ricardoClarity = Math.min(0.4, pq * 0.5)
+    quality *= 0.55
+  }
+
+  const ok =
+    isAnomaly &&
+    pat.clean &&
+    quality >= cfg.difference.minQuality &&
+    ricardoClarity >= cfg.difference.ricardoClarityThreshold
+
+  let message = 'Difference computed.'
+  if (!isAnomaly) message = 'Little residual structure in this cycle.'
+  else if (!pat.clean) message = 'Reference contaminated — voice remains unclear.'
+  else if (ok) message = 'Residual energy reveals intelligible speech.'
+  else message = 'Residual present but clarity below threshold.'
+
+  return { ok, quality, ricardoClarity, message }
+}
+
+export function cycleDifferenceComplete(
+  session: ForensicSession,
+  ui: ForensicUiState,
+): boolean {
+  if (session.completion?.kind !== 'cycle-difference') return false
+  if (!ui.cycleDifferenceDone) return false
+  const need = session.completion.requireSpeechSegmentIds ?? []
+  if (!need.length) return true
+  const have = new Set(ui.recoveredSpeech.map((r) => r.segmentId))
+  return need.every((id) => have.has(id))
 }
 
 /** Qualidade da extração RF: overlap no canal oculto vs contaminação A/C. */

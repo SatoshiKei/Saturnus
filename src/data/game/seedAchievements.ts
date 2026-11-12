@@ -152,6 +152,14 @@ export const seedAchievements: AchievementDef[] = [
     unlocked: (s) => Boolean(s.flags.block06_complete),
   },
   {
+    id: 'ach-enceladus',
+    title: 'ENCELADUS',
+    description: 'Isolou a informação oculta entre os ciclos repetidos.',
+    hint: 'Recuperar o nome no áudio anônimo pela diferença de ciclos.',
+    unlocked: (s) =>
+      Boolean(s.flags.block07_enceladus_done || s.evidenceOwned.includes('anon_audio_ricardo_name')),
+  },
+  {
     id: 'ach-block7',
     title: 'O homem que não era Ricardo',
     description: 'A identidade no cadastro não sustentou o nome.',

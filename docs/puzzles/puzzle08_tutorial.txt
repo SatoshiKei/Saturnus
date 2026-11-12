@@ -1,0 +1,126 @@
+PUZZLE 08 — ENCELADUS
+Dev only — não aparece para o jogador.
+
+Lore / origem
+-------------
+Número desconhecido → WhatsApp de Augusto → AUD_0008.wav (sem texto).
+Augusto encaminha/importa para a Bancada (receiveAnonHospitalAudio).
+O arquivo NÃO aparece sozinho na Bancada.
+Proveniência do áudio permanece aberta (não explicar câmera/telefone/arquivo).
+
+
+Asset de voz (humano)
+---------------------
+src/assets/audios/p8/Renata - Ricardo.mp3
+Fala: "Ricardo, espera um pouco. Eu já volto aqui, tá?"
+Não modificar o original; o build só lê.
+
+
+Build
+-----
+python tools/audio/build_puzzle08_enceladus.py
+
+Runtime:
+  public/assets/audio/forensic/puzzle08/p08_enceladus_final.wav
+  public/assets/audio/forensic/puzzle08/AUD_0008.wav          (UI / WhatsApp)
+  public/assets/audio/forensic/puzzle08/p08_residual_preview.wav
+  src/forensic/puzzles/puzzle08Meta.json
+
+DEBUG (tools/audio/out/puzzle08_debug/):
+  cycle_01..08, cycle_anomaly, common_pattern, residual_ideal,
+  stack_overlay.png, master_waveform.png
+
+
+Áudio
+-----
+Duração total: 48 s
+Ciclos: 8 × 6 s
+Ciclo anômalo: 6 (index 5) — contém a fala da Renata
+Ciclos 1–5,7–8: padrão hospitalar recorrente (bip + mecânico + room tone)
+Variações leves de ganho/timing/ruído; semelhantes o bastante para correlação.
+
+Play bruto: ambiente técnico + repetição; “Ricardo” NÃO fica claro.
+Após Difference correta: “Ricardo” inteligível; resto da frase permanece ambíguo.
+
+
+Ferramentas genéricas (Bancada)
+-------------------------------
+1. Selecionar ~1 ciclo na timeline (tolerância ~4.2–7.5 s).
+2. Find Similar Regions → ~8 regiões (marcadores sem rótulo de anomalia).
+3. Stack / Overlay → residual energy por região (jogador observa o outlier).
+4. Build Common Pattern → média dos ciclos normais (excluir o anômalo).
+5. Difference / Subtract Reference → alvo = ciclo anômalo.
+
+Não existem botões “remover ruído hospitalar”, “isolar voz”, “solve Enceladus”.
+
+
+Thresholds (puzzle08Meta / CycleAnalysisConfig)
+-----------------------------------------------
+findSimilar:
+  minSelectionSec 4.2 · maxSelectionSec 7.5 · correlationThreshold 0.68
+commonPattern:
+  minNormalCycles 5 · anomalyPenalty true (incluir ciclo 6 degrada qualidade)
+difference:
+  minQuality 0.55 · ricardoClarityThreshold 0.62
+  requireAnomalyTarget + requireCleanReference
+
+
+Completion
+----------
+kind: cycle-difference
+onCompleteAction: runEnceladusAnalysis → onEnceladusSolved
+Recovered Speech: somente "Ricardo" (segmentId enceladus-ricardo)
+Não transcrever a frase completa.
+Não exigir botão Confirmar.
+
+
+Flags / story
+-------------
+deliverAnonWhatsApp
+  → block07_anon_message_received, chat anônimo + AUD_0008
+
+receiveAnonHospitalAudio
+  → block07_anon_audio_received, evidence anon_hospital_burst_audio,
+    block07_enceladus_available
+
+onEnceladusSolved / runEnceladusAnalysis
+  → block07_enceladus_done
+  → evidence anon_audio_ricardo_name
+  → task_julia_ricardo_audio: "Mostrar o fragmento recuperado a Júlia"
+  → block07_julia_ricardo_audio_unlocked
+
+onJuliaRicardoAudioDone (call-julia-ricardo-audio)
+  → renata_voice_on_burst
+  → block07_renata_call_unlocked + task_call_renata
+
+onRenataCallDone (call-renata-farias)
+  → ricardo_old_patient_mariana_shift, anon_audio_shift_window
+  → block07_hospital_archive_unlocked + task_hospital_ricardo_chart
+
+call-hospital-ricardo / onRicardoRecordFound
+  → Ricardo Freitas (prontuário) — NÃO via busca policial só com "Ricardo"
+
+Cadeia:
+  Enceladus → Ricardo → Júlia reconhece Renata → Renata → arquivo → Freitas
+  → depois pertences / H.V. / hvalenca@ / Henrique
+
+
+Achievement
+-----------
+ach-enceladus · ENCELADUS
+"Isolou a informação oculta entre os ciclos repetidos."
+Quando block07_enceladus_done ou anon_audio_ricardo_name.
+
+
+DEV panel
+---------
+expectedCycleDuration · detectedRegions · selectedReferenceCycles
+anomalyCycle · commonPatternQuality · differenceQuality
+ricardoClarity · recovered · puzzleComplete
+
+
+Dataset
+-------
+src/forensic/puzzles/puzzle08Enceladus.ts
+evidenceId: anon_hospital_burst_audio
+UI filename: AUD_0008.wav (nunca ricardo/hospital/enceladus na UI)

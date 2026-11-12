@@ -208,8 +208,8 @@ export function deliverAnonWhatsApp() {
         id: 'anon-burst-1',
         kind: 'audio',
         from: 'them',
-        audioSrc: '/assets/audio/emergency-call-0803.wav',
-        durationSec: 80,
+        audioSrc: '/assets/audio/forensic/puzzle08/AUD_0008.wav',
+        durationSec: 48,
         timestamp: '02:14',
       },
     ],
@@ -248,34 +248,36 @@ export function onEnceladusSolved() {
   if (s.flags.block07_enceladus_done) return
   dispatchActions([
     { type: 'setFlag', id: 'block07_enceladus_done', value: true },
-    { type: 'addEvidence', id: 'anon_audio_hospital_environment' },
     { type: 'addEvidence', id: 'anon_audio_ricardo_name' },
-    { type: 'addEvidence', id: 'anon_audio_shift_window' },
     { type: 'completeTask', id: 'task_anon_audio_enceladus' },
     { type: 'setFlag', id: 'block07_julia_ricardo_audio_unlocked', value: true },
     { type: 'unlockContact', contactId: 'contact-julia' },
     {
       type: 'addTask',
       id: 'task_julia_ricardo_audio',
-      label: 'Pedir a Júlia que escute o trecho reconstruído',
+      label: 'Mostrar o fragmento recuperado a Júlia',
     },
   ])
 }
 
-/** Júlia reconhece Renata; paciente antigo Ricardo ligado a Mariana. */
+/** Alias Bancada (cycle-difference). */
+export function runEnceladusAnalysis() {
+  onEnceladusSolved()
+}
+
+/** Júlia reconhece a voz feminina como Renata Farias — não o arquivo. */
 export function onJuliaRicardoAudioDone() {
   const s = getInvestigationState()
   if (s.flags.block07_julia_ricardo_audio_done) return
   dispatchActions([
     { type: 'setFlag', id: 'block07_julia_ricardo_audio_done', value: true },
     { type: 'addEvidence', id: 'renata_voice_on_burst' },
-    { type: 'addEvidence', id: 'ricardo_old_patient_mariana_shift' },
     { type: 'completeTask', id: 'task_julia_ricardo_audio' },
-    { type: 'setFlag', id: 'block07_hospital_archive_unlocked', value: true },
+    { type: 'setFlag', id: 'block07_renata_call_unlocked', value: true },
     {
       type: 'addTask',
-      id: 'task_hospital_ricardo_chart',
-      label: 'Solicitar o prontuário de Ricardo no arquivo do hospital',
+      id: 'task_call_renata',
+      label: 'Ligar para Renata Farias sobre o fragmento de voz',
     },
   ])
 }
@@ -315,22 +317,7 @@ export function onRicardoDeadReflectionDone() {
   dispatchActions([
     { type: 'setFlag', id: 'block07_ricardo_dead_reflection_done', value: true },
     { type: 'setFlag', id: 'block07_refl_ricardo_dead_pending', value: false },
-    { type: 'setFlag', id: 'block07_renata_call_unlocked', value: true },
-    {
-      type: 'addTask',
-      id: 'task_call_renata',
-      label: 'Ligar para Renata Farias sobre o paciente Ricardo',
-    },
-  ])
-}
-
-export function onRenataCallDone() {
-  const s = getInvestigationState()
-  if (s.flags.block07_renata_call_done) return
-  dispatchActions([
-    { type: 'setFlag', id: 'block07_renata_call_done', value: true },
     { type: 'addEvidence', id: 'ricardo_notebook_behavior' },
-    { type: 'completeTask', id: 'task_call_renata' },
     { type: 'setFlag', id: 'block07_refl_notebook_pending', value: true },
     { type: 'setFlag', id: 'block07_hospital_deposit_unlocked', value: true },
     { type: 'unlockLocation', id: 'hospital', status: 'visitAvailable' },
@@ -338,6 +325,24 @@ export function onRenataCallDone() {
       type: 'addTask',
       id: 'task_hospital_deposit',
       label: 'Voltar ao hospital — depósito de pertences de Ricardo',
+    },
+  ])
+}
+
+/** Renata confirma o paciente Ricardo e o plantão — só então o arquivo hospitalar. */
+export function onRenataCallDone() {
+  const s = getInvestigationState()
+  if (s.flags.block07_renata_call_done) return
+  dispatchActions([
+    { type: 'setFlag', id: 'block07_renata_call_done', value: true },
+    { type: 'addEvidence', id: 'ricardo_old_patient_mariana_shift' },
+    { type: 'addEvidence', id: 'anon_audio_shift_window' },
+    { type: 'completeTask', id: 'task_call_renata' },
+    { type: 'setFlag', id: 'block07_hospital_archive_unlocked', value: true },
+    {
+      type: 'addTask',
+      id: 'task_hospital_ricardo_chart',
+      label: 'Solicitar o prontuário de Ricardo no arquivo do hospital',
     },
   ])
 }
