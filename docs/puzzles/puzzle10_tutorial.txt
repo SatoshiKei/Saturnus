@@ -1,0 +1,67 @@
+PUZZLE 10 — ORDEM DOS ANÉIS
+Dev only — não aparece para o jogador.
+
+Motivação
+---------
+Augusto investiga o percurso de Morsa porque Mariana o reconstruía.
+NÃO suspeitar Morsa = André antes da CAM 11.
+
+
+Materiais
+---------
+A — Cobertura Lívia: public/.../puzzle10/livia_protest_clip.wav (sirene)
+B — Vídeo Samuel: samuel_phone_clip.wav + BG-01 + sprite mascarado
+C — Vídeo secundário: BG-02 + flicker pattern
+D — DVR: catálogo + storage bruto (sem revelar André no thumb)
+
+
+Assets (p10)
+------------
+src/assets/audios/p10/ → public/assets/block08/rings/p10/
+BG-01, BG-02, BG-04, BG-05
+SP-01 walk 1–4, SP-03 turn, SP-04 enter, SP-05 unmasked 1–2
+NÃO usar BG-03.
+
+
+Build
+-----
+python tools/audio/build_puzzle10_rings.py
+
+
+Fluxo
+-----
+1. Audio Fingerprint Compare: Lívia + Samuel → sirene long-short-short-long
+2. Compare Frame Pattern: Samuel + secundário → flicker compartilhado
+3. Mapa: eliminar oeste/leste → passagem de serviço (BG-01→02→04→05)
+4. CFTV: CAM 03 / 07 / 11 cobrem o trecho
+5. DVR catalog: CAM11_SEG_1278 e _1280 (1279 ausente)
+6. Inspect Media Structure → ~60 s gap
+7. Storage search CAM11 / 1279 → UNINDEXED
+8. Open → cutscene (não player comum)
+9. CAM03 21:14:08 mascarado → CAM07 21:14:31 → CAM11 21:15:02 sem máscara
+10. Augusto: "André."
+11. Flag block08_morsa_reveal_played + evidence morsa_was_andre
+12. Reflection → confronto André
+
+
+Flags
+-----
+block08_rings_available
+block08_rings_timeline_solved   (passagem deduzida)
+block08_morsa_continuity_confirmed / block08_morsa_reveal_played
+block08_rings_done (após reflection)
+morsa_was_andre (evidence)
+
+
+Achievement
+-----------
+ach-ordem-aneis · ORDEM DOS ANÉIS
+"Reconstruiu o percurso oculto de Morsa."
+
+
+DEV
+---
+liviaSamuelFingerprint · videoFramePatternMatch · knownMorsaPositions
+routeCandidates · selectedRoute · servicePassageInferred
+cameraCoverageUnlocked · missingSegmentExpected · rawSegmentFound
+revealPlayed · morsaWasAndre

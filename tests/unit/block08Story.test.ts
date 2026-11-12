@@ -86,7 +86,8 @@ describe('Bloco 8 — progressão', () => {
     s = getInvestigationState()
     expect(s.flags.block08_morsa_continuity_confirmed).toBe(true)
     expect(s.flags.block08_refl_morsa_pending).toBe(true)
-    expect(s.evidenceOwned).not.toContain('morsa_was_andre')
+    expect(s.flags.block08_morsa_reveal_played).toBe(true)
+    expect(s.evidenceOwned).toContain('morsa_was_andre')
 
     onMorsaReflectionDone()
     s = getInvestigationState()

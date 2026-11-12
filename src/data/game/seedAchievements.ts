@@ -174,6 +174,14 @@ export const seedAchievements: AchievementDef[] = [
     unlocked: (s) => Boolean(s.flags.block07_complete),
   },
   {
+    id: 'ach-ordem-aneis',
+    title: 'ORDEM DOS ANÉIS',
+    description: 'Reconstruiu o percurso oculto de Morsa.',
+    hint: 'Cruzar mídias, eliminar rotas e abrir o segmento CFTV ausente do índice.',
+    unlocked: (s) =>
+      Boolean(s.flags.block08_morsa_reveal_played || s.flags.block08_morsa_continuity_confirmed),
+  },
+  {
     id: 'ach-block8',
     title: 'A noite sem assassinato',
     description: 'A queda deixou de ser o que a sentença afirmou.',

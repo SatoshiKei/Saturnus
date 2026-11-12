@@ -14,14 +14,14 @@ export function startBlock08() {
     {
       type: 'addTask',
       id: 'task_rings_puzzle',
-      label: 'Reconstruir a timeline dos protestos (bancada) — fontes dessincronizadas',
+      label: 'Reconstruir o percurso de Morsa na noite dos protestos',
     },
   ])
 }
 
 /**
- * Etapa 1 — timeline correta (ordem A→B→E→D→C→F).
- * NÃO registra `morsa_was_andre` nem nomeia a continuidade.
+ * Etapa 1 — passagem de serviço deduzida + cobertura CFTV.
+ * NÃO registra `morsa_was_andre`.
  */
 export function onRingsTimelineSolved() {
   const s = getInvestigationState()
@@ -30,12 +30,16 @@ export function onRingsTimelineSolved() {
     { type: 'setFlag', id: 'block08_rings_timeline_solved', value: true },
     { type: 'addEvidence', id: 'protest_timeline_reconstructed' },
     { type: 'completeTask', id: 'task_rings_puzzle' },
+    {
+      type: 'addTask',
+      id: 'task_rings_dvr',
+      label: 'Inspecionar o arquivo CFTV da passagem de serviço',
+    },
   ])
 }
 
 /**
- * Etapa 2 — jogador confirmou mochila + rádio + tempo.
- * Abre Reflection; evidência formal só no aftermath.
+ * Etapa 2 — cutscene CAM11: revelação. Abre Reflection.
  */
 export function onMorsaContinuityConfirmed() {
   const s = getInvestigationState()
@@ -43,6 +47,9 @@ export function onMorsaContinuityConfirmed() {
   if (!s.flags.block08_rings_timeline_solved) return
   dispatchActions([
     { type: 'setFlag', id: 'block08_morsa_continuity_confirmed', value: true },
+    { type: 'setFlag', id: 'block08_morsa_reveal_played', value: true },
+    { type: 'addEvidence', id: 'morsa_was_andre' },
+    { type: 'completeTask', id: 'task_rings_dvr' },
     { type: 'setFlag', id: 'block08_refl_morsa_pending', value: true },
   ])
 }
@@ -70,8 +77,10 @@ export function onMorsaReflectionDone() {
     { type: 'setFlag', id: 'block08_morsa_continuity_confirmed', value: true },
   ]
   if (!s.evidenceOwned.includes('morsa_was_andre')) {
+    actions.push({ type: 'addEvidence', id: 'morsa_was_andre' })
+  }
+  if (!s.evidenceOwned.includes('andre_morsa_alibi_interval')) {
     actions.push(
-      { type: 'addEvidence', id: 'morsa_was_andre' },
       { type: 'addEvidence', id: 'andre_morsa_alibi_interval' },
       { type: 'completeTask', id: 'task_identify_morsa' },
       { type: 'updateHypothesis', id: 'hyp_morsa_bridges_elisa_protests', state: 'confirmed' },

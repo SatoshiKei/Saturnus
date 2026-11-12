@@ -1,154 +1,355 @@
 /**
- * Puzzle 10 — Ordem dos Anéis (placeholder funcional).
- * A ordem de descoberta das fontes ≠ ordem real dos eventos; relógios dessincronizados.
- * TODO(puzzle-10): fingerprints de áudio, drift real, hashes de cópia.
+ * Puzzle 10 — Ordem dos Anéis
+ * Percurso de Morsa → passagem de serviço → DVR → CAM11_SEG_1279 → revelação.
+ * Dataset técnico: src/forensic/puzzles/puzzle10Meta.json
  */
 
-export type RingSourceId = 'A' | 'B' | 'C' | 'D' | 'E' | 'F'
+import meta from '../../forensic/puzzles/puzzle10Meta.json'
 
-export interface RingSource {
-  id: RingSourceId
-  label: string
-  kind: 'audio' | 'video' | 'radio' | 'camera'
-  /** Timestamp bruto gravado (minutos desde 00:00 da madrugada). */
-  rawTMin: number
-  /** Offset a aplicar (minutos) para alinhar à timeline verdadeira. */
-  offsetMin: number
-  /** Drift acumulado (minutos) — correção simples no placeholder. */
-  driftMin: number
-  note: string
-  sharedEvent?: string
+export const P10_ASSETS = '/assets/block08/rings/p10'
+
+export const RING_MEDIA = {
+  livia: {
+    id: 'livia',
+    label: 'Cobertura Lívia — trecho Maralto',
+    kind: 'audio' as const,
+    audioSrc: '/assets/audio/forensic/puzzle10/livia_protest_clip.wav',
+    durationSec: 12,
+    note: 'Protesto; sirene policial distintiva.',
+  },
+  samuel: {
+    id: 'samuel',
+    label: 'Vídeo de celular — material Samuel',
+    kind: 'video' as const,
+    audioSrc: '/assets/audio/forensic/puzzle10/samuel_phone_clip.wav',
+    posterSrc: `${P10_ASSETS}/BG-01 — rua de aproximação.png`,
+    spriteSrc: `${P10_ASSETS}/SP-01 — masked-walk-away-2.png`,
+    durationSec: 10,
+    note: 'Morsa noutro ponto; relógio do aparelho pouco confiável.',
+  },
+  secondary: {
+    id: 'secondary',
+    label: 'Arquivo secundário — percurso noturno',
+    kind: 'video' as const,
+    posterSrc: `${P10_ASSETS}/BG-02 — curva I transição.png`,
+    spriteSrc: `${P10_ASSETS}/SP-01 — masked-walk-away-3.png`,
+    durationSec: 8,
+    note: 'Iluminação industrial; flicker/rolling shutter.',
+  },
+} as const
+
+export type RingMediaId = keyof typeof RING_MEDIA
+
+export const RING_FINGERPRINT = {
+  liviaEnv: meta.liviaEnv as number[],
+  samuelEnv: meta.samuelEnv as number[],
+  wrongEnv: meta.wrongEnv as number[],
+  threshold: meta.fingerprintThreshold as number,
+  liviaSirenStartSec: meta.liviaSirenStartSec as number,
+  samuelSirenStartSec: meta.samuelSirenStartSec as number,
+  pattern: meta.sirenPattern as string,
 }
 
-export const RING_SOURCES: RingSource[] = [
+export const RING_FRAME_PATTERN = {
+  B: meta.framePatternB as number[],
+  C: meta.framePatternC as number[],
+  noise: meta.framePatternNoise as number[],
+  threshold: meta.frameThreshold as number,
+  label: meta.framePattern as string,
+}
+
+export type RingRouteId = 'west' | 'east' | 'service'
+
+export interface RingRoute {
+  id: RingRouteId
+  label: string
+  detail: string
+  compatible: boolean
+  backgrounds: string[]
+}
+
+export const RING_ROUTES: RingRoute[] = [
   {
-    id: 'A',
-    label: 'Fonte A — áudio rádio local (Lívia)',
-    kind: 'audio',
-    rawTMin: 142,
-    offsetMin: 0,
-    driftMin: 0,
-    note: 'Âncora: sirene + anúncio do corte de rua',
-    sharedEvent: 'sirene-corte',
+    id: 'west',
+    label: 'Rota externa oeste',
+    detail: 'Contorno longo do complexo — incompatível com a janela temporal.',
+    compatible: false,
+    backgrounds: [`${P10_ASSETS}/BG-01 — rua de aproximação.png`],
   },
   {
-    id: 'B',
-    label: 'Fonte B — vídeo de celular (manifestante)',
-    kind: 'video',
-    rawTMin: 138,
-    offsetMin: 7,
-    driftMin: 0,
-    note: 'Mesma sirene; relógio do celular adiantado',
-    sharedEvent: 'sirene-corte',
+    id: 'east',
+    label: 'Rota externa leste',
+    detail: 'Isolamento policial / estrutura bloqueada naquela noite.',
+    compatible: false,
+    backgrounds: [`${P10_ASSETS}/BG-01 — rua de aproximação.png`],
   },
   {
-    id: 'C',
-    label: 'Fonte C — comunicação núcleo mascarado',
-    kind: 'radio',
-    rawTMin: 155,
-    offsetMin: -4,
-    driftMin: 1,
-    note: '“Morsa sumiu pela lateral”',
-    sharedEvent: 'morsa-lateral',
-  },
-  {
-    id: 'D',
-    label: 'Fonte D — câmera fixa do protesto',
-    kind: 'camera',
-    rawTMin: 149,
-    offsetMin: 2,
-    driftMin: 0,
-    note: 'Morsa entra na área lateral / serviço',
-    sharedEvent: 'morsa-lateral',
-  },
-  {
-    id: 'E',
-    label: 'Fonte E — segundo vídeo parcial',
-    kind: 'video',
-    rawTMin: 160,
-    offsetMin: -3,
-    driftMin: 0,
-    note: 'Derivado / cópia parcial de B (mesmo hash parcial)',
-    sharedEvent: 'sirene-corte',
-  },
-  {
-    id: 'F',
-    label: 'Fonte F — câmera área de serviço',
-    kind: 'camera',
-    rawTMin: 151,
-    offsetMin: 8,
-    driftMin: 0,
-    note: 'Saída sem máscara; rádio + mochila do núcleo',
-    sharedEvent: 'saida-servico',
+    id: 'service',
+    label: 'Passagem de serviço',
+    detail: 'Distância e intervalos compatíveis com as aparições conhecidas.',
+    compatible: true,
+    backgrounds: [
+      `${P10_ASSETS}/BG-01 — rua de aproximação.png`,
+      `${P10_ASSETS}/BG-02 — curva I transição.png`,
+      `${P10_ASSETS}/BG-04 — corredor intermediário.png`,
+      `${P10_ASSETS}/BG-05 — área final I asset já existente como destino.png`,
+    ],
   },
 ]
 
-/** Ordem verdadeira após correção (A âncora → … → F saída). */
+export const RING_CAMERAS = [
+  { id: 'CAM 03', covers: 'entrada da passagem', time: '21:14:08' },
+  { id: 'CAM 07', covers: 'corredor intermediário', time: '21:14:31' },
+  { id: 'CAM 11', covers: 'área norte / saída', time: '21:15:02' },
+] as const
+
+export interface DvrSegment {
+  camera: string
+  segmentId: string
+  startTime: string
+  durationSec: number
+  codec: string
+  container: string
+  indexed: boolean
+  checksum: string
+  /** Present only for unindexed raw files. */
+  rawPath?: string
+  thumbnailAmbiguous?: boolean
+}
+
+/** Catálogo indexado — CAM11_SEG_1279 ausente. */
+export const DVR_CATALOG: DvrSegment[] = [
+  {
+    camera: 'CAM 03',
+    segmentId: 'CAM03_SEG_0440',
+    startTime: '21:13:40',
+    durationSec: 60,
+    codec: 'H.264',
+    container: 'MP4',
+    indexed: true,
+    checksum: 'a91c2e',
+  },
+  {
+    camera: 'CAM 07',
+    segmentId: 'CAM07_SEG_0901',
+    startTime: '21:14:10',
+    durationSec: 60,
+    codec: 'H.264',
+    container: 'MP4',
+    indexed: true,
+    checksum: 'b33f01',
+  },
+  {
+    camera: 'CAM 11',
+    segmentId: 'CAM11_SEG_1278',
+    startTime: '21:14:00',
+    durationSec: 60,
+    codec: 'H.264',
+    container: 'MP4',
+    indexed: true,
+    checksum: 'c70aa2',
+  },
+  {
+    camera: 'CAM 11',
+    segmentId: 'CAM11_SEG_1280',
+    startTime: '21:16:00',
+    durationSec: 60,
+    codec: 'H.264',
+    container: 'MP4',
+    indexed: true,
+    checksum: 'd12bb8',
+  },
+]
+
+/** Storage bruto — inclui o segmento não indexado. */
+export const DVR_RAW_STORAGE: DvrSegment[] = [
+  ...DVR_CATALOG,
+  {
+    camera: 'CAM 11',
+    segmentId: 'CAM11_SEG_1279',
+    startTime: '21:15:00',
+    durationSec: 60,
+    codec: 'H.264',
+    container: 'MP4',
+    indexed: false,
+    checksum: 'e9f401',
+    rawPath: 'raw/cam11/CAM11_SEG_1279.mp4',
+    thumbnailAmbiguous: true,
+  },
+]
+
+export const MISSING_SEGMENT_ID = 'CAM11_SEG_1279'
+
+export function pearson(a: number[], b: number[]): number {
+  const n = Math.min(a.length, b.length)
+  if (n < 4) return 0
+  let sa = 0
+  let sb = 0
+  for (let i = 0; i < n; i++) {
+    sa += a[i]!
+    sb += b[i]!
+  }
+  const ma = sa / n
+  const mb = sb / n
+  let num = 0
+  let da = 0
+  let db = 0
+  for (let i = 0; i < n; i++) {
+    const xa = a[i]! - ma
+    const xb = b[i]! - mb
+    num += xa * xb
+    da += xa * xa
+    db += xb * xb
+  }
+  const den = Math.sqrt(da * db)
+  return den < 1e-12 ? 0 : num / den
+}
+
+export function compareAudioFingerprints(
+  left: RingMediaId,
+  right: RingMediaId,
+): { match: boolean; score: number; deltaSec: number | null; message: string } {
+  const pair = [left, right].sort().join('+')
+  if (pair === 'livia+samuel') {
+    const score = pearson(RING_FINGERPRINT.liviaEnv, RING_FINGERPRINT.samuelEnv)
+    const delta =
+      RING_FINGERPRINT.samuelSirenStartSec - RING_FINGERPRINT.liviaSirenStartSec
+    const match = score >= RING_FINGERPRINT.threshold
+    return {
+      match,
+      score,
+      deltaSec: match ? delta : null,
+      message: match
+        ? `Strong fingerprint match (siren). Δt ≈ ${delta.toFixed(2)} s between media clocks.`
+        : 'Weak fingerprint overlap.',
+    }
+  }
+  const score = pearson(RING_FINGERPRINT.liviaEnv, RING_FINGERPRINT.wrongEnv) * 0.4
+  return {
+    match: false,
+    score: Math.max(0, score),
+    deltaSec: null,
+    message: 'No strong shared event fingerprint.',
+  }
+}
+
+export function compareFramePatterns(
+  left: RingMediaId,
+  right: RingMediaId,
+): { match: boolean; score: number; message: string } {
+  const pair = [left, right].sort().join('+')
+  if (pair === 'samuel+secondary') {
+    const score = pearson(RING_FRAME_PATTERN.B, RING_FRAME_PATTERN.C)
+    const match = score >= RING_FRAME_PATTERN.threshold
+    return {
+      match,
+      score,
+      message: match
+        ? 'Compatible illumination / shutter sequence in both videos.'
+        : 'Frame patterns diverge.',
+    }
+  }
+  const score = pearson(RING_FRAME_PATTERN.B, RING_FRAME_PATTERN.noise)
+  return {
+    match: false,
+    score: Math.max(0, score),
+    message: 'No shared illumination sequence detected.',
+  }
+}
+
+export function inspectCam11Structure(): {
+  gapSec: number
+  expectedSegment: string
+  message: string
+} {
+  return {
+    gapSec: 60,
+    expectedSegment: MISSING_SEGMENT_ID,
+    message:
+      'CAM11_SEG_1278 ends 21:15:00; CAM11_SEG_1280 starts 21:16:00 — ~60 s absent from index.',
+  }
+}
+
+export function searchRawStorage(query: string): DvrSegment[] {
+  const q = query.trim().toLowerCase()
+  if (!q) return []
+  return DVR_RAW_STORAGE.filter(
+    (s) =>
+      s.segmentId.toLowerCase().includes(q) ||
+      s.camera.toLowerCase().replace(/\s+/g, '').includes(q.replace(/\s+/g, '')) ||
+      (s.rawPath ?? '').toLowerCase().includes(q),
+  )
+}
+
+/** @deprecated legacy placeholder order — kept for story tests / checkpoints. */
+export type RingSourceId = 'A' | 'B' | 'C' | 'D' | 'E' | 'F'
+/** @deprecated */
 export const RING_TRUE_ORDER: RingSourceId[] = ['A', 'B', 'E', 'D', 'C', 'F']
-
-export const RING_CALLSIGN_HINT =
-  'Continuidade: máscara some na área lateral; a câmera de serviço registra a saída com o mesmo rádio e a mesma mochila.'
-
-export type ContinuityCheckId = 'backpack' | 'radio' | 'timing'
+/** @deprecated */
+export const RING_SOURCES: { id: RingSourceId; label: string }[] = RING_TRUE_ORDER.map((id) => ({
+  id,
+  label: id,
+}))
+/** @deprecated */
+export function isRingOrderCorrect(order: RingSourceId[]): boolean {
+  return order.length === RING_TRUE_ORDER.length && order.every((id, i) => id === RING_TRUE_ORDER[i])
+}
+/** @deprecated */
+export function rawOrderByTimestamp(): RingSourceId[] {
+  return ['B', 'A', 'D', 'F', 'C', 'E']
+}
 
 export interface RingContinuityFrame {
-  id: 'morsa-frame-enter' | 'morsa-frame-lateral' | 'morsa-frame-exit'
-  /** Timestamp diegético (após correção). */
+  id: string
   timeLabel: string
-  /** Overlay de arquivo — câmeras distintas da mesma passagem. */
   cameraId: string
   caption: string
-  imageSrc: string
+  bgSrc: string
+  sprites: string[]
+  masked: boolean
 }
 
-/** Entrada da passagem → interior / zona cega → saída na outra extremidade. */
 export const RING_CONTINUITY_FRAMES: RingContinuityFrame[] = [
   {
-    id: 'morsa-frame-enter',
+    id: 'cam03',
     timeLabel: '21:14:08',
     cameraId: 'CAM 03',
-    caption: 'Entra na passagem de serviço — mascarado; mochila e rádio distintivos.',
-    imageSrc: '/assets/block08/rings/morsa-enter-1.png',
+    caption: 'Entra na passagem — mascarado.',
+    bgSrc: `${P10_ASSETS}/BG-02 — curva I transição.png`,
+    sprites: [
+      `${P10_ASSETS}/SP-01 — masked-walk-away-1.png`,
+      `${P10_ASSETS}/SP-01 — masked-walk-away-2.png`,
+      `${P10_ASSETS}/SP-04 — masked-enter-passage.png`,
+    ],
+    masked: true,
   },
   {
-    id: 'morsa-frame-lateral',
+    id: 'cam07',
     timeLabel: '21:14:31',
     cameraId: 'CAM 07',
-    caption: 'Já no interior da passagem — some da cobertura; objetos ainda legíveis.',
-    imageSrc: '/assets/block08/rings/morsa-enter-2.png',
+    caption: 'Corredor intermediário — ainda mascarado.',
+    bgSrc: `${P10_ASSETS}/BG-04 — corredor intermediário.png`,
+    sprites: [
+      `${P10_ASSETS}/SP-01 — masked-walk-away-1.png`,
+      `${P10_ASSETS}/SP-01 — masked-walk-away-2.png`,
+      `${P10_ASSETS}/SP-01 — masked-walk-away-3.png`,
+      `${P10_ASSETS}/SP-01 — masked-walk-away-4.png`,
+      `${P10_ASSETS}/SP-03 — masked-turn-look.png`,
+    ],
+    masked: true,
   },
   {
-    id: 'morsa-frame-exit',
+    id: 'cam11',
     timeLabel: '21:15:02',
     cameraId: 'CAM 11',
-    caption: 'Sai pela outra extremidade — sem máscara; mesma mochila; mesmo rádio.',
-    imageSrc: '/assets/block08/rings/morsa-exit.png',
+    caption: 'Área norte.',
+    bgSrc: `${P10_ASSETS}/BG-05 — área final I asset já existente como destino.png`,
+    sprites: [
+      `${P10_ASSETS}/SP-01 — masked-walk-away-3.png`,
+      `${P10_ASSETS}/SP-01 — masked-walk-away-4.png`,
+      `${P10_ASSETS}/SP-05 — unmasked-emerge-1.png`,
+      `${P10_ASSETS}/SP-05 — unmasked-emerge-2.png`,
+    ],
+    masked: false,
   },
 ]
-
-export const RING_CONTINUITY_CHECKS: { id: ContinuityCheckId; label: string }[] = [
-  { id: 'backpack', label: 'Mochila / bolsa' },
-  { id: 'radio', label: 'Rádio / equipamento' },
-  { id: 'timing', label: 'Sequência temporal possível' },
-]
-
-export function correctedTime(s: RingSource): number {
-  return s.rawTMin + s.offsetMin + s.driftMin
-}
-
-export function formatCorrectedClock(s: RingSource): string {
-  const total = correctedTime(s)
-  const h = Math.floor(total / 60) % 24
-  const m = total % 60
-  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
-}
-
-export function isRingOrderCorrect(order: RingSourceId[]): boolean {
-  if (order.length !== RING_TRUE_ORDER.length) return false
-  return order.every((id, i) => id === RING_TRUE_ORDER[i])
-}
-
-/** Ordem só pelos timestamps brutos — propositalmente errada. */
-export function rawOrderByTimestamp(): RingSourceId[] {
-  return [...RING_SOURCES].sort((a, b) => a.rawTMin - b.rawTMin).map((s) => s.id)
-}

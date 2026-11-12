@@ -1,16 +1,24 @@
-/** Bancada Rings — revelação CCTV (pensamentos de Augusto). */
+/** Cutscene CAM 03 → 07 → 11 — revelação sem spoiler prévio. */
 export type MorsaCctvBeat =
-  | { kind: 'cam'; frameIndex: number; thought?: string }
+  | { kind: 'cam'; frameIndex: number; spriteIndex?: number; thought?: string }
   | { kind: 'thought'; text: string }
   | { kind: 'name'; text: string }
   | { kind: 'pause' }
 
 export const MORSA_CCTV_BEATS: MorsaCctvBeat[] = [
-  { kind: 'thought', text: 'As câmeras não discordam entre si — só entre os relógios.' },
-  { kind: 'cam', frameIndex: 0, thought: 'Mochila. Rádio. Mesma passagem.' },
-  { kind: 'cam', frameIndex: 1, thought: 'No interior a máscara ainda cobre o rosto. Os objetos permanecem.' },
-  { kind: 'cam', frameIndex: 2, thought: 'A saída não bate com ninguém que eu conheça. E ainda assim…' },
+  { kind: 'thought', text: 'A passagem de serviço. As câmeras cobriam o trecho.' },
+  { kind: 'cam', frameIndex: 0, spriteIndex: 0, thought: 'Mochila. Rádio. Entra mascarado.' },
+  { kind: 'cam', frameIndex: 0, spriteIndex: 2 },
+  { kind: 'cam', frameIndex: 1, spriteIndex: 0, thought: 'Corredor. Ainda a máscara.' },
+  { kind: 'cam', frameIndex: 1, spriteIndex: 1 },
+  { kind: 'cam', frameIndex: 1, spriteIndex: 2 },
+  { kind: 'cam', frameIndex: 1, spriteIndex: 3 },
+  { kind: 'cam', frameIndex: 1, spriteIndex: 4 },
+  { kind: 'cam', frameIndex: 2, spriteIndex: 0, thought: 'Área norte. Mesma mochila. Mesmo rádio.' },
+  { kind: 'cam', frameIndex: 2, spriteIndex: 1 },
+  { kind: 'cam', frameIndex: 2, spriteIndex: 2 },
   { kind: 'pause' },
-  { kind: 'thought', text: 'O porte. A altura. O gesto de ajustar o rádio.' },
+  { kind: 'cam', frameIndex: 2, spriteIndex: 3 },
+  { kind: 'pause' },
   { kind: 'name', text: 'André.' },
 ]
