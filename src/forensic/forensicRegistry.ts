@@ -3,6 +3,7 @@ import { puzzle01CassiniSession } from './puzzles/puzzle01Cassini'
 import { puzzle02IapetusSession } from './puzzles/puzzle02Iapetus'
 import { puzzle03AnelsSession } from './puzzles/puzzle03Anels'
 import { puzzle04JanusSession } from './puzzles/puzzle04Janus'
+import { puzzle05SaturnaliaSession } from './puzzles/puzzle05Saturnalia'
 
 /**
  * Registro de datasets por evidência.
@@ -15,6 +16,7 @@ const BY_EVIDENCE = new Map<string, ForensicSession>([
   ['rafael_audio_reply', puzzle02IapetusSession],
   [puzzle03AnelsSession.evidenceId!, puzzle03AnelsSession],
   [puzzle04JanusSession.evidenceId!, puzzle04JanusSession],
+  [puzzle05SaturnaliaSession.evidenceId!, puzzle05SaturnaliaSession],
 ])
 
 export function registerForensicSession(session: ForensicSession) {

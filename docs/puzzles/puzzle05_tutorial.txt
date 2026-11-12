@@ -1,0 +1,126 @@
+Puzzle 05 — SATURNALIA
+======================
+Documento de desenvolvimento. NÃO aparece ao jogador.
+
+
+ASSET MASTER
+------------
+src/assets/audios/p5/Lívia - Maralto Reporatgem Full Audio.mp3
+Cópia pública: public/assets/audio/forensic/puzzle05/livia_maralto_master.mp3
+Duração real: 324.519 s
+Nunca alterar o master no lugar; o script só copia e exporta slots.
+
+
+FRAGMENTS (10)
+--------------
+Script: tools/audio/build_puzzle05_saturnalia.py
+Pasta: public/assets/audio/forensic/puzzle05/RC_SLOT_00.mp3 … RC_SLOT_09.mp3
+
+Durações aproximadas (snap de energia ±250 ms):
+  RC_SLOT_00  32.407 s
+  RC_SLOT_01  32.346 s
+  RC_SLOT_02  32.312 s
+  RC_SLOT_03  32.677 s
+  RC_SLOT_04  32.552 s
+  RC_SLOT_05  32.212 s
+  RC_SLOT_06  32.482 s
+  RC_SLOT_07  32.387 s
+  RC_SLOT_08  32.577 s
+  RC_SLOT_09  32.567 s
+
+
+MAPPING CRONOLÓGICO → SLOT
+--------------------------
+segmento 1 → SLOT_06
+segmento 2 → SLOT_07
+segmento 3 → SLOT_08
+segmento 4 → SLOT_09
+segmento 5 → SLOT_00
+segmento 6 → SLOT_01
+segmento 7 → SLOT_02
+segmento 8 → SLOT_03
+segmento 9 → SLOT_04
+segmento 10 → SLOT_05
+
+
+ORDEM FÍSICA (exportação)
+-------------------------
+00 → 01 → 02 → 03 → 04 → 05 → 06 → 07 → 08 → 09
+
+
+ORDEM CRONOLÓGICA (solução)
+---------------------------
+06 → 07 → 08 → 09 → 00 → 01 → 02 → 03 → 04 → 05
+
+
+NEXT WRITE SLOT
+---------------
+Log:
+  LOGGER BUFFER
+  MODE: CIRCULAR
+  SLOTS: 10
+  NEXT WRITE SLOT: 06
+  EXPORT MODE: PHYSICAL SLOT ORDER
+
+Num buffer circular cheio, NEXT WRITE SLOT aponta para o conteúdo mais antigo.
+Por isso a reconstrução começa em 06.
+
+
+COMO RESOLVER
+-------------
+1. Abrir livia_radio_archive_raw na Bancada.
+2. Ouvir slots / ler RC_LOGGER_BUFFER.txt (File).
+3. Structure → Sequence: reordenar com ↑↓.
+4. Assemble sequence.
+5. Ordem correta → Continuity check passed → findings + achievement.
+
+
+FINDINGS
+--------
+- Cobertura dos protestos — núcleo mascarado (protest_masked_core)
+- “Morsa” — apelido recorrente na transmissão (morsa_unidentified)
+
+NÃO revela: identidade de Morsa, André, álibi, Elisa.
+
+
+ACHIEVEMENT
+-----------
+ach-saturnalia · SATURNALIA
+“Reconstruiu a cobertura bruta dos protestos da Maralto.”
+
+
+STORY / FLAGS
+-------------
+runSaturnaliaReconstruct:
+  block03_saturnalia_done
+  protest_masked_core, morsa_unidentified
+  discoverPerson morsa (identified)
+  discoverSearchTerm morsa, protesto
+  task_saturnalia complete
+  block03_complete
+  task_identify_morsa
+  ach-saturnalia
+
+NÃO discover Samuel / NÃO samuel_protest_lead.
+
+
+CAMINHO ATÉ SAMUEL
+------------------
+Saturnalia → Morsa / protestos
+→ pesquisar Maralto ou protesto
+→ doc-protesto-ocorrencia
+→ doc-protesto-detidos (Samuel Teixeira)
+→ doc-samuel-ficha (endereço)
+→ visita Samuel
+
+
+LÍVIA
+-----
+Diálogo curto: Mariana pediu material antigo dos protestos;
+Lívia entrega bruto; Mariana não explicou o que buscava — só queria o bruto, não a matéria editada.
+Sem menção a buffer/slots.
+
+
+DEV
+---
+expectedOrder, currentOrder, nextWriteSlot, sequenceValid, puzzleComplete

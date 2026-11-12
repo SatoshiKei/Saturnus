@@ -144,6 +144,7 @@ export function Inspector({
   onEstimateTempo,
   onLinkSource,
   clockSync,
+  clipSequenceTools,
 }: {
   tab: ForensicInspectorTab
   onTab: (t: ForensicInspectorTab) => void
@@ -176,6 +177,11 @@ export function Inspector({
     onApplyClockCorrection: () => void
     onSetTimingReference: (id: string | null) => void
     onSetSourceOffset: (id: string, sec: number) => void
+  }
+  clipSequenceTools?: {
+    order: string[]
+    onMove: (index: number, dir: -1 | 1) => void
+    onAssemble: () => void
   }
 }) {
   const p = ui.process
@@ -455,6 +461,51 @@ export function Inspector({
 
         {tab === 'structure' && (
           <div className="fw-panel">
+            {clipSequenceTools ? (
+              <Section title="Sequence" tip="Link Source">
+                <p className="fw-muted">Order clips for Assemble / Build sequence.</p>
+                <ol className="fw-seq-list" data-testid="clip-sequence-list">
+                  {clipSequenceTools.order.map((id, index) => (
+                    <li key={`${id}-${index}`} className="fw-seq-list__item">
+                      <span className="fw-mono">{id}</span>
+                      <span className="fw-seq-list__btns">
+                        <button
+                          type="button"
+                          className="fw-icon-btn"
+                          disabled={index === 0}
+                          data-testid={`clip-seq-up-${index}`}
+                          onClick={() => clipSequenceTools.onMove(index, -1)}
+                        >
+                          ↑
+                        </button>
+                        <button
+                          type="button"
+                          className="fw-icon-btn"
+                          disabled={index >= clipSequenceTools.order.length - 1}
+                          data-testid={`clip-seq-down-${index}`}
+                          onClick={() => clipSequenceTools.onMove(index, 1)}
+                        >
+                          ↓
+                        </button>
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+                <button
+                  type="button"
+                  className="fw-btn"
+                  data-testid="assemble-sequence"
+                  onClick={clipSequenceTools.onAssemble}
+                >
+                  Assemble sequence
+                </button>
+                {ui.assembleStatus ? (
+                  <p className="fw-muted" data-testid="assemble-status">
+                    {ui.assembleStatus}
+                  </p>
+                ) : null}
+              </Section>
+            ) : null}
             {structurePages?.length ? (
               <>
                 <Section title="Structure" tip="Structure">
@@ -588,7 +639,7 @@ export function Inspector({
                   </div>
                 ))}
               </>
-            ) : (
+            ) : clipSequenceTools ? null : (
               <p className="fw-empty fw-empty--center">
                 {source?.structure?.emptyMessage ??
                   'No editable structure for this source.'}

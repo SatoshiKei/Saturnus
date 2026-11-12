@@ -8,7 +8,7 @@ export const FLAG_KNOWN_TERM_SEEDS: { flag: string; terms: string[] }[] = [
   { flag: 'block03_nico_search_unlocked', terms: ['nico'] },
   { flag: 'block03_maralto_search_unlocked', terms: ['maralto'] },
   { flag: 'block03_maralto_recording_found', terms: ['maralto'] },
-  { flag: 'block03_saturnalia_done', terms: ['morsa', 'samuel'] },
+  { flag: 'block03_saturnalia_done', terms: ['morsa', 'protesto'] },
   { flag: 'block04_samuel_search_unlocked', terms: ['samuel'] },
   { flag: 'block04_andre_records_unlocked', terms: ['andre'] },
   { flag: 'block05_jana_search_unlocked', terms: ['jana'] },

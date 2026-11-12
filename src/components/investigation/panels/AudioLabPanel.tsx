@@ -18,7 +18,7 @@ import { ForensicWorkbench } from '../../../forensic/ForensicWorkbench'
 import { getForensicSessionForEvidence } from '../../../forensic/forensicRegistry'
 import {
   runJanusEpimetheusAnalysis,
-  runProvisionalSaturnaliaReconstruct,
+  runSaturnaliaReconstruct,
 } from '../../../game/story/block03Handlers'
 import { onUnknownRecordingAnalyzed } from '../../../game/story/block04Handlers'
 import { markAudioSeen } from '../../../game/state/investigationStore'
@@ -127,7 +127,6 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
   const inv = useInvestigation()
   const emergencyProvisionalDone = inv.flags.block01_emergency_provisional
   const rafaelForwardProvisionalDone = inv.flags.block02_rafael_forward_provisional
-  const saturnaliaDone = inv.flags.block03_saturnalia_done
   const hasHexSet = HEX_NODES.every((n) => inv.evidenceOwned.includes(n.evidenceId))
   // Mais recente primeiro (ordem de aquisição invertida).
   const hasRafaelForward = inv.evidenceOwned.includes('rafael_forward_from_mariana')
@@ -160,7 +159,6 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
   const current = allFiles.find((f) => f.id === sel)
-  const showSaturnalia = current?.id === 'livia_radio_archive_raw'
   const hexCurrent = HEX_NODES.find((n) => n.evidenceId === current?.id)
   const showHexagon = hasHexSet && Boolean(hexCurrent)
   const showPastor =
@@ -317,7 +315,10 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                         : forensicSession.completion?.onCompleteAction ===
                             'runJanusEpimetheusAnalysis'
                           ? Boolean(inv.flags.block03_janus_done)
-                          : emergencyProvisionalDone
+                          : forensicSession.completion?.onCompleteAction ===
+                              'runSaturnaliaReconstruct'
+                            ? Boolean(inv.flags.block03_saturnalia_done)
+                            : emergencyProvisionalDone
                   const containerState = inv.forensicContainerState?.[current.id]
                   return (
                     <ForensicWorkbench
@@ -343,6 +344,8 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                           runProvisionalRingsAnalysis()
                         } else if (action === 'runJanusEpimetheusAnalysis') {
                           runJanusEpimetheusAnalysis()
+                        } else if (action === 'runSaturnaliaReconstruct') {
+                          runSaturnaliaReconstruct()
                         } else {
                           runProvisionalEmergencyAnalysis()
                         }
@@ -418,37 +421,6 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                   {inv.evidenceOwned.includes('rafael_recording_vertice_tag') ? (
                     <blockquote className="aw-provisional__transcript">
                       Vinheta parcialmente recuperada: “…Vértice…”
-                    </blockquote>
-                  ) : null}
-                </div>
-              ) : null}
-
-              {!getForensicSessionForEvidence(current.id) && showSaturnalia ? (
-                <div className="aw-orbit" data-testid="saturnalia-provisional-panel">
-                  <p className="aw-orbit__title">Sessão Saturnalia</p>
-                  <p className="aw-provisional__note">
-                    Arquivo de transmissão em buffer circular: os lotes foram gravados do mais recente ao mais
-                    antigo, e dentro de cada lote a ordem dos fragmentos está invertida.
-                  </p>
-                  <ul className="aw-orbit__batches" aria-label="Fragmentos">
-                    <li>Batch 02 · frag C → B → A</li>
-                    <li>Batch 01 · frag F → E → D</li>
-                    <li>Batch 03 · frag H → G</li>
-                  </ul>
-                  <p className="aw-orbit__log">log: WRITE_REV · group_id · ts_skew</p>
-                  <button
-                    type="button"
-                    className="aw-provisional__go"
-                    data-testid="saturnalia-provisional-rebuild"
-                    disabled={saturnaliaDone}
-                    onClick={() => runProvisionalSaturnaliaReconstruct()}
-                  >
-                    {saturnaliaDone ? 'Transmissão reconstruída' : 'Reordenar lotes'}
-                  </button>
-                  {saturnaliaDone ? (
-                    <blockquote className="aw-provisional__transcript">
-                      Trecho reconstruído: referência ao núcleo mascarado dos protestos e a um apelido recorrente,
-                      “Morsa”. Sem nome completo.
                     </blockquote>
                   ) : null}
                 </div>

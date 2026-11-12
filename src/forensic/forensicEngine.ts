@@ -69,7 +69,49 @@ export function createInitialUiState(
     formalizedClockOffsetSec: null,
     correctedSetTime: null,
     findingUnlocked: false,
+    clipSequence: session.sources.filter((s) => s.audio).map((s) => s.id),
+    sequenceAssembled: false,
+    assembleStatus: null,
   }
+}
+
+export function clipSequenceMatchesExpected(
+  current: string[],
+  expected: string[] | undefined,
+): boolean {
+  if (!expected?.length) return false
+  if (current.length !== expected.length) return false
+  return current.every((id, i) => id === expected[i])
+}
+
+export function assembleClipSequence(
+  session: ForensicSession,
+  currentOrder: string[],
+): { ok: boolean; message: string } {
+  const expected = session.completion?.expectedSourceOrder
+  if (!expected?.length) {
+    return { ok: false, message: 'No sequence definition for this session.' }
+  }
+  if (currentOrder.length !== expected.length) {
+    return { ok: false, message: 'Sequence incomplete — include every clip once.' }
+  }
+  const set = new Set(currentOrder)
+  if (set.size !== currentOrder.length) {
+    return { ok: false, message: 'Sequence has duplicate clips.' }
+  }
+  if (!clipSequenceMatchesExpected(currentOrder, expected)) {
+    return {
+      ok: false,
+      message: 'Sequence assembled. Continuity check failed — order still inconsistent.',
+    }
+  }
+  return { ok: true, message: 'Sequence assembled. Continuity check passed.' }
+}
+
+export function clipSequenceComplete(session: ForensicSession, ui: ForensicUiState): boolean {
+  if (session.completion?.kind !== 'clip-sequence') return false
+  if (!ui.sequenceAssembled) return false
+  return clipSequenceMatchesExpected(ui.clipSequence, session.completion.expectedSourceOrder)
 }
 
 /** Posição absoluta da fonte na timeline compartilhada. */

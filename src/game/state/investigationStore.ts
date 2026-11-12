@@ -141,6 +141,15 @@ export function resetForensicSpeechProgress(evidenceId: string) {
     delete achievementUnlocks['ach-janus-epimetheus']
     delete bag['nico_recording_booth']
   }
+  if (evidenceId === 'livia_radio_archive_raw') {
+    flags.block03_saturnalia_done = false
+    flags.block03_complete = false
+    evidenceOwned = evidenceOwned.filter(
+      (id) => id !== 'protest_masked_core' && id !== 'morsa_unidentified',
+    )
+    delete achievementUnlocks['ach-saturnalia']
+    delete bag['livia_radio_archive_raw']
+  }
   commit({
     ...state,
     forensicRecoveredSpeech: bag,

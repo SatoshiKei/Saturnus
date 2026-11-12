@@ -1,0 +1,140 @@
+{
+  "master": "src\\assets\\audios\\p5\\L\u00edvia - Maralto Reporatgem Full Audio.mp3",
+  "masterPublic": "public\\assets\\audio\\forensic\\puzzle05\\livia_maralto_master.mp3",
+  "durationSec": 324.519,
+  "slotCount": 10,
+  "nextWriteSlot": 6,
+  "physicalExportOrder": [
+    "RC_SLOT_00",
+    "RC_SLOT_01",
+    "RC_SLOT_02",
+    "RC_SLOT_03",
+    "RC_SLOT_04",
+    "RC_SLOT_05",
+    "RC_SLOT_06",
+    "RC_SLOT_07",
+    "RC_SLOT_08",
+    "RC_SLOT_09"
+  ],
+  "chronologicalOrder": [
+    "RC_SLOT_06",
+    "RC_SLOT_07",
+    "RC_SLOT_08",
+    "RC_SLOT_09",
+    "RC_SLOT_00",
+    "RC_SLOT_01",
+    "RC_SLOT_02",
+    "RC_SLOT_03",
+    "RC_SLOT_04",
+    "RC_SLOT_05"
+  ],
+  "chronoToSlot": [
+    6,
+    7,
+    8,
+    9,
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "chronoSegments": [
+    {
+      "chronoIndex": 1,
+      "startMs": 0,
+      "endMs": 32482,
+      "durationSec": 32.482,
+      "slot": 6
+    },
+    {
+      "chronoIndex": 2,
+      "startMs": 32482,
+      "endMs": 64869,
+      "durationSec": 32.387,
+      "slot": 7
+    },
+    {
+      "chronoIndex": 3,
+      "startMs": 64869,
+      "endMs": 97446,
+      "durationSec": 32.577,
+      "slot": 8
+    },
+    {
+      "chronoIndex": 4,
+      "startMs": 97446,
+      "endMs": 130013,
+      "durationSec": 32.567,
+      "slot": 9
+    },
+    {
+      "chronoIndex": 5,
+      "startMs": 130013,
+      "endMs": 162420,
+      "durationSec": 32.407,
+      "slot": 0
+    },
+    {
+      "chronoIndex": 6,
+      "startMs": 162420,
+      "endMs": 194766,
+      "durationSec": 32.346,
+      "slot": 1
+    },
+    {
+      "chronoIndex": 7,
+      "startMs": 194766,
+      "endMs": 227078,
+      "durationSec": 32.312,
+      "slot": 2
+    },
+    {
+      "chronoIndex": 8,
+      "startMs": 227078,
+      "endMs": 259755,
+      "durationSec": 32.677,
+      "slot": 3
+    },
+    {
+      "chronoIndex": 9,
+      "startMs": 259755,
+      "endMs": 292307,
+      "durationSec": 32.552,
+      "slot": 4
+    },
+    {
+      "chronoIndex": 10,
+      "startMs": 292307,
+      "endMs": 324519,
+      "durationSec": 32.212,
+      "slot": 5
+    }
+  ],
+  "slotDurationsSec": {
+    "RC_SLOT_00": 32.407,
+    "RC_SLOT_01": 32.346,
+    "RC_SLOT_02": 32.312,
+    "RC_SLOT_03": 32.677,
+    "RC_SLOT_04": 32.552,
+    "RC_SLOT_05": 32.212,
+    "RC_SLOT_06": 32.482,
+    "RC_SLOT_07": 32.387,
+    "RC_SLOT_08": 32.577,
+    "RC_SLOT_09": 32.567
+  },
+  "outputs": {
+    "RC_SLOT_06": "public\\assets\\audio\\forensic\\puzzle05\\RC_SLOT_06.mp3",
+    "RC_SLOT_07": "public\\assets\\audio\\forensic\\puzzle05\\RC_SLOT_07.mp3",
+    "RC_SLOT_08": "public\\assets\\audio\\forensic\\puzzle05\\RC_SLOT_08.mp3",
+    "RC_SLOT_09": "public\\assets\\audio\\forensic\\puzzle05\\RC_SLOT_09.mp3",
+    "RC_SLOT_00": "public\\assets\\audio\\forensic\\puzzle05\\RC_SLOT_00.mp3",
+    "RC_SLOT_01": "public\\assets\\audio\\forensic\\puzzle05\\RC_SLOT_01.mp3",
+    "RC_SLOT_02": "public\\assets\\audio\\forensic\\puzzle05\\RC_SLOT_02.mp3",
+    "RC_SLOT_03": "public\\assets\\audio\\forensic\\puzzle05\\RC_SLOT_03.mp3",
+    "RC_SLOT_04": "public\\assets\\audio\\forensic\\puzzle05\\RC_SLOT_04.mp3",
+    "RC_SLOT_05": "public\\assets\\audio\\forensic\\puzzle05\\RC_SLOT_05.mp3"
+  },
+  "note": "Master never modified in place; PUBLIC copy + slot exports only."
+}

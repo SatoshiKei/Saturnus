@@ -130,10 +130,11 @@ export function finishLiviaInterview() {
 }
 
 /**
- * Puzzle 5 — Saturnalia (placeholder).
- * TODO(puzzle-05): substituir por ordenação de batches + inversão interna real.
+ * Puzzle 5 — SATURNALIA
+ * Reconstrução do buffer circular. Não libera Samuel diretamente —
+ * ocorrência → detidos → ficha continua necessária.
  */
-export function runProvisionalSaturnaliaReconstruct() {
+export function runSaturnaliaReconstruct() {
   const s = getInvestigationState()
   if (s.flags.block03_saturnalia_done) return
   if (!s.evidenceOwned.includes('livia_radio_archive_raw')) return
@@ -141,11 +142,9 @@ export function runProvisionalSaturnaliaReconstruct() {
     { type: 'setFlag', id: 'block03_saturnalia_done', value: true },
     { type: 'addEvidence', id: 'protest_masked_core' },
     { type: 'addEvidence', id: 'morsa_unidentified' },
-    { type: 'addEvidence', id: 'samuel_protest_lead' },
     { type: 'discoverPerson', id: 'morsa', status: 'identified' },
     { type: 'discoverSearchTerm', term: 'morsa' },
-    { type: 'discoverPerson', id: 'samuel', status: 'identified' },
-    { type: 'discoverSearchTerm', term: 'samuel' },
+    { type: 'discoverSearchTerm', term: 'protesto' },
     { type: 'completeTask', id: 'task_saturnalia' },
     { type: 'setFlag', id: 'block03_complete', value: true },
     {
@@ -157,6 +156,16 @@ export function runProvisionalSaturnaliaReconstruct() {
           completed: false,
         },
       ],
+    },
+    {
+      type: 'notifyInvestigationUpdate',
+      id: 'ach-saturnalia',
+      kind: 'evidence',
+      presentation: 'card',
+      label: 'CONQUISTA',
+      title: 'SATURNALIA',
+      summary: 'Reconstruiu a cobertura bruta dos protestos da Maralto.',
+      refId: 'protest_masked_core',
     },
   ]
   // Reabre André se a 1ª visita já ocorreu — tópico Maralto passa a existir.
@@ -174,4 +183,9 @@ export function runProvisionalSaturnaliaReconstruct() {
     )
   }
   dispatchActions(actions)
+}
+
+/** @deprecated Prefer runSaturnaliaReconstruct */
+export function runProvisionalSaturnaliaReconstruct() {
+  runSaturnaliaReconstruct()
 }

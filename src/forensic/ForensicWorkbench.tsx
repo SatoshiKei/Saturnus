@@ -17,8 +17,10 @@ import {
   resetProcess,
   resolveStructurePages,
   approximateTrackCorrelation,
+  assembleClipSequence,
   clockSyncComplete,
   clockSyncOffsetValid,
+  clipSequenceComplete,
   fmtClockOffset,
   relativeSourceOffsetSec,
   speechRecoveryComplete,
@@ -328,6 +330,8 @@ export function ForensicWorkbench({
         return
     } else if (completion.kind === 'clock-sync') {
       if (!clockSyncComplete(session, ui)) return
+    } else if (completion.kind === 'clip-sequence') {
+      if (!clipSequenceComplete(session, ui)) return
     } else {
       return
     }
@@ -343,6 +347,8 @@ export function ForensicWorkbench({
     ui.formalizedClockOffsetSec,
     ui.correctedSetTime,
     ui.findingUnlocked,
+    ui.clipSequence,
+    ui.sequenceAssembled,
     source?.speechSegments,
     source,
     session,
@@ -660,6 +666,38 @@ export function ForensicWorkbench({
           onCompare={(compareSourceA, compareSourceB) =>
             patchUi({ compareSourceA, compareSourceB })
           }
+          clipSequenceTools={
+            session.completion?.kind === 'clip-sequence'
+              ? {
+                  order: ui.clipSequence,
+                  onMove: (index, dir) => {
+                    setUi((u) => {
+                      const next = [...u.clipSequence]
+                      const j = index + dir
+                      if (j < 0 || j >= next.length) return u
+                      const tmp = next[index]!
+                      next[index] = next[j]!
+                      next[j] = tmp
+                      return {
+                        ...u,
+                        clipSequence: next,
+                        sequenceAssembled: false,
+                        assembleStatus: null,
+                      }
+                    })
+                  },
+                  onAssemble: () => {
+                    const result = assembleClipSequence(session, ui.clipSequence)
+                    setUi((u) => ({
+                      ...u,
+                      sequenceAssembled: result.ok,
+                      assembleStatus: result.message,
+                    }))
+                    setStatus(result.message)
+                  },
+                }
+              : undefined
+          }
           clockSync={
             isClockSync
               ? {
@@ -822,6 +860,7 @@ function ForensicDebug({
     source.containerPlayback?.containerDurationSec ?? source.durationSec
   const isRings = session.completion?.kind === 'source-link'
   const isJanus = session.completion?.kind === 'clock-sync'
+  const isSaturnalia = session.completion?.kind === 'clip-sequence'
   const recording = session.sources.find((s) => s.tempoRegions?.length)
   const audioPair = session.sources.filter((s) => s.audio)
   const a = audioPair[0]
@@ -833,7 +872,28 @@ function ForensicDebug({
   )
   return (
     <div className="fw-debug" data-testid="forensic-debug">
-      {isJanus ? (
+      {isSaturnalia ? (
+        <>
+          <span>expectedOrder {(session.completion?.expectedSourceOrder ?? []).join('→')}</span>
+          <span>currentOrder {ui.clipSequence.join('→')}</span>
+          <span>nextWriteSlot 06</span>
+          <span>
+            sequenceValid{' '}
+            {String(
+              ui.clipSequence.length === (session.completion?.expectedSourceOrder?.length ?? -1) &&
+                ui.clipSequence.every(
+                  (id, i) => id === session.completion?.expectedSourceOrder?.[i],
+                ),
+            )}
+          </span>
+          <span>puzzleComplete {String(ui.sequenceAssembled)}</span>
+          {onDevResetPuzzle ? (
+            <button type="button" className="fw-btn" data-testid="dev-reset-puzzle" onClick={onDevResetPuzzle}>
+              DEV reset puzzle
+            </button>
+          ) : null}
+        </>
+      ) : isJanus ? (
         <>
           <span>sourceAReferenceTime {a?.timing?.eventClockAtDj ?? '—'}</span>
           <span>sourceBInternalTime {b?.timing?.eventClockAtDj ?? '—'}</span>

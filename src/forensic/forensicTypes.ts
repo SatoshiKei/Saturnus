@@ -338,13 +338,14 @@ export interface ForensicSession {
   evidenceId?: string
   /** Flag/handler de conclusão narrativa (opcional). */
   completion?: {
-    kind: 'speech-recovery' | 'container-rebuild' | 'source-link' | 'clock-sync'
+    kind: 'speech-recovery' | 'container-rebuild' | 'source-link' | 'clock-sync' | 'clip-sequence'
     /** Chama handler externo quando completo. */
     onCompleteAction?:
       | 'runProvisionalEmergencyAnalysis'
       | 'runProvisionalRafaelForwardAnalysis'
       | 'runProvisionalRingsAnalysis'
       | 'runJanusEpimetheusAnalysis'
+      | 'runSaturnaliaReconstruct'
     /** Segmentos obrigatórios além do rebuild (se houver). */
     requireSpeechSegmentIds?: string[]
     /** source id do registro correto (source-link). */
@@ -359,6 +360,8 @@ export interface ForensicSession {
     correctedRealTime?: string
     /** Finding obrigatório (clock-sync). */
     findingText?: string
+    /** Ordem correta de source ids (clip-sequence). */
+    expectedSourceOrder?: string[]
   }
 }
 
@@ -469,6 +472,12 @@ export interface ForensicUiState {
   correctedSetTime: string | null
   /** Finding técnico desbloqueado. */
   findingUnlocked: boolean
+  /** Ordem de montagem de clips (source ids). */
+  clipSequence: string[]
+  /** Último Assemble/Build Sequence bem-sucedido. */
+  sequenceAssembled: boolean
+  /** Mensagem genérica do último assemble (sem spoiler por slot). */
+  assembleStatus: string | null
 }
 
 export const DEFAULT_PROCESS: ProcessParams = {

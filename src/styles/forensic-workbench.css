@@ -164,6 +164,33 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
+.fw-seq-list {
+  list-style: none;
+  margin: 0 0 0.6em;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25em;
+  max-height: 16em;
+  overflow: auto;
+}
+
+.fw-seq-list__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5em;
+  padding: 0.25em 0.4em;
+  border: 1px solid var(--fw-line);
+  background: rgba(0, 0, 0, 0.2);
+  font-size: 0.78em;
+}
+
+.fw-seq-list__btns {
+  display: inline-flex;
+  gap: 0.15em;
+}
+
 .fw-track-offset {
   display: flex;
   align-items: center;

@@ -56,6 +56,13 @@ export const seedAchievements: AchievementDef[] = [
     unlocked: (s) => Boolean(s.flags.block03_janus_done),
   },
   {
+    id: 'ach-saturnalia',
+    title: 'SATURNALIA',
+    description: 'Reconstruiu a cobertura bruta dos protestos da Maralto.',
+    hint: 'Reordenar os slots do logger da Rádio Costeira na bancada forense.',
+    unlocked: (s) => Boolean(s.flags.block03_saturnalia_done),
+  },
+  {
     id: 'ach-hospital',
     title: 'Plantão',
     description: 'A conversa no hospital foi registrada.',
