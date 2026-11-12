@@ -39,7 +39,7 @@ export const block05EntryActions: StoryActionRef[] = [
   { type: 'addEvidence', id: 'unknown_number_log' },
   { type: 'addEvidence', id: 'andre_contact_chronology_mismatch' },
   ...HEX_EVIDENCE_IDS.map((id) => ({ type: 'addEvidence' as const, id })),
-  { type: 'addEvidence', id: 'hex_phrase_recovered' },
+  { type: 'addEvidence', id: 'hex_spectral_patterns' },
   { type: 'addEvidence', id: 'hidden_app_detected' },
   { type: 'addEvidence', id: 'hidden_diary_recovered' },
   { type: 'addEvidence', id: 'diary_memory_fear' },

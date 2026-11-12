@@ -83,6 +83,7 @@ export function Timeline({
           </button>
           <button
             type="button"
+            data-testid="timeline-spectrogram"
             data-active={viewMode === 'spectrogram'}
             disabled={!spectrogram || multi}
             onClick={() => onViewMode('spectrogram')}

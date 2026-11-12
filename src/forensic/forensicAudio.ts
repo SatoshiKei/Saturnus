@@ -3,6 +3,7 @@ import { computeStemGains, evaluateSegmentClarity } from './forensicEngine'
 import type { NoiseProfileState, SpeechSegment } from './forensicTypes'
 import {
   clipPlaybackGain,
+  computeSpectrogramFromSamples,
   renderBackgroundNoise,
   renderClicks,
   renderTone,
@@ -65,6 +66,9 @@ export class ForensicAudioEngine {
   private anim: number | null = null
   private onTick: ((t: number) => void) | null = null
   private onWaveform: ((peaks: number[]) => void) | null = null
+  private onSpectrogram:
+    | ((spec: { cols: number; rows: number; values: number[]; maxHz: number }) => void)
+    | null = null
   private bpPassthrough = true
   private ready = false
   private disposed = false
@@ -156,6 +160,12 @@ export class ForensicAudioEngine {
 
   setWaveformHandler(fn: ((peaks: number[]) => void) | null) {
     this.onWaveform = fn
+  }
+
+  setSpectrogramHandler(
+    fn: ((spec: { cols: number; rows: number; values: number[]; maxHz: number }) => void) | null,
+  ) {
+    this.onSpectrogram = fn
   }
 
   async loadAsset(
@@ -256,6 +266,16 @@ export class ForensicAudioEngine {
     if (token !== this.token || this.disposed) return
     this.ready = true
     this.onWaveform?.(this.peakWaveform(layers, durationSec, sampleRate))
+    // Preferir o stem FILE decodificado (espectrograma verdadeiro do WAV).
+    const fileLayer = layers.find((l) => l.startSec === 0 && l.data.length > sampleRate)
+    const specLayers = fileLayer ? [fileLayer] : layers
+    this.onSpectrogram?.(
+      computeSpectrogramFromSamples(specLayers, durationSec, sampleRate, {
+        cols: 144,
+        rows: 56,
+        maxHz: 6000,
+      }),
+    )
   }
 
   private async decodeUrl(src: string, ctx: AudioContext) {

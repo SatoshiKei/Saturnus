@@ -1,10 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import {
-  HEX_CYCLE,
   HEX_EVIDENCE_IDS,
-  HEX_NODES,
-  HEX_PHRASE,
+  HEX_FILES,
   HEX_PIN,
+  expectedPinFromSymbols,
 } from '../../src/data/block04/hexagonPuzzle'
 import { callScripts } from '../../src/data/calls'
 import { createInitialState } from '../../src/game/state/initialState'
@@ -50,20 +49,17 @@ describe('Bloco 4 — progressão', () => {
     expect(s.flags.block04_samuel_search_unlocked).toBeFalsy()
   })
 
-  it('grafo Hexágono fecha A→D→B→F→C→E→A com a frase e o PIN', () => {
-    expect(HEX_CYCLE).toEqual(['A', 'D', 'B', 'F', 'C', 'E'])
-    const byId = Object.fromEntries(HEX_NODES.map((n) => [n.id, n]))
-    let cur: string = 'A'
-    const seen: string[] = []
-    for (let i = 0; i < 6; i++) {
-      seen.push(cur)
-      cur = byId[cur].pointsTo
-    }
-    expect(seen).toEqual(HEX_CYCLE)
-    expect(cur).toBe('A')
-    expect(HEX_CYCLE.map((id) => byId[id].fragment).join(' ')).toBe(HEX_PHRASE)
-    expect(HEX_PHRASE).toBe('NO TELEFONE HÁ UM DIÁRIO QUE A TELA OMITE')
-    expect(HEX_CYCLE.map((id) => byId[id].digit).join('')).toBe(HEX_PIN)
+  it('Hexágono: seis UNK → romanos → PIN 481526 (sem spoiler na evidência)', () => {
+    expect(HEX_FILES.map((f) => f.id)).toEqual([
+      'UNK_01',
+      'UNK_02',
+      'UNK_03',
+      'UNK_04',
+      'UNK_05',
+      'UNK_06',
+    ])
+    expect(HEX_FILES.map((f) => f.expectedSymbol)).toEqual(['IV', 'VIII', 'I', 'V', 'II', 'VI'])
+    expect(expectedPinFromSymbols()).toBe(HEX_PIN)
     expect(HEX_PIN).toBe('481526')
   })
 
@@ -179,7 +175,7 @@ describe('Bloco 4 — progressão', () => {
     onHexagonSolved()
     const s = getInvestigationState()
     expect(s.flags.block04_hexagon_done).toBe(true)
-    expect(s.evidenceOwned).toContain('hex_phrase_recovered')
+    expect(s.evidenceOwned).toContain('hex_spectral_patterns')
     expect(s.flags.block04_forensics_unlocked).toBe(true)
   })
 

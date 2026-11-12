@@ -1,0 +1,79 @@
+PUZZLE 06 — HEXÁGONO
+Dev only — não aparece para o jogador.
+
+Origem narrativa
+----------------
+Seis arquivos anônimos chegam pelo canal desconhecido já usado na investigação.
+Ordem de recebimento = ordem de leitura: UNK_01 … UNK_06.
+Sem dicas textuais (“analise o espectrograma”, “procure o PIN”, etc.).
+
+
+Assets
+------
+public/assets/audio/forensic/puzzle06/UNK_01.wav  (~6.8 s)  electrical → IV  → 4
+public/assets/audio/forensic/puzzle06/UNK_02.wav  (~8.4 s)  metallic   → VIII → 8
+public/assets/audio/forensic/puzzle06/UNK_03.wav  (~5.1 s)  airy       → I    → 1
+public/assets/audio/forensic/puzzle06/UNK_04.wav  (~7.3 s)  pulsing    → V    → 5
+public/assets/audio/forensic/puzzle06/UNK_05.wav  (~5.9 s)  granular   → II   → 2
+public/assets/audio/forensic/puzzle06/UNK_06.wav  (~7.8 s)  unstable   → VI   → 6
+
+Build: python tools/audio/build_puzzle06_hexagon.py
+DEBUG spectrograms: tools/audio/out/puzzle06_debug/UNK_0N_spectrogram.png
+(NÃO entram na UI.)
+
+
+Acústica dos símbolos
+---------------------
+I — transiente curto de banda larga (click/impacto). Linha vertical no STFT.
+V — chirp 4400 Hz → 1900 Hz → 4400 Hz. Forma um V no espectrograma.
+Banda preferencial dos símbolos: ~1.6–4.8 kHz.
+Texturas de cada arquivo ocupam outras regiões / aparecem difusas.
+Motivos I/V são da mesma família, não byte-identical entre arquivos.
+
+
+Solução
+-------
+IV VIII I V II VI  →  4 8 1 5 2 6  →  481526
+
+
+Como jogar na Bancada
+---------------------
+1. Abrir UNK_01 (ou qualquer UNK) — sessão forense com os seis sources.
+2. Ouvir (Waveform parece som legítimo).
+3. Timeline → Spectrogram (STFT real do WAV decodificado).
+4. Ler o algarismo romano; repetir nos demais.
+5. Sem botão DECODE / campo de PIN na Bancada.
+
+
+Integração
+----------
+Após Spectrogram nos seis arquivos:
+  flag block04_hexagon_done
+  evidência hex_spectral_patterns
+    “Os seis arquivos contêm padrões espectrais deliberadamente estruturados.”
+  (NÃO registra 481526)
+  libera pedido de perícia / forensics_unlocked
+
+Diário oculto (keypad existente): só 481526 abre.
+Achievement HEXÁGONO (ach-hexagon): hexágono feito + diário desbloqueado.
+
+
+Story actions / flags
+---------------------
+onHexCallsPreserved → addEvidence hex_audio_unk_01…06, block04_hexagon_available
+runHexagonSpectrogramSurvey / onHexagonSolved → block04_hexagon_done, hex_spectral_patterns
+tryDiaryPin('481526') → diaryUnlocked, hidden_diary_recovered, discoverPassword diary
+
+
+DEV MODE
+--------
+UNK_0N expectedSymbol …
+expectedPin 481526
+surveyComplete …
+
+
+NOTAS
+-----
+- Não desenhar numerais na UI; precisam existir no WAV.
+- Puzzles 01–05 intactos.
+- Sem metadata-cipher / ordenação (Saturnalia já ordena).

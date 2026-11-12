@@ -48,8 +48,8 @@ test('bancada: mais novo primeiro, selo NOVO até abrir, filtros e rolagem próp
   await expect(list).toBeVisible()
   const items = list.locator('li')
   const first = items.first().locator('[data-testid^="audio-file-"]')
-  await expect(first).toHaveAttribute('data-testid', 'audio-file-hex_audio_f')
-  await expect(page.getByTestId('audio-new-hex_audio_f')).toBeVisible()
+  await expect(first).toHaveAttribute('data-testid', 'audio-file-hex_audio_unk_06')
+  await expect(page.getByTestId('audio-new-hex_audio_unk_06')).toBeVisible()
 
   const before = await items.count()
   await page.getByTestId('audio-filter-new').click()
@@ -57,8 +57,8 @@ test('bancada: mais novo primeiro, selo NOVO até abrir, filtros e rolagem próp
   expect(newCount).toBeGreaterThan(0)
   expect(newCount).toBeLessThanOrEqual(before)
 
-  await page.getByTestId('audio-file-hex_audio_f').click()
-  await expect(page.getByTestId('audio-new-hex_audio_f')).toHaveCount(0)
+  await page.getByTestId('audio-file-hex_audio_unk_06').click()
+  await expect(page.getByTestId('audio-new-hex_audio_unk_06')).toHaveCount(0)
   await expect(items).toHaveCount(newCount - 1)
   await page.getByTestId('audio-filter-all').click()
   await expect(items).toHaveCount(before)

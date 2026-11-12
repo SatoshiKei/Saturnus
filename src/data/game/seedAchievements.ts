@@ -91,6 +91,17 @@ export const seedAchievements: AchievementDef[] = [
     unlocked: (s) => Boolean(s.flags.block03_complete),
   },
   {
+    id: 'ach-hexagon',
+    title: 'HEXÁGONO',
+    description: 'Identificou a estrutura escondida nos seis arquivos anônimos.',
+    hint: 'Abrir o diário oculto com o código derivado dos seis áudios.',
+    unlocked: (s) =>
+      Boolean(
+        s.flags.block04_hexagon_done &&
+          (s.phones.mariana.diaryUnlocked || s.flags.block04_diary_opened),
+      ),
+  },
+  {
     id: 'ach-diary',
     title: 'Caderno escondido',
     description: 'O diário no aparelho foi aberto.',

@@ -32,7 +32,7 @@ test('capturas: descobertas, bancada, caderno, computador, fixo, PIN, VN', async
 
   await dev(page, 'b04-start', 'b04-chronology-done', 'b04-hex-received')
   await openHubObject(page, 'audio-station')
-  await page.getByTestId('audio-file-hex_audio_a').click()
+  await page.getByTestId('audio-file-hex_audio_unk_01').click()
   await page.waitForTimeout(300)
   await shot('04-bancada-seis-audios')
   await closeHub(page)

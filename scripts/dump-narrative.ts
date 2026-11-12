@@ -24,7 +24,7 @@ import { liviaBeats, liviaTopicLabels } from '../src/data/block03/liviaInterview
 import { samuelBeats, samuelTopicLabels } from '../src/data/block04/samuelInterview'
 import { andreBeats, andreTopicLabels } from '../src/data/block04/andreInterview'
 import { block04DiaryEntries } from '../src/data/block04/diaryEntries'
-import { HEX_NODES, HEX_PHRASE, HEX_PIN, HEX_CYCLE } from '../src/data/block04/hexagonPuzzle'
+import { HEX_FILES, HEX_PIN } from '../src/data/block04/hexagonPuzzle'
 import { nicoFollowupBeats, nicoFollowupLabels } from '../src/data/block05/nicoFollowup'
 import { janaBeats, janaTopicLabels } from '../src/data/block05/janaInterview'
 import { geraldoBeats, geraldoTopicLabels } from '../src/data/block06/geraldoInterview'
@@ -504,11 +504,10 @@ L('*Local:* telefone fixo da mesa. Ninguém fala; um áudio passa; a linha cai; 
 dumpRefl('refl-hex-call')
 
 L('### Bancada — Puzzle Hexágono')
-L(`Ciclo: ${HEX_CYCLE.join(' → ')}`)
-L(`Frase: **${HEX_PHRASE}**`)
+L('Seis WAVs anônimos (UNK_01…06); espectrograma real → algarismos romanos → PIN do diário.')
 L(`PIN do diário: **${HEX_PIN}**`)
-for (const n of HEX_NODES) {
-  L(`- **${n.id}** ${n.displayName} → ${n.pointsTo} · fragmento “${n.fragment}” · dígito ${n.digit}`)
+for (const n of HEX_FILES) {
+  L(`- **${n.id}** ${n.displayName} · ${n.expectedSymbol} → ${n.digit} · textura ${n.texture}`)
 }
 
 L('### Celular de Mariana — Diário oculto')
@@ -533,7 +532,7 @@ dumpEvidence([
   'andre_told_her_to_stop',
   'andre_no_maralto_link',
   'andre_contact_chronology_mismatch',
-  'hex_phrase_recovered',
+  'hex_spectral_patterns',
   'hidden_app_detected',
   'hidden_diary_recovered',
   'diary_memory_fear',

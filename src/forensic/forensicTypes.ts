@@ -338,7 +338,13 @@ export interface ForensicSession {
   evidenceId?: string
   /** Flag/handler de conclusão narrativa (opcional). */
   completion?: {
-    kind: 'speech-recovery' | 'container-rebuild' | 'source-link' | 'clock-sync' | 'clip-sequence'
+    kind:
+      | 'speech-recovery'
+      | 'container-rebuild'
+      | 'source-link'
+      | 'clock-sync'
+      | 'clip-sequence'
+      | 'spectrogram-survey'
     /** Chama handler externo quando completo. */
     onCompleteAction?:
       | 'runProvisionalEmergencyAnalysis'
@@ -346,6 +352,7 @@ export interface ForensicSession {
       | 'runProvisionalRingsAnalysis'
       | 'runJanusEpimetheusAnalysis'
       | 'runSaturnaliaReconstruct'
+      | 'runHexagonSpectrogramSurvey'
     /** Segmentos obrigatórios além do rebuild (se houver). */
     requireSpeechSegmentIds?: string[]
     /** source id do registro correto (source-link). */
@@ -478,6 +485,8 @@ export interface ForensicUiState {
   sequenceAssembled: boolean
   /** Mensagem genérica do último assemble (sem spoiler por slot). */
   assembleStatus: string | null
+  /** Sources cujo Spectrogram já foi aberto nesta sessão (Puzzle 06). */
+  spectrogramViewedSourceIds: string[]
 }
 
 export const DEFAULT_PROCESS: ProcessParams = {

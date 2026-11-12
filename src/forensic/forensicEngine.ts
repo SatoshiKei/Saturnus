@@ -72,7 +72,19 @@ export function createInitialUiState(
     clipSequence: session.sources.filter((s) => s.audio).map((s) => s.id),
     sequenceAssembled: false,
     assembleStatus: null,
+    spectrogramViewedSourceIds: [],
   }
+}
+
+export function spectrogramSurveyComplete(
+  session: ForensicSession,
+  ui: ForensicUiState,
+): boolean {
+  if (session.completion?.kind !== 'spectrogram-survey') return false
+  const ids = session.sources.filter((s) => s.audio).map((s) => s.id)
+  if (!ids.length) return false
+  const seen = new Set(ui.spectrogramViewedSourceIds)
+  return ids.every((id) => seen.has(id))
 }
 
 export function clipSequenceMatchesExpected(

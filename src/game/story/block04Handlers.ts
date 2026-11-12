@@ -105,18 +105,20 @@ export function onHexCallsPreserved() {
   dispatchActions(actions)
 }
 
-/** Puzzle 6 resolvido pelo jogador na bancada (sequência A→D→B→F→C→E). */
+/**
+ * Puzzle 6 — espectrogramas dos seis UNK inspecionados.
+ * Finding neutro (sem PIN). O PIN só é confirmado no diário oculto.
+ */
 export function onHexagonSolved() {
   const s = getInvestigationState()
   if (s.flags.block04_hexagon_done) return
   if (!HEX_EVIDENCE_IDS.every((id) => s.evidenceOwned.includes(id))) return
   const actions: StoryActionRef[] = [
     { type: 'setFlag', id: 'block04_hexagon_done', value: true },
-    { type: 'addEvidence', id: 'hex_phrase_recovered' },
+    { type: 'addEvidence', id: 'hex_spectral_patterns' },
     { type: 'completeTask', id: 'task_hexagon' },
     { type: 'setFlag', id: 'block04_forensics_unlocked', value: true },
   ]
-  // Hexágono fornece o PIN; se o pacote ainda não foi pedido, leva naturalmente à perícia.
   if (s.flags.diary_package_known) {
     actions.push({ type: 'completeTask', id: 'task_phone_forensics' })
   } else {
@@ -127,6 +129,11 @@ export function onHexagonSolved() {
     })
   }
   dispatchActions(actions)
+}
+
+/** Alias para a Bancada Forense (spectrogram-survey). */
+export function runHexagonSpectrogramSurvey() {
+  onHexagonSolved()
 }
 
 export function onDiaryEntryRead(entryId: string, unlocksUnknown: boolean) {

@@ -20,11 +20,13 @@ import {
   runJanusEpimetheusAnalysis,
   runSaturnaliaReconstruct,
 } from '../../../game/story/block03Handlers'
-import { onUnknownRecordingAnalyzed } from '../../../game/story/block04Handlers'
+import {
+  onUnknownRecordingAnalyzed,
+  runHexagonSpectrogramSurvey,
+} from '../../../game/story/block04Handlers'
 import { markAudioSeen } from '../../../game/state/investigationStore'
-import { HEX_NODES, type HexNodeId } from '../../../data/block04/hexagonPuzzle'
+import { HEX_FILES, hexFileByEvidence } from '../../../data/block04/hexagonPuzzle'
 import { GamePanel } from '../../ui/GamePanel'
-import { HexagonSession } from './HexagonSession'
 import { ShepherdMoonsSession } from './ShepherdMoonsSession'
 import { EnceladusSession } from './EnceladusSession'
 import { CassiniSession } from './CassiniSession'
@@ -103,7 +105,7 @@ function analysisState(id: string, flags: Record<string, boolean>): AnalysisStat
   if (id === 'rec_vtx_old_01') return flags.block02_rings_provisional ? 'done' : 'pending'
   if (id === 'nico_recording_booth') return flags.block03_janus_done ? 'done' : 'pending'
   if (id === 'livia_radio_archive_raw') return flags.block03_saturnalia_done ? 'done' : 'pending'
-  if (HEX_NODES.some((n) => n.evidenceId === id)) return flags.block04_hexagon_done ? 'done' : 'pending'
+  if (HEX_FILES.some((n) => n.evidenceId === id)) return flags.block04_hexagon_done ? 'done' : 'pending'
   if (id === 'unknown_contact_recording') return flags.block04_unknown_analyzed ? 'done' : 'pending'
   if (id === 'valter_group_active_intercepts') return flags.block06_pastor_done ? 'done' : 'pending'
   if (id === 'anon_hospital_burst_audio') return flags.block07_enceladus_done ? 'done' : 'pending'
@@ -127,7 +129,6 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
   const inv = useInvestigation()
   const emergencyProvisionalDone = inv.flags.block01_emergency_provisional
   const rafaelForwardProvisionalDone = inv.flags.block02_rafael_forward_provisional
-  const hasHexSet = HEX_NODES.every((n) => inv.evidenceOwned.includes(n.evidenceId))
   // Mais recente primeiro (ordem de aquisição invertida).
   const hasRafaelForward = inv.evidenceOwned.includes('rafael_forward_from_mariana')
   const allFiles = [...inv.evidenceOwned]
@@ -159,8 +160,7 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
   const current = allFiles.find((f) => f.id === sel)
-  const hexCurrent = HEX_NODES.find((n) => n.evidenceId === current?.id)
-  const showHexagon = hasHexSet && Boolean(hexCurrent)
+  const hexFile = current ? hexFileByEvidence(current.id) : undefined
   const showPastor =
     Boolean(inv.flags.block06_pastor_available) && current?.id === 'valter_group_active_intercepts'
   const showEnceladus =
@@ -318,12 +318,17 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                           : forensicSession.completion?.onCompleteAction ===
                               'runSaturnaliaReconstruct'
                             ? Boolean(inv.flags.block03_saturnalia_done)
-                            : emergencyProvisionalDone
+                            : forensicSession.completion?.onCompleteAction ===
+                                'runHexagonSpectrogramSurvey'
+                              ? Boolean(inv.flags.block04_hexagon_done)
+                              : emergencyProvisionalDone
                   const containerState = inv.forensicContainerState?.[current.id]
                   return (
                     <ForensicWorkbench
+                      key={forensicSession.id === 'puzzle-06-hexagon' ? 'puzzle-06-hexagon' : current.id}
                       session={forensicSession}
                       fileNameBadge={current.displayFileName ?? current.title}
+                      initialSourceId={hexFile?.id}
                       completed={done}
                       recoveredSpeech={inv.forensicRecoveredSpeech?.[current.id] ?? []}
                       containerRebuilt={containerState?.rebuilt}
@@ -346,6 +351,8 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                           runJanusEpimetheusAnalysis()
                         } else if (action === 'runSaturnaliaReconstruct') {
                           runSaturnaliaReconstruct()
+                        } else if (action === 'runHexagonSpectrogramSurvey') {
+                          runHexagonSpectrogramSurvey()
                         } else {
                           runProvisionalEmergencyAnalysis()
                         }
@@ -426,9 +433,6 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                 </div>
               ) : null}
 
-              {!getForensicSessionForEvidence(current.id) && showHexagon && hexCurrent ? (
-                <HexagonSession currentId={hexCurrent.id as HexNodeId} />
-              ) : null}
               {!getForensicSessionForEvidence(current.id) && showPastor ? <ShepherdMoonsSession /> : null}
               {!getForensicSessionForEvidence(current.id) && showEnceladus ? <EnceladusSession /> : null}
               {!getForensicSessionForEvidence(current.id) && showCassini ? <CassiniSession /> : null}

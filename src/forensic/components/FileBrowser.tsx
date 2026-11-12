@@ -19,6 +19,7 @@ export function FileBrowser({
             <button
               type="button"
               className="fw-file"
+              data-testid={`fw-file-${s.id}`}
               data-active={s.id === activeId}
               onClick={() => onSelect(s.id)}
             >

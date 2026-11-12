@@ -1,0 +1,179 @@
+{
+  "seed": 4061106,
+  "sampleRate": 44100,
+  "expectedPin": "481526",
+  "symbolBandHz": [
+    1600.0,
+    4800.0
+  ],
+  "vSweepHz": [
+    4400.0,
+    1900.0,
+    4400.0
+  ],
+  "files": [
+    {
+      "id": "UNK_01",
+      "durationSec": 6.8,
+      "texture": "electrical",
+      "symbol": "IV",
+      "roman": "IV",
+      "digit": "4",
+      "motifs": [
+        {
+          "kind": "I",
+          "timeSec": 1.676,
+          "durSec": 0.033
+        },
+        {
+          "kind": "V",
+          "timeSec": 5.324,
+          "durSec": 0.19
+        }
+      ],
+      "symbolBandHz": [
+        1600.0,
+        4800.0
+      ],
+      "bandEnergy_1k6_4k8": 0.016165,
+      "bandEnergy_low": 75.932446,
+      "path": "public\\assets\\audio\\forensic\\puzzle06\\UNK_01.wav"
+    },
+    {
+      "id": "UNK_02",
+      "durationSec": 8.4,
+      "texture": "metallic",
+      "symbol": "VIII",
+      "roman": "VIII",
+      "digit": "8",
+      "motifs": [
+        {
+          "kind": "V",
+          "timeSec": 1.868,
+          "durSec": 0.211
+        },
+        {
+          "kind": "I",
+          "timeSec": 3.489,
+          "durSec": 0.027
+        },
+        {
+          "kind": "I",
+          "timeSec": 5.111,
+          "durSec": 0.023
+        },
+        {
+          "kind": "I",
+          "timeSec": 6.732,
+          "durSec": 0.029
+        }
+      ],
+      "symbolBandHz": [
+        1600.0,
+        4800.0
+      ],
+      "bandEnergy_1k6_4k8": 0.07286,
+      "bandEnergy_low": 35.194436,
+      "path": "public\\assets\\audio\\forensic\\puzzle06\\UNK_02.wav"
+    },
+    {
+      "id": "UNK_03",
+      "durationSec": 5.1,
+      "texture": "airy",
+      "symbol": "I",
+      "roman": "I",
+      "digit": "1",
+      "motifs": [
+        {
+          "kind": "I",
+          "timeSec": 2.132,
+          "durSec": 0.024
+        }
+      ],
+      "symbolBandHz": [
+        1600.0,
+        4800.0
+      ],
+      "bandEnergy_1k6_4k8": 0.027059,
+      "bandEnergy_low": 0.694106,
+      "path": "public\\assets\\audio\\forensic\\puzzle06\\UNK_03.wav"
+    },
+    {
+      "id": "UNK_04",
+      "durationSec": 7.3,
+      "texture": "pulsing",
+      "symbol": "V",
+      "roman": "V",
+      "digit": "5",
+      "motifs": [
+        {
+          "kind": "V",
+          "timeSec": 2.955,
+          "durSec": 0.201
+        }
+      ],
+      "symbolBandHz": [
+        1600.0,
+        4800.0
+      ],
+      "bandEnergy_1k6_4k8": 0.0,
+      "bandEnergy_low": 35.469117,
+      "path": "public\\assets\\audio\\forensic\\puzzle06\\UNK_04.wav"
+    },
+    {
+      "id": "UNK_05",
+      "durationSec": 5.9,
+      "texture": "granular",
+      "symbol": "II",
+      "roman": "II",
+      "digit": "2",
+      "motifs": [
+        {
+          "kind": "I",
+          "timeSec": 1.543,
+          "durSec": 0.019
+        },
+        {
+          "kind": "I",
+          "timeSec": 4.593,
+          "durSec": 0.024
+        }
+      ],
+      "symbolBandHz": [
+        1600.0,
+        4800.0
+      ],
+      "bandEnergy_1k6_4k8": 0.215098,
+      "bandEnergy_low": 3.849975,
+      "path": "public\\assets\\audio\\forensic\\puzzle06\\UNK_05.wav"
+    },
+    {
+      "id": "UNK_06",
+      "durationSec": 7.8,
+      "texture": "unstable",
+      "symbol": "VI",
+      "roman": "VI",
+      "digit": "6",
+      "motifs": [
+        {
+          "kind": "V",
+          "timeSec": 1.796,
+          "durSec": 0.2
+        },
+        {
+          "kind": "I",
+          "timeSec": 6.204,
+          "durSec": 0.026
+        }
+      ],
+      "symbolBandHz": [
+        1600.0,
+        4800.0
+      ],
+      "bandEnergy_1k6_4k8": 0.121179,
+      "bandEnergy_low": 80.386706,
+      "path": "public\\assets\\audio\\forensic\\puzzle06\\UNK_06.wav"
+    }
+  ],
+  "debugDir": "tools\\audio\\out\\puzzle06_debug"
+}

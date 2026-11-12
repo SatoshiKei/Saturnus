@@ -24,6 +24,7 @@ import {
   fmtClockOffset,
   relativeSourceOffsetSec,
   speechRecoveryComplete,
+  spectrogramSurveyComplete,
   structureSequenceValid,
   voiceSpansFromSource,
   type SegmentClarity,
@@ -45,6 +46,7 @@ import { Inspector } from './components/Inspector'
 export function ForensicWorkbench({
   session,
   fileNameBadge,
+  initialSourceId,
   onClose,
   onPuzzleComplete,
   completed,
@@ -54,9 +56,12 @@ export function ForensicWorkbench({
   structureSequences: structureSequencesProp,
   onContainerStateChange,
   onDevResetPuzzle,
+  onSpectrogramViewed,
 }: {
   session: ForensicSession
   fileNameBadge?: string
+  /** Source id a ativar ao abrir (ex.: evidência selecionada na bancada). */
+  initialSourceId?: string
   onClose: () => void
   onPuzzleComplete?: () => void
   completed?: boolean
@@ -70,11 +75,18 @@ export function ForensicWorkbench({
   }) => void
   /** DEV: reset completo do progresso do puzzle (structure + findings + completion). */
   onDevResetPuzzle?: () => void
+  /** Chamado quando o jogador abre Spectrogram num source. */
+  onSpectrogramViewed?: (sourceId: string) => void
 }) {
   const [ui, setUi] = useState<ForensicUiState>(() => {
     const initial = createInitialUiState(session, recoveredProp ?? [])
+    const active =
+      initialSourceId && session.sources.some((s) => s.id === initialSourceId)
+        ? initialSourceId
+        : initial.activeSourceId
     return {
       ...initial,
+      activeSourceId: active,
       containerRebuilt: containerRebuiltProp ?? false,
       structureSequences: structureSequencesProp ?? {},
     }
@@ -83,6 +95,12 @@ export function ForensicWorkbench({
   const [status, setStatus] = useState<string | null>(null)
   const [timelineView, setTimelineView] = useState<'waveform' | 'spectrogram'>('waveform')
   const [measuredWave, setMeasuredWave] = useState<number[] | null>(null)
+  const [measuredSpec, setMeasuredSpec] = useState<{
+    cols: number
+    rows: number
+    values: number[]
+    maxHz: number
+  } | null>(null)
   const [clarityDebug, setClarityDebug] = useState<SegmentClarity[]>([])
   const engineRef = useRef<ForensicAudioEngine | null>(null)
   const completedRef = useRef(false)
@@ -111,6 +129,7 @@ export function ForensicWorkbench({
     : (playbackSource?.durationSec ?? 0)
   const duration = spanDuration
   const waveform = measuredWave ?? playbackSource?.audio?.waveform ?? []
+  const spectrogram = measuredSpec ?? playbackSource?.audio?.spectrogram
   const syncPair = audioSources.length >= 2 ? [audioSources[0], audioSources[1]] : null
   const placementDelta = syncPair
     ? relativeSourceOffsetSec(syncPair[0], syncPair[1], ui.sourceOffsets)
@@ -151,6 +170,7 @@ export function ForensicWorkbench({
       }),
     )
     eng.setWaveformHandler((peaks) => setMeasuredWave(peaks))
+    eng.setSpectrogramHandler((spec) => setMeasuredSpec(spec))
     return () => {
       eng.dispose()
       engineRef.current = null
@@ -165,6 +185,8 @@ export function ForensicWorkbench({
 
   useEffect(() => {
     setMeasuredWave(null)
+    setMeasuredSpec(null)
+    setTimelineView('waveform')
   }, [playbackSource?.id])
 
   useEffect(() => {
@@ -332,6 +354,8 @@ export function ForensicWorkbench({
       if (!clockSyncComplete(session, ui)) return
     } else if (completion.kind === 'clip-sequence') {
       if (!clipSequenceComplete(session, ui)) return
+    } else if (completion.kind === 'spectrogram-survey') {
+      if (!spectrogramSurveyComplete(session, ui)) return
     } else {
       return
     }
@@ -349,6 +373,7 @@ export function ForensicWorkbench({
     ui.findingUnlocked,
     ui.clipSequence,
     ui.sequenceAssembled,
+    ui.spectrogramViewedSourceIds,
     source?.speechSegments,
     source,
     session,
@@ -508,7 +533,7 @@ export function ForensicWorkbench({
               markers={ui.markers}
               waveformZoomY={ui.waveformZoomY}
               viewMode={timelineView}
-              spectrogram={playbackSource?.audio?.spectrogram}
+              spectrogram={spectrogram}
               unavailableFromSec={
                 playbackSource?.containerPlayback && !ui.containerRebuilt ? playableUntil : null
               }
@@ -526,7 +551,20 @@ export function ForensicWorkbench({
               onSeek={seek}
               onSelect={(selection) => patchUi({ selection })}
               onZoom={(zoom) => patchUi({ zoom })}
-              onViewMode={setTimelineView}
+              onViewMode={(mode) => {
+                setTimelineView(mode)
+                if (mode === 'spectrogram' && playbackSource?.id) {
+                  const id = playbackSource.id
+                  setUi((u) => {
+                    if (u.spectrogramViewedSourceIds.includes(id)) return u
+                    return {
+                      ...u,
+                      spectrogramViewedSourceIds: [...u.spectrogramViewedSourceIds, id],
+                    }
+                  })
+                  onSpectrogramViewed?.(id)
+                }
+              }}
               onWaveformZoomY={(waveformZoomY) => patchUi({ waveformZoomY })}
               onLaneOffset={
                 isClockSync
@@ -861,6 +899,7 @@ function ForensicDebug({
   const isRings = session.completion?.kind === 'source-link'
   const isJanus = session.completion?.kind === 'clock-sync'
   const isSaturnalia = session.completion?.kind === 'clip-sequence'
+  const isHexagon = session.completion?.kind === 'spectrogram-survey'
   const recording = session.sources.find((s) => s.tempoRegions?.length)
   const audioPair = session.sources.filter((s) => s.audio)
   const a = audioPair[0]
@@ -872,7 +911,32 @@ function ForensicDebug({
   )
   return (
     <div className="fw-debug" data-testid="forensic-debug">
-      {isSaturnalia ? (
+      {isHexagon ? (
+        <>
+          {(
+            [
+              ['UNK_01', 'IV'],
+              ['UNK_02', 'VIII'],
+              ['UNK_03', 'I'],
+              ['UNK_04', 'V'],
+              ['UNK_05', 'II'],
+              ['UNK_06', 'VI'],
+            ] as const
+          ).map(([id, sym]) => (
+            <span key={id}>
+              {id} expectedSymbol {sym}
+              {ui.spectrogramViewedSourceIds.includes(id) ? ' · viewed' : ''}
+            </span>
+          ))}
+          <span>expectedPin 481526</span>
+          <span>surveyComplete {String(spectrogramSurveyComplete(session, ui))}</span>
+          {onDevResetPuzzle ? (
+            <button type="button" className="fw-btn" data-testid="dev-reset-puzzle" onClick={onDevResetPuzzle}>
+              DEV reset puzzle
+            </button>
+          ) : null}
+        </>
+      ) : isSaturnalia ? (
         <>
           <span>expectedOrder {(session.completion?.expectedSourceOrder ?? []).join('→')}</span>
           <span>currentOrder {ui.clipSequence.join('→')}</span>

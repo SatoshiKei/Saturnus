@@ -204,7 +204,7 @@ describe('Early paths — progressão', () => {
     ])
     onHexagonSolved()
     s = getInvestigationState()
-    expect(s.evidenceOwned).toContain('hex_phrase_recovered')
+    expect(s.evidenceOwned).toContain('hex_spectral_patterns')
     expect(s.flags.block04_hexagon_done).toBe(true)
     expect(tryDiaryPin('481526')).toBe('unlocked')
   })

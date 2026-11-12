@@ -12,7 +12,7 @@ import {
 
 test.use({ viewport: { width: 1920, height: 1080 } })
 
-const HEX_ORDER = ['A', 'D', 'B', 'F', 'C', 'E'] as const
+const UNK = ['UNK_01', 'UNK_02', 'UNK_03', 'UNK_04', 'UNK_05', 'UNK_06'] as const
 
 test('Diário oculto — nenhum atalho: seis áudios → Puzzle 6 → Perícia → laudo → PIN digitado', async ({ page }) => {
   test.setTimeout(240_000)
@@ -48,32 +48,23 @@ test('Diário oculto — nenhum atalho: seis áudios → Puzzle 6 → Perícia �
   save = await readSave(page)
   expect(save.flags.block04_hex_received).toBe(true)
   await openHubObject(page, 'audio-station')
-  // (checkpoints DEV deixam outros áudios não vistos; aqui o que importa são os seis novos.)
   await expect(page.getByTestId('audio-new-count')).toHaveText(/novos/)
-  for (const id of HEX_ORDER) {
+  for (const id of UNK) {
     await expect(page.getByTestId(`audio-new-hex_audio_${id.toLowerCase()}`)).toBeVisible()
   }
 
-  // 7–8. Puzzle 6: o PIN nunca aparece antes de resolver.
+  // 7–8. Puzzle 6: Spectrogram nos seis; PIN nunca aparece na bancada.
   await expect(page.locator('body')).not.toContainText('481526')
-  await expect(page.locator('body')).not.toContainText('NO TELEFONE HÁ UM DIÁRIO')
-  for (const id of HEX_ORDER) {
-    await page.getByTestId(`audio-file-hex_audio_${id.toLowerCase()}`).click()
-    await page.getByTestId(`hex-inspect-${id}`).click()
-    await expect(page.getByTestId('hex-tags')).toBeVisible()
+  await page.getByTestId('audio-file-hex_audio_unk_01').click()
+  for (const id of UNK) {
+    await page.getByTestId(`fw-file-${id}`).click()
+    await expect(page.getByTestId('timeline-spectrogram')).toBeEnabled({ timeout: 20_000 })
+    await page.getByTestId('timeline-spectrogram').click()
   }
-  // Ordem errada é recusada: o jogador precisa começar pelo arquivo mais antigo.
-  await page.getByTestId('audio-file-hex_audio_b').click()
-  await page.getByTestId('hex-append-B').click()
-  await expect(page.getByTestId('hex-msg')).toBeVisible()
   await expect(page.locator('body')).not.toContainText('481526')
-
-  for (const id of HEX_ORDER) {
-    await page.getByTestId(`audio-file-hex_audio_${id.toLowerCase()}`).click()
-    await page.getByTestId(`hex-append-${id}`).click()
-  }
-  await expect(page.getByTestId('hex-phrase')).toHaveText('NO TELEFONE HÁ UM DIÁRIO QUE A TELA OMITE')
-  await expect(page.getByTestId('hex-code')).toHaveText('481526')
+  save = await readSave(page)
+  expect(save.flags.block04_hexagon_done).toBe(true)
+  expect(save.evidenceOwned).toContain('hex_spectral_patterns')
   await closeHub(page)
   await dismissEvidenceCards(page)
 

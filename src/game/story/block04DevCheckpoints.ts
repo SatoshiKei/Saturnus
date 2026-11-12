@@ -184,7 +184,7 @@ export const block04DevCheckpoints: { id: string; label: string; actions: StoryA
     label: 'Puzzle 6 resolvido',
     actions: [
       { type: 'setFlag', id: 'block04_hexagon_done', value: true },
-      { type: 'addEvidence', id: 'hex_phrase_recovered' },
+      { type: 'addEvidence', id: 'hex_spectral_patterns' },
       { type: 'completeTask', id: 'task_hexagon' },
       { type: 'setFlag', id: 'block04_forensics_unlocked', value: true },
       {

@@ -211,6 +211,100 @@ export function buildCompositeSpectrum(peakHz: number): {
   return { frequencies, magnitudes }
 }
 
+/** FFT radix-2 in-place (Cooley–Tukey). */
+function fftRadix2(re: Float64Array, im: Float64Array) {
+  const n = re.length
+  for (let i = 1, j = 0; i < n; i++) {
+    let bit = n >> 1
+    for (; j & bit; bit >>= 1) j ^= bit
+    j ^= bit
+    if (i < j) {
+      const tr = re[i]!
+      re[i] = re[j]!
+      re[j] = tr
+      const ti = im[i]!
+      im[i] = im[j]!
+      im[j] = ti
+    }
+  }
+  for (let len = 2; len <= n; len <<= 1) {
+    const ang = (-2 * Math.PI) / len
+    const wlenRe = Math.cos(ang)
+    const wlenIm = Math.sin(ang)
+    for (let i = 0; i < n; i += len) {
+      let wr = 1
+      let wi = 0
+      for (let j = 0; j < len / 2; j++) {
+        const uRe = re[i + j]!
+        const uIm = im[i + j]!
+        const vRe = re[i + j + len / 2]! * wr - im[i + j + len / 2]! * wi
+        const vIm = re[i + j + len / 2]! * wi + im[i + j + len / 2]! * wr
+        re[i + j] = uRe + vRe
+        im[i + j] = uIm + vIm
+        re[i + j + len / 2] = uRe - vRe
+        im[i + j + len / 2] = uIm - vIm
+        const nwr = wr * wlenRe - wi * wlenIm
+        wi = wr * wlenIm + wi * wlenRe
+        wr = nwr
+      }
+    }
+  }
+}
+
+/**
+ * STFT real a partir de amostras mono (espectrograma da Bancada).
+ * Resolução limitada para UI; a energia é a do áudio decodificado.
+ */
+export function computeSpectrogramFromSamples(
+  layers: { data: Float32Array; gain: number; startSec: number }[],
+  durationSec: number,
+  sampleRate: number,
+  opts?: { cols?: number; rows?: number; maxHz?: number },
+): { cols: number; rows: number; values: number[]; maxHz: number } {
+  const cols = opts?.cols ?? 144
+  const rows = opts?.rows ?? 56
+  const maxHz = opts?.maxHz ?? 6000
+  const nperseg = 1024
+  const mix = new Float32Array(Math.max(1, Math.ceil(durationSec * sampleRate)))
+  for (const layer of layers) {
+    const offset = Math.floor(layer.startSec * sampleRate)
+    const { data, gain } = layer
+    for (let i = 0; i < data.length; i++) {
+      const j = offset + i
+      if (j < 0 || j >= mix.length) continue
+      mix[j]! += data[i]! * gain
+    }
+  }
+  const window = new Float32Array(nperseg)
+  for (let i = 0; i < nperseg; i++) window[i] = 0.5 - 0.5 * Math.cos((2 * Math.PI * i) / (nperseg - 1))
+  const hop = Math.max(1, Math.floor((mix.length - nperseg) / Math.max(1, cols - 1)))
+  const maxBin = Math.min(nperseg / 2, Math.floor((maxHz / sampleRate) * nperseg))
+  const grid: number[] = new Array(rows * cols).fill(0)
+  let peak = 1e-12
+  const re = new Float64Array(nperseg)
+  const im = new Float64Array(nperseg)
+  for (let c = 0; c < cols; c++) {
+    const i0 = Math.min(Math.max(0, c * hop), Math.max(0, mix.length - nperseg))
+    for (let i = 0; i < nperseg; i++) {
+      re[i] = (mix[i0 + i] ?? 0) * (window[i] ?? 0)
+      im[i] = 0
+    }
+    fftRadix2(re, im)
+    for (let r = 0; r < rows; r++) {
+      const hz = (r / Math.max(1, rows - 1)) * maxHz
+      const bin = Math.min(maxBin, Math.max(0, Math.round((hz / sampleRate) * nperseg)))
+      const v = Math.hypot(re[bin]!, im[bin]!)
+      grid[r * cols + c] = v
+      if (v > peak) peak = v
+    }
+  }
+  const values = grid.map((v) => {
+    const db = 20 * Math.log10(v / peak + 1e-8)
+    return Math.min(1, Math.max(0, (db + 55) / 55))
+  })
+  return { cols, rows, values, maxHz }
+}
+
 export function buildCompositeSpectrogram(opts: {
   durationSec: number
   peakHz: number
