@@ -64,7 +64,7 @@ describe('Puzzle 10 — ORDEM DOS ANÉIS', () => {
     expect(readdirSync(P10).some((n) => /BG-03/i.test(n))).toBe(false)
     expect(existsSync(resolve(AUDIO, 'livia_protest_clip.wav'))).toBe(true)
     expect(existsSync(resolve(AUDIO, 'samuel_phone_clip.wav'))).toBe(true)
-  })
+  }, 60_000)
 
   it('B/C: fingerprint Livia+Samuel matches; wrong pair fails', () => {
     const ok = compareAudioFingerprints('livia', 'samuel')

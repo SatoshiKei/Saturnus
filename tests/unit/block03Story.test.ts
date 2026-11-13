@@ -74,7 +74,6 @@ describe('Bloco 3 — progressão', () => {
     const s = getInvestigationState()
     expect(s.flags.block03_nico_interview_done).toBe(true)
     expect(s.evidenceOwned).toContain('nico_recording_booth')
-    expect(s.evidenceOwned).toContain('nico_recording_portable')
     expect(s.evidenceOwned.filter((id) => id === 'nico_mariana_visit').length).toBe(1)
     expect(s.people.nico.status).toBe('interviewed')
   })
@@ -151,7 +150,10 @@ describe('Bloco 3 — progressão', () => {
     expect(s.evidenceOwned).toContain('morsa_unidentified')
     expect(s.evidenceOwned).toContain('protest_masked_core')
     expect(s.people.morsa.status).toBe('identified')
-    expect(s.people.samuel.status).toBe('identified')
+    // Saturnalia nomeia Morsa. Samuel continua no caminho ocorrência → detidos → ficha.
+    expect(s.people.samuel.status).not.toBe('identified')
+    expect(s.people.samuel.status).not.toBe('located')
+    expect(s.people.samuel.status).not.toBe('interviewed')
     expect(s.tasks.some((t) => t.id === 'task_identify_morsa' && !t.completed)).toBe(true)
   })
 

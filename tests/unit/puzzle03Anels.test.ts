@@ -100,6 +100,7 @@ describe('Puzzle 03 — ANÉIS', () => {
       'Structure',
       'Packets',
       'Timing',
+      'Spectrum',
       'Compare',
       'Notes',
     ])

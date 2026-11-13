@@ -14,7 +14,7 @@ import type {
   StructurePage,
   TrackRuntime,
 } from './forensicTypes'
-import { DEFAULT_PROCESS } from './forensicTypes'
+import { DEFAULT_PROCESS, INSPECTOR_TABS } from './forensicTypes'
 
 export function createInitialUiState(
   session: ForensicSession,
@@ -1444,5 +1444,5 @@ export function fmtTime(sec: number): string {
 }
 
 export function alwaysAvailableTabs(): ForensicUiState['inspectorTab'][] {
-  return ['process', 'analysis', 'file', 'structure', 'packets', 'timing', 'compare', 'notes']
+  return INSPECTOR_TABS.map((t) => t.id)
 }

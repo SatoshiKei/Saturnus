@@ -14,6 +14,7 @@ import {
   finishVerticeArchive,
   onRafaelForwardAudioPlayed,
   runProvisionalRafaelForwardAnalysis,
+  runProvisionalRingsAnalysis,
 } from '../../src/game/story/block02Handlers'
 
 describe('Bloco 2 — progressão', () => {
@@ -31,10 +32,16 @@ describe('Bloco 2 — progressão', () => {
     expect(s.locations.vertice.status).toBe('visitAvailable')
   })
 
-  it('arquivo Vértice identifica Nico sem contactable', () => {
+  it('arquivo Vértice entrega a gravação; Nico só depois de ANÉIS', () => {
     resetGame()
     finishVerticeArchive()
-    const s = getInvestigationState()
+    let s = getInvestigationState()
+    expect(s.evidenceOwned).toContain('rec_vtx_old_01')
+    expect(s.evidenceOwned).not.toContain('nico_dj_identified')
+    expect(s.people.nico.status).not.toBe('identified')
+
+    runProvisionalRingsAnalysis()
+    s = getInvestigationState()
     expect(s.people.nico.status).toBe('identified')
     expect(s.people.nico.status).not.toBe('contactable')
     expect(s.evidenceOwned).toContain('nico_dj_identified')

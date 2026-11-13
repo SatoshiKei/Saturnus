@@ -173,6 +173,9 @@ export class ForensicAudioEngine {
     durationSec: number,
     speechSegments: SpeechSegment[] = [],
   ) {
+    // Drop the previous graph before decoding the next file. Otherwise a source
+    // switch leaves the old BufferSources running alongside the new asset.
+    this.stop()
     const token = ++this.token
     this.ready = false
     this.asset = asset

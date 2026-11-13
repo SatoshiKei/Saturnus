@@ -20,6 +20,7 @@ export const block07EntryActions: StoryActionRef[] = [
   { type: 'setFlag', id: 'block06_geraldo_reflection_done', value: true },
   { type: 'setFlag', id: 'block06_jana_followup_done', value: true },
   { type: 'setFlag', id: 'block06_valter_trail_done', value: true },
+  { type: 'setFlag', id: 'block06_pastor_extracted', value: true },
   { type: 'setFlag', id: 'block06_pastor_done', value: true },
   { type: 'setFlag', id: 'block06_operation_done', value: true },
   { type: 'setFlag', id: 'block06_miro_interview_done', value: true },

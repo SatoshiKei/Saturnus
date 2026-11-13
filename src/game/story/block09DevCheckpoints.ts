@@ -20,6 +20,8 @@ export const block09EntryActions: StoryActionRef[] = [
     ],
   },
   { type: 'setFlag', id: 'block08_rings_done', value: true },
+  { type: 'setFlag', id: 'block08_morsa_continuity_confirmed', value: true },
+  { type: 'setFlag', id: 'block08_morsa_reveal_played', value: true },
   { type: 'setFlag', id: 'block08_andre_followup_done', value: true },
   { type: 'setFlag', id: 'block08_miro_third_done', value: true },
   { type: 'setFlag', id: 'block08_guardrail_done', value: true },

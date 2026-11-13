@@ -56,7 +56,8 @@ export function onMorsaContinuityConfirmed() {
 
 /**
  * Compat / checkpoints: completa a cadeia Rings → continuidade.
- * Evidência `morsa_was_andre` só em `onMorsaReflectionDone` (ou checkpoint DEV).
+ * `morsa_was_andre` entra em `onMorsaContinuityConfirmed`, depois da cutscene
+ * (fala "André."). A reflection só formaliza álibi e confronto.
  */
 export function onRingsSolved() {
   const s = getInvestigationState()

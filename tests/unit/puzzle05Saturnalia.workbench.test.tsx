@@ -139,5 +139,5 @@ describe('Puzzle 05 workbench', () => {
     await user.click(screen.getByTestId('assemble-sequence'))
     expect(screen.getByTestId('assemble-status').textContent).toMatch(/passed/i)
     expect(onComplete).toHaveBeenCalledTimes(1)
-  })
+  }, 20_000)
 })

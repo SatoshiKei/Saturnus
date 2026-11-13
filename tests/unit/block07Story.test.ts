@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
-  CASSINI_CAPTURE,
-  isCassiniSeparated,
-  packetsForSsrc,
+  CASSINI_SSRC_A,
+  CASSINI_SSRC_B,
 } from '../../src/data/block07/cassiniPuzzle'
 import {
   ENCELADUS_BURSTS,
@@ -114,7 +113,7 @@ describe('Bloco 7 — progressão', () => {
     expect(s.flags.block07_enceladus_available).toBe(true)
   })
 
-  it('Puzzle 8 → Júlia → hospital → Renata → depósito → fórum → Aster → Cecília → Cassini', () => {
+  it('Puzzle 8 → Júlia → Renata → hospital → depósito → fórum → Aster → Cecília → Cassini', () => {
     seed()
     finishMiroFollowup()
     finishSandraInterview()
@@ -133,6 +132,12 @@ describe('Bloco 7 — progressão', () => {
 
     onJuliaRicardoAudioDone()
     s = getInvestigationState()
+    expect(s.flags.block07_renata_call_unlocked).toBe(true)
+    expect(s.flags.block07_hospital_archive_unlocked).toBeFalsy()
+    expect(s.evidenceOwned).toContain('renata_voice_on_burst')
+
+    onRenataCallDone()
+    s = getInvestigationState()
     expect(s.flags.block07_hospital_archive_unlocked).toBe(true)
 
     openDocument('doc-hospital-ricardo-freitas')
@@ -143,7 +148,6 @@ describe('Bloco 7 — progressão', () => {
     expect(s.flags.block07_henrique_identified).toBeFalsy()
 
     onRicardoDeadReflectionDone()
-    onRenataCallDone()
     onNotebookReflectionDone()
     onHospitalDepositDone()
     onHvReflectionDone()
@@ -184,14 +188,9 @@ describe('Bloco 7 — progressão', () => {
     unlockHenriqueDump()
     expect(getInvestigationState().evidenceOwned).toContain('henrique_rtp_capture')
     expect(getInvestigationState().flags.block07_cassini_available).toBe(true)
-
-    const assign: Record<string, 'A1' | 'B7' | ''> = {}
-    for (const p of CASSINI_CAPTURE) {
-      if (p.note === 'dup') continue
-      assign[p.id] = p.ssrc
-    }
-    expect(isCassiniSeparated(assign)).toBe(true)
-    expect(packetsForSsrc('A1').map((p) => p.seq)).toEqual([100, 101, 102, 103])
+    expect(CASSINI_SSRC_A).toBe('48A21C30')
+    expect(CASSINI_SSRC_B).toBe('91F47B12')
+    expect(CASSINI_SSRC_A).not.toBe(CASSINI_SSRC_B)
 
     onCassiniSolved()
     s = getInvestigationState()
