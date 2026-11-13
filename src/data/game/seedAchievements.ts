@@ -197,6 +197,13 @@ export const seedAchievements: AchievementDef[] = [
     unlocked: (s) => Boolean(s.flags.block08_complete),
   },
   {
+    id: 'ach-memoria',
+    title: 'MEMÓRIA',
+    description: 'Determinou a proveniência impossível da última gravação.',
+    hint: 'Cruzar a mensagem final com o acervo do caso até o output derivado.',
+    unlocked: (s) => Boolean(s.flags.block09_memory_done),
+  },
+  {
     id: 'ach-block9',
     title: 'Memória',
     description: 'O caso chegou ao fim.',

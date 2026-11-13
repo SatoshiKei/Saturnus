@@ -1,0 +1,111 @@
+PUZZLE 12 — MEMÓRIA
+Dev only — não aparece para o jogador.
+
+Momento
+-------
+Após confirmação da morte de Mariana no galpão.
+Gravação “recente” → bancada → MEMÓRIA.
+Não antecipar antes da morte.
+
+
+Carrier vocal
+-------------
+Nenhum TTS. Nenhum asset humano novo.
+Base: clips originais de Mariana do Puzzle 01
+  src/assets/audios/p1/*.mp3
+Full clean master de referência:
+  tools/audio/out/puzzle01_reference_clean.wav
+Concatenação determinística (seed 4121212) → mensagem ~9.2 s.
+
+
+Build
+-----
+python tools/audio/build_puzzle12_memory.py
+
+Output:
+  public/assets/audio/forensic/puzzle12/memory_final_message.wav
+  apartment_room_reference.wav
+  emergency_fingerprint_reference.wav
+  enceladus_pattern_reference.wav
+  cassini_derived_artifact_reference.wav
+  cassini_capture_order_contrast.wav
+  memory_carrier_clean.wav
+  region_*_window.wav
+  capture_meta.json / src/forensic/puzzles/puzzle12Meta.json
+
+DEBUG:
+  tools/audio/out/puzzle12_debug/
+  final_message, isolated_region_A..D, residual_region_*, source_comparison_*, provenance_report.json
+
+
+Regiões canônicas
+-----------------
+A  0.4–2.1 s   apartamento (room tone/HVAC da chamada no apto)
+B  3.0–3.8 s   emergência / Puzzle 01 (fingerprint de p01_mariana_01_escute)
+C  5.2–6.5 s   Enceladus (padrão periódico ~1 kHz / ciclo 6 s)
+D  7.0–8.4 s   Cassini-Huygens DERIVED (diff stream_b_reconstructed − capture_order)
+
+
+Por que D é impossível
+----------------------
+Fingerprint aponta para stream_b_reconstructed.wav (output da bancada),
+NÃO para o PCAP nem para stream_b_capture_order.
+Meta registra sha256 + createdAt do derived.
+A mensagem final só pode ter sido composta DEPOIS da reconstrução.
+
+
+Search Case Media
+-----------------
+Jogador seleciona janela curta na mensagem.
+Busca só no acervo do caso (corpus em memoryPuzzle.ts).
+Janela larga (>2.6 s) ou errada → hits fracos.
+Janela certa → hit forte → abrir comparação → Confirmar proveniência.
+
+
+Provenance graph
+----------------
+Centro: FINAL MESSAGE
+Ligações só após confirmação:
+  → apartamento
+  → emergência
+  → Enceladus
+  → Cassini-Huygens / derived output
+
+
+Conclusão
+---------
+Não “voz falsa” / deepfake genérico.
+Quem produziu tem acesso operacional aos materiais e aos RESULTADOS
+da investigação e consegue recombiná-los.
+Palavra: MEMÓRIA
+
+
+Achievement
+-----------
+MEMÓRIA — Determinou a proveniência impossível da última gravação.
+Dispara com block09_memory_done.
+
+
+Flags / DEV
+-----------
+block09_memory_available
+block09_memory_done
+block09_memory_word_shown
+DEV: regionA_source… regionD_source, fingerprintMatches, confirmedProvenance,
+cassiniDerivedCreatedAt, finalMessageCreatedAt, impossibleTemporalDependency, memoryComplete
+
+
+Dataset
+-------
+src/data/block09/memoryPuzzle.ts
+src/forensic/puzzles/puzzle12Memory.ts
+src/forensic/puzzles/puzzle12Meta.json
+
+
+NÃO
+---
+sliders / % / dB / notch / SSRC / ordenar buffer
+quatro caixas TRECHO A–D no início
+TTS / nova voz de Mariana
+popup SUCCESS
+afirmar onisciência / Mariana-IA / Omitido sobrenatural

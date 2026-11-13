@@ -1,182 +1,320 @@
-import { useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import {
-  MEMORY_SEGMENTS,
-  MEMORY_SOURCES,
+  CASE_MEDIA_CORPUS,
+  CASSINI_DERIVED_META,
+  FINAL_MESSAGE_META,
+  MEMORY_DURATION_SEC,
+  MEMORY_FINAL_SRC,
   MEMORY_WORD,
   isMemoryProvenanceComplete,
-  type MemorySourceId,
+  isTemporalImpossibility,
+  searchCaseMedia,
+  type ProvenanceConfirmId,
+  type SearchHit,
 } from '../../../data/block09/memoryPuzzle'
 import { onMemoryPuzzleSolved } from '../../../game/story/block09Handlers'
 import { useInvestigation } from '../../../game/hooks/useInvestigation'
+import { resolveChatMediaSrc } from '../../../lib/characterSprites'
 import { playSfx } from '../../../lib/sfx'
 
+const isDev = import.meta.env.DEV
+
+const SOURCE_LABEL: Record<ProvenanceConfirmId, string> = {
+  apartment: 'apartamento',
+  emergency: 'emergência',
+  enceladus: 'Enceladus',
+  cassini_derived: 'Cassini-Huygens / derived output',
+}
+
 /**
- * Puzzle 12 — MEMÓRIA (placeholder).
- * Player + waveform + trechos selecionáveis + fontes conhecidas + proveniência.
+ * Puzzle 12 — MEMÓRIA.
+ * Play natural → selecionar região → Search Case Media → confirmar proveniência → grafo.
  */
 export function MemorySession() {
   const inv = useInvestigation()
   const solved = Boolean(inv.flags.block09_memory_done)
-  const [assigned, setAssigned] = useState<Record<string, MemorySourceId | ''>>({})
-  const [selected, setSelected] = useState<string | null>(MEMORY_SEGMENTS[0]?.id ?? null)
-  const [playing, setPlaying] = useState(false)
-  const [msg, setMsg] = useState<string | null>(null)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
 
-  const setSrc = (segId: string, src: MemorySourceId | '') => {
+  const [selStart, setSelStart] = useState(0.5)
+  const [selEnd, setSelEnd] = useState(1.5)
+  const [hits, setHits] = useState<SearchHit[]>([])
+  const [openMedia, setOpenMedia] = useState<string | null>(null)
+  const [confirmed, setConfirmed] = useState<Set<ProvenanceConfirmId>>(
+    () =>
+      solved
+        ? new Set(['apartment', 'emergency', 'enceladus', 'cassini_derived'])
+        : new Set(),
+  )
+  const [note, setNote] = useState<string | null>(null)
+  const [augustoLine, setAugustoLine] = useState<string | null>(null)
+  const [devOpen, setDevOpen] = useState(false)
+  const [uiFade, setUiFade] = useState(solved)
+
+  const confirmedList = useMemo(() => [...confirmed], [confirmed])
+  const canFinish = isMemoryProvenanceComplete(confirmed)
+  const temporal = isTemporalImpossibility(confirmed)
+
+  const runSearch = () => {
     if (solved) return
-    setMsg(null)
     playSfx('ui')
-    setAssigned((prev) => ({ ...prev, [segId]: src }))
+    const a = Math.min(selStart, selEnd)
+    const b = Math.max(selStart, selEnd)
+    const result = searchCaseMedia(a, b)
+    setHits(result)
+    setNote(null)
   }
 
-  const trySolve = () => {
-    if (!isMemoryProvenanceComplete(assigned)) {
+  const confirmHit = (hit: SearchHit) => {
+    if (solved || !hit.strong) return
+    if (hit.source === 'other') return
+    playSfx('unlock')
+    const src = hit.source as ProvenanceConfirmId
+    setConfirmed((prev) => {
+      const next = new Set(prev)
+      next.add(src)
+      if (next.size === 1 || next.size === 2) {
+        setAugustoLine('Isso já estava nos arquivos.')
+      }
+      if (src === 'cassini_derived') {
+        setAugustoLine(
+          'Isto não estava no PCAP. É o output que eu mesmo reconstruí na bancada.',
+        )
+      }
+      return next
+    })
+    setNote(`Proveniência confirmada: ${SOURCE_LABEL[src]}`)
+  }
+
+  const finish = () => {
+    if (solved || !canFinish) {
       playSfx('error')
-      setMsg('Associe cada trecho à fonte correta. As origens são incompatíveis entre si.')
+      setNote('Confirme as quatro proveniências — inclusive a dependência temporal do output derivado.')
       return
     }
     playSfx('unlock')
+    setUiFade(true)
     onMemoryPuzzleSolved()
   }
 
-  const sel = MEMORY_SEGMENTS.find((s) => s.id === selected)
+  const open = CASE_MEDIA_CORPUS.find((m) => m.id === openMedia)
 
   return (
-    <div className="aw-hex" data-testid="memory-panel">
-      <p className="aw-orbit__title">Proveniência — gravação atribuída a Mariana</p>
-      <p className="aw-provisional__note">
-        Placeholder do Puzzle 12. Reproduza, marque trechos e associe às fontes já conhecidas. Nenhuma
-        pessoa gravou organicamente essa fala naquele momento.
-      </p>
+    <div className="aw-hex" data-testid="memory-panel" style={{ opacity: uiFade && solved ? 0.92 : 1 }}>
+      <p className="aw-orbit__title">Gravação atribuída a Mariana</p>
+      {!solved ? (
+        <p className="aw-provisional__note">
+          A voz parece recente e contínua. Selecione uma janela curta e busque no acervo do caso —
+          Search Case Media. Não há caixas pré-marcadas.
+        </p>
+      ) : (
+        <p className="aw-provisional__note">
+          Não é uma gravação orgânica. É uma memória recomposta a partir do material da investigação —
+          incluindo um resultado que só existiu depois da bancada.
+        </p>
+      )}
 
       <div className="aw-hex__row" data-testid="memory-player">
-        <button
-          type="button"
-          className="pc-inline"
-          data-testid="memory-play"
-          disabled={solved}
-          onClick={() => {
-            playSfx('ui')
-            setPlaying((p) => !p)
-          }}
-        >
-          {playing ? 'Pausar' : 'Reproduzir'}
-        </button>
-        <span className="aw-provisional__note">mariana_claim_recent.wav · ~12 s</span>
+        <audio
+          ref={audioRef}
+          controls
+          src={resolveChatMediaSrc(MEMORY_FINAL_SRC)}
+          preload="metadata"
+          data-testid="memory-audio"
+          style={{ maxWidth: 360 }}
+        />
+        <span className="aw-provisional__note">
+          mariana_claim_recent.wav · {MEMORY_DURATION_SEC.toFixed(1)} s
+        </span>
       </div>
 
-      <div
-        data-testid="memory-waveform"
-        style={{
-          display: 'flex',
-          alignItems: 'flex-end',
-          gap: 2,
-          height: 56,
-          margin: '0.75rem 0',
-          padding: '0.35rem',
-          background: 'rgba(0,0,0,0.25)',
-          borderRadius: 4,
-        }}
-        aria-hidden
-      >
-        {Array.from({ length: 48 }, (_, i) => {
-          const h = 8 + ((i * 17) % 40)
-          const t = (i / 48) * 12
-          const active = sel && t >= sel.tStart && t <= sel.tEnd
-          return (
-            <span
-              key={i}
-              style={{
-                flex: 1,
-                height: h,
-                background: active ? 'rgba(180,210,200,0.85)' : 'rgba(120,140,135,0.45)',
-                borderRadius: 1,
-              }}
-            />
-          )
-        })}
-      </div>
-
-      <h4 className="pc-sub">Fontes conhecidas</h4>
-      <ul className="pc-ul" data-testid="memory-sources">
-        {MEMORY_SOURCES.map((s) => (
-          <li key={s.id}>
-            {s.id}: {s.label}
-          </li>
-        ))}
-      </ul>
-
-      <h4 className="pc-sub">Trechos</h4>
-      <ul className="pc-ul" data-testid="memory-segments">
-        {MEMORY_SEGMENTS.map((seg) => (
-          <li key={seg.id}>
+      {!uiFade || !solved ? (
+        <>
+          <h4 className="pc-sub">Seleção de janela (s)</h4>
+          <div className="fw-eq" style={{ gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+            <label>
+              início{' '}
+              <input
+                data-testid="memory-sel-start"
+                type="number"
+                min={0}
+                max={MEMORY_DURATION_SEC}
+                step={0.1}
+                value={selStart}
+                disabled={solved}
+                onChange={(e) => setSelStart(Number(e.target.value))}
+              />
+            </label>
+            <label>
+              fim{' '}
+              <input
+                data-testid="memory-sel-end"
+                type="number"
+                min={0}
+                max={MEMORY_DURATION_SEC}
+                step={0.1}
+                value={selEnd}
+                disabled={solved}
+                onChange={(e) => setSelEnd(Number(e.target.value))}
+              />
+            </label>
             <button
               type="button"
-              className="pc-inline"
-              data-testid={`memory-select-${seg.id}`}
+              className="aw-provisional__go"
+              data-testid="memory-search"
               disabled={solved}
-              onClick={() => {
-                playSfx('ui')
-                setSelected(seg.id)
-              }}
-              style={{
-                fontWeight: selected === seg.id ? 700 : 400,
-                marginRight: '0.5rem',
-              }}
+              onClick={runSearch}
             >
-              {seg.label}
+              Search Case Media
             </button>
-            <span>
-              ({seg.tStart}s–{seg.tEnd}s) — {seg.hint}
-            </span>{' '}
-            <select
-              data-testid={`memory-assign-${seg.id}`}
-              disabled={solved}
-              value={assigned[seg.id] ?? ''}
-              onChange={(e) => setSrc(seg.id, e.target.value as MemorySourceId | '')}
-            >
-              <option value="">—</option>
-              {MEMORY_SOURCES.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.id}
-                </option>
-              ))}
-            </select>
-          </li>
-        ))}
-      </ul>
+          </div>
+          <p className="aw-provisional__note">
+            Janela atual: {Math.min(selStart, selEnd).toFixed(2)}s – {Math.max(selStart, selEnd).toFixed(2)}s
+          </p>
+        </>
+      ) : null}
 
-      <h4 className="pc-sub">Painel de proveniência</h4>
-      <ul className="pc-ul" data-testid="memory-provenance">
-        {MEMORY_SEGMENTS.map((seg) => (
-          <li key={seg.id}>
-            {seg.id}: {assigned[seg.id] || '—'}
-            {assigned[seg.id] === seg.trueSource ? ' ✓' : ''}
-          </li>
-        ))}
-      </ul>
+      {hits.length > 0 && !solved ? (
+        <div data-testid="memory-hits">
+          <h4 className="pc-sub">Resultados no acervo</h4>
+          <ul className="pc-ul">
+            {hits.map((h) => (
+              <li key={h.mediaId}>
+                <button
+                  type="button"
+                  className="pc-inline"
+                  data-testid={`memory-hit-${h.mediaId}`}
+                  onClick={() => {
+                    playSfx('ui')
+                    setOpenMedia(h.mediaId)
+                  }}
+                >
+                  {h.label}
+                </button>
+                <span className="aw-provisional__note">
+                  {' '}
+                  · {h.strong ? 'forte' : 'fraca'} · {h.reason}
+                </span>
+                {h.strong ? (
+                  <button
+                    type="button"
+                    className="aw-provisional__go"
+                    data-testid={`memory-confirm-${h.source}`}
+                    data-media={h.mediaId}
+                    style={{ marginLeft: 8 }}
+                    onClick={() => confirmHit(h)}
+                  >
+                    Confirmar proveniência
+                  </button>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
 
-      {msg ? (
-        <p role="alert" data-testid="memory-error">
-          {msg}
+      {open ? (
+        <div data-testid="memory-compare" style={{ marginTop: 8 }}>
+          <h4 className="pc-sub">Comparação — {open.label}</h4>
+          <p className="aw-provisional__note">
+            {open.kind === 'derived' ? 'derived forensic output' : open.kind}
+            {open.parentLabel ? ` · parent: ${open.parentLabel}` : ''}
+            {open.createdAt ? ` · created: ${open.createdAt}` : ''}
+            {open.sha256 ? ` · sha256: ${open.sha256.slice(0, 16)}…` : ''}
+          </p>
+          {open.evidenceHint ? (
+            <p className="aw-provisional__note">{open.evidenceHint}</p>
+          ) : null}
+          <audio controls src={resolveChatMediaSrc(open.audioSrc)} preload="metadata" style={{ maxWidth: 320 }} />
+        </div>
+      ) : null}
+
+      {augustoLine ? (
+        <p data-testid="memory-augusto-line" className="aw-provisional__note" style={{ fontStyle: 'italic' }}>
+          {augustoLine}
         </p>
       ) : null}
 
+      <h4 className="pc-sub">Provenance graph</h4>
+      <div data-testid="memory-provenance-graph" style={{ marginBottom: 8 }}>
+        <div style={{ fontWeight: 600 }}>FINAL MESSAGE</div>
+        <ul className="pc-ul">
+          {confirmedList.length === 0 ? (
+            <li className="aw-provisional__note">Nenhuma ligação confirmada.</li>
+          ) : (
+            confirmedList.map((s) => (
+              <li key={s} data-testid={`memory-edge-${s}`}>
+                → {SOURCE_LABEL[s]}
+                {s === 'cassini_derived' ? (
+                  <span className="aw-provisional__note">
+                    {' '}
+                    (created {CASSINI_DERIVED_META.createdAt.slice(0, 19)} · hash{' '}
+                    {CASSINI_DERIVED_META.sha256.slice(0, 12)}…)
+                  </span>
+                ) : null}
+              </li>
+            ))
+          )}
+        </ul>
+        {temporal ? (
+          <p data-testid="memory-temporal" className="aw-provisional__note">
+            Dependência temporal: a mensagem contém um artefato que só existe no output derivado
+            produzido durante a investigação ({FINAL_MESSAGE_META.createdAt.slice(0, 19)} vs derived{' '}
+            {CASSINI_DERIVED_META.createdAt.slice(0, 19)}).
+          </p>
+        ) : null}
+      </div>
+
+      {note ? <p data-testid="memory-note">{note}</p> : null}
+
       {!solved ? (
-        <button type="button" className="aw-provisional__go" data-testid="memory-solve" onClick={trySolve}>
-          Confirmar proveniência
+        <button
+          type="button"
+          className="aw-provisional__go"
+          data-testid="memory-solve"
+          onClick={finish}
+        >
+          Formalizar conclusão — {MEMORY_WORD}
         </button>
       ) : (
         <div data-testid="memory-solved">
           <p>
-            A gravação nunca aconteceu como gravação real. Foi recombinada a partir da memória operacional do
-            caso — o mesmo repertório que Augusto investigou.
+            A última mensagem não é uma gravação de Mariana. Também não é uma imitação genérica.
+            É uma composição de coisas que realmente foram gravadas — e de um resultado que só passou
+            a existir porque a bancada o reconstruiu.
           </p>
           <p className="aw-orbit__title" data-testid="memory-word">
             {MEMORY_WORD}
           </p>
         </div>
       )}
+
+      {isDev ? (
+        <div style={{ marginTop: 16 }}>
+          <button type="button" className="aw-provisional__go" onClick={() => setDevOpen((v) => !v)}>
+            DEV MODE
+          </button>
+          {devOpen ? (
+            <pre data-testid="memory-dev" style={{ fontSize: 11, whiteSpace: 'pre-wrap' }}>
+              {JSON.stringify(
+                {
+                  regionA_source: 'apartment',
+                  regionB_source: 'emergency',
+                  regionC_source: 'enceladus',
+                  regionD_source: 'cassini_derived',
+                  fingerprintMatches: hits.map((h) => ({ id: h.mediaId, score: h.score, strong: h.strong })),
+                  confirmedProvenance: confirmedList,
+                  cassiniDerivedCreatedAt: CASSINI_DERIVED_META.createdAt,
+                  finalMessageCreatedAt: FINAL_MESSAGE_META.createdAt,
+                  impossibleTemporalDependency: temporal,
+                  memoryComplete: solved || canFinish,
+                },
+                null,
+                2,
+              )}
+            </pre>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   )
 }

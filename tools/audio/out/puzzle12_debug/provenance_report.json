@@ -1,0 +1,83 @@
+{
+  "seed": 4121212,
+  "sampleRate": 22050,
+  "durationSec": 9.2,
+  "carrier": {
+    "kind": "puzzle01_phrase_clips_concat",
+    "cleanMaster": "tools\\audio\\out\\puzzle01_reference_clean.wav",
+    "clips": [
+      "src\\assets\\audios\\p1\\mariana escute isso at\u00e9 o fim.mp3",
+      "src\\assets\\audios\\p1\\mariana - desde aquela noite.mp3",
+      "src\\assets\\audios\\p1\\mariana - eu sentia medo.mp3",
+      "src\\assets\\audios\\p1\\mariana - eu estava confusa.mp3",
+      "src\\assets\\audios\\p1\\mariana - eu n\u00e3o lembro.mp3"
+    ],
+    "noTts": true
+  },
+  "regions": {
+    "A": {
+      "start": 0.4,
+      "end": 2.1,
+      "source": "apartment",
+      "label": "Apartamento de Mariana"
+    },
+    "B": {
+      "start": 3.0,
+      "end": 3.8,
+      "source": "emergency",
+      "label": "Chamada de emerg\u00eancia 08:03"
+    },
+    "C": {
+      "start": 5.2,
+      "end": 6.5,
+      "source": "enceladus",
+      "label": "Enceladus / padr\u00e3o hospitalar"
+    },
+    "D": {
+      "start": 7.0,
+      "end": 8.4,
+      "source": "cassini_derived",
+      "label": "Cassini-Huygens \u2014 output derivado"
+    }
+  },
+  "fingerprintThreshold": 0.55,
+  "wideSelectionMaxSec": 2.6,
+  "scores": {
+    "A_apartment": 0.882618046495254,
+    "B_emergency": 0.999992450854282,
+    "C_enceladus": 0.9853575702624873,
+    "D_cassini_derived": 1.0,
+    "D_vs_capture_order": 0.6229997615708461,
+    "residualA_apartment": 0.10924923978838423,
+    "residualB_emergency": 0.992583152548033,
+    "residualC_enceladus": 0.9835928712094733,
+    "residualD_cassini_derived": 0.9999995322997722,
+    "residualD_vs_capture_order": 0.6228684854479726
+  },
+  "audio": {
+    "final": "/assets/audio/forensic/puzzle12/memory_final_message.wav",
+    "carrier": "/assets/audio/forensic/puzzle12/memory_carrier_clean.wav",
+    "apartment": "/assets/audio/forensic/puzzle12/apartment_room_reference.wav",
+    "emergency": "/assets/audio/forensic/puzzle12/emergency_fingerprint_reference.wav",
+    "enceladus": "/assets/audio/forensic/puzzle12/enceladus_pattern_reference.wav",
+    "cassiniDerived": "/assets/audio/forensic/puzzle12/cassini_derived_artifact_reference.wav",
+    "cassiniCaptureOrder": "/assets/audio/forensic/puzzle12/cassini_capture_order_contrast.wav"
+  },
+  "cassiniDerived": {
+    "path": "public\\assets\\audio\\forensic\\puzzle09\\stream_b_reconstructed.wav",
+    "publicUrl": "/assets/audio/forensic/puzzle09/stream_b_reconstructed.wav",
+    "parentPcap": "public\\assets\\audio\\forensic\\puzzle09\\hv_session_capture.pcap",
+    "parentPcapUrl": "/assets/audio/forensic/puzzle09/hv_session_capture.pcap",
+    "sha256": "3f07df54adebe98837fa9045d9d4db478a0b233ac17224e7e4e72e8388977881",
+    "createdAt": "2026-11-12T13:19:00.026835+00:00",
+    "mtime": 1794489540.0268354,
+    "kind": "derived forensic output",
+    "note": "Artifact exists only after bench reconstruction; absent from capture-order stream / raw PCAP audio."
+  },
+  "finalMessage": {
+    "sha256": "c7ee45787d9e760fba6fae86e3855b6976da1c63079f2c5a6034cc59d9f6ae97",
+    "createdAt": "2026-11-13T03:13:20.854883+00:00",
+    "path": "public/assets/audio/forensic/puzzle12/memory_final_message.wav"
+  },
+  "pcapSha256": "5e82da2c7c1b8e2c1e8dc36e3ee1721509bc40494b4edac3559a1cc9baf58349"
+}

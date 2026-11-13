@@ -96,8 +96,14 @@ test('Bloco 9 — O Omitido, morte, Puzzle 12 MEMÓRIA, estado final', async ({ 
   await openHubObject(page, 'audio-station')
   await page.getByTestId('audio-file-mariana_recent_recording_claim').click()
   await expect(page.getByTestId('memory-panel')).toBeVisible({ timeout: 10_000 })
+  // Search Case Media nas quatro janelas canônicas + confirmar proveniência
   for (const seg of MEMORY_SEGMENTS) {
-    await page.getByTestId(`memory-assign-${seg.id}`).selectOption(seg.trueSource)
+    await page.getByTestId('memory-sel-start').fill(String(seg.tStart))
+    await page.getByTestId('memory-sel-end').fill(String(seg.tEnd))
+    await page.getByTestId('memory-search').click()
+    const source =
+      seg.trueSource === 'cassini' ? 'cassini_derived' : seg.trueSource
+    await page.getByTestId(`memory-confirm-${source}`).click()
   }
   await page.getByTestId('memory-solve').click()
   await expect(page.getByTestId('memory-solved')).toBeVisible()

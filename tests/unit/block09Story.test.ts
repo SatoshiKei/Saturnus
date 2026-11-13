@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   MEMORY_SEGMENTS,
   MEMORY_WORD,
-  isMemoryProvenanceComplete,
+  isMemoryProvenanceCompleteLegacy,
 } from '../../src/data/block09/memoryPuzzle'
 import { createInitialState } from '../../src/game/state/initialState'
 import { applyStoryActions } from '../../src/game/story/actions'
@@ -142,11 +142,11 @@ describe('Bloco 9 — progressão', () => {
 
     const wrong: Record<string, string> = {}
     for (const seg of MEMORY_SEGMENTS) wrong[seg.id] = 'apartment'
-    expect(isMemoryProvenanceComplete(wrong)).toBe(false)
+    expect(isMemoryProvenanceCompleteLegacy(wrong)).toBe(false)
 
     const right: Record<string, string> = {}
     for (const seg of MEMORY_SEGMENTS) right[seg.id] = seg.trueSource
-    expect(isMemoryProvenanceComplete(right)).toBe(true)
+    expect(isMemoryProvenanceCompleteLegacy(right)).toBe(true)
 
     onMemoryPuzzleSolved()
     s = getInvestigationState()
