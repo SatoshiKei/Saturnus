@@ -1333,25 +1333,16 @@ export function Inspector({
                 </dl>
                 <button
                   type="button"
-                  className="fw-btn"
-                  data-testid="formalize-clock-offset"
-                  disabled={!clockSync.offsetValid}
-                  onClick={clockSync.onFormalizeOffset}
-                >
-                  Formalize clock difference
-                </button>
-                <button
-                  type="button"
-                  className="fw-btn"
+                  className="fw-btn fw-btn--primary"
                   data-testid="apply-clock-correction"
                   disabled={ui.formalizedClockOffsetSec == null}
                   onClick={clockSync.onApplyClockCorrection}
                 >
-                  Apply reference offset
+                  Aplicar offset de referência
                 </button>
                 {ui.findingUnlocked ? (
                   <p className="fw-muted" data-testid="timing-finding">
-                    Reference offset registered.
+                    Offset de referência aplicado.
                   </p>
                 ) : null}
               </Section>
@@ -1507,15 +1498,6 @@ export function Inspector({
                             </dd>
                           </div>
                         </dl>
-                        <button
-                          type="button"
-                          className="fw-btn"
-                          data-testid="compare-save-alignment-inspector"
-                          disabled={!clockSync.offsetValid}
-                          onClick={clockSync.onFormalizeOffset}
-                        >
-                          Registrar análise
-                        </button>
                       </Section>
                     ) : null}
                     <Section title="Link" tip="Link Source">

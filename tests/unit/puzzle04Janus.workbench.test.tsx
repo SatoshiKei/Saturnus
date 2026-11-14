@@ -107,29 +107,39 @@ describe('Puzzle 04 workbench', () => {
       />,
     )
 
-    await user.click(screen.getByRole('tab', { name: 'Timing' }))
-    expect(screen.getByTestId('timing-panel')).toBeTruthy()
+    const waveStage = document.querySelector('.fw-wave-stage')
+    expect(waveStage).toBeTruthy()
+    await act(async () => {
+      fireEvent.drop(waveStage!, {
+        dataTransfer: {
+          getData: (mime: string) =>
+            mime === 'application/x-saturnus-fw-source' ? 'janus_desk' : '',
+        },
+      })
+    })
+    expect(screen.getByTestId('timeline-multitrack')).toBeTruthy()
 
+    await user.click(screen.getByRole('tab', { name: 'Timing' }))
     const deskOffset = screen.getByTestId('timing-offset-janus_desk') as HTMLInputElement
     await act(async () => {
       fireEvent.change(deskOffset, { target: { value: '10' } })
     })
-    expect((screen.getByTestId('formalize-clock-offset') as HTMLButtonElement).disabled).toBe(true)
+    expect((screen.getByTestId('fw-save-alignment') as HTMLButtonElement).disabled).toBe(true)
     expect(onComplete).not.toHaveBeenCalled()
 
     await act(async () => {
       fireEvent.change(deskOffset, { target: { value: '450' } })
     })
-    const formalize = screen.getByTestId('formalize-clock-offset') as HTMLButtonElement
-    expect(formalize.disabled).toBe(false)
-    await user.click(formalize)
+    const saveAlign = screen.getByTestId('fw-save-alignment') as HTMLButtonElement
+    expect(saveAlign.disabled).toBe(false)
+    expect(saveAlign.dataset.state).toBe('pending')
+    await user.click(saveAlign)
+    expect(saveAlign.dataset.state).toBe('saved')
     expect(screen.getByTestId('timing-clock-difference').textContent).toMatch(/\+07:30/)
 
     await user.click(screen.getByTestId('apply-clock-correction'))
     expect(screen.getByTestId('timing-corrected-time').textContent).toMatch(/01:23:30/)
-    expect(screen.getByTestId('timing-finding').textContent).toMatch(
-      /Sandra não poderia ter visto Elisa/,
-    )
+    expect(screen.getByTestId('timing-finding').textContent).toMatch(/Offset de referência aplicado/)
     expect(onComplete).toHaveBeenCalledTimes(1)
   })
 })

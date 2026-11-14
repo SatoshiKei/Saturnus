@@ -59,6 +59,14 @@
   font-variant-numeric: tabular-nums;
 }
 
+.fw-top__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
 .fw-grid {
   display: grid;
   grid-template-columns: 13.5em minmax(0, 1fr) minmax(15.5em, 24em);
@@ -296,9 +304,61 @@
   flex-wrap: wrap;
 }
 
-.fw-timeline__save {
-  margin-left: auto;
-  font-size: 0.78em;
+.fw-save-disk {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--fw-line);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.fw-save-disk__icon {
+  width: 1rem;
+  height: 1rem;
+  display: block;
+}
+
+.fw-save-disk[data-state='pending'] {
+  color: var(--text-primary);
+  border-color: rgba(200, 150, 62, 0.55);
+  box-shadow: 0 0 0 1px rgba(200, 150, 62, 0.2);
+}
+
+.fw-save-disk[data-state='pending']:hover:not(:disabled) {
+  border-color: rgba(200, 150, 62, 0.75);
+  background: rgba(200, 150, 62, 0.1);
+}
+
+.fw-save-disk[data-state='saved'] {
+  color: var(--text-faint);
+  opacity: 0.72;
+  cursor: default;
+}
+
+.fw-save-disk[data-state='blocked'] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.fw-save-disk:disabled {
+  cursor: default;
+}
+
+.fw-align-criteria {
+  margin: 0 0.1em 0.35rem;
+  font-size: 0.68em;
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.fw-align-criteria [data-ok='true'] {
+  color: var(--accent-cold-dim);
 }
 
 .fw-multi--compare {

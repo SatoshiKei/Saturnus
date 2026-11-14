@@ -24,14 +24,13 @@ Arquivos na sessão (nomes técnicos):
   SET_LOG / INFRA — documentos .txt (sem waveform)
 
 Fluxo tutorial (overlays sobre UI real):
-1. Destacar aba Compare — «Compare permite carregar dois sinais simultaneamente.»
-2. Destacar seletor A — «Selecione um arquivo de áudio para o canal A.» (aguarda escolha)
-3. Destacar seletor B — «Selecione outro arquivo de áudio para o canal B.» (aguarda escolha)
-4. Duas waveforms na timeline (multitrack) — «Os dois sinais usam o mesmo eixo de visualização…»
-5. Primeiro uso de Clock align — «Clock align desloca temporalmente um sinal…» + «Arraste para ajustar o offset do canal B.»
-6. Formalizar — «Alignment saved» (sem conclusão narrativa na bancada)
+1. Abrir o primeiro áudio — waveform única na timeline (como P1–P3).
+2. Arrastar o segundo áudio da gaveta Files para a timeline — ativa Compare (duas faixas, mesma régua).
+3. Clock align — arrastar a protuberância / faixa até Δ colocação < 0,2 s (métricas compactas sob a timeline).
+4. Salvar — ícone de disquete no cabeçalho (só quando Δ válido; estado salvo sem aura; nova edição reabre pendência).
+5. Timing — «Aplicar offset de referência» para ancorar o set log na hora real corrigida.
 
 Ferramentas globais:
-  Compare, Clock align, Timing (Apply reference offset / clock correction genérico), File para documentos.
+  Compare (por arraste), Clock align, Timing, Files (.txt sem waveform).
 
 Investigação (Caderno / timeline) recebe finding após handler — não a bancada.

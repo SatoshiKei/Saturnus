@@ -32,7 +32,7 @@ export async function completeJanusOnWorkbench(page: Page) {
   await page.getByRole('tab', { name: 'Timing' }).click()
   await expect(page.getByTestId('timing-panel')).toBeVisible()
   await page.getByTestId('timing-offset-janus_desk').fill('450')
-  await page.getByTestId('formalize-clock-offset').click()
+  await page.getByTestId('fw-save-alignment').click()
   await expect(page.getByTestId('timing-clock-difference')).toContainText('+07:30')
   await page.getByTestId('apply-clock-correction').click()
   await expect(page.getByTestId('timing-corrected-time')).toContainText('01:23:30')

@@ -688,6 +688,19 @@ export function ForensicWorkbench({
     patchUi({ playheadSec: t })
   }
 
+  const alignFormalized = ui.formalizedClockOffsetSec != null
+  const saveAlignPending = offsetValid && !alignFormalized
+
+  const formalizeAlign = () => {
+    if (alignFormalized) return
+    if (!offsetValid) {
+      setStatus('Alinhamento impreciso — ajuste as faixas (Δ < 0,2 s).')
+      return
+    }
+    patchUi({ formalizedClockOffsetSec: expectedOffset })
+    setStatus('Alinhamento salvo.')
+  }
+
   const absorbCompareSource = (sourceId: string) => {
     const src = liveSession.sources.find((s) => s.id === sourceId)
     if (!src?.audio) return
@@ -731,9 +744,36 @@ export function ForensicWorkbench({
           </span>
         </div>
         {showDebug && devToolbar ? <div className="fw-top__dev">{devToolbar}</div> : null}
-        <button type="button" className="fw-btn fw-btn--ghost" onClick={onClose}>
-          Fechar
-        </button>
+        <div className="fw-top__actions">
+          {isClockSync && compareDual ? (
+            <button
+              type="button"
+              className="fw-save-disk"
+              data-testid="fw-save-alignment"
+              data-state={alignFormalized ? 'saved' : saveAlignPending ? 'pending' : 'blocked'}
+              disabled={!saveAlignPending}
+              title={
+                alignFormalized
+                  ? 'Alinhamento salvo'
+                  : saveAlignPending
+                    ? 'Salvar alinhamento'
+                    : 'Alinhe as faixas antes de salvar'
+              }
+              aria-label={alignFormalized ? 'Alinhamento salvo' : 'Salvar alinhamento'}
+              onClick={formalizeAlign}
+            >
+              <svg className="fw-save-disk__icon" viewBox="0 0 16 16" aria-hidden>
+                <path
+                  fill="currentColor"
+                  d="M2 1.5h7.5L14 6v8.5H2V1.5zm2 0V5h5V1.5H4zM4 8.5h8V13H4V8.5z"
+                />
+              </svg>
+            </button>
+          ) : null}
+          <button type="button" className="fw-btn fw-btn--ghost" onClick={onClose}>
+            Fechar
+          </button>
+        </div>
       </header>
 
       <div className="fw-grid">
@@ -900,19 +940,16 @@ export function ForensicWorkbench({
                     ? absorbCompareSource
                     : undefined
                 }
-                onFormalizeCompare={
+                alignCriteria={
                   isClockSync && compareDual
-                    ? () => {
-                        if (!offsetValid) {
-                          setStatus('Alinhamento insuficiente para registrar.')
-                          return
-                        }
-                        patchUi({ formalizedClockOffsetSec: expectedOffset })
-                        setStatus('Análise registrada')
+                    ? {
+                        deltaSec: Math.abs(placementDelta),
+                        correlation,
+                        toleranceSec: session.completion?.offsetToleranceSec ?? 0.2,
+                        valid: offsetValid,
                       }
                     : undefined
                 }
-                formalizeCompareDisabled={!offsetValid}
               />
             ) : null}
           </main>
@@ -1090,20 +1127,10 @@ export function ForensicWorkbench({
                   expectedOffsetSec: expectedOffset,
                   placementDeltaSec: placementDelta,
                   currentClockOffsetSec: expectedOffset,
-                  onFormalizeOffset: () => {
-                    if (!offsetValid) {
-                      setStatus('Alignment insufficient to formalize clock difference.')
-                      return
-                    }
-                    setUi((u) => ({
-                      ...u,
-                      formalizedClockOffsetSec: expectedOffset,
-                    }))
-                    setStatus('Alignment saved')
-                  },
+                  onFormalizeOffset: formalizeAlign,
                   onApplyClockCorrection: () => {
                     if (ui.formalizedClockOffsetSec == null) {
-                      setStatus('Formalize clock difference before applying correction.')
+                      setStatus('Salve o alinhamento no cabeçalho antes de aplicar o offset.')
                       return
                     }
                     const setLog =
@@ -1123,7 +1150,7 @@ export function ForensicWorkbench({
                       correctedSetTime: corrected,
                       findingUnlocked: true,
                     }))
-                    setStatus(`Reference offset applied — ${corrected}`)
+                    setStatus(`Offset de referência aplicado — ${corrected}`)
                   },
                   onSetTimingReference: (id) => patchUi({ timingReferenceSourceId: id }),
                   onSetSourceOffset: (id, sec) =>

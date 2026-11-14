@@ -41,8 +41,7 @@ export function Timeline({
   playing = false,
   compareBar,
   onCompareDrop,
-  onFormalizeCompare,
-  formalizeCompareDisabled,
+  alignCriteria,
 }: {
   durationSec: number
   playheadSec: number
@@ -68,8 +67,12 @@ export function Timeline({
   playing?: boolean
   compareBar?: { a: string; b: string }
   onCompareDrop?: (sourceId: string) => void
-  onFormalizeCompare?: () => void
-  formalizeCompareDisabled?: boolean
+  alignCriteria?: {
+    deltaSec: number
+    correlation: number
+    toleranceSec: number
+    valid: boolean
+  }
 }) {
   const rootRef = useRef<HTMLDivElement>(null)
   const multiRef = useRef<HTMLDivElement>(null)
@@ -160,17 +163,6 @@ export function Timeline({
             onChange={(e) => onWaveformZoomY(Number(e.target.value))}
           />
         </label>
-        {onFormalizeCompare ? (
-          <button
-            type="button"
-            className="fw-btn fw-timeline__save"
-            data-testid="compare-save-alignment"
-            disabled={formalizeCompareDisabled}
-            onClick={onFormalizeCompare}
-          >
-            Registrar análise
-          </button>
-        ) : null}
       </div>
 
       <div
@@ -209,6 +201,15 @@ export function Timeline({
           />
         ))}
       </div>
+
+      {alignCriteria ? (
+        <p className="fw-align-criteria" data-testid="fw-align-criteria">
+          <span data-ok={alignCriteria.valid}>
+            Δ {alignCriteria.deltaSec.toFixed(2)} s
+          </span>
+          <span> · r {alignCriteria.correlation.toFixed(2)}</span>
+        </p>
+      ) : null}
 
       {compareBar ? (
         <div className="fw-compare-bar" data-testid="fw-compare-bar">
