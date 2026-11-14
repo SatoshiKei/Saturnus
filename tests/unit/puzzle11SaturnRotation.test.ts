@@ -150,7 +150,7 @@ describe('Puzzle 11 — ROTAÇÃO DE SATURNO', () => {
     expect(puzzle01CassiniSession.id).toBeTruthy()
     expect(puzzle09CassiniHuygensSession.id).toBeTruthy()
     expect(getForensicSessionForEvidence('emergency_call_raw')).toBeTruthy()
-    const ev = seedEvidenceCatalog.find((e) => e.id === 'police_clock_drift_logs')!
+    const ev = seedEvidenceCatalog.find((e) => e.id === 'rui_police_approach_records')!
     expect(ev.puzzleMeta?.puzzleId).toBe('puzzle-11-rotation')
     expect(ROTATION_CALLSIGN).toBe('VTR-14')
   })

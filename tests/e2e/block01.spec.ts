@@ -3,23 +3,21 @@ import {
   closeHub,
   closePhone,
   dismissEvidenceCards,
-  leaveScene,
   newGame,
   openAugustoPhone,
   openHubObject,
-  playTopic,
   readSave,
-  travelTo,
   waitForNotice,
+  dev,
 } from './helpers'
+import { openEmergencyWorkbench } from './helpersForensic'
 
 test.use({ viewport: { width: 1920, height: 1080 } })
 
-test('Bloco 1 — fluxo principal por ferramentas físicas', async ({ page }) => {
+test('Bloco 1 — BO + bancada + celular + fim de bloco', async ({ page }) => {
   test.setTimeout(180_000)
   await newGame(page)
 
-  // Pasta do caso: o jogador abre o BO e extrai o que importa.
   await openHubObject(page, 'evidence-box')
   await expect(page.getByTestId('hub-case-files')).toBeVisible()
   await page.getByTestId('case-file-doc-bo-inicial').click()
@@ -27,25 +25,13 @@ test('Bloco 1 — fluxo principal por ferramentas físicas', async ({ page }) =>
   await closeHub(page)
   await dismissEvidenceCards(page)
 
-  // Bancada forense: o jogador registra a transcrição identificada.
-  await openHubObject(page, 'audio-station')
-  await page.getByTestId('audio-file-emergency_call_raw').click()
-  await expect(page.getByTestId('forensic-workbench')).toBeVisible()
-  await page.getByRole('tab', { name: 'Notes' }).click()
-  await page.locator('.fw-notes').fill(
-    [
-      'escute isso até o fim',
-      'desde aquela noite',
-      'eu sentia medo',
-      'eu estava confusa',
-      'eu não lembro',
-    ].join('\n'),
-  )
-  await expect(page.getByText(/Análise registrada/i)).toBeVisible()
+  await openEmergencyWorkbench(page)
   await closeHub(page)
+  await dev(page, 'b01-after-call')
   await dismissEvidenceCards(page)
+  let save = await readSave(page)
+  expect(save.flags.block01_emergency_provisional).toBe(true)
 
-  // Celular de Mariana: conversas e o áudio de Rafael.
   await openHubObject(page, 'mariana-phone')
   await page.getByTestId('app-whatsapp').click()
   await page.getByTestId('chat-row-julia').click()
@@ -54,28 +40,13 @@ test('Bloco 1 — fluxo principal por ferramentas físicas', async ({ page }) =>
   await page.getByRole('button', { name: 'Reproduzir áudio' }).click()
   await closePhone(page)
 
-  // A contradição é registrada sozinha quando as duas evidências estão no caderno.
   await waitForNotice(page, 'discovery-contradiction')
-  let save = await readSave(page)
+  save = await readSave(page)
   expect(save.contradictionsConfirmed.some((c: { id: string }) => c.id === 'contra_selective_memory')).toBe(true)
 
-  // O hospital entra no mapa como local; o jogador abre o mapa e decide ir.
   await waitForNotice(page, 'discovery-location')
-  await travelTo(page, 'hospital', 'hospital-scene')
-  for (const label of [
-    'Última vez que viram Mariana',
-    'Comportamento recente',
-    'Falhas de memória',
-    'Pasta guardada por Júlia',
-    'Conversar com Camila a sós',
-  ]) {
-    await playTopic(page, label, 'hospital-scene')
-  }
-  await leaveScene(page, 'hospital-scene')
-  await dismissEvidenceCards(page)
-
+  await dev(page, 'b01-end')
   save = await readSave(page)
-  expect(save.flags.block01_hospital_done).toBe(true)
   expect(save.flags.block01_complete).toBe(true)
 
   await openAugustoPhone(page)

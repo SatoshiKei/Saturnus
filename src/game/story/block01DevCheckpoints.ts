@@ -60,7 +60,6 @@ export const block01DevCheckpoints: { id: string; label: string; actions: StoryA
     label: 'Após entrevistas',
     actions: [
       { type: 'setFlag', id: 'block01_hospital_done', value: true },
-      { type: 'addEvidence', id: 'julia_kept_folder' },
       { type: 'addEvidence', id: 'camila_witness_note' },
     ],
   },

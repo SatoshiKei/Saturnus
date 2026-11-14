@@ -43,8 +43,8 @@ Objetivo: entender o básico do caso e sair do hospital com um próximo passo cl
    - última vez que viram Mariana  
    - comportamento recente  
    - falhas de memória  
-   - pasta que Júlia guardava  
    - falar com Camila a sós  
+
 7. Encerre a visita. O primeiro bloco termina; Rafael fica disponível no WhatsApp do Augusto (a conversa ainda está vazia — você é quem começa depois).
 
 ---
@@ -60,9 +60,9 @@ No fim: você entende que Mariana investigava o caso Elisa por conta própria, e
 
 ### Trilha do Vértice
 
-1. Celular **do Augusto** → WhatsApp → **Rafael** → ouça o áudio que ele encaminhou.  
+1. Celular **do Augusto** → WhatsApp → **Rafael** → ouça o áudio de Rafael (análise prévia de um material que Mariana tinha mostrado a ele — não é a gravação da balada).  
 2. **Bancada** → mesmo áudio → análise provisória. Isso coloca o **Vértice** no mapa.  
-3. **Mapa** → Vértice. Fale com Iara, Sandro e Caio, pergunte a Sandro por que Mariana se interessou pelo lugar, e por fim **consulte os arquivos antigos** (é assim que Nico entra no radar).
+3. **Mapa** → Vértice. Fale com Iara, Sandro e Caio, pergunte a Sandro por que Mariana se interessou pelo lugar, e por fim **consulte os arquivos antigos** (Augusto obtém REC_VTX_OLD_01 no local → Bancada/P03 → Nico).
 
 ### Trilha Paula → Lucas → Elisa
 
@@ -194,7 +194,7 @@ Muitos passos estão na aba **Caso** do monitor; o WhatsApp do Augusto ganha men
 Todos ficam na **bancada**, em “análise provisória”, até existir versão final no roteiro:
 
 - Bloco 1 — ligação de emergência  
-- Bloco 2 — áudio encaminhado pelo Rafael (abre o Vértice)  
+- Bloco 2 — áudio de Rafael / análise (abre o Vértice); arquivo histórico no Vértice (P03)  
 - Bloco 3 — Janus (duas gravações do Nico); Saturnalia (rádio da Lívia)  
 - Bloco 4 — Hexágono (six áudios → PIN do diário **481526**)  
 - Bloco 6 — Luas Pastoras (interceptações → Galpão 17)  

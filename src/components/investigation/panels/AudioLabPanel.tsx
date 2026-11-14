@@ -99,7 +99,7 @@ const filters: { id: Filter; label: string }[] = [
 
 function analysisState(id: string, flags: Record<string, boolean>): AnalysisState {
   if (id === 'emergency_call_raw') return flags.block01_emergency_provisional ? 'done' : 'pending'
-  if (id === 'rafael_forward_from_mariana' || id === 'rafael_audio_reply')
+  if (id === 'rafael_voice_to_augusto' || id === 'rafael_audio_reply')
     return flags.block02_rafael_forward_provisional ? 'done' : 'pending'
   if (id === 'rec_vtx_old_01') return flags.block02_rings_provisional ? 'done' : 'pending'
   if (id === 'nico_recording_booth') return flags.block03_janus_done ? 'done' : 'pending'
@@ -110,7 +110,7 @@ function analysisState(id: string, flags: Record<string, boolean>): AnalysisStat
   if (id === 'anon_hospital_burst_audio') return flags.block07_enceladus_done ? 'done' : 'pending'
   if (id === 'henrique_rtp_capture') return flags.block07_cassini_done ? 'done' : 'pending'
   if (id === 'protest_heterogeneous_sources') return flags.block08_rings_done ? 'done' : 'pending'
-  if (id === 'police_clock_drift_logs') return flags.block08_rotation_done ? 'done' : 'pending'
+  if (id === 'rui_police_approach_records') return flags.block08_rotation_done ? 'done' : 'pending'
   if (id === 'mariana_recent_recording_claim') return flags.block09_memory_done ? 'done' : 'pending'
   return 'none'
 }
@@ -129,7 +129,7 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
   const emergencyProvisionalDone = inv.flags.block01_emergency_provisional
   const rafaelForwardProvisionalDone = inv.flags.block02_rafael_forward_provisional
   // Mais recente primeiro (ordem de aquisição invertida).
-  const hasRafaelForward = inv.evidenceOwned.includes('rafael_forward_from_mariana')
+  const hasRafaelForward = inv.evidenceOwned.includes('rafael_voice_to_augusto')
   const allFiles = [...inv.evidenceOwned]
     .reverse()
     .map((id) => inv.evidence[id])
@@ -163,7 +163,7 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
   const showRings =
     Boolean(inv.flags.block08_rings_available) && current?.id === 'protest_heterogeneous_sources'
   const showRotation =
-    Boolean(inv.flags.block08_rotation_available) && current?.id === 'police_clock_drift_logs'
+    Boolean(inv.flags.block08_rotation_available) && current?.id === 'rui_police_approach_records'
   const showMemory =
     Boolean(inv.flags.block09_memory_available) && current?.id === 'mariana_recent_recording_claim'
   const showUnknownAnalyze = current?.id === 'unknown_contact_recording'
@@ -417,7 +417,7 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                 </>
               ) : null}
 
-              {!getForensicSessionForEvidence(current.id) && current.id === 'rafael_forward_from_mariana' &&
+              {!getForensicSessionForEvidence(current.id) && current.id === 'rafael_voice_to_augusto' &&
               current.puzzleMeta?.implementation === 'placeholder' ? (
                 <div className="aw-provisional" data-testid="rafael-forward-provisional-panel">
                   <p className="aw-provisional__note">

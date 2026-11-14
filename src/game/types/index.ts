@@ -396,6 +396,22 @@ export interface InvestigationState {
     string,
     { rebuilt: boolean; sequences: Record<string, number> }
   >
+  /**
+   * Artefatos derivados produzidos na bancada (ex.: stream B do Puzzle 09).
+   * Persistidos no save — Puzzle 12 consulta o artifact runtime, não só meta de build.
+   */
+  forensicDerivedArtifacts?: Record<string, ForensicDerivedArtifact>
+}
+
+export interface ForensicDerivedArtifact {
+  id: string
+  kind: 'cassini-stream-b'
+  contentHash: string
+  createdAtMs: number
+  parentSourceId: string
+  ssrc: string
+  reconstructionOrder: 'sequence' | 'capture' | 'time'
+  audioSrc: string
 }
 
 export interface DiscoveryEvent {

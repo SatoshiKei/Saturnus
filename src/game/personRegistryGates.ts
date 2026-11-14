@@ -17,8 +17,8 @@ export const personRegistryFlag: Record<string, string> = {
   caio: 'block02_vertice_caio',
   livia: 'block03_maralto_researched',
   morsa: 'block03_saturnalia_done',
-  /** Samuel: Saturnalia OU visita acidental (Marcelo). */
-  samuel: 'block03_saturnalia_done',
+  /** Samuel: ocorrência/detidos (ou visita acidental Marcelo) — não Saturnalia sozinho. */
+  samuel: 'block04_samuel_search_unlocked',
   jana: 'block05_jana_search_unlocked',
   geraldo: 'block06_geraldo_search_unlocked',
   valter: 'block06_jana_followup_done',
@@ -72,10 +72,9 @@ export function isPersonVisibleInRegistry(personId: string, inv: InvestigationSt
     )
   }
 
-  // Samuel: Saturnalia / protestos OU visita acidental.
+  // Samuel: lista de detidos / ficha / visita acidental — nunca só Saturnalia.
   if (personId === 'samuel') {
     return (
-      Boolean(inv.flags.block03_saturnalia_done) ||
       Boolean(inv.flags.block04_samuel_search_unlocked) ||
       Boolean(inv.flags.samuel_accidental_done) ||
       knowsTerm(inv, 'samuel') ||

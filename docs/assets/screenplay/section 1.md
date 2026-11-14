@@ -1,3 +1,6 @@
+> **LEGACY / OUTDATED** — screenplay snapshot. Não é canon atual.
+> A pasta entregue a Júlia / `julia_folder` foi removida do runtime e dos walkthroughs vigentes.
+
 ## Abertura
 
 Tela preta.

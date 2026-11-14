@@ -21,7 +21,7 @@ export const block02DevCheckpoints: { id: string; label: string; actions: StoryA
     label: 'Após Rafael (áudio recebido)',
     actions: [
       { type: 'setFlag', id: 'block02_rafael_forward_received', value: true },
-      { type: 'addEvidence', id: 'rafael_forward_from_mariana' },
+      { type: 'addEvidence', id: 'rafael_voice_to_augusto' },
       { type: 'completeTask', id: 'task_rafael_recording' },
     ],
   },

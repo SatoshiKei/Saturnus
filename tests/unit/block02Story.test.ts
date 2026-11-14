@@ -22,7 +22,7 @@ describe('Bloco 2 — progressão', () => {
     resetGame()
     __setStateForTests(
       applyStoryActions(getInvestigationState(), [
-        { type: 'addEvidence', id: 'rafael_forward_from_mariana' },
+        { type: 'addEvidence', id: 'rafael_voice_to_augusto' },
       ]),
     )
     runProvisionalRafaelForwardAnalysis()
@@ -92,7 +92,7 @@ describe('Bloco 2 — progressão', () => {
     resetGame()
     onRafaelForwardAudioPlayed()
     onRafaelForwardAudioPlayed()
-    expect(getInvestigationState().evidenceOwned.filter((id) => id === 'rafael_forward_from_mariana').length).toBe(1)
+    expect(getInvestigationState().evidenceOwned.filter((id) => id === 'rafael_voice_to_augusto').length).toBe(1)
   })
 
   it('trigger block02_unlock_paula com nota quarta', () => {

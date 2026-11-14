@@ -15,8 +15,27 @@ export const puzzle04FindingText =
   'Sandra não poderia ter visto Elisa no primeiro avistamento.'
 
 export const puzzle04SetLogVerticeTime = '01:16:00'
-export const puzzle04CorrectedRealTime = '01:23:30'
 export const puzzle04SandraApproxTime = '~01:16'
+
+/** Deriva horário real a partir do set log (relógio Vertice) + offset formalizado. */
+export function deriveCorrectedRealTime(
+  setLogVerticeTime: string,
+  offsetSec: number,
+): string {
+  const m = /^(\d{1,2}):(\d{2}):(\d{2})$/.exec(setLogVerticeTime.trim())
+  if (!m) return setLogVerticeTime
+  const total =
+    Number(m[1]) * 3600 + Number(m[2]) * 60 + Number(m[3]) + Math.round(offsetSec)
+  const h = Math.floor(total / 3600) % 24
+  const min = Math.floor((total % 3600) / 60)
+  const sec = total % 60
+  return `${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
+}
+
+export const puzzle04CorrectedRealTime = deriveCorrectedRealTime(
+  puzzle04SetLogVerticeTime,
+  puzzle04ExpectedOffsetSec,
+)
 
 const PHONE_SRC = '/assets/audio/forensic/puzzle04/puzzle04_phone_source.wav'
 const DESK_SRC = '/assets/audio/forensic/puzzle04/puzzle04_desk_source.mp3'

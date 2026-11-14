@@ -24,11 +24,11 @@ import {
   finishAndreInterview,
   finishSamuelInterview,
   onDiaryEntryRead,
-  onHexagonSolved,
   onHexCallAnswered,
   onHexCallsPreserved,
   onUnknownRecordingAnalyzed,
   onUnknownRecordingFound,
+  runHexagonSpectrogramSurvey,
 } from '../../src/game/story/block04Handlers'
 
 function seedBlock04Start() {
@@ -166,17 +166,27 @@ describe('Bloco 4 — progressão', () => {
     }
   })
 
-  it('Puzzle 6 exige os seis áudios e libera o pedido de perícia', () => {
+  it('Puzzle 6: survey exige os seis áudios; PIN resolve o hexágono', () => {
     seedBlock04Start()
-    onHexagonSolved()
+    runHexagonSpectrogramSurvey()
+    expect(getInvestigationState().flags.block04_hex_spectrograms_inspected).toBeFalsy()
     expect(getInvestigationState().flags.block04_hexagon_done).toBeFalsy()
 
     onHexCallsPreserved()
-    onHexagonSolved()
-    const s = getInvestigationState()
-    expect(s.flags.block04_hexagon_done).toBe(true)
+    runHexagonSpectrogramSurvey()
+    let s = getInvestigationState()
+    expect(s.flags.block04_hex_spectrograms_inspected).toBe(true)
+    expect(s.flags.block04_hexagon_done).toBeFalsy()
     expect(s.evidenceOwned).toContain('hex_spectral_patterns')
     expect(s.flags.block04_forensics_unlocked).toBe(true)
+
+    dispatchActions([
+      { type: 'setFlag', id: 'block04_forensics_access', value: true },
+      { type: 'setFlag', id: 'block04_diary_icon_revealed', value: true },
+    ])
+    expect(tryDiaryPin(HEX_PIN)).toBe('unlocked')
+    s = getInvestigationState()
+    expect(s.flags.block04_hexagon_done).toBe(true)
   })
 
   it('perícia: pode ser pedida cedo; laudo libera o acesso; PIN errado falha, 481526 abre', () => {
@@ -190,7 +200,7 @@ describe('Bloco 4 — progressão', () => {
     expect(getInvestigationState().phones.mariana.diaryUnlocked).toBeFalsy()
 
     onHexCallsPreserved()
-    onHexagonSolved()
+    runHexagonSpectrogramSurvey()
     expect(call.available(getInvestigationState())).toBe(true)
     dispatchActions(call.onComplete)
     openDocument('doc-laudo-forense')

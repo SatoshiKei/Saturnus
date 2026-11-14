@@ -1,9 +1,19 @@
-import type { AudioAssetConfig, ProcessParams, StemConfig, StemId } from './forensicTypes'
+import type {
+  AudioAssetConfig,
+  ProcessParams,
+  SelectionRange,
+  StemConfig,
+  StemId,
+} from './forensicTypes'
 import { computeStemGains, evaluateSegmentClarity } from './forensicEngine'
 import type { NoiseProfileState, SpeechSegment } from './forensicTypes'
 import {
+  applyBufferProcess,
   clipPlaybackGain,
   computeSpectrogramFromSamples,
+  measurePeak,
+  normalizePeakGain,
+  regionSampleRange,
   renderBackgroundNoise,
   renderClicks,
   renderTone,
@@ -79,6 +89,8 @@ export class ForensicAudioEngine {
     profile: NoiseProfileState | null
     muted: boolean
   } | null = null
+  /** Região de Reverse / Normalize / Fade (seleção da UI, ou null = arquivo inteiro). */
+  private processRegion: SelectionRange | null = null
   /** Limite de decode (container danificado). null = duração total. */
   private playableUntilSec: number | null = null
 
@@ -344,77 +356,34 @@ export class ForensicAudioEngine {
     return this.startOffsetSec + elapsed
   }
 
-  applyProcess(process: ProcessParams, profile: NoiseProfileState | null, muted: boolean) {
+  setProcessRegion(region: SelectionRange | null) {
+    const prev = this.processRegion
+    this.processRegion = region
+    if (!this.playing || !this.lastApply) return
+    if (sameRegion(prev, region)) return
+    // Reverse / normalize / fade are baked into scheduled buffers.
+    void this.play(this.getCurrentTime(), this.loop, region)
+  }
+
+  applyProcess(
+    process: ProcessParams,
+    profile: NoiseProfileState | null,
+    muted: boolean,
+    region?: SelectionRange | null,
+  ) {
+    const prevProcess = this.lastApply?.process ?? null
+    const prevRegion = this.processRegion
+    if (region !== undefined) this.processRegion = region
+    const dspChanged = bufferDspChanged(prevProcess, process)
+    const regionChanged = region !== undefined && !sameRegion(prevRegion, region)
+
     this.lastApply = { process, profile, muted }
-    if (!this.ctx || !this.filters || !this.master || !this.panNode || !this.asset) return
-    const base: Record<StemId, number> = {
-      FILE: 1,
-      CORRUPTED_BASE: 1,
-      VOICE: 1,
-      BACKGROUND_NOISE: 1,
-      TONE_1700: 1,
-      VOCAL_DEBRIS: 1,
-      CLICKS: 1,
+    this.applyProcessLive(process, profile, muted)
+
+    // Reverse / normalize / fade are sample-domain — rebuild graph when they change.
+    if ((dspChanged || regionChanged) && this.playing) {
+      void this.play(this.getCurrentTime(), this.loop, this.loopSel)
     }
-    for (const s of this.asset.stems) base[s.id] = s.initialGain
-    const rules = { notch: this.asset.notch, spectral: this.asset.spectral }
-    const gains = computeStemGains(base, process, profile, rules)
-    for (const [id, g] of Object.entries(gains) as [StemId, number][]) {
-      const node = this.stemGains.get(id)
-      if (node) node.gain.value = muted ? 0 : g
-    }
-
-    // Presença limpa por fragmento — acompanha o score do segmento.
-    for (const stem of this.asset.stems) {
-      if (stem.kind !== 'clips') continue
-      for (const clip of stem.clips ?? []) {
-        const seg =
-          this.speechSegments.find((s) => s.clipId === clip.id) ??
-          this.speechSegments.find((s) => Math.abs(s.startSec - clip.startSec) < 0.05)
-        const baseClip = this.clipGains.get(clip.id) ?? Math.pow(10, (clip.gainDb ?? 0) / 20)
-        let mul = 0.02
-        if (seg && !process.bypass) {
-          const clarity = evaluateSegmentClarity(seg, process, profile, base, rules)
-          // effectiveVoiceGain já inclui voiceDamage do perfil contaminado.
-          mul = clarity.effectiveVoiceGain
-        } else if (process.bypass) {
-          mul = 0.02
-        }
-        const node = this.clipGainNodes.get(clip.id)
-        if (node) node.gain.value = muted ? 0 : baseClip * mul
-      }
-    }
-
-    if (process.bypass) {
-      this.filters.hp.frequency.value = 20
-      this.filters.lp.frequency.value = 20000
-      this.filters.notch.gain.value = 0
-      this.reconnectFilterChain(false)
-      for (const eq of this.eqNodes) eq.node.gain.value = 0
-      this.panNode.pan.value = 0
-      return
-    }
-
-    this.filters.hp.frequency.value = Math.max(20, process.highPassHz)
-    this.filters.lp.frequency.value = Math.min(20000, process.lowPassHz)
-
-    const useBp = process.bandPassLowHz > 40 || process.bandPassHighHz < 18000
-    if (useBp !== !this.bpPassthrough) this.reconnectFilterChain(useBp)
-    if (useBp) {
-      const center = (process.bandPassLowHz + process.bandPassHighHz) / 2
-      const width = Math.max(1, process.bandPassHighHz - process.bandPassLowHz)
-      this.filters.bp.frequency.value = center
-      this.filters.bp.Q.value = center / width
-    }
-
-    this.filters.notch.frequency.value = Math.max(20, process.notchCenterHz)
-    const q = process.notchCenterHz / Math.max(10, process.notchWidthHz)
-    this.filters.notch.Q.value = Math.min(40, Math.max(0.3, q))
-    this.filters.notch.gain.value = process.notchReductionDb
-
-    for (const eq of this.eqNodes) eq.node.gain.value = process.eqBands[eq.band] ?? 0
-
-    this.panNode.pan.value = Math.max(-1, Math.min(1, process.pan / 100))
   }
 
   setPlaybackRate(rate: number) {
@@ -436,11 +405,15 @@ export class ForensicAudioEngine {
     this.stopInternal()
     this.loop = loop
     this.loopSel = sel
+    // Selection drives Reverse / Normalize / Fade even when loop is off.
+    this.processRegion = sel
     const start = Math.max(0, fromSec)
     this.startOffsetSec = start
     this.startCtxTime = this.ctx!.currentTime
     this.playing = true
     this.clipGainNodes.clear()
+
+    const sharedNorm = this.sharedNormalizeGain()
 
     for (const stem of this.asset.stems) {
       const g = this.ctx!.createGain()
@@ -449,22 +422,73 @@ export class ForensicAudioEngine {
       // Tom entra depois do Notch no bus; o restante (incl. base corrompida) passa pelos filtros.
       const dest = stem.kind === 'tone' ? this.toneBus : this.bus
       g.connect(dest)
-      this.scheduleStem(stem, g, start)
+      this.scheduleStem(stem, g, start, sharedNorm)
     }
 
     if (this.lastApply) {
       const { process, profile, muted } = this.lastApply
-      this.applyProcess(process, profile, muted)
+      // Avoid recursive rebuild — DSP already baked into scheduled buffers.
+      this.applyProcessLive(process, profile, muted)
     }
     this.tickLoop()
   }
 
-  private scheduleStem(stem: StemConfig, dest: GainNode, fromSec: number) {
+  /** Peak-normalize gain shared across stems so relative mix balance is preserved. */
+  private sharedNormalizeGain(): number {
+    const process = this.lastApply?.process
+    if (!process || process.bypass) return 1
+    const sampleRate = this.ctx?.sampleRate ?? 48000
+    const region = this.effectiveProcessRegion()
+    let peak = 0
+    for (const buf of this.procedural.values()) {
+      const data = buf.getChannelData(0)
+      const { start, end } = regionSampleRange(sampleRate, data.length, region, this.durationSec)
+      peak = Math.max(peak, measurePeak(data, start, end))
+    }
+    return normalizePeakGain(peak, process.normalizePeak, 1)
+  }
+
+  private effectiveProcessRegion(): SelectionRange | null {
+    if (this.processRegion) return this.processRegion
+    const limit =
+      this.playableUntilSec == null ? this.durationSec : Math.min(this.durationSec, this.playableUntilSec)
+    return { startSec: 0, endSec: limit }
+  }
+
+  private processAudioBuffer(
+    buf: WebAudioBuffer,
+    sharedNorm: number,
+    localRegion: SelectionRange | null,
+  ): WebAudioBuffer {
+    const process = this.lastApply?.process
+    if (!process || process.bypass) return buf
+    const data = this.mono(buf)
+    const processed = applyBufferProcess(
+      data,
+      buf.sampleRate,
+      process,
+      localRegion,
+      data.length / buf.sampleRate,
+      sharedNorm,
+    )
+    return this.bufferFrom(processed, buf.sampleRate)
+  }
+
+  private scheduleStem(stem: StemConfig, dest: GainNode, fromSec: number, sharedNorm: number) {
     const ctx = this.ctx!
+    const region = this.effectiveProcessRegion()
     if (stem.kind === 'clips' && stem.clips) {
       for (const clip of stem.clips) {
-        const buf = this.decoded.get(clip.src)
-        if (!buf) continue
+        const raw = this.decoded.get(clip.src)
+        if (!raw) continue
+        // Map timeline selection into clip-local time for DSP.
+        const localRegion: SelectionRange | null = region
+          ? {
+              startSec: Math.max(0, region.startSec - clip.startSec),
+              endSec: Math.max(0, region.endSec - clip.startSec),
+            }
+          : null
+        const buf = this.processAudioBuffer(raw, sharedNorm, localRegion)
         const clipDur = buf.duration
         const clipEnd = clip.startSec + clipDur
         if (clipEnd <= fromSec) continue
@@ -498,11 +522,18 @@ export class ForensicAudioEngine {
 
     if (stem.kind === 'debris') {
       for (const piece of this.debris) {
-        const dur = piece.buffer.duration
+        const localRegion: SelectionRange | null = region
+          ? {
+              startSec: Math.max(0, region.startSec - piece.timelineSec),
+              endSec: Math.max(0, region.endSec - piece.timelineSec),
+            }
+          : null
+        const buf = this.processAudioBuffer(piece.buffer, sharedNorm, localRegion)
+        const dur = buf.duration
         const end = piece.timelineSec + dur
         if (end <= fromSec) continue
         const src = ctx.createBufferSource()
-        src.buffer = piece.buffer
+        src.buffer = buf
         src.playbackRate.value = this.rate
         const g = ctx.createGain()
         g.gain.value = piece.gain
@@ -527,8 +558,9 @@ export class ForensicAudioEngine {
       return
     }
 
-    const buf = this.procedural.get(stem.id)
-    if (!buf) return
+    const raw = this.procedural.get(stem.id)
+    if (!raw) return
+    const buf = this.processAudioBuffer(raw, sharedNorm, region)
     if (fromSec >= buf.duration) return
     const src = ctx.createBufferSource()
     src.buffer = buf
@@ -546,6 +578,74 @@ export class ForensicAudioEngine {
         /* ignore */
       }
     })
+  }
+
+  /** Live Biquad / gain updates without rebuilding sample-domain DSP buffers. */
+  private applyProcessLive(
+    process: ProcessParams,
+    profile: NoiseProfileState | null,
+    muted: boolean,
+  ) {
+    if (!this.ctx || !this.filters || !this.master || !this.panNode || !this.asset) return
+    const base: Record<StemId, number> = {
+      FILE: 1,
+      CORRUPTED_BASE: 1,
+      VOICE: 1,
+      BACKGROUND_NOISE: 1,
+      TONE_1700: 1,
+      VOCAL_DEBRIS: 1,
+      CLICKS: 1,
+    }
+    for (const s of this.asset.stems) base[s.id] = s.initialGain
+    const rules = { notch: this.asset.notch, spectral: this.asset.spectral }
+    const gains = computeStemGains(base, process, profile, rules)
+    for (const [id, g] of Object.entries(gains) as [StemId, number][]) {
+      const node = this.stemGains.get(id)
+      if (node) node.gain.value = muted ? 0 : g
+    }
+    for (const stem of this.asset.stems) {
+      if (stem.kind !== 'clips') continue
+      for (const clip of stem.clips ?? []) {
+        const seg =
+          this.speechSegments.find((s) => s.clipId === clip.id) ??
+          this.speechSegments.find((s) => Math.abs(s.startSec - clip.startSec) < 0.05)
+        const baseClip = this.clipGains.get(clip.id) ?? Math.pow(10, (clip.gainDb ?? 0) / 20)
+        let mul = 0.02
+        if (seg && !process.bypass) {
+          const clarity = evaluateSegmentClarity(seg, process, profile, base, rules)
+          mul = clarity.effectiveVoiceGain
+        } else if (process.bypass) {
+          mul = 0.02
+        }
+        const node = this.clipGainNodes.get(clip.id)
+        if (node) node.gain.value = muted ? 0 : baseClip * mul
+      }
+    }
+    if (process.bypass) {
+      this.filters.hp.frequency.value = 20
+      this.filters.lp.frequency.value = 20000
+      this.filters.notch.gain.value = 0
+      this.reconnectFilterChain(false)
+      for (const eq of this.eqNodes) eq.node.gain.value = 0
+      this.panNode.pan.value = 0
+      return
+    }
+    this.filters.hp.frequency.value = Math.max(20, process.highPassHz)
+    this.filters.lp.frequency.value = Math.min(20000, process.lowPassHz)
+    const useBp = process.bandPassLowHz > 40 || process.bandPassHighHz < 18000
+    if (useBp !== !this.bpPassthrough) this.reconnectFilterChain(useBp)
+    if (useBp) {
+      const center = (process.bandPassLowHz + process.bandPassHighHz) / 2
+      const width = Math.max(1, process.bandPassHighHz - process.bandPassLowHz)
+      this.filters.bp.frequency.value = center
+      this.filters.bp.Q.value = center / width
+    }
+    this.filters.notch.frequency.value = Math.max(20, process.notchCenterHz)
+    const q = process.notchCenterHz / Math.max(10, process.notchWidthHz)
+    this.filters.notch.Q.value = Math.min(40, Math.max(0.3, q))
+    this.filters.notch.gain.value = process.notchReductionDb
+    for (const eq of this.eqNodes) eq.node.gain.value = process.eqBands[eq.band] ?? 0
+    this.panNode.pan.value = Math.max(-1, Math.min(1, process.pan / 100))
   }
 
   setPlayableUntil(sec: number | null) {
@@ -627,4 +727,21 @@ export class ForensicAudioEngine {
   isPlaying() {
     return this.playing
   }
+}
+
+function sameRegion(a: SelectionRange | null, b: SelectionRange | null): boolean {
+  if (a === b) return true
+  if (!a || !b) return false
+  return a.startSec === b.startSec && a.endSec === b.endSec
+}
+
+function bufferDspChanged(prev: ProcessParams | null, next: ProcessParams): boolean {
+  if (!prev) return true
+  return (
+    prev.reverse !== next.reverse ||
+    prev.normalizePeak !== next.normalizePeak ||
+    prev.fadeInSec !== next.fadeInSec ||
+    prev.fadeOutSec !== next.fadeOutSec ||
+    prev.bypass !== next.bypass
+  )
 }

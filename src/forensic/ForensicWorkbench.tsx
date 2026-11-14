@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import '../styles/forensic-workbench.css'
 import { ForensicAudioEngine } from './forensicAudio'
 import {
@@ -55,6 +55,8 @@ import { Timeline } from './components/Timeline'
 import { TrackRow } from './components/TrackRow'
 import { Transport } from './components/Transport'
 import { Inspector } from './components/Inspector'
+import { buildCassiniStreamBArtifact } from './derivedArtifact'
+import { getInvestigationState, markForensicDerivedArtifact } from '../game/state/investigationStore'
 
 export function ForensicWorkbench({
   session,
@@ -70,6 +72,8 @@ export function ForensicWorkbench({
   onContainerStateChange,
   onDevResetPuzzle,
   onSpectrogramViewed,
+  specializedWorkspace,
+  hideTimeline,
 }: {
   session: ForensicSession
   fileNameBadge?: string
@@ -90,7 +94,12 @@ export function ForensicWorkbench({
   onDevResetPuzzle?: () => void
   /** Chamado quando o jogador abre Spectrogram num source. */
   onSpectrogramViewed?: (sourceId: string) => void
+  /** Conteúdo especializado (P10–P12) no workspace central; Timeline some se omitido com hideTimeline. */
+  specializedWorkspace?: ReactNode
+  /** Esconde a Timeline genérica (default: true quando specializedWorkspace está definido). */
+  hideTimeline?: boolean
 }) {
+  const suppressTimeline = hideTimeline ?? Boolean(specializedWorkspace)
   const [ui, setUi] = useState<ForensicUiState>(() => {
     const initial = createInitialUiState(session, recoveredProp ?? [])
     const active =
@@ -268,8 +277,8 @@ export function ForensicWorkbench({
       pan: track?.pan ?? ui.process.pan,
       gainDb: ui.process.gainDb + (track?.gainDb ?? 0),
     }
-    eng.applyProcess(process, profile, effectiveMute)
-  }, [ui.process, ui.tracks, ui.activeNoiseProfileId, ui.noiseProfiles])
+    eng.applyProcess(process, profile, effectiveMute, ui.selection)
+  }, [ui.process, ui.tracks, ui.activeNoiseProfileId, ui.noiseProfiles, ui.selection])
 
   const processRef = useRef(ui.process)
   const profileRef = useRef(
@@ -286,6 +295,38 @@ export function ForensicWorkbench({
   playingRef.current = ui.playing
   rebuiltRef.current = ui.containerRebuilt
   playableRef.current = playableUntil
+
+  // P08: after Difference, residual has no speech yet. Playing the residual
+  // attaches an evaluable segment; Recovered Speech still unlocks only via listen hold.
+  useEffect(() => {
+    if (!ui.cycleDifferenceDone) return
+    if (ui.activeSourceId !== 'derived-enceladus-residual') return
+    if (!ui.playing) return
+    const cfg = session.sources[0]?.cycleAnalysis
+    if (!cfg?.recoveredSpeech) return
+    setExtraSources((prev) => {
+      const residual = prev.find((s) => s.id === 'derived-enceladus-residual')
+      if (!residual || (residual.speechSegments?.length ?? 0) > 0) return prev
+      return prev.map((s) =>
+        s.id !== 'derived-enceladus-residual'
+          ? s
+          : {
+              ...s,
+              speechSegments: [
+                {
+                  id: cfg.recoveredSpeech.segmentId,
+                  text: cfg.recoveredSpeech.text,
+                  startSec: 0.15,
+                  durationSec: Math.min(cfg.cycleSec - 0.25, 2.2),
+                  clarityThreshold: 0.05,
+                  recoveryWeights: { center: 0.25, depth: 0.25, width: 0.25, noise: 0.25 },
+                  voiceWeight: 1,
+                },
+              ],
+            },
+      )
+    })
+  }, [ui.cycleDifferenceDone, ui.activeSourceId, ui.playing, session.sources])
 
   // Unlock só enquanto o playhead percorre o trecho com clareza suficiente.
   // Só configurar sliders (sem ouvir) NÃO registra Recovered Speech.
@@ -452,7 +493,7 @@ export function ForensicWorkbench({
     eng.setPlaybackRate(ui.playbackRate)
     const profile =
       ui.noiseProfiles.find((p) => p.id === ui.activeNoiseProfileId) ?? null
-    eng.applyProcess(ui.process, profile, false)
+    eng.applyProcess(ui.process, profile, false, ui.selection)
     patchUi({ playing: true })
   }
 
@@ -581,65 +622,72 @@ export function ForensicWorkbench({
 
         <div className="fw-center">
           <main className="fw-main">
-            <Timeline
-              durationSec={duration}
-              playheadSec={ui.playheadSec}
-              waveform={waveform}
-              zoom={ui.zoom}
-              selection={ui.selection}
-              markers={ui.markers}
-              waveformZoomY={ui.waveformZoomY}
-              viewMode={timelineView}
-              spectrogram={spectrogram}
-              unavailableFromSec={
-                playbackSource?.containerPlayback && !ui.containerRebuilt ? playableUntil : null
-              }
-              lanes={
-                isClockSync
-                  ? audioSources.map((s) => ({
-                      id: s.id,
-                      label: s.filename,
-                      waveform: s.audio?.waveform ?? [],
-                      startSec: (s.timelineOriginSec ?? 0) + (ui.sourceOffsets[s.id] ?? 0),
-                      durationSec: s.durationSec,
-                    }))
-                  : undefined
-              }
-              onSeek={seek}
-              onSelect={(selection) => patchUi({ selection })}
-              onZoom={(zoom) => patchUi({ zoom })}
-              onViewMode={(mode) => {
-                setTimelineView(mode)
-                if (mode === 'spectrogram' && playbackSource?.id) {
-                  const id = playbackSource.id
-                  setUi((u) => {
-                    if (u.spectrogramViewedSourceIds.includes(id)) return u
-                    return {
-                      ...u,
-                      spectrogramViewedSourceIds: [...u.spectrogramViewedSourceIds, id],
-                    }
-                  })
-                  onSpectrogramViewed?.(id)
+            {specializedWorkspace ? (
+              <div className="fw-specialized" data-testid="fw-specialized-workspace">
+                {specializedWorkspace}
+              </div>
+            ) : null}
+            {!suppressTimeline ? (
+              <Timeline
+                durationSec={duration}
+                playheadSec={ui.playheadSec}
+                waveform={waveform}
+                zoom={ui.zoom}
+                selection={ui.selection}
+                markers={ui.markers}
+                waveformZoomY={ui.waveformZoomY}
+                viewMode={timelineView}
+                spectrogram={spectrogram}
+                unavailableFromSec={
+                  playbackSource?.containerPlayback && !ui.containerRebuilt ? playableUntil : null
                 }
-              }}
-              onWaveformZoomY={(waveformZoomY) => patchUi({ waveformZoomY })}
-              onLaneOffset={
-                isClockSync
-                  ? (laneId, nextStartSec) => {
-                      const src = audioSources.find((s) => s.id === laneId)
-                      if (!src) return
-                      const offset = nextStartSec - (src.timelineOriginSec ?? 0)
-                      setUi((u) => ({
-                        ...u,
-                        sourceOffsets: { ...u.sourceOffsets, [laneId]: offset },
-                        formalizedClockOffsetSec: null,
-                        correctedSetTime: null,
-                        findingUnlocked: false,
+                lanes={
+                  isClockSync
+                    ? audioSources.map((s) => ({
+                        id: s.id,
+                        label: s.filename,
+                        waveform: s.audio?.waveform ?? [],
+                        startSec: (s.timelineOriginSec ?? 0) + (ui.sourceOffsets[s.id] ?? 0),
+                        durationSec: s.durationSec,
                       }))
-                    }
-                  : undefined
-              }
-            />
+                    : undefined
+                }
+                onSeek={seek}
+                onSelect={(selection) => patchUi({ selection })}
+                onZoom={(zoom) => patchUi({ zoom })}
+                onViewMode={(mode) => {
+                  setTimelineView(mode)
+                  if (mode === 'spectrogram' && playbackSource?.id) {
+                    const id = playbackSource.id
+                    setUi((u) => {
+                      if (u.spectrogramViewedSourceIds.includes(id)) return u
+                      return {
+                        ...u,
+                        spectrogramViewedSourceIds: [...u.spectrogramViewedSourceIds, id],
+                      }
+                    })
+                    onSpectrogramViewed?.(id)
+                  }
+                }}
+                onWaveformZoomY={(waveformZoomY) => patchUi({ waveformZoomY })}
+                onLaneOffset={
+                  isClockSync
+                    ? (laneId, nextStartSec) => {
+                        const src = audioSources.find((s) => s.id === laneId)
+                        if (!src) return
+                        const offset = nextStartSec - (src.timelineOriginSec ?? 0)
+                        setUi((u) => ({
+                          ...u,
+                          sourceOffsets: { ...u.sourceOffsets, [laneId]: offset },
+                          formalizedClockOffsetSec: null,
+                          correctedSetTime: null,
+                          findingUnlocked: false,
+                        }))
+                      }
+                    : undefined
+                }
+              />
+            ) : null}
           </main>
           <Transport
             playing={ui.playing}
@@ -817,15 +865,24 @@ export function ForensicWorkbench({
                       setStatus('Formalize clock difference before applying correction.')
                       return
                     }
-                    const corrected = session.completion?.correctedRealTime ?? '01:23:30'
+                    const setLog =
+                      session.completion?.setLogVerticeTime ?? '01:16:00'
+                    const offset = ui.formalizedClockOffsetSec
+                    // Deriva do alinhamento formalizado — não injeta string narrativa.
+                    const parts = setLog.split(':').map(Number)
+                    const base =
+                      (parts[0] ?? 0) * 3600 + (parts[1] ?? 0) * 60 + (parts[2] ?? 0)
+                    const total = base + Math.round(offset)
+                    const h = Math.floor(total / 3600) % 24
+                    const min = Math.floor((total % 3600) / 60)
+                    const sec = total % 60
+                    const corrected = `${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
                     setUi((u) => ({
                       ...u,
                       correctedSetTime: corrected,
                       findingUnlocked: true,
                     }))
-                    setStatus(
-                      `Set log ${session.completion?.setLogVerticeTime ?? '01:16:00'} → ${corrected} real`,
-                    )
+                    setStatus(`Set log ${setLog} (Vertice) + ${fmtClockOffset(offset)} → ${corrected} real`)
                   },
                   onSetTimingReference: (id) => patchUi({ timingReferenceSourceId: id }),
                   onSetSourceOffset: (id, sec) =>
@@ -964,40 +1021,52 @@ export function ForensicWorkbench({
               ui.referenceCycleIndexes,
               ui.commonPatternQuality,
             )
-            setUi((u) => {
-              let recoveredSpeech = u.recoveredSpeech
-              let cycleDifferenceDone = u.cycleDifferenceDone
-              if (result.ok) {
-                const seg = cfg.recoveredSpeech
-                if (!recoveredSpeech.some((r) => r.segmentId === seg.segmentId)) {
-                  recoveredSpeech = [
-                    ...recoveredSpeech,
+            setUi((u) => ({
+              ...u,
+              differenceQuality: result.quality,
+              ricardoClarity: result.ricardoClarity,
+              cycleAnalysisStatus: result.message,
+              // Passo técnico ok; texto Recovered Speech só após ouvir o residual.
+              cycleDifferenceDone: result.ok,
+            }))
+            if (result.ok && cfg.residualPreviewSrc) {
+              const residualId = 'derived-enceladus-residual'
+              // Difference only produces residual audio. Recovered Speech ("Ricardo")
+              // is attached after the player listens / analyzes the residual.
+              const residual: ForensicSource = {
+                id: residualId,
+                filename: 'AUD_0008_DIFFERENCE.wav',
+                displayName: 'Difference residual (derived)',
+                type: 'audio',
+                durationSec: cfg.cycleSec,
+                tracks: [
+                  { id: 'master', name: 'MASTER', channel: '1 / mono', visible: true, gainDb: 0, pan: 0 },
+                ],
+                speechSegments: [],
+                audio: {
+                  sampleRate: 44100,
+                  channels: 1,
+                  seed: 8,
+                  waveform: Array.from({ length: 96 }, (_, i) => 0.12 + Math.sin(i / 5) * 0.08),
+                  stems: [
                     {
-                      segmentId: seg.segmentId,
-                      text: seg.text,
-                      startSec: seg.startSec,
-                      unlockedAt: Date.now(),
+                      id: 'FILE',
+                      kind: 'file',
+                      initialGain: 1,
+                      src: cfg.residualPreviewSrc,
                     },
-                  ]
-                  onSegmentRecovered?.({
-                    segmentId: seg.segmentId,
-                    text: seg.text,
-                    startSec: seg.startSec,
-                    unlockedAt: Date.now(),
-                  })
-                }
-                cycleDifferenceDone = true
+                  ],
+                },
               }
-              return {
-                ...u,
-                differenceQuality: result.quality,
-                ricardoClarity: result.ricardoClarity,
-                cycleAnalysisStatus: result.message,
-                recoveredSpeech,
-                cycleDifferenceDone,
-              }
-            })
-            setStatus(result.message)
+              setExtraSources((prev) => {
+                const rest = prev.filter((s) => s.id !== residualId)
+                return [...rest, residual]
+              })
+              patchUi({ activeSourceId: residualId })
+              setStatus('Residual derived — play it to evaluate recoverable speech.')
+            } else {
+              setStatus(result.message)
+            }
           }}
           onPacketSort={(sort) => patchUi({ packetSort: sort })}
           onPacketSsrcFilter={(ssrc) =>
@@ -1065,34 +1134,13 @@ export function ForensicWorkbench({
               let streamBRecovered = u.streamBRecovered
               let streamAOrderQuality = u.streamAOrderQuality
               let streamBOrderQuality = u.streamBOrderQuality
-              let recoveredSpeech = u.recoveredSpeech
               if (result.isStreamA) {
                 streamAOrderQuality = result.quality
                 if (result.ok) streamARecovered = true
               }
               if (result.isStreamB) {
                 streamBOrderQuality = result.quality
-                if (result.ok) {
-                  streamBRecovered = true
-                  const text = cfg.findings.anomalousKnowledge
-                  if (!recoveredSpeech.some((r) => r.segmentId === 'cassini-anomalous')) {
-                    recoveredSpeech = [
-                      ...recoveredSpeech,
-                      {
-                        segmentId: 'cassini-anomalous',
-                        text,
-                        startSec: 0,
-                        unlockedAt: Date.now(),
-                      },
-                    ]
-                    onSegmentRecovered?.({
-                      segmentId: 'cassini-anomalous',
-                      text,
-                      startSec: 0,
-                      unlockedAt: Date.now(),
-                    })
-                  }
-                }
+                if (result.ok) streamBRecovered = true
               }
               return {
                 ...u,
@@ -1101,10 +1149,26 @@ export function ForensicWorkbench({
                 streamBRecovered,
                 streamAOrderQuality,
                 streamBOrderQuality,
-                recoveredSpeech,
                 packetStatus: result.message,
               }
             })
+            if (result.ok && result.isStreamB && result.audioSrc) {
+              const inv = getInvestigationState()
+              markForensicDerivedArtifact(
+                buildCassiniStreamBArtifact({
+                  audioSrc: result.audioSrc,
+                  createdAtMs: inv.playTimeMs ?? Date.now(),
+                  reconstructionOrder:
+                    ui.packetSort === 'sequence'
+                      ? 'sequence'
+                      : ui.packetSort === 'time'
+                        ? 'time'
+                        : 'capture',
+                  ssrc: stream.ssrc,
+                  parentSourceId: source?.id ?? 'hv_session_capture',
+                }),
+              )
+            }
             if (result.audioSrc) {
               const derived: ForensicSource = {
                 id: `derived-${stream.id}`,

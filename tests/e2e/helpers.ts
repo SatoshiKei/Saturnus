@@ -1,6 +1,6 @@
 import { expect, type Page } from '@playwright/test'
 
-/** Novo jogo limpo (menu → novo → abertura). */
+/** Novo jogo limpo (menu ↁEnovo ↁEabertura). */
 export async function newGame(page: Page) {
   await page.goto('/')
   await page.evaluate(() => window.localStorage.clear())
@@ -21,13 +21,37 @@ export async function newGame(page: Page) {
 
 /** Aplica um checkpoint do painel DEV (apenas atalho de teste para chegar ao estado de entrada). */
 export async function dev(page: Page, ...ids: string[]) {
-  await page.getByTestId('dev-panel-open').click()
+  const open = page.getByTestId('dev-panel-open')
+  if (await open.isVisible().catch(() => false)) await open.click()
+  await expect(page.getByTestId('dev-story-panel')).toBeVisible()
+  // Blocos colapsados não montam os botões  Eexpandir todos os cabeçalhos.
+  const heads = page.locator('.inv-dev__block-head')
+  const n = await heads.count()
+  for (let i = 0; i < n; i++) {
+    const head = heads.nth(i)
+    if ((await head.getAttribute('aria-expanded')) !== 'true') await head.click()
+  }
   for (const id of ids) {
     const btn = page.getByTestId(`dev-${id}`)
     await btn.scrollIntoViewIfNeeded()
     await btn.click()
+    const confirm = page.getByTestId('dev-checkpoint-confirm-load')
+    await expect(confirm).toBeVisible({ timeout: 5000 })
+    await confirm.click()
+    // Carregar fecha o painel; reabrir para o próximo id.
+    if (ids.indexOf(id) < ids.length - 1) {
+      await page.getByTestId('dev-panel-open').click()
+      await expect(page.getByTestId('dev-story-panel')).toBeVisible()
+      const heads2 = page.locator('.inv-dev__block-head')
+      const n2 = await heads2.count()
+      for (let i = 0; i < n2; i++) {
+        const head = heads2.nth(i)
+        if ((await head.getAttribute('aria-expanded')) !== 'true') await head.click()
+      }
+    }
   }
-  await page.getByTestId('dev-panel-close').click()
+  const close = page.getByTestId('dev-panel-close')
+  if (await close.isVisible().catch(() => false)) await close.click()
 }
 
 export async function closeHub(page: Page) {
@@ -118,7 +142,14 @@ export async function dismissEvidenceCards(page: Page) {
 
 /** Estado persistido do jogo (leitura apenas, para asserts). */
 export async function readSave(page: Page) {
-  return page.evaluate(() => JSON.parse(localStorage.getItem('saturnus-investigation-v1') ?? '{}'))
+  return page.evaluate(() => {
+    const raw = JSON.parse(localStorage.getItem('saturnus-investigation-v1') ?? '{}')
+    // Envelope GameSaveSnapshot ou InvestigationState legado.
+    if (raw && typeof raw === 'object' && raw.investigation && typeof raw.investigation === 'object') {
+      return raw.investigation
+    }
+    return raw
+  })
 }
 
 /** Conduz uma ligação até o fim (linhas, transição, resultado) e desliga. */

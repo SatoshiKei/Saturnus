@@ -184,7 +184,6 @@ export const reflections: ReflectionDef[] = [
     ],
   },
   {
-    /** Legado — não dispara mais no fluxo novo. */
     id: 'refl-b05-maralto',
     background: HUB_REFLECTION_BACKGROUND,
     blocks: [
@@ -193,7 +192,6 @@ export const reflections: ReflectionDef[] = [
     ],
   },
   {
-    /** Legado — absorvido em refl-b05-path. */
     id: 'refl-b05-coincidence',
     background: HUB_REFLECTION_BACKGROUND,
     blocks: [

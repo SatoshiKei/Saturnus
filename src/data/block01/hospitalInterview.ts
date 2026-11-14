@@ -10,7 +10,6 @@ export const HOSPITAL_TOPIC_IDS = [
   'last_seen',
   'behavior',
   'memory_issues',
-  'julia_folder',
   'camila_alone',
 ] as const
 
@@ -20,7 +19,6 @@ export const hospitalTopicLabels: Record<HospitalTopicId, string> = {
   last_seen: 'Última vez que viram Mariana',
   behavior: 'Comportamento recente',
   memory_issues: 'Falhas de memória',
-  julia_folder: 'Pasta guardada por Júlia',
   camila_alone: 'Conversar com Camila a sós',
 }
 
@@ -28,7 +26,6 @@ export const hospitalTopicFlags: Record<HospitalTopicId, string> = {
   last_seen: 'block01_topic_last_seen',
   behavior: 'block01_topic_behavior',
   memory_issues: 'block01_topic_memory',
-  julia_folder: 'block01_topic_folder',
   camila_alone: 'block01_camila_private',
 }
 
@@ -75,16 +72,6 @@ export const hospitalBeats: Record<HospitalTopicId, HospitalBeat[]> = {
     { speaker: 'Júlia', text: 'Específicas nada. Ela foi na minha casa e no dia seguinte não lembrava.', portrait: 'julia' },
     { speaker: 'Camila', text: 'Mas lembrava de prontuário, medicação, paciente, tudo.', portrait: 'camila' },
     { speaker: 'Júlia', text: 'Eu sei.', portrait: 'julia' },
-  ],
-  julia_folder: [
-    { speaker: 'Augusto', text: 'Nas mensagens ela diz que “guardou aquilo como tu pediu”. O que era?' },
-    { speaker: 'Júlia', text: 'Era uma pasta.', portrait: 'julia' },
-    { speaker: 'Augusto', text: 'Que pasta?' },
-    { speaker: 'Júlia', text: 'Não sei.', portrait: 'julia' },
-    { speaker: 'Augusto', text: 'Você guardou uma pasta sem saber o que tinha dentro?' },
-    { speaker: 'Júlia', text: 'Ela pediu.', portrait: 'julia' },
-    { speaker: 'Augusto', text: 'Onde está?' },
-    { speaker: 'Júlia', text: 'Ainda está na minha casa.', portrait: 'julia' },
   ],
   camila_alone: [
     { speaker: 'Augusto', text: 'Você acha que Júlia está exagerando?' },

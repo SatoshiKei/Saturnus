@@ -1,5 +1,9 @@
 # SATURNUS — Transcrição cronológica
 
+> **LEGACY / OUTDATED** — snapshot histórico. Não é canon atual.
+> Em particular, a subtrama da **pasta da Júlia** foi removida do desenho vigente;
+> menções a `julia_kept_folder` / “recolher pasta” neste arquivo não devem ser seguidas.
+
 Texto diegético extraído das fontes do jogo (cenas, WhatsApp, notas, diário, ligações, computador, caderno, bancada, reflexões). Áudios aparecem como referência de arquivo, não como transcrição fonética. Opções de WhatsApp do Augusto são formulações cosméticas da mesma intenção.
 
 ---

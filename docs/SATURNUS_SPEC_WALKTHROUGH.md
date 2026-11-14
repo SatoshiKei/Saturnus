@@ -361,7 +361,7 @@ Convenção: **Termina com** = flag(s) de fechamento. Use o **CaseNotepad** como
 | 3 | Celular Mariana | WhatsApp → abrir thread **Júlia** |
 | 4 | Celular Mariana | WhatsApp → **Rafael** → reproduzir áudio |
 | 5 | — | Com as duas evidências de memória → **CONTRADIÇÃO** (lapsos seletivos) → hospital no mapa |
-| 6 | Mapa | Hospital Municipal → 5 assuntos (última vez / comportamento / falhas / pasta Júlia / Camila a sós) |
+| 6 | Mapa | Hospital Municipal → assuntos (última vez / comportamento / falhas / Camila a sós) |
 | 7 | — | Fim da visita → bloco completo |
 
 Triggers-chave: `block01_unlock_hospital`, `block01_end_block` (`docs/story/BLOCK_01_DISAPPEARANCE.md`).

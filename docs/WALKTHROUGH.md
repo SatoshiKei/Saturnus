@@ -40,11 +40,10 @@ Detalhes por bloco: `docs/story/BLOCK_0X_*.md` e `docs/gameplay/INVESTIGATION_FL
 3. **Celular Mariana** → WhatsApp → abrir **Júlia** (só entrar na conversa).
 4. **Mesmo celular** → WhatsApp → **Rafael** → **Reproduzir áudio**.
 5. Quando as duas evidências de memória existirem, aparece **CONTRADIÇÃO REGISTRADA** (lapsos seletivos) e o **hospital** entra no mapa.
-6. **Mapa** → **Hospital Municipal** → visitar → esgotar os **5 assuntos**:
+6. **Mapa** → **Hospital Municipal** → visitar → esgotar os assuntos:
    - Última vez que viram Mariana  
    - Comportamento recente  
    - Falhas de memória  
-   - Pasta guardada por Júlia  
    - Conversar com Camila a sós  
 7. Encerrar a visita → Bloco 1 completo. **Celular Augusto** passa a ter contato **Rafael** (conversa ainda vazia).
 
@@ -58,9 +57,9 @@ As trilhas **A** e **B** podem ser feitas em ordem livre, mas a **convergência*
 
 ### Trilha A — Rafael e o Vértice
 
-1. **Celular Augusto** → WhatsApp → **Rafael** → reproduzir o **áudio encaminhado**.
-2. **Bancada** → áudio encaminhado → **Análise provisória** → desbloqueia **Vértice** no mapa.
-3. **Mapa** → **Vértice** → visitar → falar com **Iara, Sandro, Caio**, perguntar a Sandro sobre o interesse de Mariana, **Consultar arquivos antigos** (identifica **Nico**).
+1. **Celular Augusto** → WhatsApp → **Rafael** → reproduzir o **áudio de Rafael** (análise prévia; não é a gravação da balada).
+2. **Bancada** → áudio de Rafael → **Análise provisória** → desbloqueia **Vértice** no mapa.
+3. **Mapa** → **Vértice** → visitar → falar com **Iara, Sandro, Caio**, perguntar a Sandro sobre o interesse de Mariana, **Consultar arquivos antigos** (obtém arquivo histórico REC_VTX_OLD_01 no local → Bancada/P03 → identifica **Nico**).
 
 ### Trilha B — Paula, Lucas e Elisa
 
@@ -193,7 +192,7 @@ Ordem lógica (várias ações ficam na aba **Caso** do monitor):
 | Bloco | Nome | Onde | Observação |
 |-------|------|------|------------|
 | 1 | Emergência | Bancada | Análise provisória |
-| 2 | Encaminhamento Rafael | Bancada | Libera Vértice |
+| 2 | Áudio de Rafael (análise) | Bancada | Libera Vértice |
 | 3 | Janus | Bancada | Duas gravações Nico |
 | 3 | Saturnalia | Bancada | Arquivo de Lívia |
 | 4 | Hexágono | Bancada | PIN diário **`481526`** |

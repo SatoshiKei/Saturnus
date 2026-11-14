@@ -88,6 +88,13 @@
   overflow: auto;
 }
 
+.fw-specialized {
+  min-height: 0;
+  height: 100%;
+  overflow: auto;
+  padding: 0.25em 0.15em 0.55em;
+}
+
 .fw-pane-h {
   padding: 0.55em 0.7em 0.35em;
   font-size: 0.68em;

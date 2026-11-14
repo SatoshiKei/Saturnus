@@ -4,11 +4,32 @@ Arquivo: REC_VTX_OLD_01.m4a (evidenceId: rec_vtx_old_01)
 Runtime: public/assets/audio/forensic/puzzle03/rec_vtx_old_01_final.mp3
 
 
-ORIGEM NARRATIVA IMEDIATA
--------------------------
-Mariana → Rafael → Augusto
+ORIGEM NARRATIVA (CANON)
+------------------------
+Rafael aponta Vértice (P02)
+→ Augusto vai ao Vértice
+→ no Vértice obtém um NOVO arquivo histórico (REC_VTX_OLD_01)
+→ esse arquivo entra na Bancada
+→ Puzzle 03 → set/noite → Nico
+
+Origem: arquivo histórico do Vértice
+Obtido por: Augusto durante a visita
+Canal: arquivo/documento fornecido no local
+Cadeia: Vértice → Augusto
+
+NÃO passou por Rafael / WhatsApp / Mariana→Rafael→Augusto.
 Pergunta: em qual set/noite do Vértice a gravação foi feita?
 NÃO revela Elisa / André / Lucas / morte.
+
+
+TODO TÉCNICO/EDITORIAL
+----------------------
+P03_DESIGN_REWORK_REQUIRED
+Implementação atual reduzida a: 4 candidatos + timing + janela de microfone + Link Source.
+Canon desejado (alto nível, NÃO implementado nesta rodada):
+gravação real de balada; música; público; DJ; características do sistema;
+registros do set; análise multimídia mais rica.
+Não alterar a solução (Nico) sem decisão posterior.
 
 
 ASSETS DE PRODUÇÃO
@@ -31,8 +52,8 @@ BPM depois:        128.0
 Ducking:           residual gain 0.42 durante mic open
 
 
-COMO RESOLVER
--------------
+COMO RESOLVER (mecânica ATUAL)
+------------------------------
 1. Abrir REC_VTX_OLD_01.m4a na bancada.
 2. Selecionar trecho estável antes da voz (~8–68 s).
 3. Analysis → Selection tempo estimate → ~126.1 BPM.
@@ -48,20 +69,11 @@ CANDIDATOS
 VTX-SET-20-A  Operador A   126→126     intervenção ~70–88   → elimina (não sobe BPM)
 VTX-SET-20-B  Operador B   126→128     intervenção ~40–55   → elimina (janela errada)
 VTX-SET-20-C  Nico         126.1→128.0 intervenção ~72–90.7 → CORRETO
-VTX-SET-20-D  Operador C   128→128     intervenção ~71–89   → elimina (já 128 no início)
+VTX-SET-20-D  Operador D   128→128     intervenção ~72–90   → elimina (sem pré 126)
 
 
-CONCLUSÃO
+RESULTADO
 ---------
-Link REC_VTX_OLD_01 → VTX-SET-20-C
-Finding: “Vértice — set operado por Nicolas “Nico” Prado Reis.”
-Flag: block02_rings_provisional
-Evidence: rec_vtx_set_nico_match + nico_dj_identified
-Achievement: ach-rings / ANÉIS
-Handler: runProvisionalRingsAnalysis
-
-
-DEV
----
-actualPreTempo / actualPostTempo / djStart / djEnd /
-correctSetId / selectedSetId / puzzleComplete
+Finding: set de Nico no Vértice.
+Lead: localizar / entrevistar Nico.
+Flags: block02_rings_provisional / nico unlocked via handlers.

@@ -78,7 +78,7 @@ describe('Bloco 3 — progressão', () => {
     expect(s.people.nico.status).toBe('interviewed')
   })
 
-  it('Janus exige o par e gera inconsistência sem absolver', () => {
+  it('Janus exige a captura da cabine e gera inconsistência sem absolver', () => {
     seedBlock03Start()
     runProvisionalJanusSync()
     expect(getInvestigationState().flags.block03_janus_done).toBeFalsy()
@@ -86,7 +86,6 @@ describe('Bloco 3 — progressão', () => {
     __setStateForTests(
       applyStoryActions(getInvestigationState(), [
         { type: 'addEvidence', id: 'nico_recording_booth' },
-        { type: 'addEvidence', id: 'nico_recording_portable' },
       ]),
     )
     runProvisionalJanusSync()

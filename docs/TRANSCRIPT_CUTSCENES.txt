@@ -1,5 +1,8 @@
 SATURNUS — Transcrição de cutscenes
 
+LEGACY / OUTDATED — dump histórico. Não tratar como canon atual se divergir do runtime.
+Subtrama da pasta da Júlia: removida do desenho vigente.
+
 Entrevistas em tópicos (VN), cenas lineares, reflexões de Augusto e diálogos de ligação. Gerado por `scripts/dump-cutscenes.ts`.
 
 ---

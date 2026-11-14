@@ -11,6 +11,9 @@ import {
 import { puzzle07ShepherdMoonsSession } from './puzzles/puzzle07ShepherdMoons'
 import { puzzle08EnceladusSession } from './puzzles/puzzle08Enceladus'
 import { puzzle09CassiniHuygensSession } from './puzzles/puzzle09CassiniHuygens'
+import { puzzle10RingsSession } from './puzzles/puzzle10Rings'
+import { puzzle11SaturnRotationSession } from './puzzles/puzzle11SaturnRotation'
+import { puzzle12MemorySession } from './puzzles/puzzle12Memory'
 
 /**
  * Registro de datasets por evidência.
@@ -28,6 +31,13 @@ const BY_EVIDENCE = new Map<string, ForensicSession>([
   [puzzle07ShepherdMoonsSession.evidenceId!, puzzle07ShepherdMoonsSession],
   [puzzle08EnceladusSession.evidenceId!, puzzle08EnceladusSession],
   [puzzle09CassiniHuygensSession.evidenceId!, puzzle09CassiniHuygensSession],
+  [puzzle10RingsSession.evidenceId!, puzzle10RingsSession],
+  [puzzle11SaturnRotationSession.evidenceId!, puzzle11SaturnRotationSession],
+  // Save-compat alias (pre-rename clock-drift id).
+  ['police_clock_drift_logs', puzzle11SaturnRotationSession],
+  [puzzle12MemorySession.evidenceId!, puzzle12MemorySession],
+  // Save-compat alias (pre-rename P02 id).
+  ['rafael_forward_from_mariana', puzzle02IapetusSession],
 ])
 
 export function registerForensicSession(session: ForensicSession) {

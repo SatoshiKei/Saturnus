@@ -66,6 +66,15 @@ const OMITIDO_ASSIST_SOURCES = new Set([
 export function onDocumentConsulted(docId: string) {
   const s = getInvestigationState()
 
+  // Origem da ligação: resultado técnico já no registro da central (após P01).
+  if (
+    docId === 'doc-central-chamada' &&
+    s.flags.block01_emergency_provisional &&
+    !s.tasks.find((t) => t.id === 'task_trace_emergency_call' && t.completed)
+  ) {
+    dispatchActions([{ type: 'completeTask', id: 'task_trace_emergency_call' }])
+  }
+
   if (
     s.flags.block05_maralto_review_unlocked &&
     !s.flags.block05_maralto_weighed &&

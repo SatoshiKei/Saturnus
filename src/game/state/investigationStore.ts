@@ -1,7 +1,13 @@
 import { seedDocuments } from '../../data/game/seedDocuments'
 import { HEX_PIN } from '../../data/block04/hexagonPuzzle'
 import type { ChatMessage } from '../../types/messaging'
-import type { ChatProgress, InvestigationState, StoryActionRef, PersonStatus } from '../types'
+import type {
+  ChatProgress,
+  ForensicDerivedArtifact,
+  InvestigationState,
+  StoryActionRef,
+  PersonStatus,
+} from '../types'
 import { repairInvestigationState } from '../personRegistryGates'
 import { createInitialState, SAVE_KEY, STATE_VERSION } from './initialState'
 import {
@@ -78,6 +84,17 @@ export function markForensicContainerState(
   })
 }
 
+/** Persiste artifact derivado da bancada (ex.: stream B Cassini-Huygens). */
+export function markForensicDerivedArtifact(artifact: ForensicDerivedArtifact) {
+  commit({
+    ...state,
+    forensicDerivedArtifacts: {
+      ...(state.forensicDerivedArtifacts ?? {}),
+      [artifact.id]: artifact,
+    },
+  })
+}
+
 /** Registra um segmento de fala recuperado na bancada. Persistente; não apaga no Reset processing. */
 export function markForensicSpeechRecovered(
   evidenceId: string,
@@ -113,14 +130,22 @@ export function resetForensicSpeechProgress(evidenceId: string) {
     evidenceOwned = evidenceOwned.filter((id) => id !== 'emergency_call_restored')
     delete achievementUnlocks['ach-cassini-division']
   }
-  if (evidenceId === 'rafael_forward_from_mariana' || evidenceId === 'rafael_audio_reply') {
+  if (evidenceId === 'rafael_voice_to_augusto' || evidenceId === 'rafael_audio_reply') {
     flags.block02_rafael_forward_provisional = false
     evidenceOwned = evidenceOwned.filter((id) => id !== 'rafael_recording_vertice_tag')
     delete achievementUnlocks['ach-iapetus']
-    delete containers['rafael_forward_from_mariana']
+    delete containers['rafael_voice_to_augusto']
     delete containers['rafael_audio_reply']
-    delete bag['rafael_forward_from_mariana']
+    delete bag['rafael_voice_to_augusto']
     delete bag['rafael_audio_reply']
+  }
+  let forensicDerivedArtifacts = { ...(state.forensicDerivedArtifacts ?? {}) }
+  if (evidenceId === 'henrique_rtp_capture') {
+    flags.block07_cassini_done = false
+    evidenceOwned = evidenceOwned.filter((id) => id !== 'stream_b_reconstructed')
+    delete achievementUnlocks['ach-cassini-huygens']
+    delete bag['henrique_rtp_capture']
+    delete forensicDerivedArtifacts['cassini-stream-b']
   }
   if (evidenceId === 'rec_vtx_old_01') {
     flags.block02_rings_provisional = false
@@ -154,6 +179,7 @@ export function resetForensicSpeechProgress(evidenceId: string) {
     ...state,
     forensicRecoveredSpeech: bag,
     forensicContainerState: containers,
+    forensicDerivedArtifacts,
     flags,
     evidenceOwned,
     achievementUnlocks,
@@ -238,6 +264,8 @@ export function tryDiaryPin(pin: string): 'locked' | 'wrong' | 'unlocked' {
         { type: 'discoverPassword', which: 'diary' },
         { type: 'addEvidence', id: 'hidden_diary_recovered' },
         { type: 'setFlag', id: 'block04_forensics_done', value: true },
+        { type: 'setFlag', id: 'block04_hexagon_done', value: true },
+        { type: 'setFlag', id: 'block04_hex_spectrograms_inspected', value: true },
         { type: 'completeTask', id: 'task_unlock_diary' },
         { type: 'addTask', id: 'task_read_diary', label: 'Ler o diário recuperado' },
       ],
@@ -342,19 +370,49 @@ export function migrateState(raw: InvestigationState): InvestigationState {
     }
   }
   if (raw.flags?.block02_vertice_archive) owned.add('doc-vertice-escala')
+
+  // Evidence ID renames (semantic audit fix round).
+  const EVIDENCE_ID_ALIASES: Record<string, string> = {
+    rafael_forward_from_mariana: 'rafael_voice_to_augusto',
+    police_clock_drift_logs: 'rui_police_approach_records',
+  }
+  const remapId = (id: string) => EVIDENCE_ID_ALIASES[id] ?? id
+  const remappedOwned = (raw.evidenceOwned ?? []).map(remapId)
+  const remappedBag = { ...(raw.evidence ?? {}) }
+  for (const [oldId, newId] of Object.entries(EVIDENCE_ID_ALIASES)) {
+    if (remappedBag[oldId] && !remappedBag[newId]) {
+      remappedBag[newId] = { ...remappedBag[oldId], id: newId }
+    }
+    delete remappedBag[oldId]
+  }
+  const remappedSpeech = { ...(raw.forensicRecoveredSpeech ?? {}) }
+  const remappedContainers = { ...(raw.forensicContainerState ?? {}) }
+  for (const [oldId, newId] of Object.entries(EVIDENCE_ID_ALIASES)) {
+    if (remappedSpeech[oldId] && !remappedSpeech[newId]) remappedSpeech[newId] = remappedSpeech[oldId]
+    if (remappedContainers[oldId] && !remappedContainers[newId])
+      remappedContainers[newId] = remappedContainers[oldId]
+    delete remappedSpeech[oldId]
+    delete remappedContainers[oldId]
+  }
+
   const merged: InvestigationState = {
     ...base,
     ...raw,
     version: STATE_VERSION,
+    evidenceOwned: [...new Set(remappedOwned)],
+    evidence: remappedBag,
     documentsOwned: [...owned],
     discoveries: [],
-    audioSeen: raw.audioSeen ?? raw.evidenceOwned?.filter((id) => raw.evidence?.[id]?.type === 'audio') ?? [],
+    audioSeen: (raw.audioSeen ?? remappedOwned.filter((id) => remappedBag?.[id]?.type === 'audio')).map(
+      remapId,
+    ),
     chatProgress: raw.chatProgress ?? {},
     callsDone: raw.callsDone ?? [],
     playTimeMs: raw.playTimeMs ?? 0,
     achievementUnlocks: raw.achievementUnlocks ?? {},
-    forensicRecoveredSpeech: raw.forensicRecoveredSpeech ?? {},
-    forensicContainerState: raw.forensicContainerState ?? {},
+    forensicRecoveredSpeech: remappedSpeech,
+    forensicContainerState: remappedContainers,
+    forensicDerivedArtifacts: raw.forensicDerivedArtifacts ?? {},
     contacts: { ...base.contacts, ...(raw.contacts ?? {}) },
     locations: { ...base.locations, ...(raw.locations ?? {}) },
     toastQueue: [],

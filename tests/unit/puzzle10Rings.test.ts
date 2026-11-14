@@ -145,10 +145,10 @@ describe('Puzzle 10 — ORDEM DOS ANÉIS', () => {
     expect(s.locations.presidio?.status).not.toBe('visitAvailable')
   })
 
-  it('R: puzzles 01/09 registry untouched; achievement exists', () => {
+  it('R: puzzles 01/09/10 registry wired; achievement exists', () => {
     expect(getForensicSessionForEvidence('emergency_call_raw')?.id ?? puzzle01CassiniSession.id).toBeTruthy()
     expect(puzzle09CassiniHuygensSession.completion?.kind).toBe('rtp-stream-separation')
-    expect(getForensicSessionForEvidence('protest_heterogeneous_sources')).toBeNull()
+    expect(getForensicSessionForEvidence('protest_heterogeneous_sources')?.id).toBe('puzzle-10-rings')
     const ach = seedAchievements.find((a) => a.id === 'ach-ordem-aneis')!
     expect(ach.title).toBe('ORDEM DOS ANÉIS')
     expect(ach.description.toLowerCase()).not.toContain('andré')

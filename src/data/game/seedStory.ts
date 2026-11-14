@@ -17,7 +17,6 @@ export const seedTasks: CaseTask[] = [
 
 export const block01EndTasks: CaseTask[] = [
   { id: 'task_trace_emergency_call', label: 'Analisar origem da ligação de emergência', completed: false },
-  { id: 'task_julia_folder', label: 'Recolher pasta deixada com Júlia', completed: false },
   { id: 'task_rafael_recording', label: 'Identificar gravação mencionada por Rafael', completed: false },
   { id: 'task_rafael_venue_staff', label: 'Descobrir quem trabalhava no local da gravação', completed: false },
   { id: 'task_selective_lapses', label: 'Entender por que os lapsos de Mariana parecem seletivos', completed: false },

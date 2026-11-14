@@ -45,7 +45,6 @@ No fim, Rafael aparece no WhatsApp do Augusto.
        - última vez que viram Mariana
        - comportamento recente
        - falhas de memória
-       - pasta da Júlia
        - Camila a sós
   7. Encerrar visita.
 
@@ -57,10 +56,10 @@ Faça as duas trilhas (ordem livre). Só avança de verdade quando as duas
 fecharem. Pendência seguinte: localizar Nico.
 
 TRILHA DO VÉRTICE
-  1. Celular Augusto → Rafael → áudio encaminhado.
+  1. Celular Augusto → Rafael → áudio de Rafael (análise prévia; não a balada).
   2. Bancada → análise provisória desse áudio → Vértice no mapa.
   3. Mapa → Vértice → Iara, Sandro, Caio, interesse de Mariana, arquivos
-     antigos (Nico).
+     antigos (REC_VTX_OLD_01 no local → Bancada/P03 → Nico).
 
 TRILHA PAULA → LUCAS → ELISA
   1. Celular Mariana → Notas → quarta → libera Paula no Augusto.

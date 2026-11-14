@@ -106,15 +106,15 @@ export function onHexCallsPreserved() {
 }
 
 /**
- * Puzzle 6 — espectrogramas dos seis UNK inspecionados.
- * Finding neutro (sem PIN). O PIN só é confirmado no diário oculto.
+ * Puzzle 6 — espectrogramas dos seis UNK inspecionados (análise técnica).
+ * Não marca o puzzle como resolvido: o PIN só se confirma no diário.
  */
-export function onHexagonSolved() {
+export function runHexagonSpectrogramSurvey() {
   const s = getInvestigationState()
-  if (s.flags.block04_hexagon_done) return
+  if (s.flags.block04_hex_spectrograms_inspected) return
   if (!HEX_EVIDENCE_IDS.every((id) => s.evidenceOwned.includes(id))) return
   const actions: StoryActionRef[] = [
-    { type: 'setFlag', id: 'block04_hexagon_done', value: true },
+    { type: 'setFlag', id: 'block04_hex_spectrograms_inspected', value: true },
     { type: 'addEvidence', id: 'hex_spectral_patterns' },
     { type: 'completeTask', id: 'task_hexagon' },
     { type: 'setFlag', id: 'block04_forensics_unlocked', value: true },
@@ -131,9 +131,16 @@ export function onHexagonSolved() {
   dispatchActions(actions)
 }
 
-/** Alias para a Bancada Forense (spectrogram-survey). */
-export function runHexagonSpectrogramSurvey() {
-  onHexagonSolved()
+/**
+ * Puzzle 6 resolvido: PIN 481526 aceito no diário oculto.
+ */
+export function onHexagonSolved() {
+  const s = getInvestigationState()
+  if (s.flags.block04_hexagon_done) return
+  dispatchActions([
+    { type: 'setFlag', id: 'block04_hexagon_done', value: true },
+    { type: 'setFlag', id: 'block04_hex_spectrograms_inspected', value: true },
+  ])
 }
 
 export function onDiaryEntryRead(entryId: string, unlocksUnknown: boolean) {

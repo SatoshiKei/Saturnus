@@ -102,7 +102,7 @@ export function onNoteRead(storyFlag: string) {
 export function runProvisionalEmergencyAnalysis() {
   const s = getInvestigationState()
   if (s.flags.block01_emergency_provisional) return
-  dispatchActions([
+  const actions: import('../types').StoryActionRef[] = [
     { type: 'setFlag', id: 'block01_emergency_provisional', value: true },
     { type: 'addEvidence', id: 'emergency_call_restored' },
     { type: 'linkHypothesis', hypothesisId: 'hyp_kidnapping', evidenceId: 'emergency_call_restored', role: 'support' },
@@ -118,7 +118,12 @@ export function runProvisionalEmergencyAnalysis() {
       summary: 'Recuperou os cinco fragmentos inteligíveis da chamada de emergência.',
       refId: 'emergency_call_restored',
     },
-  ])
+  ]
+  // Se o registro da central já foi lido, a origem técnica já está estabelecida.
+  if (s.documents['doc-central-chamada']?.read) {
+    actions.push({ type: 'completeTask', id: 'task_trace_emergency_call' })
+  }
+  dispatchActions(actions)
 }
 
 /** Garante hipótese no estado (catálogo). */

@@ -31,7 +31,7 @@ Mapa: visita Vértice via `LocationsMap` → `openLocationScene('vertice')`. Luc
 
 | ID | Origem |
 |----|--------|
-| `rafael_forward_from_mariana` | Reproduzir áudio no WhatsApp (Augusto × Rafael) |
+| `rafael_voice_to_augusto` | Reproduzir áudio no WhatsApp (Augusto × Rafael) |
 | `rafael_recording_vertice_tag` | Análise provisória na bancada (`puzzle-03-rafael-forward` **placeholder**) |
 | `mariana_vertice_visit` / `mariana_repeated_questions` | Tópico Iara (Vértice) |
 | `nico_dj_identified` | Tópico arquivo (Vértice) |
@@ -71,7 +71,7 @@ Handlers: `src/game/story/block02Handlers.ts`.
 
 ## Puzzle placeholder
 
-Evidência `rafael_forward_from_mariana` com `puzzleMeta.implementation: 'placeholder'`. UI: `data-testid="rafael-forward-provisional-panel"`. Não implementa DSP avançado.
+Evidência `rafael_voice_to_augusto` com `puzzleMeta.implementation: 'placeholder'`. UI: `data-testid="rafael-forward-provisional-panel"`. Não implementa DSP avançado.
 
 ## Dependências lógicas
 

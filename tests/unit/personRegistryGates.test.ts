@@ -23,3 +23,19 @@ describe('personRegistryGates — Lucas', () => {
     expect(fixed.flags.block02_paula_chat_done).toBe(true)
   })
 })
+
+describe('personRegistryGates — Samuel', () => {
+  it('Saturnalia sozinho não mostra Samuel', () => {
+    let inv = createInitialState()
+    inv = applyStoryActions(inv, [{ type: 'setFlag', id: 'block03_saturnalia_done', value: true }])
+    expect(isPersonVisibleInRegistry('samuel', inv)).toBe(false)
+  })
+
+  it('lista de detidos / search unlock mostra Samuel', () => {
+    let inv = createInitialState()
+    inv = applyStoryActions(inv, [
+      { type: 'setFlag', id: 'block04_samuel_search_unlocked', value: true },
+    ])
+    expect(isPersonVisibleInRegistry('samuel', inv)).toBe(true)
+  })
+})

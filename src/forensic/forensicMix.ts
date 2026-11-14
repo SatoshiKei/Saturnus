@@ -1,4 +1,4 @@
-import type { ClickEvent, DropoutEvent, GainWindow } from './forensicTypes'
+import type { ClickEvent, DropoutEvent, GainWindow, ProcessParams, SelectionRange } from './forensicTypes'
 
 /** RNG determinístico. A mesma seed produz a mesma sequência. */
 export function mulberry32(seed: number): () => number {
@@ -163,6 +163,157 @@ export function sliceFragment(
   }
   return out
 }
+
+/** Clamp a sample index range into [0, length]. */
+export function clampSampleRange(
+  length: number,
+  startIdx: number,
+  endIdx: number,
+): { start: number; end: number } {
+  const start = Math.max(0, Math.min(length, Math.floor(startIdx)))
+  const end = Math.max(start, Math.min(length, Math.ceil(endIdx)))
+  return { start, end }
+}
+
+/** Reverse samples in [startIdx, endIdx) in place. */
+export function reverseSamples(data: Float32Array, startIdx = 0, endIdx = data.length): void {
+  const { start, end } = clampSampleRange(data.length, startIdx, endIdx)
+  let i = start
+  let j = end - 1
+  while (i < j) {
+    const tmp = data[i]!
+    data[i] = data[j]!
+    data[j] = tmp
+    i++
+    j--
+  }
+}
+
+/** Absolute peak in [startIdx, endIdx). */
+export function measurePeak(data: Float32Array, startIdx = 0, endIdx = data.length): number {
+  const { start, end } = clampSampleRange(data.length, startIdx, endIdx)
+  let peak = 0
+  for (let i = start; i < end; i++) {
+    const a = Math.abs(data[i]!)
+    if (a > peak) peak = a
+  }
+  return peak
+}
+
+/**
+ * Linear gain that maps `peak` to `targetDb` dBFS, capped so the result
+ * never exceeds `peakCeiling` (default 1.0).
+ */
+export function normalizePeakGain(peak: number, targetDb: number, peakCeiling = 1): number {
+  if (peak < 1e-12) return 1
+  const targetLin = Math.min(peakCeiling, Math.pow(10, targetDb / 20))
+  return targetLin / peak
+}
+
+/**
+ * Peak-normalize [startIdx, endIdx) toward `targetDb` dBFS.
+ * Peak is capped at `peakCeiling` (default 1.0) so the result never clips.
+ * Returns the linear gain applied (1 if silent / no-op).
+ */
+export function normalizePeakSamples(
+  data: Float32Array,
+  targetDb: number,
+  startIdx = 0,
+  endIdx = data.length,
+  peakCeiling = 1,
+): number {
+  const { start, end } = clampSampleRange(data.length, startIdx, endIdx)
+  if (end <= start) return 1
+  const peak = measurePeak(data, start, end)
+  const g = normalizePeakGain(peak, targetDb, peakCeiling)
+  if (g === 1) return 1
+  for (let i = start; i < end; i++) data[i]! *= g
+  return g
+}
+
+/** Scale [startIdx, endIdx) by a precomputed linear gain. */
+export function scaleSamples(
+  data: Float32Array,
+  gain: number,
+  startIdx = 0,
+  endIdx = data.length,
+): void {
+  if (gain === 1) return
+  const { start, end } = clampSampleRange(data.length, startIdx, endIdx)
+  for (let i = start; i < end; i++) data[i]! *= gain
+}
+
+/**
+ * Linear amplitude fade-in / fade-out on [startIdx, endIdx).
+ * Fade lengths are clamped so they do not overlap past the midpoint.
+ */
+export function applyLinearFade(
+  data: Float32Array,
+  sampleRate: number,
+  fadeInSec: number,
+  fadeOutSec: number,
+  startIdx = 0,
+  endIdx = data.length,
+): void {
+  const { start, end } = clampSampleRange(data.length, startIdx, endIdx)
+  const n = end - start
+  if (n <= 0) return
+  const maxFade = Math.floor(n / 2)
+  const fadeInN = Math.max(0, Math.min(maxFade, Math.round(Math.max(0, fadeInSec) * sampleRate)))
+  const fadeOutN = Math.max(0, Math.min(maxFade, Math.round(Math.max(0, fadeOutSec) * sampleRate)))
+  for (let i = 0; i < fadeInN; i++) {
+    data[start + i]! *= fadeInN <= 1 ? 0 : i / (fadeInN - 1)
+  }
+  for (let i = 0; i < fadeOutN; i++) {
+    const idx = end - 1 - i
+    data[idx]! *= fadeOutN <= 1 ? 0 : i / (fadeOutN - 1)
+  }
+}
+
+export type BufferProcessParams = Pick<
+  ProcessParams,
+  'reverse' | 'normalizePeak' | 'fadeInSec' | 'fadeOutSec' | 'bypass'
+>
+
+export function regionSampleRange(
+  sampleRate: number,
+  length: number,
+  region: SelectionRange | null,
+  durationSec?: number,
+): { start: number; end: number } {
+  const fullEndSec = durationSec ?? length / Math.max(1e-9, sampleRate)
+  const startSec = region ? Math.max(0, region.startSec) : 0
+  const endSec = region ? Math.max(startSec, region.endSec) : fullEndSec
+  return clampSampleRange(length, Math.round(startSec * sampleRate), Math.round(endSec * sampleRate))
+}
+
+/**
+ * Copy `source` and apply reverse → normalize → fade on the selection
+ * (or the full buffer when `region` is null). Bypass skips all three.
+ * Pass `sharedNormalizeGain` to keep multi-stem balance (same scale on all).
+ */
+export function applyBufferProcess(
+  source: Float32Array,
+  sampleRate: number,
+  process: BufferProcessParams,
+  region: SelectionRange | null,
+  durationSec?: number,
+  sharedNormalizeGain?: number,
+): Float32Array {
+  const out = new Float32Array(source.length)
+  out.set(source)
+  if (process.bypass) return out
+
+  const { start, end } = regionSampleRange(sampleRate, out.length, region, durationSec)
+  if (process.reverse) reverseSamples(out, start, end)
+  if (sharedNormalizeGain != null) scaleSamples(out, sharedNormalizeGain, start, end)
+  else normalizePeakSamples(out, process.normalizePeak, start, end, 1)
+  if (process.fadeInSec > 0 || process.fadeOutSec > 0) {
+    applyLinearFade(out, sampleRate, process.fadeInSec, process.fadeOutSec, start, end)
+  }
+  return out
+}
+
 
 function hashUnit(a: number, b: number): number {
   let x = (a * 374761393 + b * 668265263) | 0

@@ -43,7 +43,6 @@ export function HospitalInterviewScene({ onClose }: { onClose: () => void }) {
     dispatchActions([
       { type: 'setFlag', id: 'block01_hospital_done', value: true },
       { type: 'setFlag', id: 'block01_renata_seen', value: true },
-      { type: 'addEvidence', id: 'julia_kept_folder' },
       { type: 'addEvidence', id: 'camila_witness_note' },
       { type: 'unlockContact', contactId: 'contact-fernanda' },
       { type: 'unlockLocation', id: 'hospital', status: 'visited' },
@@ -54,11 +53,6 @@ export function HospitalInterviewScene({ onClose }: { onClose: () => void }) {
   const completeTopic = useCallback(
     (topic: HospitalTopicId) => {
       setFlag(hospitalTopicFlags[topic], true)
-      if (topic === 'julia_folder') {
-        dispatchActions([
-          { type: 'addTask', id: 'task_julia_folder', label: 'Recolher pasta deixada com Júlia' },
-        ])
-      }
       setActiveTopic(null)
       setBeatIndex(0)
       setMode('menu')

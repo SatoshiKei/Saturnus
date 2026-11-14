@@ -1,11 +1,10 @@
 import { useMemo, useRef, useState } from 'react'
 import {
-  CASE_MEDIA_CORPUS,
-  CASSINI_DERIVED_META,
   FINAL_MESSAGE_META,
   MEMORY_DURATION_SEC,
   MEMORY_FINAL_SRC,
   MEMORY_WORD,
+  caseMediaCorpusForState,
   isMemoryProvenanceComplete,
   isTemporalImpossibility,
   searchCaseMedia,
@@ -53,13 +52,21 @@ export function MemorySession() {
   const confirmedList = useMemo(() => [...confirmed], [confirmed])
   const canFinish = isMemoryProvenanceComplete(confirmed)
   const temporal = isTemporalImpossibility(confirmed)
+  const derivedBag = inv.forensicDerivedArtifacts ?? {}
+  const corpus = useMemo(() => caseMediaCorpusForState(derivedBag), [derivedBag])
+  const runtimeCassini = derivedBag['cassini-stream-b']
+  // Runtime artifact from P09 is mandatory for region D — no static meta fallback.
+  const cassiniCreatedAt = runtimeCassini
+    ? new Date(runtimeCassini.createdAtMs).toISOString()
+    : null
+  const cassiniHash = runtimeCassini?.contentHash ?? null
 
   const runSearch = () => {
     if (solved) return
     playSfx('ui')
     const a = Math.min(selStart, selEnd)
     const b = Math.max(selStart, selEnd)
-    const result = searchCaseMedia(a, b)
+    const result = searchCaseMedia(a, b, derivedBag)
     setHits(result)
     setNote(null)
   }
@@ -67,6 +74,11 @@ export function MemorySession() {
   const confirmHit = (hit: SearchHit) => {
     if (solved || !hit.strong) return
     if (hit.source === 'other') return
+    if (hit.source === 'cassini_derived' && !runtimeCassini) {
+      playSfx('error')
+      setNote('Região D exige o artifact runtime de Cassini-Huygens (stream B reconstruído).')
+      return
+    }
     playSfx('unlock')
     const src = hit.source as ProvenanceConfirmId
     setConfirmed((prev) => {
@@ -86,9 +98,13 @@ export function MemorySession() {
   }
 
   const finish = () => {
-    if (solved || !canFinish) {
+    if (solved || !canFinish || !runtimeCassini) {
       playSfx('error')
-      setNote('Confirme as quatro proveniências — inclusive a dependência temporal do output derivado.')
+      setNote(
+        !runtimeCassini
+          ? 'Sem artifact derivado persistido (cassini-stream-b) — reconstrua o stream B no Puzzle 09.'
+          : 'Confirme as quatro proveniências — inclusive a dependência temporal do output derivado.',
+      )
       return
     }
     playSfx('unlock')
@@ -96,7 +112,7 @@ export function MemorySession() {
     onMemoryPuzzleSolved()
   }
 
-  const open = CASE_MEDIA_CORPUS.find((m) => m.id === openMedia)
+  const open = corpus.find((m) => m.id === openMedia)
 
   return (
     <div className="aw-hex" data-testid="memory-panel" style={{ opacity: uiFade && solved ? 0.92 : 1 }}>
@@ -244,11 +260,10 @@ export function MemorySession() {
             confirmedList.map((s) => (
               <li key={s} data-testid={`memory-edge-${s}`}>
                 → {SOURCE_LABEL[s]}
-                {s === 'cassini_derived' ? (
+                {s === 'cassini_derived' && cassiniCreatedAt && cassiniHash ? (
                   <span className="aw-provisional__note">
                     {' '}
-                    (created {CASSINI_DERIVED_META.createdAt.slice(0, 19)} · hash{' '}
-                    {CASSINI_DERIVED_META.sha256.slice(0, 12)}…)
+                    (created {cassiniCreatedAt.slice(0, 19)} · hash {cassiniHash.slice(0, 12)}…)
                   </span>
                 ) : null}
               </li>
@@ -258,8 +273,8 @@ export function MemorySession() {
         {temporal ? (
           <p data-testid="memory-temporal" className="aw-provisional__note">
             Dependência temporal: a mensagem contém um artefato que só existe no output derivado
-            produzido durante a investigação ({FINAL_MESSAGE_META.createdAt.slice(0, 19)} vs derived{' '}
-            {CASSINI_DERIVED_META.createdAt.slice(0, 19)}).
+            produzido durante a investigação ({FINAL_MESSAGE_META.createdAt.slice(0, 19)}
+            {cassiniCreatedAt ? ` vs derived ${cassiniCreatedAt.slice(0, 19)}` : ''}).
           </p>
         ) : null}
       </div>
@@ -303,7 +318,9 @@ export function MemorySession() {
                   regionD_source: 'cassini_derived',
                   fingerprintMatches: hits.map((h) => ({ id: h.mediaId, score: h.score, strong: h.strong })),
                   confirmedProvenance: confirmedList,
-                  cassiniDerivedCreatedAt: CASSINI_DERIVED_META.createdAt,
+                  cassiniDerivedCreatedAt: cassiniCreatedAt,
+                  cassiniDerivedHash: cassiniHash,
+                  runtimeArtifact: Boolean(runtimeCassini),
                   finalMessageCreatedAt: FINAL_MESSAGE_META.createdAt,
                   impossibleTemporalDependency: temporal,
                   memoryComplete: solved || canFinish,

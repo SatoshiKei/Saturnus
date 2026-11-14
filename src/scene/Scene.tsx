@@ -124,6 +124,10 @@ function pendingSoloReflection(flags: Record<string, boolean>): string | null {
     return 'refl-samuel-recontextualized'
   }
   if (flags.block05_refl_andre_pending && !flags['refl-b05-andre_seen']) return 'refl-b05-andre'
+  if (flags.block05_refl_maralto_pending && !flags['refl-b05-maralto_seen']) return 'refl-b05-maralto'
+  if (flags.block05_refl_coincidence_pending && !flags['refl-b05-coincidence_seen']) {
+    return 'refl-b05-coincidence'
+  }
   if (flags.block05_refl_path_pending && !flags['refl-b05-path_seen']) return 'refl-b05-path'
   if (flags.block06_refl_geraldo_pending && !flags['refl-b06-geraldo_seen']) return 'refl-b06-geraldo'
   if (flags.block06_refl_miro_pending && !flags['refl-b06-miro_seen']) return 'refl-b06-miro'

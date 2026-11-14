@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { cleanup, render, screen, fireEvent, act } from '@testing-library/react'
+import { cleanup, render, screen, fireEvent, act, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ForensicWorkbench } from '../../src/forensic/ForensicWorkbench'
 import {
@@ -185,10 +185,7 @@ describe('Puzzle 02 — IAPETUS workbench', () => {
         ]}
       />,
     )
-    await act(async () => {
-      await Promise.resolve()
-    })
-    expect(onDone).toHaveBeenCalled()
+    await waitFor(() => expect(onDone).toHaveBeenCalled(), { timeout: 3000 })
   })
 
   it('H — UI copy does not mention Nico or Elisa', async () => {

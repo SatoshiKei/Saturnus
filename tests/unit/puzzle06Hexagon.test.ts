@@ -36,7 +36,11 @@ import { createInitialState } from '../../src/game/state/initialState'
 import { applyStoryActions } from '../../src/game/story/actions'
 import { runStoryEngine } from '../../src/game/story/engine'
 import { block04EntryActions } from '../../src/game/story/block04DevCheckpoints'
-import { onHexagonSolved, onHexCallsPreserved } from '../../src/game/story/block04Handlers'
+import {
+  onHexagonSolved,
+  onHexCallsPreserved,
+  runHexagonSpectrogramSurvey,
+} from '../../src/game/story/block04Handlers'
 import { dispatchActions } from '../../src/game/state/investigationStore'
 
 const ROOT = resolve(__dirname, '../..')
@@ -190,20 +194,24 @@ describe('Puzzle 06 — HEXÁGONO', () => {
     expect(getInvestigationState().phones.mariana.diaryUnlocked).toBe(true)
   })
 
-  it('achievement HEXÁGONO requires diary after spectrogram survey', () => {
+  it('spectrogram survey ≠ solved; PIN 481526 marks hexagon done + achievement', () => {
     const ach = seedAchievements.find((a) => a.id === 'ach-hexagon')
     expect(ach?.title).toBe('HEXÁGONO')
     resetGame()
     __setStateForTests(runStoryEngine(applyStoryActions(createInitialState(), block04EntryActions)))
     onHexCallsPreserved()
-    onHexagonSolved()
+    runHexagonSpectrogramSurvey()
     let s = getInvestigationState()
+    expect(s.flags.block04_hex_spectrograms_inspected).toBe(true)
+    expect(s.flags.block04_hexagon_done).toBeFalsy()
     expect(ach!.unlocked(s)).toBe(false)
     dispatchActions([
       { type: 'setFlag', id: 'block04_forensics_access', value: true },
+      { type: 'setFlag', id: 'block04_diary_icon_revealed', value: true },
     ])
-    tryDiaryPin(HEX_PIN)
+    expect(tryDiaryPin(HEX_PIN)).toBe('unlocked')
     s = getInvestigationState()
+    expect(s.flags.block04_hexagon_done).toBe(true)
     expect(ach!.unlocked(s)).toBe(true)
   })
 

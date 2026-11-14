@@ -31,7 +31,9 @@ Implementação jogável conforme `docs/assets/screenplay/section 1.md`.
 
 ## Evidências (ids)
 
-`initial_police_report`, `mariana_phone`, `emergency_call_raw`, `emergency_call_restored`, `call_history_gap`, `mariana_memory_lapses`, `rafael_call_memory`, `rafael_audio_reply`, `julia_kept_folder`, `camila_witness_note`
+`initial_police_report`, `mariana_phone`, `emergency_call_raw`, `emergency_call_restored`, `call_history_gap`, `mariana_memory_lapses`, `rafael_call_memory`, `rafael_audio_reply`, `camila_witness_note`
+
+(`julia_kept_folder` — LEGACY / OUTDATED; pasta da Júlia removida do canon atual.)
 
 ## Hipóteses
 
@@ -60,7 +62,7 @@ Augusto, Mariana, Júlia, Camila, Rafael, Paula, Fernanda, Diego — sem Nico/El
 
 ## Pendências pós-bloco
 
-Ver `block01EndTasks` em `seedStory.ts` (origem da chamada, pasta Júlia, gravação Rafael, etc.).
+Ver `block01EndTasks` em `seedStory.ts` (origem da chamada, gravação Rafael, etc.).
 
 ## Divergências técnicas
 

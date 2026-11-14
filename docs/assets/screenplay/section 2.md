@@ -1,3 +1,6 @@
+> **LEGACY / OUTDATED** — screenplay snapshot. Não é canon atual.
+> A pasta deixada com Júlia foi removida do desenho vigente.
+
 ## Estado inicial
 
 O bloco começa imediatamente após o retorno de Augusto do hospital.

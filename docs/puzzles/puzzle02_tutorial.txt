@@ -1,9 +1,15 @@
 PUZZLE 02 — IAPETUS
 Dev only — não aparece para o jogador.
 Arquivo: rafael_1610_2147.ogg
-Evidências: rafael_audio_reply | rafael_forward_from_mariana
+Evidências: rafael_audio_reply | rafael_voice_to_augusto
+Canon: áudio de Rafael para Augusto — análise de um material que Mariana
+       havia mostrado/enviado a ele anteriormente (NÃO é encaminhamento da balada).
+Asset: rafael_1610_2147_full.mp3 (correto)
 Fonte: src/assets/audios/p2/Rafael - Vértice Full Audio - Novo.mp3
 Runtime: public/assets/audio/forensic/puzzle02/rafael_1610_2147_full.mp3
+
+PENDÊNCIA LOW (não altera completion nesta rodada):
+P02_SEG_CABINE_OPTIONAL — seg_cabine permanece opcional.
 
 
 O QUE ESTÁ ERRADO

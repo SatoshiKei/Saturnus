@@ -10,13 +10,6 @@ export const marianaBlock01Notes: NoteItem[] = [
     storyFlag: 'block01_note_quarta_read',
   },
   {
-    id: 'n-pasta',
-    title: '30/10',
-    body: 'Júlia ficou com a pasta\nperguntar o que tinha dentro\ngravar se ligar de novo\nconferir horário antes de responder',
-    updatedAt: '30/10/2026',
-    storyFlag: 'block01_note_pasta_read',
-  },
-  {
     id: 'n-pessoas',
     title: 'PESSOAS',
     body: 'Júlia\nCamila\nRafael\nPaula\n\nse eu perguntar de novo não fala que eu já perguntei',

@@ -116,7 +116,7 @@ src/forensic/puzzles/puzzle11Meta.json
 
 UI
 --
-RotationSession na bancada (evidence police_clock_drift_logs)
+RotationSession na bancada (evidence rui_police_approach_records)
 Sem painel exclusivo “Puzzle 11”; sem checklist ✓trem/✓ocorrência
 
 

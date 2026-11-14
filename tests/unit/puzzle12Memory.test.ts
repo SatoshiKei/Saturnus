@@ -82,23 +82,61 @@ describe('Puzzle 12 — MEMÓRIA', () => {
   })
 
   it('K: seleção larga/errada não resolve', () => {
-    const wide = searchCaseMedia(0.2, 8.5)
+    const derived = {
+      'cassini-stream-b': {
+        contentHash: 'runtime-hash-test',
+        createdAtMs: 1_700_000_000_000,
+        audioSrc: CASSINI_DERIVED_META.publicUrl,
+      },
+    }
+    const wide = searchCaseMedia(0.2, 8.5, derived)
     expect(wide.every((h) => !h.strong)).toBe(true)
-    const wrong = searchCaseMedia(2.2, 2.7)
+    const wrong = searchCaseMedia(2.2, 2.7, derived)
     expect(wrong.every((h) => !h.strong)).toBe(true)
   })
 
-  it('L/M: Search confirma cada proveniência; grafo só após confirm', () => {
+  it('L/M: Search confirma cada proveniência com artifact runtime; D exige persistência', () => {
+    const regionD = MEMORY_REGIONS.find((r) => r.id === 'D')!
+    const without = searchCaseMedia(regionD.start, regionD.end)
+    expect(without.every((h) => !(h.strong && h.source === 'cassini_derived'))).toBe(true)
+
+    const derived = {
+      'cassini-stream-b': {
+        contentHash: 'runtime-hash-test',
+        createdAtMs: 1_700_000_000_000,
+        audioSrc: CASSINI_DERIVED_META.publicUrl,
+      },
+    }
     const confirmed = new Set<
       'apartment' | 'emergency' | 'enceladus' | 'cassini_derived'
     >()
     for (const r of MEMORY_REGIONS) {
-      const hits = searchCaseMedia(r.start, r.end)
+      const hits = searchCaseMedia(r.start, r.end, derived)
       const strong = hits.find((h) => h.strong && h.source === r.source)
       expect(strong).toBeTruthy()
       confirmed.add(r.source)
       expect(isMemoryProvenanceComplete(confirmed)).toBe(confirmed.size === 4)
     }
+  })
+
+  it('PCAP original ≠ fingerprint D; derived artifact correto = fingerprint D', () => {
+    const regionD = MEMORY_REGIONS.find((r) => r.id === 'D')!
+    const derived = {
+      'cassini-stream-b': {
+        contentHash: 'deadbeef0001',
+        createdAtMs: 1_700_000_000_000,
+        audioSrc: '/assets/audio/forensic/puzzle09/stream_b_reconstructed.wav',
+      },
+    }
+    const hits = searchCaseMedia(regionD.start, regionD.end, derived)
+    const pcap = hits.find((h) => h.mediaId === 'media-cassini-pcap')
+    const capture = hits.find((h) => h.mediaId === 'media-cassini-capture')
+    const art = hits.find((h) => h.mediaId === 'media-cassini-derived')
+    expect(pcap?.strong).toBe(false)
+    expect(capture?.strong).toBe(false)
+    expect(art?.strong).toBe(true)
+    expect(art?.sha256).toBe('deadbeef0001')
+    expect(pcap?.score ?? 0).toBeLessThan(art?.score ?? 0)
   })
 
   it('N/O: impossibilidade temporal só com D; complete depois', () => {

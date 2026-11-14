@@ -60,7 +60,7 @@ Docs antigos (`SATURNUS_SPEC_WALKTHROUGH.md`, `WALKTHROUGH_GUIA.md`) ainda descr
 | 08 | Enceladus | WhatsApp anônimo, depois encaminhado | Find Similar, padrão comum, Difference | Só “Ricardo” | Júlia → Renata → hospital | Sim | Sim | Sim | Índices de ciclo estão no dataset |
 | 09 | Cassini-Huygens | PCAP via Cecília | Separar dois SSRC e ordenar sequence | Duas sessões; sem terceiro stream | Bloco 8 / Morsa | Sim | Sim | Parcial | Hash do derivado é meta estática, não registro da sessão |
 | 10 | Ordem dos Anéis | Mídias dos protestos | Fingerprint, flicker, rota, DVR, segmento 1279 | Cutscene; Augusto diz “André.” | Confronto com André | Sim | Sim | Sim | UI própria, não a bancada de áudio |
-| 11 | Rotação de Saturno | Relatos + registros após Rui | Passagem, CAD, fingerprint, AVL | VTR-14; Augusto só na escala | Bloco 9 | Sim | Sim | Sim | Evidência ainda se chama `police_clock_drift_logs` |
+| 11 | Rotação de Saturno | Relatos + registros após Rui | Passagem, CAD, fingerprint, AVL | VTR-14; Augusto só na escala | Bloco 9 | Sim | Sim | Sim | Evidência ainda se chama `rui_police_approach_records` |
 | 12 | MEMÓRIA | Gravação reivindicada no bloco 9 | Janelas, Search Case Media, quatro proveniências | Palavra MEMÓRIA; D é o derivado do P09 | Final | Sim | Sim | Sim | Região D depende do meta estático do P09 |
 
 ### Notas por puzzle
@@ -342,7 +342,7 @@ Contrato novo coberto por teste: blocos 1–9 alcançáveis, doze conquistas no 
 4. Painel DEV mostra respostas esperadas.
 5. Walkthroughs ainda descrevem hexágono por metadados e puzzles 07–09 pelos painéis velhos.
 6. `nico_recording_portable` continua no catálogo; a entrevista não entrega mais.
-7. Evidência do puzzle 11 ainda se chama `police_clock_drift_logs`.
+7. Evidência do puzzle 11 ainda se chama `rui_police_approach_records`.
 8. Build avisa chunk único acima de 500 kB.
 9. Vitest, sob carga, às vezes resolve sprite como `file:///src/assets/sprites/bia.png`.
 10. Título `mariana_andre_innocence` é mais largo que a fala do Lucas.
@@ -409,3 +409,24 @@ Para cada puzzle a pergunta foi: por que Augusto tem o material, por que analisa
 | 02 | Fecha até o Vértice; o segundo trecho não é necessário |
 
 Nenhum puzzle está implementado como minigame solto sem lead de entrada e sem flag de saída. O furo semântico maior não é um puzzle isolado: é a pasta da Júlia, que ainda pede um objeto que a investigação não usa, e a bancada, que em três gestos escreve a conclusão no lugar do jogador.
+
+---
+
+## 15. Follow-up — rodada de correção semântica (2026-11-14)
+
+Histórico acima **preservado**. Decisões humanas aplicadas; ver também `docs/audits/SATURNUS_SEMANTIC_AUDIT.md`.
+
+| Item | Status |
+|---|---|
+| P02 nomenclatura (não fluxo) | FIXED — `rafael_voice_to_augusto` |
+| P03 proveniência Vértice→Augusto | FIXED |
+| P03 design multimídia | PENDING DESIGN — `P03_DESIGN_REWORK_REQUIRED` |
+| P04 dataset Noite X | FIXED — `src/data/block03/noiteXChronology.ts` |
+| Lucas evidence | FIXED |
+| B5 reflections lifecycle | FIXED |
+| P08 residual → speech | FIXED |
+| P09→P12 artifact runtime | FIXED |
+| P11 ID clock-drift | FIXED → `rui_police_approach_records` |
+| Pasta Júlia (docs canônicos) | FIXED / LEGACY marked |
+| `P02_SEG_CABINE_OPTIONAL` | PENDING (LOW) |
+| Playthrough P01/P10/P12 | PENDING PLAYTHROUGH |

@@ -104,25 +104,13 @@ export function onMaraltoLineWeighed() {
     { type: 'setFlag', id: 'block05_maralto_weighed', value: true },
     { type: 'completeTask', id: 'task_weigh_maralto_line' },
     { type: 'addHypothesis', id: 'hyp_one_line_distraction' },
-    {
-      type: 'addTask',
-      id: 'task_mariana_contact_chronology',
-      label: 'Entender a ordem em que Mariana procurou as pessoas',
-    },
+    { type: 'setFlag', id: 'block05_refl_maralto_pending', value: true },
   ])
-  onMaraltoReflectionDone()
 }
 
-/** Saves antigos que ficaram nas micro-reflections B5 — conclui flags sem cena. */
+/** @deprecated micro-reflections B5 voltam a disparar via pending; sem auto-conclusão. */
 export function absorbLegacyB5MicroReflections() {
-  const s = getInvestigationState()
-  if (s.flags.block05_refl_maralto_pending && !s.flags.block05_maralto_reflection_done) {
-    onMaraltoReflectionDone()
-  }
-  const s2 = getInvestigationState()
-  if (s2.flags.block05_refl_coincidence_pending && !s2.flags.block05_coincidence_reflection_done) {
-    onCoincidenceReflectionDone()
-  }
+  /* no-op — reflection_done só após a cena */
 }
 
 export function onMaraltoReflectionDone() {
@@ -131,7 +119,13 @@ export function onMaraltoReflectionDone() {
   dispatchActions([
     { type: 'setFlag', id: 'block05_maralto_reflection_done', value: true },
     { type: 'setFlag', id: 'block05_refl_maralto_pending', value: false },
+    { type: 'setFlag', id: 'refl-b05-maralto_seen', value: true },
     { type: 'setFlag', id: 'block05_chronology_action_unlocked', value: true },
+    {
+      type: 'addTask',
+      id: 'task_mariana_contact_chronology',
+      label: 'Entender a ordem em que Mariana procurou as pessoas',
+    },
   ])
 }
 
@@ -162,8 +156,8 @@ export function comparePhoneFilesSequence() {
     { type: 'setFlag', id: 'block05_compare_done', value: true },
     { type: 'addEvidence', id: 'phone_files_depend_on_order' },
     { type: 'completeTask', id: 'task_compare_phone_files' },
+    { type: 'setFlag', id: 'block05_refl_coincidence_pending', value: true },
   ])
-  onCoincidenceReflectionDone()
 }
 
 /** Depois da reflexão “pode ser coincidência”: testar voltando à chamada inicial. */
@@ -173,6 +167,7 @@ export function onCoincidenceReflectionDone() {
   dispatchActions([
     { type: 'setFlag', id: 'block05_coincidence_reflection_done', value: true },
     { type: 'setFlag', id: 'block05_refl_coincidence_pending', value: false },
+    { type: 'setFlag', id: 'refl-b05-coincidence_seen', value: true },
     { type: 'setFlag', id: 'block05_emergency_revisit_unlocked', value: true },
     {
       type: 'addTask',
@@ -215,15 +210,11 @@ export function revisitEmergencyEntry() {
 export function onPathReflectionDone() {
   const s = getInvestigationState()
   if (s.flags.block05_complete) return
+  // Path reflection only closes its own lifecycle. Maralto / coincidence
+  // keep independent pending → scene → *_done flags (DEV checkpoints may still synthesize).
   const actions: StoryActionRef[] = [
     { type: 'setFlag', id: 'block05_path_reflection_done', value: true },
     { type: 'setFlag', id: 'block05_refl_path_pending', value: false },
-    { type: 'setFlag', id: 'block05_maralto_reflection_done', value: true },
-    { type: 'setFlag', id: 'block05_coincidence_reflection_done', value: true },
-    { type: 'setFlag', id: 'block05_refl_maralto_pending', value: false },
-    { type: 'setFlag', id: 'block05_refl_coincidence_pending', value: false },
-    { type: 'setFlag', id: 'refl-b05-maralto_seen', value: true },
-    { type: 'setFlag', id: 'refl-b05-coincidence_seen', value: true },
     { type: 'addHypothesis', id: 'hyp_deliberate_path' },
     {
       type: 'linkHypothesis',

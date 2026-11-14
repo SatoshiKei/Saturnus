@@ -17,7 +17,9 @@ import {
   finishJanaInterview,
   finishNicoFollowup,
   onAndreStillGuiltyReflectionDone,
+  onCoincidenceReflectionDone,
   onMaraltoLineWeighed,
+  onMaraltoReflectionDone,
   onPathReflectionDone,
   organizeMarianaContactChronology,
   revisitEmergencyEntry,
@@ -127,6 +129,8 @@ describe('Bloco 5 — progressão', () => {
     consultElisaAutosBySection()
     onAndreStillGuiltyReflectionDone()
     onMaraltoLineWeighed()
+    expect(getInvestigationState().flags.block05_maralto_reflection_done).toBeFalsy()
+    onMaraltoReflectionDone()
     organizeMarianaContactChronology()
     let s = getInvestigationState()
     expect(s.evidenceOwned).toContain('mariana_sought_people_before')
@@ -134,6 +138,10 @@ describe('Bloco 5 — progressão', () => {
     comparePhoneFilesSequence()
     s = getInvestigationState()
     expect(s.evidenceOwned).toContain('phone_files_depend_on_order')
+    expect(s.flags.block05_coincidence_reflection_done).toBeFalsy()
+    expect(s.flags.block05_emergency_revisit_unlocked).toBeFalsy()
+    onCoincidenceReflectionDone()
+    s = getInvestigationState()
     expect(s.flags.block05_emergency_revisit_unlocked).toBe(true)
     revisitEmergencyEntry()
     s = getInvestigationState()
@@ -150,5 +158,26 @@ describe('Bloco 5 — progressão', () => {
     expect(s.flags.block06_entry_ready).toBe(true)
     expect(s.documentsOwned).toContain('doc-elisa-geraldo-depoimento')
     expect(s.tasks.some((t) => t.id === 'task_reexamine_elisa_from_scratch' && !t.completed)).toBe(true)
+  })
+
+  it('onPathReflectionDone NÃO grava maralto/coincidence done sem as cenas', () => {
+    seedBlock05Start()
+    // Path pode fechar o bloco sem sintetizar as outras reflections.
+    dispatchActions([
+      { type: 'setFlag', id: 'block05_refl_path_pending', value: true },
+      { type: 'setFlag', id: 'refl-b05-path_seen', value: true },
+      { type: 'addEvidence', id: 'mariana_sought_people_before' },
+      { type: 'addEvidence', id: 'phone_files_depend_on_order' },
+      { type: 'addEvidence', id: 'call_enabled_apartment_entry' },
+    ])
+    expect(getInvestigationState().flags.block05_maralto_reflection_done).toBeFalsy()
+    expect(getInvestigationState().flags.block05_coincidence_reflection_done).toBeFalsy()
+    onPathReflectionDone()
+    const s = getInvestigationState()
+    expect(s.flags.block05_path_reflection_done).toBe(true)
+    expect(s.flags.block05_maralto_reflection_done).toBeFalsy()
+    expect(s.flags.block05_coincidence_reflection_done).toBeFalsy()
+    expect(s.flags['refl-b05-maralto_seen']).toBeFalsy()
+    expect(s.flags['refl-b05-coincidence_seen']).toBeFalsy()
   })
 })

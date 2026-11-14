@@ -14,7 +14,7 @@ import {
 } from '../../src/game/state/investigationStore'
 import { finishLucasInterview } from '../../src/game/story/block02Handlers'
 import { finishNicoFollowup } from '../../src/game/story/block05Handlers'
-import { onHexagonSolved } from '../../src/game/story/block04Handlers'
+import { runHexagonSpectrogramSurvey } from '../../src/game/story/block04Handlers'
 import { onForumHvalencaOpened } from '../../src/game/story/block07Handlers'
 import {
   finishGeraldoEarlyInterview,
@@ -202,11 +202,12 @@ describe('Early paths — progressão', () => {
       ...HEX_EVIDENCE_IDS.map((id) => ({ type: 'addEvidence' as const, id })),
       { type: 'setFlag', id: 'block04_hexagon_available', value: true },
     ])
-    onHexagonSolved()
+    runHexagonSpectrogramSurvey()
     s = getInvestigationState()
     expect(s.evidenceOwned).toContain('hex_spectral_patterns')
-    expect(s.flags.block04_hexagon_done).toBe(true)
+    expect(s.flags.block04_hexagon_done).toBeFalsy()
     expect(tryDiaryPin('481526')).toBe('unlocked')
+    expect(getInvestigationState().flags.block04_hexagon_done).toBe(true)
   })
 
   it('migrateState v3 semeia searchTermsDiscovered a partir de flags antigas', () => {

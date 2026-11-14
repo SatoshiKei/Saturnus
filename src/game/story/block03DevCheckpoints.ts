@@ -43,7 +43,7 @@ export const block03EntryActions: StoryActionRef[] = [
   { type: 'setFlag', id: 'block02_elisa_search_unlocked', value: true },
   { type: 'setFlag', id: 'block02_convergence_done', value: true },
   { type: 'setFlag', id: 'block02_complete', value: true },
-  { type: 'addEvidence', id: 'rafael_forward_from_mariana' },
+  { type: 'addEvidence', id: 'rafael_voice_to_augusto' },
   { type: 'addEvidence', id: 'rafael_recording_vertice_tag' },
   { type: 'addEvidence', id: 'nico_dj_identified' },
   { type: 'addEvidence', id: 'paula_leads_lucas' },

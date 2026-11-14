@@ -232,7 +232,7 @@ export const block08DevCheckpoints: { id: string; label: string; actions: StoryA
       { type: 'setFlag', id: 'block08_accident_reflection_done', value: true },
       { type: 'setFlag', id: 'refl-b08-accident_seen', value: true },
       { type: 'setFlag', id: 'block08_rotation_available', value: true },
-      { type: 'addEvidence', id: 'police_clock_drift_logs' },
+      { type: 'addEvidence', id: 'rui_police_approach_records' },
       {
         type: 'addTask',
         id: 'task_rotation_puzzle',

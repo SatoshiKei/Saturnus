@@ -109,7 +109,7 @@ describe('Puzzle 03 — ANÉIS', () => {
 
   it('O — puzzles 01 and 02 still registered', () => {
     expect(getForensicSessionForEvidence('emergency_call_raw')?.id).toBe(puzzle01CassiniSession.id)
-    expect(getForensicSessionForEvidence('rafael_forward_from_mariana')?.id).toBe(
+    expect(getForensicSessionForEvidence('rafael_voice_to_augusto')?.id).toBe(
       puzzle02IapetusSession.id,
     )
     expect(getForensicSessionForEvidence('rec_vtx_old_01')?.id).toBe(puzzle03AnelsSession.id)

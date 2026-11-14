@@ -7,7 +7,7 @@ export function onRafaelForwardAudioPlayed() {
   if (s.flags.block02_rafael_forward_received) return
   dispatchActions([
     { type: 'setFlag', id: 'block02_rafael_forward_received', value: true },
-    { type: 'addEvidence', id: 'rafael_forward_from_mariana' },
+    { type: 'addEvidence', id: 'rafael_voice_to_augusto' },
     { type: 'completeTask', id: 'task_rafael_recording' },
   ])
 }
@@ -16,7 +16,7 @@ export function runProvisionalRafaelForwardAnalysis() {
   const s = getInvestigationState()
   if (s.flags.block02_rafael_forward_provisional) return
   const hasSource =
-    s.evidenceOwned.includes('rafael_forward_from_mariana') ||
+    s.evidenceOwned.includes('rafael_voice_to_augusto') ||
     s.evidenceOwned.includes('rafael_audio_reply')
   if (!hasSource) return
   dispatchActions([

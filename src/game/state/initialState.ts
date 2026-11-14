@@ -55,5 +55,6 @@ export function createInitialState(): InvestigationState {
     achievementUnlocks: {},
     forensicRecoveredSpeech: {},
     forensicContainerState: {},
+    forensicDerivedArtifacts: {},
   }
 }

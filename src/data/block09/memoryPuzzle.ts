@@ -182,17 +182,52 @@ const SOURCE_SCORE_KEY: Record<MemorySourceId, string> = {
  * Search Case Media — só materiais do caso.
  * Seleção larga/errada → hits fracos ou genéricos.
  */
-export function searchCaseMedia(start: number, end: number): SearchHit[] {
+/** Corpus com artifact runtime do Puzzle 09 quando existir no save. */
+export function caseMediaCorpusForState(
+  derived?: Record<string, { contentHash: string; createdAtMs: number; audioSrc: string }> | null,
+): CaseMediaEntry[] {
+  const art = derived?.['cassini-stream-b']
+  // Static puzzle12Meta is build/verification only — runtime provenance requires the artifact.
+  if (!art) {
+    return CASE_MEDIA_CORPUS.map((m) => {
+      if (m.id !== 'media-cassini-derived') return m
+      return {
+        ...m,
+        sha256: undefined,
+        createdAt: undefined,
+        parentLabel: 'Requer artifact runtime cassini-stream-b (Puzzle 09)',
+      }
+    })
+  }
+  return CASE_MEDIA_CORPUS.map((m) => {
+    if (m.id !== 'media-cassini-derived') return m
+    return {
+      ...m,
+      audioSrc: art.audioSrc || m.audioSrc,
+      sha256: art.contentHash,
+      createdAt: new Date(art.createdAtMs).toISOString(),
+      parentLabel: 'hv_session_capture.pcap → bench reconstruction',
+    }
+  })
+}
+
+export function searchCaseMedia(
+  start: number,
+  end: number,
+  derived?: Record<string, { contentHash: string; createdAtMs: number; audioSrc: string }> | null,
+): SearchHit[] {
   if (end <= start) return []
   const dur = end - start
   const wide = dur > MEMORY_WIDE_MAX_SEC
   const best = bestRegion(start, end)
   const hits: SearchHit[] = []
 
+  const corpus = caseMediaCorpusForState(derived)
+
   if (wide || !best || best.ratio < 0.45) {
     // Weak / generic — does not resolve the puzzle (deterministic)
     const jitter = ((start * 10 + end * 3) % 7) * 0.01
-    for (const m of CASE_MEDIA_CORPUS.slice(0, 3)) {
+    for (const m of corpus.slice(0, 3)) {
       hits.push({
         mediaId: m.id,
         label: m.label,
@@ -212,7 +247,9 @@ export function searchCaseMedia(start: number, end: number): SearchHit[] {
   const region = best.region
   const fp = MEMORY_SCORES[SOURCE_SCORE_KEY[region.source]] ?? 0
 
-  for (const m of CASE_MEDIA_CORPUS) {
+  const hasRuntimeDerived = Boolean(derived?.['cassini-stream-b'])
+
+  for (const m of corpus) {
     let score = 0.08
     let strong = false
     let reason = 'Correspondência residual no acervo.'
@@ -229,10 +266,17 @@ export function searchCaseMedia(start: number, end: number): SearchHit[] {
               : 'media-cassini-derived'
       score = fp * (0.85 + 0.15 * best.ratio)
       if (m.id !== canonicalId) score *= 0.72
-      strong = m.id === canonicalId && score >= MEMORY_FP_THRESHOLD && best.ratio >= 0.55
-      reason = strong
-        ? 'Assinatura compatível com a janela selecionada.'
-        : 'Possível afinidade — confirme abrindo a fonte.'
+      // Região D exige artifact runtime persistido da reconstrução do Puzzle 09.
+      if (region.source === 'cassini_derived' && !hasRuntimeDerived) {
+        score *= 0.35
+        strong = false
+        reason = 'Sem output derivado persistido da bancada — reconstrua o stream B primeiro.'
+      } else {
+        strong = m.id === canonicalId && score >= MEMORY_FP_THRESHOLD && best.ratio >= 0.55
+        reason = strong
+          ? 'Assinatura compatível com a janela selecionada.'
+          : 'Possível afinidade — confirme abrindo a fonte.'
+      }
     } else if (region.source === 'cassini_derived' && m.id === 'media-cassini-capture') {
       score = (MEMORY_SCORES.D_vs_capture_order ?? 0.3) * 0.7
       strong = false
