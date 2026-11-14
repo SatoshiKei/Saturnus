@@ -59,7 +59,8 @@ As trilhas **A** e **B** podem ser feitas em ordem livre, mas a **convergência*
 
 1. **Celular Augusto** → WhatsApp → **Rafael** → reproduzir o **áudio de Rafael** (análise prévia; não é a gravação da balada).
 2. **Bancada** → áudio de Rafael → **Análise provisória** → desbloqueia **Vértice** no mapa.
-3. **Mapa** → **Vértice** → visitar → falar com **Iara, Sandro, Caio**, perguntar a Sandro sobre o interesse de Mariana, **Consultar arquivos antigos** (obtém arquivo histórico REC_VTX_OLD_01 no local → Bancada/P03 → identifica **Nico**).
+3. **Mapa** → **Vértice** → visitar → falar com **Iara, Sandro, Caio**, perguntar a Sandro sobre o interesse de Mariana, **Consultar arquivos antigos** (obtém REC_VTX_OLD_01 no local).  
+4. **Bancada** → **ANÉIS**: ouvir a gravação → Fingerprint Search nas regiões antes/depois do DJ → filtrar arquivo de sets por transição **A→B** → abrir a sessão → **Nico**.
 
 ### Trilha B — Paula, Lucas e Elisa
 

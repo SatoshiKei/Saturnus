@@ -420,7 +420,7 @@ Histórico acima **preservado**. Decisões humanas aplicadas; ver também `docs/
 |---|---|
 | P02 nomenclatura (não fluxo) | FIXED — `rafael_voice_to_augusto` |
 | P03 proveniência Vértice→Augusto | FIXED |
-| P03 design multimídia | PENDING DESIGN — `P03_DESIGN_REWORK_REQUIRED` |
+| P03 design multimídia | PENDING ASSET — arquitetura OK; `P03_SECOND_TRACK_REQUIRED` (falta Faixa B distinta) |
 | P04 dataset Noite X | FIXED — `src/data/block03/noiteXChronology.ts` |
 | Lucas evidence | FIXED |
 | B5 reflections lifecycle | FIXED |

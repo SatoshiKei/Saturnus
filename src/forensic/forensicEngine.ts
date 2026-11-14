@@ -15,6 +15,7 @@ import type {
   TrackRuntime,
 } from './forensicTypes'
 import { DEFAULT_PROCESS, INSPECTOR_TABS } from './forensicTypes'
+import { puzzle03NarrativeComplete } from './puzzles/puzzle03Fingerprint'
 
 export function createInitialUiState(
   session: ForensicSession,
@@ -98,6 +99,17 @@ export function createInitialUiState(
     streamBRecovered: false,
     streamAOrderQuality: null,
     streamBOrderQuality: null,
+    fingerprintAId: null,
+    fingerprintBId: null,
+    fingerprintLastHits: [],
+    fingerprintStatus: null,
+    transitionOrder: null,
+    archiveUnlocked: false,
+    archiveRequireOrdered: false,
+    archiveFilterTrackIds: [],
+    archiveMatchedSessionIds: [],
+    openedArchiveSessionId: null,
+    archiveStatus: null,
   }
 }
 
@@ -258,6 +270,19 @@ export function cycleDifferenceComplete(
   if (!need.length) return true
   const have = new Set(ui.recoveredSpeech.map((r) => r.segmentId))
   return need.every((id) => have.has(id))
+}
+
+export function fingerprintArchiveComplete(
+  session: ForensicSession,
+  ui: ForensicUiState,
+): boolean {
+  if (session.completion?.kind !== 'fingerprint-archive') return false
+  return puzzle03NarrativeComplete({
+    fingerprintAId: ui.fingerprintAId,
+    fingerprintBId: ui.fingerprintBId,
+    transitionOrder: ui.transitionOrder,
+    openedArchiveSessionId: ui.openedArchiveSessionId,
+  })
 }
 
 /** Qualidade de ordenação: fração de pares consecutivos com seq+1. */

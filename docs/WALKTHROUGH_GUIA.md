@@ -62,7 +62,8 @@ No fim: você entende que Mariana investigava o caso Elisa por conta própria, e
 
 1. Celular **do Augusto** → WhatsApp → **Rafael** → ouça o áudio de Rafael (análise prévia de um material que Mariana tinha mostrado a ele — não é a gravação da balada).  
 2. **Bancada** → mesmo áudio → análise provisória. Isso coloca o **Vértice** no mapa.  
-3. **Mapa** → Vértice. Fale com Iara, Sandro e Caio, pergunte a Sandro por que Mariana se interessou pelo lugar, e por fim **consulte os arquivos antigos** (Augusto obtém REC_VTX_OLD_01 no local → Bancada/P03 → Nico).
+3. **Mapa** → Vértice. Fale com Iara, Sandro e Caio, pergunte a Sandro por que Mariana se interessou pelo lugar, e por fim **consulte os arquivos antigos** (REC_VTX_OLD_01 no local).  
+4. **Bancada** → **ANÉIS**: Fingerprint Search nas duas regiões musicais (antes/depois do DJ) → pesquisar o arquivo de sets pela transição ordenada A→B → abrir a sessão → **Nico**.
 
 ### Trilha Paula → Lucas → Elisa
 

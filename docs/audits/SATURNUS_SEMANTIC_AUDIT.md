@@ -11,7 +11,7 @@ Referência histórica: `docs/audits/SATURNUS_FULL_GAME_AUDIT.md` (não apagada)
 |---|---|---|
 | D-P02-LABEL | Nomenclatura P02 (não fluxo) | **FIXED** |
 | D-P03-LABEL | Proveniência P03 (Vértice→Augusto) | **FIXED** |
-| D-P03-DESIGN | Mecânica multimídia vs 4 candidatos | **PENDING DESIGN** (`P03_DESIGN_REWORK_REQUIRED`) |
+| D-P03-DESIGN | Mecânica multimídia vs 4 candidatos | **PENDING ASSET** (`P03_SECOND_TRACK_REQUIRED`) |
 | D-P04-NIGHTX | Dataset temporal Noite X | **FIXED** (dataset + testes; UI P04 não virou timeline) |
 | D-LUCAS | Evidence Lucas testemunho vs interpretação | **FIXED** |
 | D-B5-REFL | `onPathReflectionDone` auto-done | **FIXED** |
@@ -29,7 +29,7 @@ Referência histórica: `docs/audits/SATURNUS_FULL_GAME_AUDIT.md` (não apagada)
 | Status | Puzzles (aprox.) |
 |---|---|
 | ALIGNED / FIXED | P01*, P02 labels, P03 provenance, P04 dataset, P05–P07, P08 chain, P09→P12 artifact, P10*, P11 ID, P12* |
-| PENDING DESIGN | P03 mecânica multimídia |
+| PENDING ASSET | P03 design (arquitetura OK; falta Faixa B distinta) |
 | PENDING PLAYTHROUGH | P01 acústico; P10/P12 visual |
 
 \*Ressalvas de playthrough.
@@ -42,7 +42,7 @@ Referência histórica: `docs/audits/SATURNUS_FULL_GAME_AUDIT.md` (não apagada)
 |---|---|---|---|---|---|---|---|---|---|---|
 | 01 Cassini | EMG_0803 | Central / caso | BO / pasta do caso | case-file → bancada | Ligação no BO | Process/notch/noise/listen → 5 fragments | Speech recovered | Lapsos / medo | Celular / contradição | ALIGNED* |
 | 02 Iapetus | Rafael falando | Rafael | Rafael | WhatsApp Augusto | Áudio de Rafael (análise prévia) | Rebuild Ogg + recovered speech | “gravado no Vértice” | Ir ao Vértice | Vértice | **FIXED** (rótulos) |
-| 03 Anéis | REC_VTX_OLD_01 | Arquivo Vértice | Staff / arquivo no local | visita → evidence | Material novo no local | Tempo + link a 1 de 4 sets | Set = Nico | Nico identificado | Buscar Nico | Proveniência **FIXED**; design **PENDING** |
+| 03 Anéis | REC_VTX_OLD_01 | Arquivo Vértice | Staff / arquivo no local | visita → evidence | Material novo no local | Fingerprint A/B → archive A→B → abrir set | Sessão → Nico | Nico identificado | Buscar Nico | Proveniência FIXED; design **PENDING ASSET** |
 | 04 Janus | Phone + desk Noite X | Nico / casa | Nico entrevista | bancada | Inconsistência horária | Align +450s → 01:23:30 | Clocks unsynced | Sandra ≠ Elisa 1º avist. | Reabrir cronologia | Dataset **FIXED**; playthrough TBD |
 | 05 Saturnalia | Logger Lívia | Lívia / Maralto | Lívia | visita → áudio | Arquivo radio | Reordenar 10 slots | Reportagem + Morsa | Protestos / Morsa | Ocorrência → Samuel | ALIGNED |
 | 06 Hexágono | 6 UNK | Anônimo | Ligação fixo | bancada + diário | Áudios anônimos | Spec → romanos → PIN diário | PIN 481526 | Diário | Diário / desconhecido | ALIGNED |
@@ -75,28 +75,26 @@ Canon: Rafael aponta Vértice → Augusto no Vértice → **novo** arquivo hist�
 
 ---
 
-## P03 — DESIGN REWORK PENDING
+## P03 — DESIGN = PENDING ASSET (2026-11-14)
 
-`P03_DESIGN_REWORK_REQUIRED`
+Arquitetura Fingerprint Search + arquivo A→B: **preservada**.  
+Conteúdo musical A≠B: **não cumprido** → `P03_SECOND_TRACK_REQUIRED`.
 
-**Implementação atual:**
+**NÃO FIXED** enquanto A e B forem a mesma fonte / stretch / BPM variants.
 
-- quatro candidatos de set-log;
-- estimativa de timing / BPM pré e pós;
-- janela de microfone / intervenção do DJ;
-- Link Source no registro compatível.
+| Campo | Valor |
+|---|---|
+| Source A | `src/assets/audios/p3/Give-Me-Everything-Tonight-Hardtekk-The-Dark-Triad-Song.mp3` |
+| Source B | **null** — ausente |
+| Inventário p3/ | só essa música + `DJ - Vértice.mp3` + `club-crowd.mp3` |
+| Master atual | `public/assets/audio/forensic/puzzle03/rec_vtx_old_01_final.mp3` (ainda 1 música) |
 
-**Canon desejado (alto nível — NÃO implementar sem decisão):**
+**Proibido:** sintetizar, remixar, stretch da mesma faixa, escolher Capangas/Valter ou outra cena por gosto.
 
-- gravação real de balada;
-- música;
-- público;
-- DJ;
-- características do sistema;
-- registros do set;
-- análise multimídia mais rica.
+Quando B aprovado existir: rebuild do master com A→MIC→B reais; fingerprints distintos; então `D-P03-DESIGN = FIXED`.
 
-Solução narrativa (Nico) permanece; redesenho mecânico separado.
+Módulo: `src/forensic/puzzles/puzzle03Fingerprint.ts` (`PUZZLE03_MUSIC_SOURCES`)  
+Testes: `tests/unit/puzzle03Anels.test.ts` (`puzzle03TracksMustUseDistinctSources`)
 
 ---
 
@@ -127,7 +125,7 @@ Fonte única: `src/data/block03/noiteXChronology.ts`
 
 | ID | Severidade | Notas |
 |---|---|---|
-| `P03_DESIGN_REWORK_REQUIRED` | MEDIUM | Decisão de redesign multimídia |
+| `P03_SECOND_TRACK_REQUIRED` | HIGH | Faixa B aprovada ausente; D-P03-DESIGN = PENDING ASSET |
 | `P02_SEG_CABINE_OPTIONAL` | LOW | Manter opcional até decisão |
 | P01 / P10 / P12 play | — | PENDING PLAYTHROUGH |
 

@@ -474,6 +474,7 @@ export interface ForensicSession {
       | 'speech-recovery'
       | 'container-rebuild'
       | 'source-link'
+      | 'fingerprint-archive'
       | 'clock-sync'
       | 'clip-sequence'
       | 'spectrogram-survey'
@@ -653,6 +654,25 @@ export interface ForensicUiState {
   streamBRecovered: boolean
   streamAOrderQuality: number | null
   streamBOrderQuality: number | null
+  /** Puzzle 03 — Fingerprint Search / arquivo de sets. */
+  fingerprintAId: string | null
+  fingerprintBId: string | null
+  fingerprintLastHits: Array<{
+    trackId: string
+    title: string
+    versionLabel: string
+    confidence: number
+    strong: boolean
+    reason: string
+  }>
+  fingerprintStatus: string | null
+  transitionOrder: 'A→B' | 'B→A' | 'incomplete' | 'same' | null
+  archiveUnlocked: boolean
+  archiveRequireOrdered: boolean
+  archiveFilterTrackIds: string[]
+  archiveMatchedSessionIds: string[]
+  openedArchiveSessionId: string | null
+  archiveStatus: string | null
 }
 
 export const DEFAULT_PROCESS: ProcessParams = {

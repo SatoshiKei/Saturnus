@@ -161,6 +161,10 @@ export function Inspector({
   onStructureSequence,
   onRebuildContainer,
   onEstimateTempo,
+  onFingerprintSearch,
+  onArchiveQuery,
+  onOpenArchiveSession,
+  archiveSessions,
   onLinkSource,
   clockSync,
   clipSequenceTools,
@@ -200,6 +204,30 @@ export function Inspector({
   onStructureSequence?: (pageId: string, sequence: number) => void
   onRebuildContainer?: () => void
   onEstimateTempo?: () => void
+  onFingerprintSearch?: () => void
+  onArchiveQuery?: (opts?: { trackIds?: string[]; requireOrdered?: boolean }) => void
+  onOpenArchiveSession?: (sessionId: string) => void
+  archiveSessions?: {
+    unlocked: boolean
+    rows: Array<{
+      id: string
+      recordId: string
+      date: string
+      startTime: string
+      trackCount: number
+    }>
+    openedId: string | null
+    openedDetail: {
+      id: string
+      recordId: string
+      date: string
+      startTime: string
+      operator: string
+      trackSequence: string[]
+      bpmMeta?: string
+      notes?: string
+    } | null
+  }
   onLinkSource?: () => void
   clockSync?: {
     correlation: number
@@ -600,6 +628,147 @@ export function Inspector({
                 <p className="fw-muted">Requires a sufficiently long selection on a stable region.</p>
               )}
             </Section>
+            {onFingerprintSearch ? (
+              <Section title="Fingerprint Search" tip="Fingerprint Search">
+                <p className="fw-muted">
+                  Search the local media catalog against the current selection. Crowd, mic speech, or mixed
+                  transitions weaken the match.
+                </p>
+                <button
+                  type="button"
+                  className="fw-btn"
+                  data-testid="fingerprint-search"
+                  onClick={() => onFingerprintSearch()}
+                >
+                  Fingerprint Search
+                </button>
+                {ui.fingerprintStatus ? (
+                  <p className="fw-muted" data-testid="fingerprint-status" role="status">
+                    {ui.fingerprintStatus}
+                  </p>
+                ) : null}
+                {ui.fingerprintLastHits.length ? (
+                  <ul className="fw-recovered" data-testid="fingerprint-hits">
+                    {ui.fingerprintLastHits.slice(0, 4).map((h) => (
+                      <li key={h.trackId || h.reason} className="fw-recovered__item">
+                        <span className="fw-mono">{(h.confidence * 100).toFixed(0)}%</span>
+                        <span className="fw-recovered__text">
+                          {h.strong ? '● ' : '○ '}
+                          {h.title}
+                          {h.versionLabel ? ` · ${h.versionLabel}` : ''}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+                {(ui.fingerprintAId || ui.fingerprintBId) && (
+                  <dl className="fw-meta" data-testid="fingerprint-confirmed">
+                    <div>
+                      <dt>Confirmed A</dt>
+                      <dd className="fw-mono">{ui.fingerprintAId ?? '—'}</dd>
+                    </div>
+                    <div>
+                      <dt>Confirmed B</dt>
+                      <dd className="fw-mono">{ui.fingerprintBId ?? '—'}</dd>
+                    </div>
+                    <div>
+                      <dt>Transition</dt>
+                      <dd className="fw-mono" data-testid="fingerprint-transition">
+                        {ui.transitionOrder ?? '—'}
+                      </dd>
+                    </div>
+                  </dl>
+                )}
+              </Section>
+            ) : null}
+            {archiveSessions?.unlocked ? (
+              <Section title="Vertice set archive" tip="Vertice set archive">
+                <p className="fw-muted">
+                  Historical DJ software exports from the venue. Filter by identified tracks; adjacency
+                  matters when both beds are known.
+                </p>
+                <div className="fw-seq-list__btns" style={{ gap: 8, marginBottom: 8 }}>
+                  <button
+                    type="button"
+                    className="fw-btn"
+                    data-testid="archive-query-tracks"
+                    onClick={() => onArchiveQuery?.()}
+                  >
+                    Refresh archive query
+                  </button>
+                  <button
+                    type="button"
+                    className="fw-btn"
+                    data-testid="archive-query-ordered"
+                    disabled={ui.transitionOrder !== 'A→B'}
+                    onClick={() =>
+                      onArchiveQuery?.({
+                        trackIds: [ui.fingerprintAId, ui.fingerprintBId].filter(Boolean) as string[],
+                        requireOrdered: true,
+                      })
+                    }
+                  >
+                    Require A→B adjacency
+                  </button>
+                </div>
+                {ui.archiveStatus ? (
+                  <p className="fw-muted" data-testid="archive-status">
+                    {ui.archiveStatus}
+                  </p>
+                ) : null}
+                <ul className="fw-seq-list" data-testid="archive-session-list">
+                  {archiveSessions.rows.map((row) => (
+                    <li key={row.id} className="fw-seq-list__item">
+                      <button
+                        type="button"
+                        className="fw-btn"
+                        data-testid={`archive-open-${row.id}`}
+                        onClick={() => onOpenArchiveSession?.(row.id)}
+                      >
+                        {row.recordId}
+                      </button>
+                      <span className="fw-mono">
+                        {row.date} {row.startTime} · {row.trackCount} tracks
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                {archiveSessions.openedDetail ? (
+                  <dl className="fw-meta" data-testid="archive-session-detail">
+                    <div>
+                      <dt>Record</dt>
+                      <dd className="fw-mono">{archiveSessions.openedDetail.recordId}</dd>
+                    </div>
+                    <div>
+                      <dt>Date</dt>
+                      <dd className="fw-mono">
+                        {archiveSessions.openedDetail.date} {archiveSessions.openedDetail.startTime}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>Operator / DJ</dt>
+                      <dd data-testid="archive-operator">{archiveSessions.openedDetail.operator}</dd>
+                    </div>
+                    <div>
+                      <dt>Track sequence</dt>
+                      <dd className="fw-mono">{archiveSessions.openedDetail.trackSequence.join(' → ')}</dd>
+                    </div>
+                    {archiveSessions.openedDetail.bpmMeta ? (
+                      <div>
+                        <dt>Tempo meta</dt>
+                        <dd className="fw-mono">{archiveSessions.openedDetail.bpmMeta}</dd>
+                      </div>
+                    ) : null}
+                    {archiveSessions.openedDetail.notes ? (
+                      <div>
+                        <dt>Note</dt>
+                        <dd>{archiveSessions.openedDetail.notes}</dd>
+                      </div>
+                    ) : null}
+                  </dl>
+                ) : null}
+              </Section>
+            ) : null}
           </div>
         )}
 

@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { cleanup, render, screen, fireEvent, act } from '@testing-library/react'
+import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ForensicWorkbench } from '../../src/forensic/ForensicWorkbench'
-import { puzzle03AnelsSession, puzzle03CorrectSetSourceId } from '../../src/forensic/puzzles/puzzle03Anels'
+import { puzzle03AnelsSession } from '../../src/forensic/puzzles/puzzle03Anels'
 import { INSPECTOR_TABS } from '../../src/forensic/forensicTypes'
 
 class FakeAudioContext {
@@ -53,8 +53,12 @@ class FakeAudioContext {
       stop() {},
     }
   }
-  resume() { return Promise.resolve() }
-  close() { return Promise.resolve() }
+  resume() {
+    return Promise.resolve()
+  }
+  close() {
+    return Promise.resolve()
+  }
   decodeAudioData() {
     return Promise.resolve({
       duration: 180,
@@ -76,62 +80,16 @@ function stubAudio() {
 
 afterEach(() => cleanup())
 
-describe('Puzzle 03 workbench', () => {
-  it('keeps generic tabs and shows set records as files', async () => {
+describe('Puzzle 03 workbench (fingerprint redesign)', () => {
+  it('só o áudio nas fontes — Fingerprint Search sem quatro candidatos', async () => {
     stubAudio()
     render(<ForensicWorkbench session={puzzle03AnelsSession} onClose={() => {}} />)
-    for (const tab of INSPECTOR_TABS) {
-      expect(screen.getByRole('tab', { name: tab.label })).toBeInTheDocument()
-    }
-    expect(screen.getAllByText('REC_VTX_OLD_01.m4a').length).toBeGreaterThan(0)
-    expect(screen.getByText('VTX-SET-20-C.log')).toBeInTheDocument()
-    expect(screen.queryByText(/Give-Me-Everything/i)).toBeNull()
-  })
-
-  it('linking Nico completes the puzzle', async () => {
-    stubAudio()
-    const onDone = vi.fn()
-    render(
-      <ForensicWorkbench
-        session={puzzle03AnelsSession}
-        onClose={() => {}}
-        onPuzzleComplete={onDone}
-      />,
-    )
-    await userEvent.click(screen.getByRole('tab', { name: 'Compare' }))
-    const selects = screen
-      .getAllByRole('combobox')
-      .filter((el) => Array.from(el.querySelectorAll('option')).some((o) => o.value === 'rec_vtx_old_01'))
-    expect(selects.length).toBeGreaterThanOrEqual(2)
-    await userEvent.selectOptions(selects[0]!, 'rec_vtx_old_01')
-    await userEvent.selectOptions(selects[1]!, puzzle03CorrectSetSourceId)
-    await userEvent.click(screen.getByRole('button', { name: /Link source/i }))
-    expect(screen.getAllByText(/Link registered/i).length).toBeGreaterThan(0)
-    await act(async () => {
-      await Promise.resolve()
-    })
-    expect(onDone).toHaveBeenCalled()
-  })
-
-  it('wrong link does not complete', async () => {
-    stubAudio()
-    const onDone = vi.fn()
-    render(
-      <ForensicWorkbench
-        session={puzzle03AnelsSession}
-        onClose={() => {}}
-        onPuzzleComplete={onDone}
-      />,
-    )
-    await userEvent.click(screen.getByRole('tab', { name: 'Compare' }))
-    const selects = screen
-      .getAllByRole('combobox')
-      .filter((el) => Array.from(el.querySelectorAll('option')).some((o) => o.value === 'rec_vtx_old_01'))
-    expect(selects.length).toBeGreaterThanOrEqual(2)
-    await userEvent.selectOptions(selects[0]!, 'rec_vtx_old_01')
-    await userEvent.selectOptions(selects[1]!, 'set_vtx_20_a')
-    await userEvent.click(screen.getByRole('button', { name: /Link source/i }))
-    expect(screen.getAllByText(/do not fully correspond/i).length).toBeGreaterThan(0)
-    expect(onDone).not.toHaveBeenCalled()
+    expect(INSPECTOR_TABS.map((t) => t.label)).toContain('Analysis')
+    expect(screen.queryByText(/VTX-SET-20-A/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Nicolas Prado/i)).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Link source/i })).not.toBeInTheDocument()
+    await userEvent.click(screen.getByRole('tab', { name: 'Analysis' }))
+    expect(screen.getByTestId('fingerprint-search')).toBeInTheDocument()
+    expect(screen.queryByTestId('archive-session-list')).not.toBeInTheDocument()
   })
 })

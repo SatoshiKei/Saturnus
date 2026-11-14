@@ -238,7 +238,7 @@ export const seedEvidenceCatalog: Evidence[] = [
     sourceId: 'rec_vtx_old_01',
     integrity: 'unverified',
     description:
-      'Vértice — set operado por Nicolas “Nico” Prado Reis. Correspondência por tempo (~126→~128 BPM) e janela de intervenção do microfone.',
+      'Vértice — sessão histórica com transição ordenada das duas regiões musicais da gravação. Operador da cabine: Nicolas “Nico” Prado Reis.',
     relatedPersonIds: ['nico'],
     relatedLocationIds: ['vertice'],
     relatedEventIds: [],

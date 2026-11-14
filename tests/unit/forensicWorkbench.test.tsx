@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { cleanup, render, screen, fireEvent, act } from '@testing-library/react'
+import { cleanup, render, screen, fireEvent, act, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ForensicWorkbench } from '../../src/forensic/ForensicWorkbench'
 import { puzzle01CassiniSession, puzzle01Ideal } from '../../src/forensic/puzzles/puzzle01Cassini'
@@ -174,10 +174,7 @@ describe('ForensicWorkbench UI', () => {
         completed={false}
       />,
     )
-    await act(async () => {
-      await Promise.resolve()
-    })
-    expect(onDone).toHaveBeenCalled()
+    await waitFor(() => expect(onDone).toHaveBeenCalled(), { timeout: 3000 })
     await userEvent.click(screen.getByRole('tab', { name: 'Notes' }))
     expect(screen.getByTestId('recovered-speech-list').textContent).toMatch(/eu não lembro/)
     expect(screen.getByTestId('recovered-speech-list').textContent).toMatch(/escute isso até o fim/)

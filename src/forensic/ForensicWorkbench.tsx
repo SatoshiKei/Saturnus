@@ -23,6 +23,7 @@ import {
   clipSequenceComplete,
   buildDerivedRfSource,
   cycleDifferenceComplete,
+  fingerprintArchiveComplete,
   createDerivedRtpStream,
   evaluateCommonPatternSelection,
   evaluateCycleDifference,
@@ -41,6 +42,17 @@ import {
   type SegmentClarity,
 } from './forensicEngine'
 import { loadPuzzle09PacketRows } from './puzzles/puzzle09CassiniHuygens'
+import {
+  PUZZLE03_CANONICAL_SESSION_ID,
+  PUZZLE03_SET_SESSIONS,
+  PUZZLE03_TRACK_A_ID,
+  PUZZLE03_TRACK_B_ID,
+  puzzle03TechnicalChainReady,
+  queryVerticeArchive,
+  searchFingerprintCatalog,
+  sessionListHidesOperatorNames,
+  summarizeTransition,
+} from './puzzles/puzzle03Fingerprint'
 import type {
   ForensicSession,
   ForensicSource,
@@ -446,6 +458,8 @@ export function ForensicWorkbench({
       if (!rfChannelExtractComplete(session, ui)) return
     } else if (completion.kind === 'cycle-difference') {
       if (!cycleDifferenceComplete(session, ui)) return
+    } else if (completion.kind === 'fingerprint-archive') {
+      if (!fingerprintArchiveComplete(session, ui)) return
     } else if (completion.kind === 'rtp-stream-separation') {
       if (!rtpStreamSeparationComplete(session, ui)) return
     } else {
@@ -471,6 +485,10 @@ export function ForensicWorkbench({
     ui.cycleDifferenceDone,
     ui.streamARecovered,
     ui.streamBRecovered,
+    ui.fingerprintAId,
+    ui.fingerprintBId,
+    ui.transitionOrder,
+    ui.openedArchiveSessionId,
     ui.recoveredSpeech,
     source?.speechSegments,
     source,
@@ -914,6 +932,150 @@ export function ForensicWorkbench({
             })
             setStatus(`Estimated tempo ${result.bpm.toFixed(1)} BPM (${result.confidence})`)
           }}
+          onFingerprintSearch={
+            session.completion?.kind === 'fingerprint-archive'
+              ? () => {
+                  if (!ui.selection) {
+                    setStatus('Select a temporal region before Fingerprint Search.')
+                    patchUi({ fingerprintStatus: 'Selection required.' })
+                    return
+                  }
+                  const audioSrc =
+                    session.sources.find((s) => s.audio && s.tempoRegions?.length) ?? source
+                  const tempo = estimateTempoFromSelection(audioSrc, ui.selection)
+                  const tempoBpm = tempo.ok ? tempo.bpm : null
+                  const hits = searchFingerprintCatalog(
+                    ui.selection.startSec,
+                    ui.selection.endSec,
+                    tempoBpm,
+                  )
+                  const strong = hits.find((h) => h.strong)
+                  setUi((u) => {
+                    let fingerprintAId = u.fingerprintAId
+                    let fingerprintBId = u.fingerprintBId
+                    if (strong?.trackId === PUZZLE03_TRACK_A_ID) fingerprintAId = strong.trackId
+                    if (strong?.trackId === PUZZLE03_TRACK_B_ID) fingerprintBId = strong.trackId
+                    const transitionOrder = summarizeTransition(fingerprintAId, fingerprintBId)
+                    const archiveUnlocked = Boolean(fingerprintAId || fingerprintBId)
+                    const filterIds = [fingerprintAId, fingerprintBId].filter(Boolean) as string[]
+                    const matched = queryVerticeArchive({
+                      trackIds: filterIds,
+                      requireOrderedAdjacent:
+                        transitionOrder === 'A→B' && filterIds.length === 2,
+                    })
+                    return {
+                      ...u,
+                      fingerprintLastHits: hits.map((h) => ({
+                        trackId: h.trackId,
+                        title: h.title,
+                        versionLabel: h.versionLabel,
+                        confidence: h.confidence,
+                        strong: h.strong,
+                        reason: h.reason,
+                      })),
+                      fingerprintAId,
+                      fingerprintBId,
+                      transitionOrder,
+                      archiveUnlocked,
+                      archiveFilterTrackIds: filterIds,
+                      archiveRequireOrdered: transitionOrder === 'A→B' && filterIds.length === 2,
+                      archiveMatchedSessionIds: matched.map((s) => s.id),
+                      fingerprintStatus: strong
+                        ? `Match: ${strong.title} · ${strong.versionLabel}`
+                        : hits[0]
+                          ? `Low confidence — ${hits[0].reason}`
+                          : 'No catalog match.',
+                      archiveStatus:
+                        transitionOrder === 'A→B'
+                          ? 'Ordered transition A→B established — filter archive by adjacency.'
+                          : archiveUnlocked
+                            ? 'Archive available — identify both beds to refine.'
+                            : null,
+                    }
+                  })
+                  setStatus(
+                    strong
+                      ? `Fingerprint: ${strong.title}`
+                      : 'Fingerprint Search — no strong match for this selection.',
+                  )
+                }
+              : undefined
+          }
+          onArchiveQuery={
+            session.completion?.kind === 'fingerprint-archive'
+              ? (opts) => {
+                  const filterIds =
+                    opts?.trackIds ??
+                    ([ui.fingerprintAId, ui.fingerprintBId].filter(Boolean) as string[])
+                  const requireOrdered =
+                    opts?.requireOrdered ??
+                    (summarizeTransition(ui.fingerprintAId, ui.fingerprintBId) === 'A→B' &&
+                      filterIds.length === 2)
+                  const matched = queryVerticeArchive({
+                    trackIds: filterIds,
+                    requireOrderedAdjacent: requireOrdered,
+                  })
+                  patchUi({
+                    archiveFilterTrackIds: filterIds,
+                    archiveRequireOrdered: requireOrdered,
+                    archiveMatchedSessionIds: matched.map((s) => s.id),
+                    archiveStatus: `${matched.length} session(s) in archive view.`,
+                  })
+                }
+              : undefined
+          }
+          onOpenArchiveSession={
+            session.completion?.kind === 'fingerprint-archive'
+              ? (sessionId) => {
+                  const chainReady = puzzle03TechnicalChainReady({
+                    fingerprintAId: ui.fingerprintAId,
+                    fingerprintBId: ui.fingerprintBId,
+                    transitionOrder: ui.transitionOrder,
+                  })
+                  if (!chainReady) {
+                    setStatus('Establish A→B fingerprints before relying on a set record.')
+                    patchUi({
+                      openedArchiveSessionId: sessionId,
+                      archiveStatus:
+                        'Opening records without A→B chain does not conclude the analysis.',
+                    })
+                    return
+                  }
+                  patchUi({
+                    openedArchiveSessionId: sessionId,
+                    archiveStatus:
+                      sessionId === PUZZLE03_CANONICAL_SESSION_ID
+                        ? 'Matching session opened — cabine operator on record.'
+                        : 'Session opened — track order does not match A→B adjacency.',
+                  })
+                  setStatus(
+                    sessionId === PUZZLE03_CANONICAL_SESSION_ID
+                      ? 'Vertice set record opened.'
+                      : 'Set record opened.',
+                  )
+                }
+              : undefined
+          }
+          archiveSessions={
+            session.completion?.kind === 'fingerprint-archive'
+              ? (() => {
+                  const ids = new Set(
+                    ui.archiveMatchedSessionIds.length
+                      ? ui.archiveMatchedSessionIds
+                      : PUZZLE03_SET_SESSIONS.map((s) => s.id),
+                  )
+                  const list = PUZZLE03_SET_SESSIONS.filter((s) => ids.has(s.id))
+                  return {
+                    unlocked: ui.archiveUnlocked,
+                    rows: sessionListHidesOperatorNames(list),
+                    openedId: ui.openedArchiveSessionId,
+                    openedDetail: ui.openedArchiveSessionId
+                      ? PUZZLE03_SET_SESSIONS.find((s) => s.id === ui.openedArchiveSessionId) ?? null
+                      : null,
+                  }
+                })()
+              : undefined
+          }
           onLinkSource={() => {
             const result = linkSources(session, ui.compareSourceA, ui.compareSourceB)
             setUi((u) => ({
@@ -1282,7 +1444,7 @@ function ForensicDebug({
   const decodedDuration = effectivePlayableUntil(source, ui.containerRebuilt)
   const containerDuration =
     source.containerPlayback?.containerDurationSec ?? source.durationSec
-  const isRings = session.completion?.kind === 'source-link'
+  const isRings = session.completion?.kind === 'fingerprint-archive'
   const isJanus = session.completion?.kind === 'clock-sync'
   const isSaturnalia = session.completion?.kind === 'clip-sequence'
   const isHexagon = session.completion?.kind === 'spectrogram-survey'
