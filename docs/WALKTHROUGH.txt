@@ -56,11 +56,13 @@ Faça as duas trilhas (ordem livre). Só avança de verdade quando as duas
 fecharem. Pendência seguinte: localizar Nico.
 
 TRILHA DO VÉRTICE
-  1. Celular Augusto → Rafael → áudio de Rafael (análise prévia; não a balada).
-  2. Bancada → análise provisória desse áudio → Vértice no mapa.
-  3. Mapa → Vértice → Iara, Sandro, Caio, interesse de Mariana, arquivos
-     antigos (REC_VTX_OLD_01 no local).
-  4. Bancada → ANÉIS: fingerprint A/B → arquivo de sets A→B → Nico.
+  1. Celular Mariana → chat Rafael → áudio de Rafael (P2; NÃO a balada).
+  2. Bancada → IAPETUS → Vértice no mapa (+ mídia original ausente no aparelho).
+  3. 1ª visita Vértice → Iara/Sandro/Caio/arquivos: Mariana esteve lá;
+     arquivos históricos existem. SEM gravação P3. SEM Nico.
+  4. Celular Augusto → Rafael → pedir a gravação original → Rafael envia a balada.
+  5. Bancada → ANÉIS: fingerprint A/B → chave A→B (técnico; ainda SEM Nico).
+  6. 2ª visita Vértice → cruzar A→B com logs de set → Nico.
 
 TRILHA PAULA → LUCAS → ELISA
   1. Celular Mariana → Notas → quarta → libera Paula no Augusto.

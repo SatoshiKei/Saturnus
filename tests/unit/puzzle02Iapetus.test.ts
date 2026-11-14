@@ -118,7 +118,7 @@ describe('Puzzle 02 — IAPETUS engine', () => {
   it('does not alter Puzzle 01 session identity', () => {
     expect(puzzle01CassiniSession.id).toBe('puzzle-01-cassini')
     expect(puzzle01CassiniSession.evidenceId).toBe('emergency_call_raw')
-    expect(puzzle02IapetusSession.evidenceId).toBe('rafael_voice_to_augusto')
+    expect(puzzle02IapetusSession.evidenceId).toBe('rafael_audio_reply')
   })
 
   it('Reset processing preserves container rebuild finding', () => {

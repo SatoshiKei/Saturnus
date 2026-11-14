@@ -131,7 +131,8 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
   const emergencyProvisionalDone = inv.flags.block01_emergency_provisional
   const rafaelForwardProvisionalDone = inv.flags.block02_rafael_forward_provisional
   // Mais recente primeiro (ordem de aquisição invertida).
-  const hasRafaelForward = inv.evidenceOwned.includes('rafael_voice_to_augusto')
+  // Canon: o P2 é `rafael_audio_reply` (celular de Mariana); `rafael_voice_to_augusto` é só alias legado.
+  const hasRafaelAudioReply = inv.evidenceOwned.includes('rafael_audio_reply')
   const allFiles = [...inv.evidenceOwned]
     .reverse()
     .map((id) => inv.evidence[id])
@@ -140,8 +141,8 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
         Boolean(e) &&
         // Só material sonoro ou sessão reconstruível — nunca laudo/hipótese/documento.
         (e.type === 'audio' || Boolean(e.puzzleMeta)) &&
-        // Mesmo áudio IAPETUS: uma entrada só (preferir o forward se existir).
-        !(e.id === 'rafael_audio_reply' && hasRafaelForward),
+        // Mesmo áudio IAPETUS: uma entrada só (preferir `rafael_audio_reply`; alias legado some se ambos existirem).
+        !(e.id === 'rafael_voice_to_augusto' && hasRafaelAudioReply),
     )
   const [filter, setFilter] = useState<Filter>('all')
   const isNew = (id: string) => !inv.audioSeen.includes(id)

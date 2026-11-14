@@ -45,7 +45,7 @@ describe('manifesto canônico DEV STORY', () => {
     expect(v.orderMismatch).toEqual([])
     expect(v.issues).toEqual([])
     expect(v.checkpointCount).toBe(DEV_CHECKPOINTS.length)
-    expect(v.checkpointCount).toBe(89)
+    expect(v.checkpointCount).toBe(90)
   })
 
   it('cada checkpoint é monotônico em relação ao anterior (nada some ao avançar)', () => {
@@ -130,7 +130,7 @@ describe('marcos canônicos por checkpoint', () => {
   }[] = [
     {
       id: 'b01-start',
-      lacks: { flags: ['block01_bo_registered'], evidence: ['emergency_call_restored', 'rafael_voice_to_augusto'] },
+      lacks: { flags: ['block01_bo_registered'], evidence: ['emergency_call_restored', 'rec_vtx_old_01'] },
       noArtifacts: ['cassini-stream-b'],
     },
     {
@@ -143,8 +143,46 @@ describe('marcos canônicos por checkpoint', () => {
       has: { flags: ['block01_complete', 'block01_hospital_done'] },
     },
     {
+      id: 'b02-vertice-unlocked',
+      has: {
+        flags: ['block02_rafael_forward_provisional'],
+        evidence: ['rafael_audio_reply', 'rafael_recording_vertice_tag', 'mariana_club_recording_missing'],
+        ach: ['ach-iapetus'],
+      },
+      lacks: { flags: ['block02_vertice_archive', 'block02_rafael_club_received'], evidence: ['rec_vtx_old_01'] },
+    },
+    {
+      id: 'b02-archive-ready',
+      has: { flags: ['block02_vertice_archive'], docs: ['doc-vertice-escala'] },
+      lacks: {
+        flags: ['block02_rafael_club_received', 'block02_rings_provisional', 'block02_vertice_set_crossref'],
+        evidence: ['rec_vtx_old_01', 'nico_dj_identified'],
+      },
+      people: { rafael: 'identified' },
+    },
+    {
+      id: 'b02-after-rafael-audio',
+      has: { flags: ['block02_rafael_club_received'], evidence: ['rec_vtx_old_01'] },
+      lacks: { flags: ['block02_rings_provisional'], evidence: ['rec_vtx_fingerprint_transition', 'nico_dj_identified'] },
+    },
+    {
+      id: 'b02-rings-provisional',
+      has: {
+        flags: ['block02_rings_provisional'],
+        evidence: ['rec_vtx_fingerprint_transition'],
+        ach: ['ach-rings'],
+      },
+      lacks: { flags: ['block02_vertice_set_crossref'], evidence: ['nico_dj_identified', 'rec_vtx_set_nico_match'] },
+      activeTasks: ['task_vertice_cross_reference'],
+    },
+    {
       id: 'b02-nico-identified',
-      has: { evidence: ['nico_dj_identified'], ach: ['ach-rings'] },
+      has: {
+        flags: ['block02_vertice_set_crossref', 'block03_nico_search_unlocked'],
+        evidence: ['nico_dj_identified', 'rec_vtx_set_nico_match'],
+        ach: ['ach-rings'],
+      },
+      people: { nico: 'identified' },
       lacks: { flags: ['block02_complete'] },
     },
     {
@@ -283,8 +321,10 @@ describe('marcos canônicos por checkpoint', () => {
 describe('bancada: fontes só após aquisição', () => {
   /** Primeira aquisição de cada arquivo de áudio/captura no caminho principal. */
   const SOURCES: { evidence: string; acquiredAt: string }[] = [
-    { evidence: 'rafael_voice_to_augusto', acquiredAt: 'b02-after-rafael-audio' },
-    { evidence: 'rec_vtx_old_01', acquiredAt: 'b02-archive-ready' },
+    // P2 (celular de Mariana): já presente desde o BO/celular; não é reenviado por Rafael.
+    { evidence: 'rec_vtx_old_01', acquiredAt: 'b02-after-rafael-audio' },
+    { evidence: 'rec_vtx_fingerprint_transition', acquiredAt: 'b02-rings-provisional' },
+    { evidence: 'nico_dj_identified', acquiredAt: 'b02-nico-identified' },
     { evidence: 'nico_recording_booth', acquiredAt: 'b03-after-nico' },
     { evidence: 'livia_radio_archive_raw', acquiredAt: 'b03-after-livia' },
     { evidence: 'hex_audio_unk_01', acquiredAt: 'b04-hex-received' },

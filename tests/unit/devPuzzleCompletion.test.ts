@@ -56,11 +56,12 @@ const LEGIT: Record<
     flags: ['block02_rafael_forward_provisional'],
     evidence: ['rafael_recording_vertice_tag'],
     achievements: ['ach-iapetus'],
-    speechFor: ['rafael_voice_to_augusto'],
+    speechFor: ['rafael_audio_reply'],
   },
   P03: {
+    // Canon: P3 é só técnico (A→B). Nico só na 2ª visita ao Vértice (set_crossref).
     flags: ['block02_rings_provisional'],
-    evidence: ['nico_dj_identified', 'rec_vtx_set_nico_match'],
+    evidence: ['rec_vtx_fingerprint_transition'],
     achievements: ['ach-rings'],
   },
   P04: {
@@ -162,6 +163,27 @@ describe('DEV · COMPLETE PUZZLE — P01–P12', () => {
     const expected = puzzle01CassiniSession.sources.find((s) => s.speechSegments?.length)!.speechSegments!
     const got = state.forensicRecoveredSpeech?.emergency_call_raw ?? []
     expect(got.map((g) => g.segmentId).sort()).toEqual(expected.map((s) => s.id).sort())
+  })
+
+  it('P02 não entrega a gravação da balada; P03 não identifica Nico e exige o envio de Rafael', () => {
+    const { state: preP2 } = preStateFor('P02')
+    const p2 = applyCanonicalPuzzleCompletion('P02', preP2).state
+    expect(p2.evidenceOwned).toContain('mariana_club_recording_missing')
+    expect(p2.evidenceOwned).not.toContain('rec_vtx_old_01')
+
+    // Sem a cópia de Rafael (rec_vtx_old_01) o P03 não existe.
+    const blocked = applyCanonicalPuzzleCompletion('P03', buildCanonicalCheckpointState('b02-archive-ready'))
+    expect(blocked.report.blocked).toBeTruthy()
+    expect(blocked.state.flags.block02_rings_provisional).toBeFalsy()
+
+    const { id, state: preP3 } = preStateFor('P03')
+    expect(id).toBe('b02-after-rafael-audio')
+    expect(preP3.evidenceOwned).toContain('rec_vtx_old_01')
+    const p3 = applyCanonicalPuzzleCompletion('P03', preP3).state
+    expect(p3.evidenceOwned).not.toContain('nico_dj_identified')
+    expect(p3.flags.block02_vertice_set_crossref).toBeFalsy()
+    expect(p3.people.nico?.status).not.toBe('identified')
+    expect(p3.locations.vertice?.status).toBe('visitAvailable')
   })
 
   it('P03 marca devBypass enquanto o design dual-track estiver pendente (sem fingir FIXED)', () => {

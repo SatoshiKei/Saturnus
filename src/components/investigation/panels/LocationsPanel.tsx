@@ -68,6 +68,14 @@ export function LocationsMap({ onClose }: { onClose: () => void }) {
     for (const row of SCENE_DONE_LOCATION) {
       if (!inv.flags[row.flag]) continue
       if (inv.locations[row.locationId]?.status !== 'visitAvailable') continue
+      // 2ª visita ao Vértice após P3 técnico (cruzamento A→B → Nico).
+      if (
+        row.locationId === 'vertice' &&
+        inv.flags.block02_rings_provisional &&
+        !inv.flags.block02_vertice_set_crossref
+      ) {
+        continue
+      }
       // Bloco 5 reabre o Titã; Bloco 6 reabre Jana após Geraldo.
       if (
         row.locationId === 'titan' &&

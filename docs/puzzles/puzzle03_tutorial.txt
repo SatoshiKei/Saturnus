@@ -8,72 +8,46 @@ STATUS DE ASSET
 ---------------
 PENDING ASSET — P03_SECOND_TRACK_REQUIRED
 
-O design aprovado exige DUAS faixas/fontes musicais genuinamente distintas:
-
-  MÚSICA A → intervenção do DJ → transição → MÚSICA B
-
-NÃO é válido:
-- mesma música com BPM diferente;
-- time-stretch / pitch-shift / crop da mesma fonte;
-- fingerprints artificiais tratando duas regiões da mesma faixa como músicas diferentes.
-
-Source A (existe):
-  src/assets/audios/p3/Give-Me-Everything-Tonight-Hardtekk-The-Dark-Triad-Song.mp3
-
-Source B:
-  AUSENTE — em p3/ só há a faixa acima + DJ - Vértice.mp3 + club-crowd.mp3.
-  Não inventar / sintetizar / escolher tracks de outros puzzles (p6/p7 Capangas).
-
-Enquanto B faltar: arquitetura Fingerprint+arquivo permanece; D-P03-DESIGN ≠ FIXED.
+Source A: src/assets/audios/p3/Give-Me-Everything-Tonight-Hardtekk-The-Dark-Triad-Song.mp3
+Source B: AUSENTE (não inventar).
 
 
-PROVENIÊNCIA (CANON) — OK
--------------------------
-P02 → Vértice → Augusto obtém REC_VTX_OLD_01 no local → Bancada.
-Cadeia: Vértice → Augusto. sourceType: location-archive.
-NÃO Rafael / WhatsApp / Mariana→Rafael.
+PROVENIÊNCIA (CANON DEFINITIVO)
+-------------------------------
+Áudio B = gravação da balada.
+Mariana enviou a Rafael; Rafael preservou cópia; Rafael envia a Augusto.
+
+Cadeia: Mariana → Rafael → Augusto
+sourceType: augusto-whatsapp
+Canal: WhatsApp Rafael → Augusto (após 1ª visita ao Vértice)
+
+NÃO é location-archive.
+NÃO é “obtido no Vértice”.
+NÃO é a voz do P2.
 
 
-PERGUNTA
---------
-De qual noite / set veio a gravação? → quem na cabine?
-Resultado: Nico.
+GATES
+-----
+1ª visita Vértice → arquivos existem (SEM este áudio, SEM Nico)
+Rafael envia balada → P3 na Bancada
+P3 técnico (A→B) → conquista ANÉIS; reabre Vértice; SEM Nico
+2ª visita → cruzamento institucional → Nico
 
 
-ARQUITETURA (preservada; depende de A≠B reais)
-----------------------------------------------
-1. Ouvir master; perceber intervenção.
-2. Fingerprint Search na região limpa de Faixa A.
-3. Fingerprint Search na região limpa de Faixa B.
-4. Arquivo de sets do Vértice (pesquisável).
-5. Filtrar; exigir adjacência ordenada A→B.
-6. Abrir sessão única → Operator: Nico.
-7. runProvisionalRingsAnalysis / ach-rings.
+PERGUNTA / RESULTADO TÉCNICO
+----------------------------
+Extrair transição A→B / chave de busca.
+Nico NÃO nasce no handler do P3.
 
 
-IDs TÉCNICOS PROVISÓRIOS
-------------------------
-TRACK_REF_A — aponta para Source A
-TRACK_REF_B — placeholder até asset B (sourceAssetPath = null)
-
-
-TIMING DO MASTER ATUAL (1 música — legado até rebuild)
------------------------------------------------------
-Duração: 180 s
-MIC:     72.000 – 90.678 s
-Pré:     ~8 – 68 s
-Pós:     ~96 – 150 s
-(Estes boundaries serão redefinidos quando o master tiver A e B reais.)
-
-
-SESSÃO CANÔNICA (estrutura)
----------------------------
-id: vtx-set-2019-11-08-nico / VTX-SET-20-C
-Operator: Nicolas Prado Reis (“Nico”)
-Track sequence: … TRACK_REF_A → TRACK_REF_B …
+ARQUITETURA
+-----------
+Fingerprint Search + regiões A/MIC/B + adjacência A→B + catálogo local.
+Operator names ocultos na bancada; revelação na 2ª visita.
 
 
 FLAGS
 -----
-block02_rings_provisional + ach-rings após abrir sessão canónica com cadeia A→B.
-Saves antigos com a flag permanecem concluídos.
+block02_rafael_club_received + rec_vtx_old_01 (entrega)
+block02_rings_provisional + rec_vtx_fingerprint_transition + ach-rings (técnico)
+block02_vertice_set_crossref + nico_dj_identified (2ª visita)

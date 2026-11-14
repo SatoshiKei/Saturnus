@@ -12,6 +12,8 @@ import {
 import {
   finishLucasInterview,
   finishVerticeArchive,
+  finishVerticeSetCrossRef,
+  onRafaelClubAudioPlayed,
   onRafaelForwardAudioPlayed,
   runProvisionalRafaelForwardAnalysis,
   runProvisionalRingsAnalysis,
@@ -32,19 +34,48 @@ describe('Bloco 2 — progressão', () => {
     expect(s.locations.vertice.status).toBe('visitAvailable')
   })
 
-  it('arquivo Vértice entrega a gravação; Nico só depois de ANÉIS', () => {
+  it('1ª visita só confirma arquivos; áudio P3 vem de Rafael; ANÉIS é técnico; Nico só na 2ª visita', () => {
     resetGame()
     finishVerticeArchive()
     let s = getInvestigationState()
-    expect(s.evidenceOwned).toContain('rec_vtx_old_01')
+    expect(s.flags.block02_vertice_archive).toBe(true)
+    expect(s.documentsOwned).toContain('doc-vertice-escala')
+    expect(s.evidenceOwned).not.toContain('rec_vtx_old_01')
     expect(s.evidenceOwned).not.toContain('nico_dj_identified')
     expect(s.people.nico.status).not.toBe('identified')
 
+    // Sem a gravação da balada, o P3 técnico não roda.
+    runProvisionalRingsAnalysis()
+    expect(getInvestigationState().flags.block02_rings_provisional).toBeFalsy()
+
+    onRafaelClubAudioPlayed()
+    s = getInvestigationState()
+    expect(s.flags.block02_rafael_club_received).toBe(true)
+    expect(s.evidenceOwned).toContain('rec_vtx_old_01')
+
     runProvisionalRingsAnalysis()
     s = getInvestigationState()
+    expect(s.flags.block02_rings_provisional).toBe(true)
+    expect(s.evidenceOwned).toContain('rec_vtx_fingerprint_transition')
+    expect(s.locations.vertice.status).toBe('visitAvailable')
+    expect(s.evidenceOwned).not.toContain('nico_dj_identified')
+    expect(s.people.nico.status).not.toBe('identified')
+
+    // Cruzamento antes do P3 técnico é ignorado; depois, identifica Nico.
+    finishVerticeSetCrossRef()
+    s = getInvestigationState()
+    expect(s.flags.block02_vertice_set_crossref).toBe(true)
     expect(s.people.nico.status).toBe('identified')
     expect(s.people.nico.status).not.toBe('contactable')
     expect(s.evidenceOwned).toContain('nico_dj_identified')
+  })
+
+  it('cruzamento set_crossref é ignorado sem o P3 técnico', () => {
+    resetGame()
+    finishVerticeSetCrossRef()
+    const s = getInvestigationState()
+    expect(s.flags.block02_vertice_set_crossref).toBeFalsy()
+    expect(s.people.nico.status).not.toBe('identified')
   })
 
   it('busca Elisa só após Lucas', () => {
@@ -88,11 +119,13 @@ describe('Bloco 2 — progressão', () => {
     expect(s.hypotheses.hyp_voluntary_disappearance).toBeTruthy()
   })
 
-  it('áudio Rafael gera evidência uma vez', () => {
+  it('áudio de Rafael (balada) gera rec_vtx_old_01 uma vez; alias forward equivale', () => {
     resetGame()
+    onRafaelClubAudioPlayed()
     onRafaelForwardAudioPlayed()
-    onRafaelForwardAudioPlayed()
-    expect(getInvestigationState().evidenceOwned.filter((id) => id === 'rafael_voice_to_augusto').length).toBe(1)
+    const owned = getInvestigationState().evidenceOwned
+    expect(owned.filter((id) => id === 'rec_vtx_old_01').length).toBe(1)
+    expect(owned).not.toContain('rafael_voice_to_augusto')
   })
 
   it('trigger block02_unlock_paula com nota quarta', () => {

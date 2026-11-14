@@ -1,7 +1,16 @@
 import type { StoryActionRef } from '../types'
 import { block01EndTasks } from '../../data/game/seedStory'
 
-/** Atalhos DEV — Bloco 2 (não expor em produção). */
+/**
+ * Atalhos DEV — Bloco 2 (não expor em produção).
+ *
+ * Cadeia canônica P2→P4 (ordem dos checkpoints):
+ *  1. P2 (rafael_audio_reply no celular de Mariana) → Vértice + mídia da balada ausente.
+ *  2. 1ª visita ao Vértice → arquivos existem (sem áudio P3, sem Nico).
+ *  3. Rafael (exige block02_vertice_archive) → rec_vtx_old_01 (gravação da balada).
+ *  4. P3 técnico (ANÉIS A→B) → reabre Vértice (sem Nico).
+ *  5. 2ª visita (set_crossref) → Nico identificado.
+ */
 export const block02DevCheckpoints: { id: string; label: string; actions: StoryActionRef[] }[] = [
   {
     id: 'b02-start',
@@ -17,49 +26,87 @@ export const block02DevCheckpoints: { id: string; label: string; actions: StoryA
     ],
   },
   {
-    id: 'b02-after-rafael-audio',
-    label: 'Após Rafael (áudio recebido)',
-    actions: [
-      { type: 'setFlag', id: 'block02_rafael_forward_received', value: true },
-      { type: 'addEvidence', id: 'rafael_voice_to_augusto' },
-      { type: 'completeTask', id: 'task_rafael_recording' },
-    ],
-  },
-  {
     id: 'b02-vertice-unlocked',
-    label: 'Vértice desbloqueado',
+    label: 'P2 — Vértice desbloqueado (áudio de Rafael no celular de Mariana)',
     actions: [
       { type: 'setFlag', id: 'block02_rafael_forward_provisional', value: true },
       { type: 'addEvidence', id: 'rafael_recording_vertice_tag' },
+      { type: 'addEvidence', id: 'mariana_club_recording_missing' },
       { type: 'unlockLocation', id: 'vertice', status: 'visitAvailable' },
+      { type: 'addTask', id: 'task_vertice_dj', label: 'Investigar o Vértice — o que Mariana perguntou lá' },
+      {
+        type: 'addTask',
+        id: 'task_rafael_recording',
+        label: 'Recuperar a gravação original que Mariana enviou a Rafael',
+      },
     ],
   },
   {
     id: 'b02-archive-ready',
-    label: 'Arquivo Vértice + gravação (Puzzle 03)',
+    label: '1ª visita ao Vértice — arquivos existem',
     actions: [
       { type: 'setFlag', id: 'block02_vertice_iara', value: true },
       { type: 'setFlag', id: 'block02_vertice_sandro', value: true },
       { type: 'setFlag', id: 'block02_vertice_caio', value: true },
       { type: 'setFlag', id: 'block02_vertice_archive', value: true },
+      { type: 'setFlag', id: 'block02_vertice_visit_done', value: true },
+      { type: 'addEvidence', id: 'mariana_vertice_visit' },
+      { type: 'addEvidence', id: 'mariana_repeated_questions' },
       { type: 'addDocument', id: 'doc-vertice-escala' },
+      { type: 'completeTask', id: 'task_rafael_venue_staff' },
+      {
+        type: 'addTask',
+        id: 'task_get_club_from_rafael',
+        label: 'Pedir a Rafael a gravação original que Mariana lhe enviou',
+      },
+      { type: 'unlockLocation', id: 'vertice', status: 'visited' },
+    ],
+  },
+  {
+    id: 'b02-after-rafael-audio',
+    label: 'Rafael envia a gravação da balada (Puzzle 03)',
+    actions: [
+      { type: 'setFlag', id: 'block02_rafael_chat_done', value: true },
+      { type: 'setFlag', id: 'block02_rafael_club_received', value: true },
+      { type: 'setFlag', id: 'block02_rafael_forward_received', value: true },
       { type: 'addEvidence', id: 'rec_vtx_old_01' },
+      { type: 'completeTask', id: 'task_rafael_recording' },
+      {
+        type: 'addTask',
+        id: 'task_match_vertice_set',
+        label: 'Analisar a gravação da balada e extrair a transição musical',
+      },
+    ],
+  },
+  {
+    id: 'b02-rings-provisional',
+    label: 'P3 — ANÉIS técnico (A→B), Vértice reaberto',
+    actions: [
+      { type: 'setFlag', id: 'block02_rings_provisional', value: true },
+      { type: 'addEvidence', id: 'rec_vtx_fingerprint_transition' },
+      { type: 'completeTask', id: 'task_match_vertice_set' },
+      { type: 'unlockLocation', id: 'vertice', status: 'visitAvailable' },
+      {
+        type: 'addTask',
+        id: 'task_vertice_cross_reference',
+        label: 'Cruzar a transição A→B com os registros históricos do Vértice',
+      },
     ],
   },
   {
     id: 'b02-nico-identified',
-    label: 'Nico identificado (pós-ANÉIS)',
+    label: '2ª visita ao Vértice — Nico identificado',
     actions: [
-      { type: 'setFlag', id: 'block02_vertice_iara', value: true },
-      { type: 'setFlag', id: 'block02_vertice_sandro', value: true },
-      { type: 'setFlag', id: 'block02_vertice_caio', value: true },
-      { type: 'setFlag', id: 'block02_vertice_archive', value: true },
-      { type: 'setFlag', id: 'block02_rings_provisional', value: true },
-      { type: 'addDocument', id: 'doc-vertice-escala' },
-      { type: 'addEvidence', id: 'rec_vtx_old_01' },
-      { type: 'addEvidence', id: 'rec_vtx_set_nico_match' },
+      { type: 'setFlag', id: 'block02_vertice_set_crossref', value: true },
       { type: 'addEvidence', id: 'nico_dj_identified' },
+      { type: 'addEvidence', id: 'rec_vtx_set_nico_match' },
       { type: 'discoverPerson', id: 'nico', status: 'identified' },
+      { type: 'discoverSearchTerm', term: 'nico' },
+      { type: 'setFlag', id: 'block03_nico_search_unlocked', value: true },
+      { type: 'completeTask', id: 'task_vertice_dj' },
+      { type: 'completeTask', id: 'task_vertice_cross_reference' },
+      { type: 'addTask', id: 'task_locate_nico', label: 'Localizar Nico' },
+      { type: 'unlockLocation', id: 'vertice', status: 'visited' },
     ],
   },
   {

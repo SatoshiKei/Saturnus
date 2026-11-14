@@ -285,15 +285,18 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-vertice-escala',
-    title: 'Escala de DJs e equipe — arquivo antigo do Vértice',
+    title: 'Arquivo histórico — existência confirmada (Vértice)',
     category: 'Arquivo privado',
     issuer: 'Boate Vértice — administração',
     system: 'documentos',
     blocks: [
-      { id: 'b1', text: 'Escala semanal (modelo impresso, anos anteriores). Cabine principal: “Nico”.' },
+      {
+        id: 'b1',
+        text: 'Confirmação de Sandro/Caio: o estabelecimento ainda possui exportações antigas de escala, cachê e logs de set da mesa.',
+      },
       {
         id: 'b2',
-        text: 'Cadastro de funcionários: Nicolas Prado Reis — técnico de som e DJ residente. Telefone e endereço da época: ilegíveis (papel danificado).',
+        text: 'Sem chave técnica (transição de faixas / fingerprint / janela de microfone) o cruzamento não isola uma sessão. Voltar quando o material de áudio estiver analisado.',
       },
     ],
   },

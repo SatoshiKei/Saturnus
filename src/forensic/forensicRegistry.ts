@@ -22,8 +22,8 @@ import { puzzle12MemorySession } from './puzzles/puzzle12Memory'
 const BY_EVIDENCE = new Map<string, ForensicSession>([
   [puzzle01CassiniSession.evidenceId!, puzzle01CassiniSession],
   [puzzle02IapetusSession.evidenceId!, puzzle02IapetusSession],
-  // Mesmo dataset: cópia no celular de Mariana e forward para Augusto.
-  ['rafael_audio_reply', puzzle02IapetusSession],
+  // Legado: id antigo do P2 (mesma sessão / mesmo asset).
+  ['rafael_voice_to_augusto', puzzle02IapetusSession],
   [puzzle03AnelsSession.evidenceId!, puzzle03AnelsSession],
   [puzzle04JanusSession.evidenceId!, puzzle04JanusSession],
   [puzzle05SaturnaliaSession.evidenceId!, puzzle05SaturnaliaSession],

@@ -67,7 +67,7 @@ import {
   completeVerticeTopicById,
   finishLucasInterview,
   finishVerticeVisit,
-  onRafaelForwardAudioPlayed,
+  onRafaelClubAudioPlayed,
 } from './block02Handlers'
 import { finishLiviaInterview, finishNicoInterview, onMarianaMaraltoRecordingFound } from './block03Handlers'
 import {
@@ -135,7 +135,7 @@ const HANDLERS = {
   onMarianaPhoneClosed,
   onJuliaChatReviewed,
   onRafaelAudioPlayed,
-  onRafaelForwardAudioPlayed,
+  onRafaelClubAudioPlayed,
   finishVerticeVisit,
   onMarianaMaraltoRecordingFound,
   onUnknownCallerNumberSeen,
@@ -292,13 +292,31 @@ export const CANONICAL_STORY_MANIFEST: CanonicalCheckpointDef[] = [
   },
   // ── Bloco 2 ──
   { id: 'b02-start', steps: [] },
-  { id: 'b02-after-rafael-audio', steps: [{ chat: 'chat-rafael-augusto' }, { h: 'onRafaelForwardAudioPlayed' }] },
-  { id: 'b02-vertice-unlocked', steps: [{ puzzle: 'P02' }] },
+  {
+    id: 'b02-vertice-unlocked',
+    steps: [{ puzzle: 'P02' }],
+    note: 'Canon P2→P4: P02 = áudio de Rafael já no celular de Mariana (rafael_audio_reply); libera o Vértice + mídia da balada ausente. NÃO entrega rec_vtx_old_01.',
+  },
   {
     id: 'b02-archive-ready',
     steps: [{ vertice: ['iara', 'sandro', 'caio', 'archive'] }, { h: 'finishVerticeVisit' }],
+    note: '1ª visita ao Vértice: arquivos existem (block02_vertice_archive). Sem áudio P3, sem Nico.',
   },
-  { id: 'b02-nico-identified', steps: [{ puzzle: 'P03' }] },
+  {
+    id: 'b02-after-rafael-audio',
+    steps: [{ chat: 'chat-rafael-augusto' }, { h: 'onRafaelClubAudioPlayed' }],
+    note: 'Chat com Rafael só abre após block02_vertice_archive; ele envia a gravação da balada (rec_vtx_old_01) — insumo do P03.',
+  },
+  {
+    id: 'b02-rings-provisional',
+    steps: [{ puzzle: 'P03' }],
+    note: 'P03 ANÉIS = só técnico (A→B, rec_vtx_fingerprint_transition). Reabre o Vértice; NÃO identifica Nico.',
+  },
+  {
+    id: 'b02-nico-identified',
+    steps: [{ vertice: ['set_crossref'] }, { h: 'finishVerticeVisit' }],
+    note: '2ª visita ao Vértice: cruzamento institucional A→B × registros de set → Nico (block02_vertice_set_crossref).',
+  },
   { id: 'b02-after-paula', steps: [{ note: 'block01_note_quarta_read' }, { chat: 'chat-paula-augusto' }] },
   { id: 'b02-after-lucas', steps: [{ doc: 'doc-lucas-cadastro' }, { vn: 'lucas' }] },
   { id: 'b02-convergence', steps: [{ doc: 'doc-elisa-resumo' }, { doc: 'doc-elisa-testemunhas' }] },
@@ -514,6 +532,8 @@ function playChatScript(chatId: string): string | null {
   if (!script) return `Chat sem roteiro: ${chatId}`
   const s = getInvestigationState()
   if (!s.phones.augusto.unlockedChatIds.includes(chatId)) return `Chat ainda bloqueado: ${chatId}`
+  const missingGate = (script.requiresFlagsAll ?? []).filter((f) => !s.flags[f])
+  if (missingGate.length) return `Chat ${chatId} exige flags: ${missingGate.join(', ')}`
   let progress = s.chatProgress[chatId] ?? { step: 0, done: false, messages: [] }
   if (progress.done) return null
   while (progress.step < script.steps.length) {

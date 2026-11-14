@@ -62,8 +62,10 @@ No fim: você entende que Mariana investigava o caso Elisa por conta própria, e
 
 1. Celular **do Augusto** → WhatsApp → **Rafael** → ouça o áudio de Rafael (análise prévia de um material que Mariana tinha mostrado a ele — não é a gravação da balada).  
 2. **Bancada** → mesmo áudio → análise provisória. Isso coloca o **Vértice** no mapa.  
-3. **Mapa** → Vértice. Fale com Iara, Sandro e Caio, pergunte a Sandro por que Mariana se interessou pelo lugar, e por fim **consulte os arquivos antigos** (REC_VTX_OLD_01 no local).  
-4. **Bancada** → **ANÉIS**: Fingerprint Search nas duas regiões musicais (antes/depois do DJ) → pesquisar o arquivo de sets pela transição ordenada A→B → abrir a sessão → **Nico**.
+3. **Mapa** → **1ª visita** Vértice (Mariana / arquivos existem; sem P3; sem Nico).  
+4. **Celular Augusto** → Rafael → recebe a gravação da balada.  
+5. **Bancada** → **ANÉIS** (A→B técnico; sem Nico).  
+6. **2ª visita** Vértice → cruzamento → **Nico**.
 
 ### Trilha Paula → Lucas → Elisa
 
@@ -195,7 +197,7 @@ Muitos passos estão na aba **Caso** do monitor; o WhatsApp do Augusto ganha men
 Todos ficam na **bancada**, em “análise provisória”, até existir versão final no roteiro:
 
 - Bloco 1 — ligação de emergência  
-- Bloco 2 — áudio de Rafael / análise (abre o Vértice); arquivo histórico no Vértice (P03)  
+- Bloco 2 — áudio Rafael no celular de Mariana (P02); 1ª visita Vértice; Rafael envia balada (P03); 2ª visita → Nico  
 - Bloco 3 — Janus (duas gravações do Nico); Saturnalia (rádio da Lívia)  
 - Bloco 4 — Hexágono (six áudios → PIN do diário **481526**)  
 - Bloco 6 — Luas Pastoras (interceptações → Galpão 17)  

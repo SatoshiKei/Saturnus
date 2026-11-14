@@ -748,7 +748,11 @@ export function Inspector({
                     </div>
                     <div>
                       <dt>Operator / DJ</dt>
-                      <dd data-testid="archive-operator">{archiveSessions.openedDetail.operator}</dd>
+                      <dd data-testid="archive-operator">
+                        {archiveSessions.openedDetail.operator
+                          ? 'Em arquivo — confirmar no Vértice'
+                          : '—'}
+                      </dd>
                     </div>
                     <div>
                       <dt>Track sequence</dt>

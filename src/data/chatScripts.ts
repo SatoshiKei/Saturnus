@@ -37,6 +37,11 @@ export interface ChatScript {
   emptyHint: string
   steps: ScriptStep[]
   onComplete: StoryActionRef[]
+  /**
+   * Se definido, a conversa só avança quando o predicado for verdadeiro.
+   * Usado p.ex. para exigir a 1ª visita ao Vértice antes de Rafael enviar o P3.
+   */
+  requiresFlagsAll?: string[]
 }
 
 /** Respostas do step para a opção escolhida (com fallback). */
@@ -238,27 +243,39 @@ export const paulaScript: ChatScript = {
   ],
 }
 
-/** Asset real do áudio de Rafael (Puzzle 02 / IAPETUS). */
+/** Asset real do áudio de Rafael→Mariana (Puzzle 02 / IAPETUS) — só no celular dela. */
 export const RAFAEL_VERTICE_AUDIO_SRC =
   '/assets/audio/forensic/puzzle02/rafael_1610_2147_full.mp3'
 /** Truncamento no WhatsApp — o final do Vértice só na bancada após rebuild. */
 export const RAFAEL_VERTICE_PLAYABLE_UNTIL_SEC = 22.26
 export const RAFAEL_VERTICE_DURATION_SEC = 33
 
-/** Áudio do forward Rafael → Augusto (Puzzle 02). Exportado para re-sincronizar saves antigos. */
+/** Gravação da balada (P3) — Rafael → Augusto. NÃO é a voz do P2. */
+export const RAFAEL_CLUB_AUDIO_SRC =
+  '/assets/audio/forensic/puzzle03/rec_vtx_old_01_final.mp3'
+export const RAFAEL_CLUB_DURATION_SEC = 180
+
+/**
+ * Áudio enviado por Rafael a Augusto = cópia da gravação da balada (P3).
+ * Id legado `r2-audio-forward` mantido para saves/progresso de chat.
+ */
 export const RAFAEL_FORWARD_AUDIO: Extract<ScriptReply, { kind: 'audio' }> = {
   kind: 'audio',
   id: 'r2-audio-forward',
-  audioSrc: RAFAEL_VERTICE_AUDIO_SRC,
-  durationSec: RAFAEL_VERTICE_DURATION_SEC,
-  playableUntilSec: RAFAEL_VERTICE_PLAYABLE_UNTIL_SEC,
+  audioSrc: RAFAEL_CLUB_AUDIO_SRC,
+  durationSec: RAFAEL_CLUB_DURATION_SEC,
 }
+
+/** Alias explícito do mesmo anexo. */
+export const RAFAEL_CLUB_AUDIO = RAFAEL_FORWARD_AUDIO
 
 export const rafaelScript: ChatScript = {
   chatId: 'chat-rafael-augusto',
   contactId: 'rafael',
   startTime: [10, 2],
   emptyHint: 'Nenhuma mensagem ainda. Escreva para Rafael.',
+  /** Pedido da gravação da balada só após a 1ª visita (arquivos históricos confirmados). */
+  requiresFlagsAll: ['block02_vertice_archive'],
   steps: [
     {
       options: [

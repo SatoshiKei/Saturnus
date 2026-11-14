@@ -10,7 +10,7 @@ import type { InvestigationState } from './types'
 export const personRegistryFlag: Record<string, string> = {
   elisa: 'block02_elisa_search_unlocked',
   andre: 'block02_elisa_search_unlocked',
-  nico: 'block02_vertice_archive',
+  nico: 'block02_vertice_set_crossref',
   lucas: 'block02_paula_chat_done',
   iara: 'block02_vertice_iara',
   sandro: 'block02_vertice_sandro',

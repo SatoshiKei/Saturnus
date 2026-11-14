@@ -60,7 +60,7 @@ describe('progressão canônica DEV', () => {
     const steps: { id: string; flag: string }[] = [
       { id: 'b01-after-call', flag: 'block01_emergency_provisional' },
       { id: 'b02-vertice-unlocked', flag: 'block02_rafael_forward_provisional' },
-      { id: 'b02-nico-identified', flag: 'block02_rings_provisional' },
+      { id: 'b02-rings-provisional', flag: 'block02_rings_provisional' },
       { id: 'b03-janus-done', flag: 'block03_janus_done' },
       { id: 'b03-saturnalia-done', flag: 'block03_saturnalia_done' },
       { id: 'b04-hex-done', flag: 'block04_hex_spectrograms_inspected' },

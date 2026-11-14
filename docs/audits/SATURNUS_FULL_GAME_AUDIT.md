@@ -419,8 +419,9 @@ Histórico acima **preservado**. Decisões humanas aplicadas; ver também `docs/
 | Item | Status |
 |---|---|
 | P02 nomenclatura (não fluxo) | FIXED — `rafael_voice_to_augusto` |
-| P03 proveniência Vértice→Augusto | FIXED |
-| P03 design multimídia | PENDING ASSET — arquitetura OK; `P03_SECOND_TRACK_REQUIRED` (falta Faixa B distinta) |
+| P03 proveniência Mariana→Rafael→Augusto | FIXED (revertido Vértice→Augusto) |
+| P03 design multimídia | PENDING ASSET — arquitetura OK; `P03_SECOND_TRACK_REQUIRED` |
+| P02→P3→Nico→P4 gating | FIXED — 1ª visita ≠ Nico; P3 técnico ≠ Nico; 2ª visita = Nico |
 | P04 dataset Noite X | FIXED — `src/data/block03/noiteXChronology.ts` |
 | Lucas evidence | FIXED |
 | B5 reflections lifecycle | FIXED |

@@ -32,6 +32,8 @@ import {
 } from '../../src/game/state/investigationStore'
 import {
   finishVerticeArchive,
+  finishVerticeSetCrossRef,
+  onRafaelClubAudioPlayed,
   runProvisionalRingsAnalysis,
 } from '../../src/game/story/block02Handlers'
 import { seedEvidenceCatalog } from '../../src/data/game/seedEvidence'
@@ -44,15 +46,16 @@ describe('Puzzle 03 — ANÉIS (fingerprint redesign)', () => {
     __setStateForTests(createInitialState())
   })
 
-  it('provenance permanece Vértice→Augusto; sem Rafael/WhatsApp', () => {
+  it('provenance canónica: Mariana → Rafael → Augusto (WhatsApp); não é arquivo do Vértice', () => {
     const e3 = seedEvidenceCatalog.find((e) => e.id === 'rec_vtx_old_01')!
-    expect(e3.sourceType).toBe('location-archive')
-    const blob = `${e3.title}\n${e3.description}\n${e3.sourceType}`.toLowerCase()
-    expect(blob).not.toMatch(/via rafael|c[oó]pia via/)
-    expect(blob).toMatch(/v[eé]rtice/)
+    expect(e3.sourceType).toBe('augusto-whatsapp')
+    const blob = `${e3.title}\n${e3.description}`.toLowerCase()
+    expect(blob).toMatch(/rafael/)
+    expect(blob).toMatch(/mariana\s*→\s*rafael\s*→\s*augusto/)
+    expect(blob).toMatch(/n[aã]o [eé] arquivo obtido no v[eé]rtice/)
     const meta = recording.metadata?.map((m) => m.value).join(' ').toLowerCase()
-    expect(meta).not.toMatch(/whatsapp|rafael/)
-    expect(meta).toMatch(/v[eé]rtice/)
+    expect(meta).toMatch(/whatsapp/)
+    expect(meta).toMatch(/rafael/)
   })
 
   it('puzzle03TracksMustUseDistinctSources', () => {
@@ -187,12 +190,32 @@ describe('Puzzle 03 — ANÉIS (fingerprint redesign)', () => {
     expect(listBlob).not.toMatch(/Nico|Nicolas/)
   })
 
-  it('achievement / handler só após runProvisionalRingsAnalysis', () => {
+  it('P03 técnico só após a gravação da balada (Rafael); não identifica Nico', () => {
     finishVerticeArchive()
+    // 1ª visita não entrega o áudio: P03 técnico ainda não roda.
+    runProvisionalRingsAnalysis()
+    expect(getInvestigationState().flags.block02_rings_provisional).toBeFalsy()
+
+    onRafaelClubAudioPlayed()
     expect(getInvestigationState().flags.block02_rings_provisional).toBeFalsy()
     runProvisionalRingsAnalysis()
     const s = getInvestigationState()
     expect(s.flags.block02_rings_provisional).toBe(true)
+    expect(s.evidenceOwned).toContain('rec_vtx_fingerprint_transition')
+    expect(s.locations.vertice?.status).toBe('visitAvailable')
+    expect(s.evidenceOwned).not.toContain('nico_dj_identified')
+    expect(s.people.nico?.status).not.toBe('identified')
+  })
+
+  it('Nico só na 2ª visita (set_crossref), após o P03 técnico', () => {
+    finishVerticeArchive()
+    onRafaelClubAudioPlayed()
+    finishVerticeSetCrossRef()
+    expect(getInvestigationState().flags.block02_vertice_set_crossref).toBeFalsy()
+    runProvisionalRingsAnalysis()
+    finishVerticeSetCrossRef()
+    const s = getInvestigationState()
+    expect(s.flags.block02_vertice_set_crossref).toBe(true)
     expect(s.evidenceOwned).toContain('nico_dj_identified')
     expect(s.people.nico?.status).toBe('identified')
   })
@@ -209,7 +232,7 @@ describe('Puzzle 03 — ANÉIS (fingerprint redesign)', () => {
 
   it('puzzles 01/02 ainda registados; P03 só áudio', () => {
     expect(getForensicSessionForEvidence('emergency_call_raw')?.id).toBe(puzzle01CassiniSession.id)
-    expect(getForensicSessionForEvidence('rafael_voice_to_augusto')?.id).toBe(
+    expect(getForensicSessionForEvidence('rafael_audio_reply')?.id).toBe(
       puzzle02IapetusSession.id,
     )
     expect(getForensicSessionForEvidence('rec_vtx_old_01')?.id).toBe(puzzle03AnelsSession.id)

@@ -75,7 +75,6 @@ import { puzzle01CassiniSession } from './puzzles/puzzle01Cassini'
 import { puzzle02IapetusSession } from './puzzles/puzzle02Iapetus'
 import { puzzle03AnelsSession } from './puzzles/puzzle03Anels'
 import {
-  PUZZLE03_CANONICAL_SESSION_ID,
   PUZZLE03_MUSIC_SOURCES,
   PUZZLE03_TRACK_A_ID,
   PUZZLE03_TRACK_B_ID,
@@ -235,7 +234,8 @@ const P01: CanonicalPuzzleDef = {
 }
 
 // ── P02 ────────────────────────────────────────────────────────────────────────
-const P02_EVIDENCE = ['rafael_voice_to_augusto', 'rafael_audio_reply']
+// Canon: P2 = `rafael_audio_reply` (celular de Mariana); `rafael_voice_to_augusto` é só alias legado.
+const P02_EVIDENCE = ['rafael_audio_reply', 'rafael_voice_to_augusto']
 const p02Source = puzzle02IapetusSession.sources[0]!
 
 const P02: CanonicalPuzzleDef = {
@@ -310,7 +310,7 @@ const P03: CanonicalPuzzleDef = {
   stages: [
     {
       id: 'fingerprint-archive',
-      label: 'Fingerprint A→B + sessão de arquivo aberta',
+      label: 'Fingerprint A→B (técnico)',
       kind: 'technical',
       run: () => {
         const ok = fingerprintArchiveComplete(
@@ -319,13 +319,17 @@ const P03: CanonicalPuzzleDef = {
             fingerprintAId: PUZZLE03_TRACK_A_ID,
             fingerprintBId: PUZZLE03_TRACK_B_ID,
             transitionOrder: 'A→B',
-            openedArchiveSessionId: PUZZLE03_CANONICAL_SESSION_ID,
           }),
         )
-        return ok ? APPLIED : { status: 'failed', reason: 'Cadeia fingerprint/arquivo P03 inválida.' }
+        return ok ? APPLIED : { status: 'failed', reason: 'Cadeia fingerprint P03 inválida.' }
       },
     },
-    handlerStage('analysis', 'Set aberto → Nico + conquista', runProvisionalRingsAnalysis, 'block02_rings_provisional'),
+    handlerStage(
+      'analysis',
+      'ANÉIS técnico — reabre Vértice (sem Nico)',
+      runProvisionalRingsAnalysis,
+      'block02_rings_provisional',
+    ),
   ],
 }
 

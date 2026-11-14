@@ -30,6 +30,11 @@ function archiveUnlocked(flags: Record<string, boolean>) {
   )
 }
 
+/** 2ª visita: cruzamento só após P3 técnico e se ainda não feito. */
+function setCrossrefUnlocked(flags: Record<string, boolean>) {
+  return Boolean(flags.block02_rings_provisional && !flags.block02_vertice_set_crossref)
+}
+
 export function VerticeInterviewScene({ onClose }: { onClose: () => void }) {
   const inv = useInvestigation()
   const [mode, setMode] = useState<Mode>('menu')
@@ -51,23 +56,28 @@ export function VerticeInterviewScene({ onClose }: { onClose: () => void }) {
     onClose()
   }, [onClose])
 
-  const completeTopic = useCallback(
-    (topic: VerticeTopicId) => {
-      completeVerticeTopicById(topic)
-      setActiveTopic(null)
-      setBeatIndex(0)
-      setMode('menu')
-    },
-    [],
-  )
+  const completeTopic = useCallback((topic: VerticeTopicId) => {
+    completeVerticeTopicById(topic)
+    setActiveTopic(null)
+    setBeatIndex(0)
+    setMode('menu')
+  }, [])
 
   const pendingTopics = VERTICE_TOPIC_IDS.filter((id) => {
     if (doneTopics.has(id)) return false
     if (id === 'archive') return archiveUnlocked(inv.flags)
+    if (id === 'set_crossref') return setCrossrefUnlocked(inv.flags)
+    // Na 2ª visita (P3 pronto), não reabrir tópicos da 1ª — só o cruzamento.
+    if (inv.flags.block02_rings_provisional && inv.flags.block02_vertice_archive) {
+      return false
+    }
     return true
   })
 
   const currentBeat = mode === 'play' && activeTopic ? verticeBeats[activeTopic][beatIndex] : null
+  const hint = setCrossrefUnlocked(inv.flags)
+    ? 'Arquivo histórico — cruzar a transição A→B com os logs de set.'
+    : 'Casa fechada — mas quem trabalha aqui ainda lembra de Mariana.'
 
   return (
     <VNSceneShell
@@ -83,7 +93,7 @@ export function VerticeInterviewScene({ onClose }: { onClose: () => void }) {
           <VisualNovelDialog
             text=""
             choiceVariant="topics"
-            choiceHint="Casa fechada — mas quem trabalha aqui ainda lembra de Mariana."
+            choiceHint={hint}
             choices={pendingTopics.map((id) => ({ id, label: verticeTopicLabels[id] }))}
             onChoice={(id) => {
               setActiveTopic(id as VerticeTopicId)

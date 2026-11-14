@@ -414,7 +414,7 @@ export function migrateState(raw: InvestigationState): InvestigationState {
 
   // Evidence ID renames (semantic audit fix round).
   const EVIDENCE_ID_ALIASES: Record<string, string> = {
-    rafael_forward_from_mariana: 'rafael_voice_to_augusto',
+    rafael_forward_from_mariana: 'rafael_audio_reply',
     police_clock_drift_logs: 'rui_police_approach_records',
   }
   const remapId = (id: string) => EVIDENCE_ID_ALIASES[id] ?? id
@@ -495,6 +495,28 @@ export function migrateState(raw: InvestigationState): InvestigationState {
         },
       }
     }
+  }
+
+  // ── P2/P3/Vértice canon (2026-11-14): P3 vem de Rafael; Nico só na 2ª visita ──
+  {
+    const ownedSet = new Set(merged.evidenceOwned)
+    const flags = { ...merged.flags }
+    // Saves que ganharam rec_vtx_old_01 na 1ª visita: tratar como já recebidos de Rafael.
+    if (ownedSet.has('rec_vtx_old_01') && !flags.block02_rafael_club_received) {
+      flags.block02_rafael_club_received = true
+      flags.block02_rafael_forward_received = true
+    }
+    // Saves em que P3 antigo já descobria Nico: marcar cruzamento feito (não destruir progressão).
+    if (
+      flags.block02_rings_provisional &&
+      ownedSet.has('nico_dj_identified') &&
+      !flags.block02_vertice_set_crossref
+    ) {
+      flags.block02_vertice_set_crossref = true
+      flags.block03_nico_search_unlocked = true
+    }
+    // Progressão além de P4: não remover Nico/P4.
+    merged.flags = flags
   }
 
   return repairInvestigationState(merged)

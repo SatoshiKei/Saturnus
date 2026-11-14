@@ -1,15 +1,18 @@
 PUZZLE 02 — IAPETUS
 Dev only — não aparece para o jogador.
-Arquivo: rafael_1610_2147.ogg
-Evidências: rafael_audio_reply | rafael_voice_to_augusto
-Canon: áudio de Rafael para Augusto — análise de um material que Mariana
-       havia mostrado/enviado a ele anteriormente (NÃO é encaminhamento da balada).
-Asset: rafael_1610_2147_full.mp3 (correto)
-Fonte: src/assets/audios/p2/Rafael - Vértice Full Audio - Novo.mp3
+Arquivo: rafael_1610_2147.ogg / PTT-Rafael-01.11.ogg
+Evidência canónica: rafael_audio_reply (celular apreendido de Mariana)
+Legado: rafael_voice_to_augusto (mesmo asset; NÃO reenviar por Rafael)
+Asset: rafael_1610_2147_full.mp3
 Runtime: public/assets/audio/forensic/puzzle02/rafael_1610_2147_full.mp3
 
-PENDÊNCIA LOW (não altera completion nesta rodada):
-P02_SEG_CABINE_OPTIONAL — seg_cabine permanece opcional.
+CANON
+-----
+Áudio A = Rafael falando com Mariana (já no aparelho dela).
+Função: Vértice + existência de uma gravação original que ela lhe enviou
+        (agora ausente no celular → mariana_club_recording_missing).
+NÃO é a gravação da balada (P3).
+NÃO é reenviado por Rafael a Augusto.
 
 
 O QUE ESTÁ ERRADO
@@ -17,43 +20,21 @@ O QUE ESTÁ ERRADO
 O áudio para em ~22.26 s (depois de “Já trabalhei com ele.”).
 O final (Vértice) existe no arquivo, mas o container Ogg está quebrado.
 
-FILE mostra a pista:
-  Container duration  00:33.411
-  Decoded duration    00:22.260
-
 
 COMO RESOLVER
 -------------
-1. FILE — ver que container > decoded.
-
-2. STRUCTURE — olhar a coluna Sequence:
-     0  1  2  3  4  12  6  7  8
-   Page 5 está com 12 (deveria seguir 4 → 5 → 6). CRC = mismatch.
-
-3. Selecionar Page 5 → editar Page sequence: 12 → 5.
-   (Só editar não basta; CRC ainda mismatch; playback ainda corta.)
-
-4. Rebuild container.
-   Certo (seq 5)  → decode completo, timeline até ~33.4 s.
-   Errado (ex. 9) → “structural warnings”, continua truncado.
-
-5. Play no trecho depois de ~22.3 s e ouvir:
-     “…isso aí foi gravado no Vértice…”
-   Recovered Speech registra sozinho. Puzzle conclui.
+1. FILE — container > decoded.
+2. STRUCTURE — Page 5 sequence 12 → 5; Rebuild.
+3. Play após ~22.3 s: “…isso aí foi gravado no Vértice…”
+4. Recovered Speech → conclui.
 
 
 RESULTADO
 ---------
 ONDE? → Vértice
-(não revela Nico / Elisa)
+(não revela Nico / Elisa; não entrega P3)
 
 Story: block02_rafael_forward_provisional, rafael_recording_vertice_tag,
-       unlock vertice, task_vertice_dj, achievement IAPETUS (ach-iapetus)
+       mariana_club_recording_missing, unlock vertice, ach-iapetus
 
-
-NOTAS RÁPIDAS
--------------
-- Gain / EQ / Notch / Speed não resolvem isto.
-- Rebuild não adivinha o número — usa o valor editado.
-- Reset processing não desfaz o rebuild.
-- DEV: expectedSequence na Page 5; botão “DEV reset puzzle”.
+Próximo: 1ª visita ao Vértice (Mariana) → depois pedir a balada a Rafael.

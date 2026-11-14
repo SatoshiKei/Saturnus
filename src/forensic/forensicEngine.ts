@@ -15,7 +15,7 @@ import type {
   TrackRuntime,
 } from './forensicTypes'
 import { DEFAULT_PROCESS, INSPECTOR_TABS } from './forensicTypes'
-import { puzzle03NarrativeComplete } from './puzzles/puzzle03Fingerprint'
+import { puzzle03TechnicalChainReady } from './puzzles/puzzle03Fingerprint'
 
 export function createInitialUiState(
   session: ForensicSession,
@@ -277,11 +277,11 @@ export function fingerprintArchiveComplete(
   ui: ForensicUiState,
 ): boolean {
   if (session.completion?.kind !== 'fingerprint-archive') return false
-  return puzzle03NarrativeComplete({
+  // Conclusão TÉCNICA do P3: A→B. Nico só na 2ª visita ao Vértice.
+  return puzzle03TechnicalChainReady({
     fingerprintAId: ui.fingerprintAId,
     fingerprintBId: ui.fingerprintBId,
     transitionOrder: ui.transitionOrder,
-    openedArchiveSessionId: ui.openedArchiveSessionId,
   })
 }
 

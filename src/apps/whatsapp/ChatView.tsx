@@ -4,6 +4,8 @@ import { getChatById } from '../../data/mockChats'
 import {
   buildScriptStepMessages,
   chatScripts,
+  RAFAEL_CLUB_AUDIO_SRC,
+  RAFAEL_CLUB_DURATION_SEC,
   RAFAEL_FORWARD_AUDIO,
   RAFAEL_VERTICE_AUDIO_SRC,
   RAFAEL_VERTICE_DURATION_SEC,
@@ -11,7 +13,7 @@ import {
 } from '../../data/chatScripts'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { appendChatMessages, dispatchActions } from '../../game/state/investigationStore'
-import { onRafaelForwardAudioPlayed } from '../../game/story/block02Handlers'
+import { onRafaelClubAudioPlayed } from '../../game/story/block02Handlers'
 import { phoneFeatureLocks } from '../../data/phoneFeatures'
 import { onJuliaChatReviewed, onRafaelAudioPlayed } from '../../game/story/block01Handlers'
 import { onMarianaChatOpened } from '../../game/story/block09Handlers'
@@ -34,12 +36,22 @@ interface ChatViewProps {
 /** Reaplica audioSrc/duração atuais em mensagens já persistidas no save. */
 function withLiveAudio(message: ChatMessage): ChatMessage {
   if (message.kind !== 'audio') return message
-  if (message.id === RAFAEL_FORWARD_AUDIO.id || message.id === 'rf-audio-reply') {
+  // P2 — voz de Rafael no celular de Mariana
+  if (message.id === 'rf-audio-reply') {
     return {
       ...message,
       audioSrc: RAFAEL_VERTICE_AUDIO_SRC,
       durationSec: RAFAEL_VERTICE_DURATION_SEC,
       playableUntilSec: RAFAEL_VERTICE_PLAYABLE_UNTIL_SEC,
+    }
+  }
+  // P3 — gravação da balada (Rafael → Augusto); nunca remapear para a voz do P2
+  if (message.id === RAFAEL_FORWARD_AUDIO.id) {
+    return {
+      ...message,
+      audioSrc: RAFAEL_CLUB_AUDIO_SRC,
+      durationSec: RAFAEL_CLUB_DURATION_SEC,
+      playableUntilSec: undefined,
     }
   }
   return message
@@ -155,10 +167,16 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
   }
   const contact = contactById[chat.contactId]
   const title = chat.isGroup ? (chat.groupTitle ?? contact.name) : contact.name
-  const currentStep = scriptChat && script && !progress.done ? script.steps[progress.step] : undefined
+  const scriptReady =
+    !script?.requiresFlagsAll?.length ||
+    script.requiresFlagsAll.every((f) => Boolean(inv.flags[f]))
+  const currentStep =
+    scriptChat && script && scriptReady && !progress.done ? script.steps[progress.step] : undefined
   const canCompose = Boolean(currentStep) && pendingReplies === 0
   const showOptions = canCompose && composing
   const typing = pendingReplies > 0
+  const blockedByFlags =
+    scriptChat && script && !progress.done && !scriptReady && Boolean(script.requiresFlagsAll?.length)
 
   return (
     <div className="wa-chat-view" data-testid="whatsapp-chat-view">
@@ -236,7 +254,7 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
               live.kind === 'audio' && live.id === 'rf-audio-reply'
                 ? onRafaelAudioPlayed
                 : live.kind === 'audio' && live.id === 'r2-audio-forward'
-                  ? onRafaelForwardAudioPlayed
+                  ? onRafaelClubAudioPlayed
                   : undefined
             }
           />
@@ -277,6 +295,11 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
               </button>
             ))}
           </div>
+        ) : null}
+        {blockedByFlags ? (
+          <p className="wa-composer-hint" data-testid="chat-script-blocked">
+            Ainda não tenho o que perguntar com precisão. Volto depois de checar o Vértice.
+          </p>
         ) : null}
         {composerHint ? <p className="wa-composer-hint">{composerHint}</p> : null}
         {chatId === ANON_CHAT_ID && !inv.flags.block07_anon_audio_received ? (

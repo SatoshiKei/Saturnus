@@ -1069,12 +1069,12 @@ export function ForensicWorkbench({
                     openedArchiveSessionId: sessionId,
                     archiveStatus:
                       sessionId === PUZZLE03_CANONICAL_SESSION_ID
-                        ? 'Matching session opened — cabine operator on record.'
+                        ? 'Matching session id found — confirm operator at Vertice archive.'
                         : 'Session opened — track order does not match A→B adjacency.',
                   })
                   setStatus(
                     sessionId === PUZZLE03_CANONICAL_SESSION_ID
-                      ? 'Vertice set record opened.'
+                      ? 'Matching set record flagged for venue cross-check.'
                       : 'Set record opened.',
                   )
                 }
@@ -1094,7 +1094,14 @@ export function ForensicWorkbench({
                     rows: sessionListHidesOperatorNames(list),
                     openedId: ui.openedArchiveSessionId,
                     openedDetail: ui.openedArchiveSessionId
-                      ? PUZZLE03_SET_SESSIONS.find((s) => s.id === ui.openedArchiveSessionId) ?? null
+                      ? (() => {
+                          const raw = PUZZLE03_SET_SESSIONS.find(
+                            (s) => s.id === ui.openedArchiveSessionId,
+                          )
+                          if (!raw) return null
+                          // Nunca revelar Nico na bancada — só na 2ª visita ao Vértice.
+                          return { ...raw, operator: '' }
+                        })()
                       : null,
                   }
                 })()

@@ -4,7 +4,8 @@ import type { InvestigationState } from '../types'
 export const FLAG_KNOWN_TERM_SEEDS: { flag: string; terms: string[] }[] = [
   { flag: 'block02_elisa_search_unlocked', terms: ['elisa', 'andre'] },
   { flag: 'block02_paula_chat_done', terms: ['lucas'] },
-  { flag: 'block02_vertice_archive', terms: ['nico'] },
+  // Nico só após 2ª visita / cruzamento (não na 1ª consulta de arquivo).
+  { flag: 'block02_vertice_set_crossref', terms: ['nico'] },
   { flag: 'block03_nico_search_unlocked', terms: ['nico'] },
   { flag: 'block03_maralto_search_unlocked', terms: ['maralto'] },
   { flag: 'block03_maralto_recording_found', terms: ['maralto'] },

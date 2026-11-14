@@ -10,7 +10,7 @@ Referência histórica: `docs/audits/SATURNUS_FULL_GAME_AUDIT.md` (não apagada)
 | Código | Item | Status |
 |---|---|---|
 | D-P02-LABEL | Nomenclatura P02 (não fluxo) | **FIXED** |
-| D-P03-LABEL | Proveniência P03 (Vértice→Augusto) | **FIXED** |
+| D-P03-LABEL | Proveniência P03 (Mariana→Rafael→Augusto) | **FIXED** |
 | D-P03-DESIGN | Mecânica multimídia vs 4 candidatos | **PENDING ASSET** (`P03_SECOND_TRACK_REQUIRED`) |
 | D-P04-NIGHTX | Dataset temporal Noite X | **FIXED** (dataset + testes; UI P04 não virou timeline) |
 | D-LUCAS | Evidence Lucas testemunho vs interpretação | **FIXED** |
@@ -42,7 +42,7 @@ Referência histórica: `docs/audits/SATURNUS_FULL_GAME_AUDIT.md` (não apagada)
 |---|---|---|---|---|---|---|---|---|---|---|
 | 01 Cassini | EMG_0803 | Central / caso | BO / pasta do caso | case-file → bancada | Ligação no BO | Process/notch/noise/listen → 5 fragments | Speech recovered | Lapsos / medo | Celular / contradição | ALIGNED* |
 | 02 Iapetus | Rafael falando | Rafael | Rafael | WhatsApp Augusto | Áudio de Rafael (análise prévia) | Rebuild Ogg + recovered speech | “gravado no Vértice” | Ir ao Vértice | Vértice | **FIXED** (rótulos) |
-| 03 Anéis | REC_VTX_OLD_01 | Arquivo Vértice | Staff / arquivo no local | visita → evidence | Material novo no local | Fingerprint A/B → archive A→B → abrir set | Sessão → Nico | Nico identificado | Buscar Nico | Proveniência FIXED; design **PENDING ASSET** |
+| 03 Anéis | REC_VTX_OLD_01 | Rafael (cópia) | Mariana→Rafael | chat após 1ª visita | Balada ausente no celular | Fingerprint A→B (técnico) | 2ª visita → Nico | Nico | Buscar Nico | Proveniência FIXED; design **PENDING ASSET** |
 | 04 Janus | Phone + desk Noite X | Nico / casa | Nico entrevista | bancada | Inconsistência horária | Align +450s → 01:23:30 | Clocks unsynced | Sandra ≠ Elisa 1º avist. | Reabrir cronologia | Dataset **FIXED**; playthrough TBD |
 | 05 Saturnalia | Logger Lívia | Lívia / Maralto | Lívia | visita → áudio | Arquivo radio | Reordenar 10 slots | Reportagem + Morsa | Protestos / Morsa | Ocorrência → Samuel | ALIGNED |
 | 06 Hexágono | 6 UNK | Anônimo | Ligação fixo | bancada + diário | Áudios anônimos | Spec → romanos → PIN diário | PIN 481526 | Diário | Diário / desconhecido | ALIGNED |
@@ -57,21 +57,36 @@ Referência histórica: `docs/audits/SATURNUS_FULL_GAME_AUDIT.md` (não apagada)
 
 ## P02 — status FIXED (nomenclatura)
 
-- ID: `rafael_voice_to_augusto` (alias save: `rafael_forward_from_mariana`)
-- Título/descrição: áudio de Rafael para Augusto — análise prévia; não encaminhamento da balada
-- Asset / WhatsApp / lead Vértice: inalterados
+- ID canónico: `rafael_audio_reply` (celular Mariana); legado `rafael_voice_to_augusto`
+- Função: descobrir Vértice + existência da gravação original ausente no aparelho
 - `P02_SEG_CABINE_OPTIONAL` — LOW; completion não depende de `seg_cabine`
 
 ---
 
-## P03 — proveniência FIXED
+## P02/P03/Vértice — Canon definitivo (2026-11-14)
 
-Canon: Rafael aponta Vértice → Augusto no Vértice → **novo** arquivo histórico → Bancada → P03 → Nico.
+**Substitui** a interpretação errada `P3 = arquivo obtido no Vértice`.
 
-- `rec_vtx_old_01`: `sourceType: location-archive`; cadeia Vértice → Augusto
-- Metadata sessão / tutorial / walkthroughs: sem Rafael/WhatsApp
-- Aquisição: `finishVerticeArchive`
-- Teste: `tests/unit/semanticProvenanceP02P03.audit.test.ts`
+```
+Celular Mariana → áudio Rafael→Mariana → P2 → Vértice identificado
+→ 1ª ida Vértice (Mariana; arquivos existem; SEM P3; SEM Nico)
+→ Rafael envia gravação da balada (Mariana→Rafael→Augusto)
+→ P3 técnico (A→B; SEM Nico)
+→ 2ª ida Vértice (cruzamento institucional) → Nico
+→ entrevista Nico → P4
+```
+
+| Objeto | Evidence | Source type | Cadeia |
+|---|---|---|---|
+| Voz Rafael (P2) | `rafael_audio_reply` | `mariana-whatsapp` | Rafael→Mariana |
+| Mídia ausente | `mariana_club_recording_missing` | `mariana-whatsapp` | referência |
+| Gravação balada (P3) | `rec_vtx_old_01` | `augusto-whatsapp` | Mariana→Rafael→Augusto |
+| Chave A→B | `rec_vtx_fingerprint_transition` | `audio-lab` | derivado P3 |
+| Match Nico | `rec_vtx_set_nico_match` | `location-archive` | 2ª visita |
+
+- Aquisição P3: `onRafaelClubAudioPlayed` (NÃO `finishVerticeArchive`)
+- Nico: `finishVerticeSetCrossRef` (NÃO `runProvisionalRingsAnalysis`)
+- Teste: `tests/unit/p02P03VerticeCanonicalFlow.test.ts`
 
 ---
 
