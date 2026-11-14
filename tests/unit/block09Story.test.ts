@@ -48,7 +48,11 @@ describe('Bloco 9 — progressão', () => {
       {
         type: 'replaceTasks',
         tasks: [
-          { id: 'task_how_mariana_knew', label: 'Como Mariana descobriu tudo isso?', completed: false },
+          {
+            id: 'task_compare_omitido_system',
+            label: 'Comparar os registros de Henrique com o material encontrado no caso Mariana',
+            completed: false,
+          },
         ],
       },
     ])

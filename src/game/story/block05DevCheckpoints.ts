@@ -62,7 +62,7 @@ export const block05EntryActions: StoryActionRef[] = [
     tasks: [
       {
         id: 'task_press_nico',
-        label: 'Voltar a falar com Nico sobre a Noite X',
+        label: 'Questionar Nico sobre Elisa',
         completed: false,
       },
     ],

@@ -18,8 +18,8 @@ export function finishSamuelInterview() {
     { type: 'completeTask', id: 'task_identify_morsa' },
     {
       type: 'addTask',
-      id: 'task_andre_visits',
-      label: 'Conferir os registros de visita de Mariana a André',
+      id: 'task_interview_andre',
+      label: 'Visitar André na unidade',
     },
     {
       type: 'linkHypothesis',
@@ -47,8 +47,12 @@ export function finishAndreInterview() {
     { type: 'discoverPerson', id: 'andre', status: 'interviewed' },
     { type: 'addEvidence', id: 'andre_confirms_shift' },
     { type: 'addEvidence', id: 'andre_told_her_to_stop' },
-    { type: 'completeTask', id: 'task_andre_visits' },
     { type: 'completeTask', id: 'task_interview_andre' },
+    {
+      type: 'addTask',
+      id: 'task_check_andre_chronology',
+      label: 'Cruzar o registro do número sem nome com as ligações autorizadas na unidade',
+    },
     { type: 'unlockLocation', id: 'presidio', status: 'visited' },
     { type: 'addHypothesis', id: 'hyp_andre_manipulating' },
     {
@@ -64,11 +68,6 @@ export function finishAndreInterview() {
       role: 'support',
     },
     { type: 'setFlag', id: 'block04_chronology_search_unlocked', value: true },
-    {
-      type: 'addTask',
-      id: 'task_check_andre_chronology',
-      label: 'Comparar os horários dos contatos com os registros da unidade',
-    },
   ]
   // Happy path: Saturnalia já ocorreu antes da visita → Maralto disponível.
   // Visita antecipada pós-Autos: Maralto fica para retorno.
@@ -232,7 +231,7 @@ export function onUnknownRecordingAnalyzed() {
       tasks: [
         {
           id: 'task_press_nico',
-          label: 'Voltar a falar com Nico sobre a Noite X',
+          label: 'Questionar Nico sobre Elisa',
           completed: false,
         },
       ],

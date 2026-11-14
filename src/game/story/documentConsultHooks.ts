@@ -66,12 +66,27 @@ const OMITIDO_ASSIST_SOURCES = new Set([
 export function onDocumentConsulted(docId: string) {
   const s = getInvestigationState()
 
-  // Save legado: entrevista concluída sem `completeTask` (DEV / ordem cadastro→visita).
+  // Save legado / reintrodução acidental: entrevista feita mas meta ainda aberta.
   if (
     s.flags.block03_nico_interview_done &&
     s.tasks.some((t) => t.id === 'task_talk_nico' && !t.completed)
   ) {
     dispatchActions([{ type: 'completeTask', id: 'task_talk_nico' }])
+  }
+
+  if (
+    (s.flags.block03_livia_interview_done ||
+      s.evidenceOwned.includes('livia_radio_archive_raw')) &&
+    s.tasks.some((t) => t.id === 'task_talk_livia' && !t.completed)
+  ) {
+    dispatchActions([{ type: 'completeTask', id: 'task_talk_livia' }])
+  }
+
+  if (
+    s.flags.block04_andre_chronology_done &&
+    s.tasks.some((t) => t.id === 'task_check_andre_chronology' && !t.completed)
+  ) {
+    dispatchActions([{ type: 'completeTask', id: 'task_check_andre_chronology' }])
   }
 
   // Origem da ligação: resultado técnico já no registro da central (após P01).

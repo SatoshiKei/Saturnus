@@ -24,6 +24,40 @@ describe('personRegistryGates — Lucas', () => {
   })
 })
 
+describe('personRegistryGates — Nico (pendência)', () => {
+  it('repair fecha Falar com Nico após visita antecipada', () => {
+    let inv = createInitialState()
+    inv = applyStoryActions(inv, [
+      { type: 'addTask', id: 'task_talk_nico', label: 'Falar com Nico' },
+      { type: 'setFlag', id: 'nico_early_done', value: true },
+    ])
+    const fixed = repairInvestigationState(inv)
+    expect(fixed.tasks.find((t) => t.id === 'task_talk_nico')?.completed).toBe(true)
+    expect(fixed.flags.block03_nico_interview_done).toBeFalsy()
+  })
+
+  it('repair fecha Falar com Lívia após entrevista / Saturnália', () => {
+    let inv = createInitialState()
+    inv = applyStoryActions(inv, [
+      { type: 'addTask', id: 'task_talk_livia', label: 'Ir à redação da Rádio Costeira' },
+      { type: 'addEvidence', id: 'livia_radio_archive_raw' },
+    ])
+    const fixed = repairInvestigationState(inv)
+    expect(fixed.tasks.find((t) => t.id === 'task_talk_livia')?.completed).toBe(true)
+  })
+
+  it('repair fecha Falar com Nico se Janus já foi feito', () => {
+    let inv = createInitialState()
+    inv = applyStoryActions(inv, [
+      { type: 'addTask', id: 'task_talk_nico', label: 'Falar com Nico' },
+      { type: 'setFlag', id: 'block03_janus_done', value: true },
+    ])
+    const fixed = repairInvestigationState(inv)
+    expect(fixed.tasks.find((t) => t.id === 'task_talk_nico')?.completed).toBe(true)
+    expect(fixed.flags.block03_nico_interview_done).toBe(true)
+  })
+})
+
 describe('personRegistryGates — Samuel', () => {
   it('Saturnalia sozinho não mostra Samuel', () => {
     let inv = createInitialState()

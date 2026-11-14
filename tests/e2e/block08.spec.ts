@@ -38,5 +38,5 @@ test('Bloco 8 — Morsa=André, acidente, Augusto na cadeia, estado final', asyn
   expect(save.evidenceOwned).toContain('denis_remembers_jaguar_green')
   expect(save.evidenceOwned).toContain('scale_links_callsign_to_augusto')
   expect(save.hypotheses.hyp_elisa_died_accident).toBeTruthy()
-  expect(save.tasks.some((t: { id: string }) => t.id === 'task_how_mariana_knew')).toBe(true)
+  expect(save.tasks.some((t: { id: string }) => t.id === 'task_compare_omitido_system')).toBe(true)
 })

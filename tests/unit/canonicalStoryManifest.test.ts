@@ -188,7 +188,7 @@ describe('marcos canônicos por checkpoint', () => {
     {
       id: 'b02-convergence',
       has: { flags: ['block02_complete'] },
-      activeTasks: ['task_locate_nico'],
+      activeTasks: ['task_talk_nico'],
     },
     {
       id: 'b03-after-nico',

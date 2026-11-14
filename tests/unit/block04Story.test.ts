@@ -129,6 +129,7 @@ describe('Bloco 4 — progressão', () => {
     expect(s.evidenceOwned).toContain('andre_no_maralto_link')
     expect(s.hypotheses.hyp_andre_manipulating?.state).toBe('active')
     expect(s.flags.block04_chronology_search_unlocked).toBe(true)
+    expect(s.tasks.some((t) => t.id === 'task_check_andre_chronology' && !t.completed)).toBe(true)
   })
 
   it('cronologia é contradição automática; ligação anônima fica pendente até ser atendida', () => {
@@ -145,6 +146,7 @@ describe('Bloco 4 — progressão', () => {
     let s = getInvestigationState()
     expect(s.contradictionsConfirmed.some((c) => c.id === 'contra_andre_night_hours')).toBe(true)
     expect(s.flags.block04_andre_chronology_done).toBe(true)
+    expect(s.tasks.some((t) => t.id === 'task_check_andre_chronology' && t.completed)).toBe(true)
     expect(s.hypotheses.hyp_andre_manipulating?.state).toBe('weakened')
     expect(s.flags.block04_hex_call_pending).toBe(true)
     // Os seis áudios ainda NÃO estão na bancada: dependem da cena da ligação.

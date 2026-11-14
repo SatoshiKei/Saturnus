@@ -66,7 +66,6 @@ export const block02DevCheckpoints: { id: string; label: string; actions: StoryA
       { type: 'setFlag', id: 'block02_rafael_forward_received', value: true },
       { type: 'addEvidence', id: 'rec_vtx_old_01' },
       { type: 'completeTask', id: 'task_rafael_recording' },
-      { type: 'completeTask', id: 'task_get_club_from_rafael' },
       {
         type: 'addTask',
         id: 'task_match_vertice_set',
@@ -101,7 +100,7 @@ export const block02DevCheckpoints: { id: string; label: string; actions: StoryA
       { type: 'setFlag', id: 'block03_nico_search_unlocked', value: true },
       { type: 'completeTask', id: 'task_vertice_dj' },
       { type: 'completeTask', id: 'task_vertice_cross_reference' },
-      { type: 'addTask', id: 'task_locate_nico', label: 'Localizar Nico' },
+      { type: 'addTask', id: 'task_talk_nico', label: 'Falar com Nico' },
       { type: 'unlockLocation', id: 'vertice', status: 'visited' },
     ],
   },
@@ -153,7 +152,7 @@ export const block02DevCheckpoints: { id: string; label: string; actions: StoryA
       { type: 'setFlag', id: 'block02_complete', value: true },
       {
         type: 'replaceTasks',
-        tasks: [{ id: 'task_locate_nico', label: 'Localizar Nico — testemunha do caso Elisa', completed: false }],
+        tasks: [{ id: 'task_talk_nico', label: 'Falar com Nico', completed: false }],
       },
     ],
   },

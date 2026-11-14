@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import type { CallLine, CallScript } from '../../data/calls'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { dispatchActions } from '../../game/state/investigationStore'
+import { onLiviaLandlineCallDone } from '../../game/story/block03PhoneHooks'
 import { playSfx } from '../../lib/sfx'
 
 type Phase = 'dialing' | 'talking' | 'skip' | 'result' | 'ended'
@@ -62,11 +63,13 @@ export function CallSession({ script, onEnd, compact }: CallSessionProps) {
         setPhase('skip')
         later(() => {
           dispatchActions(script.onComplete)
+          if (script.id === 'call-livia') onLiviaLandlineCallDone()
           setPhase(script.result ? 'result' : 'ended')
         }, SKIP_MS)
         return
       }
       dispatchActions(script.onComplete)
+      if (script.id === 'call-livia') onLiviaLandlineCallDone()
       setPhase(script.result ? 'result' : 'ended')
       return
     }

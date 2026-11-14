@@ -186,11 +186,9 @@ export function finishVerticeSetCrossRef() {
     { type: 'discoverSearchTerm', term: 'nico' },
     { type: 'setFlag', id: 'block03_nico_search_unlocked', value: true },
     { type: 'completeTask', id: 'task_vertice_cross_reference' },
-    {
-      type: 'addTask',
-      id: 'task_locate_nico',
-      label: 'Localizar Nico',
-    },
+    ...(s.flags.nico_early_done
+      ? []
+      : [{ type: 'addTask' as const, id: 'task_talk_nico', label: 'Falar com Nico' }]),
     { type: 'unlockLocation', id: 'vertice', status: 'visited' },
   ])
 }

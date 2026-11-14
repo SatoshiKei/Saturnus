@@ -107,8 +107,26 @@ describe('Bloco 2 — progressão', () => {
     const s = getInvestigationState()
     expect(s.flags.block02_convergence_done).toBe(true)
     expect(s.flags.block02_complete).toBe(true)
-    expect(s.tasks.some((t) => t.id === 'task_locate_nico' && !t.completed)).toBe(true)
+    expect(s.tasks.some((t) => t.id === 'task_talk_nico' && !t.completed)).toBe(false)
     expect(s.hypotheses.hyp_own_investigation?.state).toBe('confirmed')
+  })
+
+  it('convergência tardia não reabre Falar com Nico após entrevista', () => {
+    resetGame()
+    __setStateForTests(
+      applyStoryActions(getInvestigationState(), [
+        { type: 'addEvidence', id: 'nico_dj_identified' },
+        { type: 'addEvidence', id: 'paula_leads_lucas' },
+        { type: 'addTask', id: 'task_talk_nico', label: 'Falar com Nico' },
+        { type: 'setFlag', id: 'block03_nico_interview_done', value: true },
+        { type: 'completeTask', id: 'task_talk_nico' },
+      ]),
+    )
+    openDocument('doc-elisa-resumo')
+    openDocument('doc-elisa-testemunhas')
+    const s = getInvestigationState()
+    expect(s.flags.block02_convergence_done).toBe(true)
+    expect(s.tasks.some((t) => t.id === 'task_talk_nico' && !t.completed)).toBe(false)
   })
 
   it('Lucas libera hipótese voluntária', () => {

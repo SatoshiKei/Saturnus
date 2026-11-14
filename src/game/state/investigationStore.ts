@@ -36,7 +36,7 @@ function emit() {
 }
 
 function commit(next: InvestigationState, persist = true) {
-  state = runStoryEngine(next)
+  state = repairInvestigationState(runStoryEngine(next))
   if (sandboxDepth > 0) return
   if (persist) saveGame(state)
   emit()
@@ -238,7 +238,24 @@ export function openDocument(docId: string) {
   const prev = state.documents[docId] ?? { read: false, highlightedBlockIds: [] }
   let next = applyStoryActions(state, [{ type: 'addDocument', id: docId }])
   next = { ...next, documents: { ...next.documents, [docId]: { ...prev, read: true } } }
-  if (!wasRead && def.onOpen?.length) next = applyStoryActions(next, def.onOpen)
+  if (!wasRead && def.onOpen?.length) {
+    next = applyStoryActions(next, def.onOpen)
+    if (docId === 'doc-nico-cadastro' && next.flags.nico_early_done) {
+      next = applyStoryActions(next, [{ type: 'completeTask', id: 'task_talk_nico' }])
+    }
+    if (docId === 'doc-maralto-clipping') {
+      const alreadySpoke =
+        next.flags.block03_livia_interview_done ||
+        next.evidenceOwned.includes('livia_radio_archive_raw')
+      if (alreadySpoke) {
+        next = applyStoryActions(next, [{ type: 'completeTask', id: 'task_talk_livia' }])
+      } else if (!next.tasks.some((t) => t.id === 'task_talk_livia')) {
+        next = applyStoryActions(next, [
+          { type: 'addTask', id: 'task_talk_livia', label: 'Ir à redação da Rádio Costeira' },
+        ])
+      }
+    }
+  }
   commit(next)
 }
 

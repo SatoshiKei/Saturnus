@@ -1,5 +1,7 @@
 # Fluxo de investigação (Blocos 1–4)
 
+Catálogo completo de pendências (`task_*`): [TASKS_CATALOG.md](./TASKS_CATALOG.md) (regenerar com `node scripts/generate-task-catalog.mjs`).
+
 Saturnus é uma investigação policial feita **fisicamente**, com as ferramentas da mesa de Augusto. O jogo
 nunca diz “contato disponível”, “entrevista desbloqueada” ou “clique para entrevistar”. O jogador encontra
 informação (um telefone, um endereço, um nome em um documento) e **decide o que fazer com ela**.

@@ -270,12 +270,13 @@ export const block08DevCheckpoints: { id: string; label: string; actions: StoryA
       { type: 'setFlag', id: 'refl-b08-final_seen', value: true },
       { type: 'setFlag', id: 'block08_complete', value: true },
       { type: 'setFlag', id: 'block09_entry_ready', value: true },
+      { type: 'setFlag', id: 'block09_compare_unlocked', value: true },
       {
         type: 'replaceTasks',
         tasks: [
           {
-            id: 'task_how_mariana_knew',
-            label: 'Como Mariana descobriu tudo isso?',
+            id: 'task_compare_omitido_system',
+            label: 'Comparar os registros de Henrique com o material encontrado no caso Mariana',
             completed: false,
           },
         ],

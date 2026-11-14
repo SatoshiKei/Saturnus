@@ -307,7 +307,6 @@ export const seedDocuments: Document[] = [
       { type: 'addEvidence', id: 'nico_current_record' },
       { type: 'discoverPerson', id: 'nico', status: 'located' },
       { type: 'unlockContact', contactId: 'contact-nico' },
-      { type: 'completeTask', id: 'task_locate_nico' },
       { type: 'addTask', id: 'task_talk_nico', label: 'Falar com Nico' },
       {
         type: 'notifyInvestigationUpdate',
@@ -341,7 +340,6 @@ export const seedDocuments: Document[] = [
     onOpen: [
       { type: 'addEvidence', id: 'maralto_public_record' },
       { type: 'setFlag', id: 'block03_maralto_researched', value: true },
-      { type: 'completeTask', id: 'task_research_maralto' },
       { type: 'discoverPerson', id: 'marcelo', status: 'mentioned' },
       { type: 'discoverSearchTerm', term: 'marcelo' },
       { type: 'addHypothesis', id: 'hyp_maralto_disappearance' },
@@ -376,7 +374,6 @@ export const seedDocuments: Document[] = [
       { type: 'addEvidence', id: 'livia_sought_by_mariana' },
       { type: 'discoverPerson', id: 'livia', status: 'identified' },
       { type: 'unlockContact', contactId: 'contact-livia' },
-      { type: 'addTask', id: 'task_talk_livia', label: 'Falar com Lívia Serrano' },
     ],
   },
   {

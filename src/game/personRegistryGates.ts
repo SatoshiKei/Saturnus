@@ -185,13 +185,67 @@ export function repairInvestigationState(state: InvestigationState): Investigati
     'task_selective_lapses',
     'task_why_mariana_session',
     'task_continue_elisa_case',
+    'task_contact_radio_costeira',
+    'task_locate_livia',
+    'task_andre_visits',
+    'task_get_club_from_rafael',
+    'task_research_maralto',
+    'task_call_renata',
+    'task_locate_nico',
+    'task_weigh_mariana_messages',
+    'task_how_mariana_knew',
   ])
+  const liviaInterviewSatisfied = (s: InvestigationState) =>
+    Boolean(s.flags.block03_livia_interview_done) ||
+    s.evidenceOwned.includes('livia_radio_archive_raw') ||
+    Boolean(s.flags.block03_saturnalia_available) ||
+    Boolean(s.flags.block03_saturnalia_done)
+
+  const nicoInterviewSatisfied = (s: InvestigationState) =>
+    Boolean(s.flags.block03_nico_interview_done) ||
+    Boolean(s.flags.block03_janus_done) ||
+    liviaInterviewSatisfied(s) ||
+    Boolean(s.flags.block03_saturnalia_done) ||
+    Boolean(s.flags.block03_complete) ||
+    Boolean(s.flags.block04_started) ||
+    s.evidenceOwned.includes('nico_recording_booth')
+
+  if (nicoInterviewSatisfied(next) && !next.flags.block03_nico_interview_done) {
+    next = {
+      ...next,
+      flags: { ...next.flags, block03_nico_interview_done: true },
+    }
+  }
+
   const owned = new Set(next.evidenceOwned)
   let tasks = (next.tasks ?? []).filter((t) => {
     if (t.id === 'task_get_club_from_rafael') return false
     if (REMOVED_TASK_IDS.has(t.id)) return false
     return true
   })
+  if (nicoInterviewSatisfied(next) || next.flags.nico_early_done) {
+    tasks = tasks.map((t) =>
+      t.id === 'task_talk_nico' && !t.completed ? { ...t, completed: true } : t,
+    )
+  }
+  if (liviaInterviewSatisfied(next)) {
+    tasks = tasks.map((t) =>
+      t.id === 'task_talk_livia' && !t.completed ? { ...t, completed: true } : t,
+    )
+  }
+  if (next.flags.block04_andre_chronology_done) {
+    tasks = tasks.map((t) =>
+      t.id === 'task_check_andre_chronology' && !t.completed ? { ...t, completed: true } : t,
+    )
+  }
+  {
+    const byId = new Map<string, (typeof tasks)[number]>()
+    for (const t of tasks) {
+      const prev = byId.get(t.id)
+      if (!prev || (!prev.completed && t.completed)) byId.set(t.id, t)
+    }
+    tasks = [...byId.values()]
+  }
   if (owned.has('rec_vtx_old_01')) {
     tasks = tasks.map((t) =>
       (t.id === 'task_rafael_recording' || t.id === 'task_get_club_from_rafael') && !t.completed

@@ -15,11 +15,6 @@ export function onMarianaRadioCallLogEntryOpened(entryId: string) {
     { type: 'unlockContact', contactId: 'contact-livia' },
     { type: 'completeTask', id: 'task_review_mariana_call_log' },
     {
-      type: 'addTask',
-      id: 'task_contact_radio_costeira',
-      label: 'Entrar em contato com a Rádio Costeira',
-    },
-    {
       type: 'notifyInvestigationUpdate',
       id: 'radio-costeira-landline',
       kind: 'contact',
@@ -32,4 +27,27 @@ export function onMarianaRadioCallLogEntryOpened(entryId: string) {
 /** Manifest DEV / story replay (sem entryId). */
 export function onMarianaRadioCallDiscovered() {
   onMarianaRadioCallLogEntryOpened(MARIANA_RADIO_CALL_LOG_ID)
+}
+
+/** Primeira ligação à redação — pendência de visita só se a entrevista ainda não ocorreu. */
+export function onLiviaLandlineCallDone() {
+  const s = getInvestigationState()
+  if (
+    s.flags.block03_livia_interview_done ||
+    s.evidenceOwned.includes('livia_radio_archive_raw')
+  ) {
+    if (s.tasks.some((t) => t.id === 'task_talk_livia' && !t.completed)) {
+      dispatchActions([{ type: 'completeTask', id: 'task_talk_livia' }])
+    }
+    return
+  }
+  if (!s.tasks.some((t) => t.id === 'task_talk_livia')) {
+    dispatchActions([
+      {
+        type: 'addTask',
+        id: 'task_talk_livia',
+        label: 'Ir à redação da Rádio Costeira',
+      },
+    ])
+  }
 }

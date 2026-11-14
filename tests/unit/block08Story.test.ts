@@ -199,7 +199,7 @@ describe('Bloco 8 — progressão', () => {
     s = getInvestigationState()
     expect(s.flags.block08_complete).toBe(true)
     expect(s.flags.block09_entry_ready).toBe(true)
-    expect(s.tasks.some((t) => t.id === 'task_how_mariana_knew')).toBe(true)
+    expect(s.tasks.some((t) => t.id === 'task_compare_omitido_system' && !t.completed)).toBe(true)
     expect(s.hypotheses.hyp_augusto_causal_in_chain?.state).toBe('confirmed')
     expect(s.hypotheses.hyp_mariana_chose_augusto?.state).toBe('confirmed')
   })

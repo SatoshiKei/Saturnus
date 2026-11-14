@@ -61,10 +61,13 @@ describe('Early paths — progressão', () => {
       { type: 'discoverPerson', id: 'nico', status: 'located' },
       { type: 'unlockLocation', id: 'titan', status: 'visitAvailable' },
       { type: 'setFlag', id: 'block02_vertice_archive', value: true },
+      { type: 'addTask', id: 'task_talk_nico', label: 'Falar com Nico' },
     ])
     expect(isNicoEarlyVisit(getInvestigationState())).toBe(true)
     finishNicoEarlyInterview()
-    expect(getInvestigationState().flags.nico_early_done).toBe(true)
+    const afterEarly = getInvestigationState()
+    expect(afterEarly.flags.nico_early_done).toBe(true)
+    expect(afterEarly.tasks.find((t) => t.id === 'task_talk_nico')?.completed).toBe(true)
     expect(getInvestigationState().flags.block03_nico_interview_done).toBeFalsy()
     finishLucasInterview()
     const s = getInvestigationState()

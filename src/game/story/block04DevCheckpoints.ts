@@ -98,8 +98,8 @@ export const block04DevCheckpoints: { id: string; label: string; actions: StoryA
       { type: 'completeTask', id: 'task_identify_morsa' },
       {
         type: 'addTask',
-        id: 'task_andre_visits',
-        label: 'Conferir os registros de visita de Mariana a André',
+        id: 'task_interview_andre',
+        label: 'Visitar André na unidade',
       },
     ],
   },
@@ -114,12 +114,7 @@ export const block04DevCheckpoints: { id: string; label: string; actions: StoryA
       { type: 'completeCall', id: 'call-presidio-visit' },
       { type: 'unlockLocation', id: 'presidio', status: 'visitAvailable' },
       { type: 'discoverPerson', id: 'andre', status: 'located' },
-      { type: 'completeTask', id: 'task_andre_visits' },
-      {
-        type: 'addTask',
-        id: 'task_interview_andre',
-        label: 'Visitar André na unidade prisional',
-      },
+      { type: 'addTask', id: 'task_interview_andre', label: 'Visitar André na unidade' },
     ],
   },
   {
@@ -139,7 +134,7 @@ export const block04DevCheckpoints: { id: string; label: string; actions: StoryA
       {
         type: 'addTask',
         id: 'task_check_andre_chronology',
-        label: 'Comparar os horários dos contatos com os registros da unidade',
+        label: 'Cruzar o registro do número sem nome com as ligações autorizadas na unidade',
       },
     ],
   },
@@ -265,7 +260,7 @@ export const block04DevCheckpoints: { id: string; label: string; actions: StoryA
         tasks: [
           {
             id: 'task_press_nico',
-            label: 'Voltar a falar com Nico sobre a Noite X',
+            label: 'Questionar Nico sobre Elisa',
             completed: false,
           },
         ],

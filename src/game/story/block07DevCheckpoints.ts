@@ -174,11 +174,6 @@ export const block07DevCheckpoints: { id: string; label: string; actions: StoryA
       { type: 'addEvidence', id: 'renata_voice_on_burst' },
       { type: 'completeTask', id: 'task_julia_ricardo_audio' },
       { type: 'setFlag', id: 'block07_renata_call_unlocked', value: true },
-      {
-        type: 'addTask',
-        id: 'task_call_renata',
-        label: 'Ligar para Renata Farias sobre o fragmento de voz',
-      },
     ],
   },
   {
@@ -188,7 +183,6 @@ export const block07DevCheckpoints: { id: string; label: string; actions: StoryA
       { type: 'setFlag', id: 'block07_renata_call_done', value: true },
       { type: 'addEvidence', id: 'ricardo_old_patient_mariana_shift' },
       { type: 'addEvidence', id: 'anon_audio_shift_window' },
-      { type: 'completeTask', id: 'task_call_renata' },
       { type: 'setFlag', id: 'block07_hospital_archive_unlocked', value: true },
       {
         type: 'addTask',

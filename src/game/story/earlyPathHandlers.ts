@@ -162,6 +162,7 @@ export function finishNicoEarlyInterview() {
   dispatchActions([
     { type: 'setFlag', id: 'nico_early_done', value: true },
     { type: 'discoverPerson', id: 'nico', status: 'interviewed' },
+    { type: 'completeTask', id: 'task_talk_nico' },
     markVisited,
   ])
 }

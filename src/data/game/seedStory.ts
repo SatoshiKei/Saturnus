@@ -1160,10 +1160,6 @@ export const seedStoryTriggers: StoryTrigger[] = [
         evidenceId: 'mariana_rebuilding_elisa_case',
         role: 'support',
       },
-      {
-        type: 'replaceTasks',
-        tasks: [{ id: 'task_locate_nico', label: 'Localizar Nico', completed: false }],
-      },
       { type: 'setFlag', id: 'block02_complete', value: true },
     ],
   },

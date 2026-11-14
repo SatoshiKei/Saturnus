@@ -87,8 +87,13 @@ export function runProvisionalJanusSync() {
 export function finishLiviaInterview() {
   const s = getInvestigationState()
   const markVisited = { type: 'unlockLocation' as const, id: 'radio', status: 'visited' as const }
+  const completeTalk: StoryActionRef = { type: 'completeTask', id: 'task_talk_livia' }
+  const talkStillOpen = s.tasks.some((t) => t.id === 'task_talk_livia' && !t.completed)
   if (s.flags.block03_livia_interview_done) {
-    if (s.locations.radio?.status === 'visitAvailable') dispatchActions([markVisited])
+    const fixes: StoryActionRef[] = []
+    if (s.locations.radio?.status === 'visitAvailable') fixes.push(markVisited)
+    if (talkStillOpen) fixes.push(completeTalk)
+    if (fixes.length) dispatchActions(fixes)
     return
   }
   dispatchActions([
@@ -102,7 +107,7 @@ export function finishLiviaInterview() {
     {
       type: 'addTask',
       id: 'task_saturnalia',
-      label: 'Reconstruir a transmissão radiofônica (bancada de áudio)',
+      label: 'Reconstruir a transmissão radiofônica',
     },
     markVisited,
   ])

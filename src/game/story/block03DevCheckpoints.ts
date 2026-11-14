@@ -78,7 +78,7 @@ export const block03EntryActions: StoryActionRef[] = [
   { type: 'replaceTasks', tasks: block01EndTasks.map((t) => ({ ...t, completed: true })) },
   {
     type: 'replaceTasks',
-    tasks: [{ id: 'task_locate_nico', label: 'Localizar Nico — testemunha do caso Elisa', completed: false }],
+    tasks: [{ id: 'task_talk_nico', label: 'Falar com Nico', completed: false }],
   },
   { type: 'setFlag', id: 'block03_started', value: true },
   { type: 'setFlag', id: 'block03_nico_search_unlocked', value: true },
@@ -99,7 +99,7 @@ export const block03DevCheckpoints: { id: string; label: string; actions: StoryA
       { type: 'addEvidence', id: 'nico_current_record' },
       { type: 'unlockContact', contactId: 'contact-nico' },
       { type: 'discoverPerson', id: 'nico', status: 'located' },
-      { type: 'completeTask', id: 'task_locate_nico' },
+      { type: 'completeTask', id: 'task_talk_nico' },
       { type: 'addTask', id: 'task_talk_nico', label: 'Falar com Nico' },
       { type: 'completeCall', id: 'call-nico' },
       { type: 'unlockLocation', id: 'titan', status: 'visitAvailable' },
@@ -167,11 +167,6 @@ export const block03DevCheckpoints: { id: string; label: string; actions: StoryA
       { type: 'unlockContact', contactId: 'contact-livia' },
       { type: 'completeTask', id: 'task_review_mariana_call_log' },
       {
-        type: 'addTask',
-        id: 'task_contact_radio_costeira',
-        label: 'Entrar em contato com a Rádio Costeira',
-      },
-      {
         type: 'notifyInvestigationUpdate',
         id: 'radio-costeira-landline',
         kind: 'contact',
@@ -188,18 +183,12 @@ export const block03DevCheckpoints: { id: string; label: string; actions: StoryA
       { type: 'addDocument', id: 'doc-maralto-cadastro' },
       { type: 'addDocument', id: 'doc-maralto-clipping' },
       { type: 'unlockContact', contactId: 'contact-livia' },
-      { type: 'addTask', id: 'task_talk_livia', label: 'Falar com Lívia Serrano' },
       { type: 'addEvidence', id: 'maralto_public_record' },
       { type: 'addEvidence', id: 'livia_sought_by_mariana' },
       { type: 'setFlag', id: 'block03_maralto_researched', value: true },
       { type: 'addHypothesis', id: 'hyp_maralto_disappearance' },
       { type: 'addHypothesis', id: 'hyp_elisa_maralto_open' },
       { type: 'discoverPerson', id: 'livia', status: 'identified' },
-      {
-        type: 'addTask',
-        id: 'task_locate_livia',
-        label: 'Localizar Lívia Serrano — cobertura dos protestos',
-      },
     ],
   },
   {

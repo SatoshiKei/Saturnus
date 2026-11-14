@@ -28,7 +28,7 @@ function seedBlock03Start() {
         {
           type: 'replaceTasks',
           tasks: [
-            { id: 'task_locate_nico', label: 'Localizar Nico — testemunha do caso Elisa', completed: false },
+            { id: 'task_talk_nico', label: 'Falar com Nico', completed: false },
           ],
         },
       ]),
@@ -62,7 +62,7 @@ describe('Bloco 3 — progressão', () => {
     expect(after.evidenceOwned).toContain('nico_current_record')
     expect(after.people.nico.status).toBe('located')
     expect(after.contacts['contact-nico']?.unlocked).toBe(true)
-    expect(after.tasks.some((t) => t.id === 'task_locate_nico' && t.completed)).toBe(true)
+    expect(after.tasks.some((t) => t.id === 'task_talk_nico' && !t.completed)).toBe(true)
   })
 
   it('entrevista Nico entrega gravações Janus', () => {
@@ -150,5 +150,20 @@ describe('Bloco 3 — progressão', () => {
     const s = getInvestigationState()
     expect(s.evidenceOwned).toContain('livia_radio_archive_raw')
     expect(s.flags.block03_saturnalia_available).toBe(true)
+    expect(s.tasks.some((t) => t.id === 'task_talk_livia' && !t.completed)).toBe(false)
+  })
+
+  it('recorte Maralto não reabre Falar com Lívia após entrevista', () => {
+    seedBlock03Start()
+    finishLiviaInterview()
+    __setStateForTests(
+      applyStoryActions(getInvestigationState(), [
+        { type: 'replaceTasks', tasks: [{ id: 'task_identify_morsa', label: 'x', completed: false }] },
+        { type: 'discoverSearchTerm', term: 'maralto' },
+      ]),
+    )
+    openDocument('doc-maralto-clipping')
+    const s = getInvestigationState()
+    expect(s.tasks.some((t) => t.id === 'task_talk_livia' && !t.completed)).toBe(false)
   })
 })

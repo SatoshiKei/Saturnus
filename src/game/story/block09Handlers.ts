@@ -49,7 +49,6 @@ export function compareHenriqueMarianaSystem() {
     { type: 'addEvidence', id: 'mariana_used_same_system_months' },
     { type: 'addEvidence', id: 'omitido_guided_not_answered' },
     { type: 'discoverPerson', id: 'omitido', status: 'identified' },
-    { type: 'completeTask', id: 'task_how_mariana_knew' },
     { type: 'completeTask', id: 'task_compare_omitido_system' },
     { type: 'addHypothesis', id: 'hyp_omitido_guided_mariana' },
     { type: 'updateHypothesis', id: 'hyp_omitido_guided_mariana', state: 'confirmed' },
@@ -57,7 +56,7 @@ export function compareHenriqueMarianaSystem() {
     {
       type: 'addTask',
       id: 'task_reread_diary_omitido',
-      label: 'O que o diário significa agora?',
+      label: 'Reler o diário com o contexto de O Omitido',
     },
     {
       type: 'notifyInvestigationUpdate',
@@ -85,7 +84,7 @@ export function rereadDiaryOmitido() {
     {
       type: 'addTask',
       id: 'task_omitido_assistance',
-      label: 'Quem sustentou a outra metade do percurso?',
+      label: 'Reabrir as fontes técnicas ligadas a O Omitido',
     },
   ])
 }
@@ -136,7 +135,7 @@ export function onRobertoExposed() {
     {
       type: 'addTask',
       id: 'task_read_mariana_messages',
-      label: 'Quem fala em nome de Mariana?',
+      label: 'Examinar as novas mensagens atribuídas a Mariana',
     },
   ])
   injectMarianaWave(1)
@@ -212,13 +211,7 @@ export function onMarianaMessagesWave1Read() {
   dispatchActions([
     { type: 'setFlag', id: 'block09_messages_wave1_read', value: true },
     { type: 'addEvidence', id: 'messages_as_mariana_convincing' },
-    { type: 'completeTask', id: 'task_read_mariana_messages' },
     { type: 'setFlag', id: 'block09_messages_wave2', value: true },
-    {
-      type: 'addTask',
-      id: 'task_weigh_mariana_messages',
-      label: 'Ler as novas mensagens de Mariana — elas sabem demais',
-    },
   ])
   injectMarianaWave(2)
 }
@@ -231,7 +224,7 @@ export function weighMarianaMessageImpossibilities() {
   dispatchActions([
     { type: 'setFlag', id: 'block09_messages_impossible_done', value: true },
     { type: 'addEvidence', id: 'messages_know_post_disappearance_facts' },
-    { type: 'completeTask', id: 'task_weigh_mariana_messages' },
+    { type: 'completeTask', id: 'task_read_mariana_messages' },
     { type: 'setFlag', id: 'block09_refl_messages_pending', value: true },
   ])
 }
