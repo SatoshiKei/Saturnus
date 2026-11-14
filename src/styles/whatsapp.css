@@ -993,6 +993,66 @@
   color: #666;
 }
 
+.wa-calls--detail-view {
+  display: flex;
+  flex-direction: column;
+}
+
+.wa-calls__detail {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 20px 24px;
+  background: #fff;
+}
+
+.wa-calls__detail-back {
+  background: none;
+  border: none;
+  color: #007aff;
+  font-size: 17px;
+  padding: 8px 0 16px;
+  cursor: pointer;
+  font: inherit;
+  align-self: flex-start;
+}
+
+.wa-calls__detail-name {
+  margin: 0 0 6px;
+  font-weight: 700;
+  font-size: 28px;
+  letter-spacing: -0.02em;
+  color: #111;
+}
+
+.wa-calls__detail-sub,
+.wa-calls__detail-num,
+.wa-calls__detail-line {
+  margin: 4px 0;
+  font-size: 17px;
+  color: rgba(60, 60, 67, 0.85);
+  line-height: 1.35;
+}
+
+.wa-calls__detail-sub {
+  color: rgba(60, 60, 67, 0.6);
+  font-size: 15px;
+}
+
+.wa-calls--whatsapp .wa-calls__detail {
+  background: #0b141a;
+}
+
+.wa-calls--whatsapp .wa-calls__detail-name {
+  color: #e9edef;
+}
+
+.wa-calls--whatsapp .wa-calls__detail-sub,
+.wa-calls--whatsapp .wa-calls__detail-num,
+.wa-calls--whatsapp .wa-calls__detail-line {
+  color: rgba(233, 237, 239, 0.78);
+}
+
 .wa-calls__number {
   font-weight: 400;
   color: #555;

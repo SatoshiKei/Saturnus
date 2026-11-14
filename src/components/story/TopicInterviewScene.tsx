@@ -82,31 +82,44 @@ export function TopicInterviewScene<T extends string>({ config, onClose }: Props
   const bg = assetPath(config.background)
   const dark = config.darkness ?? 0.55
 
+  const interviewShouldFinish = useCallback(
+    (flags: ReturnType<typeof getInvestigationState>['flags'], unlocked: string[]) => {
+      const availableNow = config.topicIds.filter((id) => {
+        const req = config.topicRequires?.[id]
+        if (!req) return true
+        if (flags[req]) return true
+        return unlocked.includes(req)
+      })
+      const availableDone = availableNow.every((id) => flags[config.flags[id]])
+      const allConfiguredDone = config.topicIds.every((id) => flags[config.flags[id]])
+      return config.finishRequiresAllTopics ? allConfiguredDone : availableDone
+    },
+    [config],
+  )
+
+  const tryFinishInterview = useCallback(() => {
+    const state = getInvestigationState()
+    const flags = state.flags
+    if (flags[config.doneFlag]) return
+    if (!interviewShouldFinish(flags, state.interviewTopicsUnlocked)) return
+    config.finish()
+  }, [config, interviewShouldFinish])
+
   const completeTopic = useCallback(
     (topic: T) => {
       setFlag(config.flags[topic], true)
       // Lê a store na hora — `doneTopics` do render pode estar defasado e impedir o fechamento.
       const state = getInvestigationState()
       const flags = state.flags
-      const availableNow = config.topicIds.filter((id) => {
-        const req = config.topicRequires?.[id]
-        if (!req) return true
-        if (flags[req]) return true
-        return state.interviewTopicsUnlocked.includes(req)
-      })
-      const availableDone = availableNow.every((id) => flags[config.flags[id]])
-      const allConfiguredDone = config.topicIds.every((id) => flags[config.flags[id]])
-      const shouldFinish = config.finishRequiresAllTopics ? allConfiguredDone : availableDone
-      if (shouldFinish) {
-        if (!flags[config.doneFlag]) config.finish()
-        // Vai direto à Reflexão (NVL) — não passa pela fala idle que pedia clique.
+      if (interviewShouldFinish(flags, state.interviewTopicsUnlocked)) {
+        tryFinishInterview()
         leave()
         return
       }
       setActiveTopic(null)
       setBeatIndex(0)
     },
-    [config, leave],
+    [config, interviewShouldFinish, leave, tryFinishInterview],
   )
 
   const pending = availableTopics.filter((id) => !doneTopics.has(id))
@@ -145,7 +158,10 @@ export function TopicInterviewScene<T extends string>({ config, onClose }: Props
             speaker="Augusto"
             text={config.idleLine}
             terminalBeat
-            onContinue={leave}
+            onContinue={() => {
+              tryFinishInterview()
+              leave()
+            }}
           />
         )
       ) : null}

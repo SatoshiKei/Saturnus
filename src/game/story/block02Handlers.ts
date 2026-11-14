@@ -57,7 +57,7 @@ export function runProvisionalRafaelForwardAnalysis() {
     {
       type: 'addTask',
       id: 'task_vertice_dj',
-      label: 'Ir ao Vértice e perguntar por Mariana',
+      label: 'Ir ao Vértice e falar com a equipe',
     },
     {
       type: 'addTask',
@@ -107,14 +107,22 @@ export function finishVerticeVisit() {
   // Se P3 técnico está pronto e a 2ª visita ainda não ocorreu, manter visitável.
   const needsSecond =
     s.flags.block02_rings_provisional && !s.flags.block02_vertice_set_crossref
-  dispatchActions([
+  const actions: StoryActionRef[] = [
     {
       type: 'unlockLocation',
       id: 'vertice',
       status: needsSecond ? 'visitAvailable' : 'visited',
     },
     { type: 'setFlag', id: 'block02_vertice_visit_done', value: true },
-  ])
+  ]
+  // 1ª visita: conclui ao sair (2ª visita cumpre `task_vertice_cross_reference`).
+  if (
+    !s.flags.block02_vertice_set_crossref &&
+    s.tasks.some((t) => t.id === 'task_vertice_dj' && !t.completed)
+  ) {
+    actions.push({ type: 'completeTask', id: 'task_vertice_dj' })
+  }
+  dispatchActions(actions)
 }
 
 /**
@@ -177,7 +185,6 @@ export function finishVerticeSetCrossRef() {
     { type: 'discoverPerson', id: 'nico', status: 'identified' },
     { type: 'discoverSearchTerm', term: 'nico' },
     { type: 'setFlag', id: 'block03_nico_search_unlocked', value: true },
-    { type: 'completeTask', id: 'task_vertice_dj' },
     { type: 'completeTask', id: 'task_vertice_cross_reference' },
     {
       type: 'addTask',

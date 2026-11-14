@@ -201,7 +201,7 @@ export const rafaelScript: ChatScript = {
         'Rafael, sou Augusto Nogueira, da Polícia Civil. Preciso falar sobre a Mariana.',
         'Rafael? Polícia Civil. É sobre a Mariana.',
       ],
-      replies: [{ kind: 'text', text: 'Ela sumiu mesmo?' }],
+      replies: [{ kind: 'text', text: 'KRL! Ela sumiu mesmo então?' }],
     },
     {
       options: [

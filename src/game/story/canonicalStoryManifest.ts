@@ -70,6 +70,7 @@ import {
   onRafaelClubAudioPlayed,
 } from './block02Handlers'
 import { finishLiviaInterview, finishNicoInterview } from './block03Handlers'
+import { onMarianaRadioCallDiscovered } from './block03PhoneHooks'
 import {
   finishAndreInterview,
   finishSamuelInterview,
@@ -138,6 +139,7 @@ const HANDLERS = {
   onRafaelClubAudioPlayed,
   finishVerticeVisit,
   onUnknownCallerNumberSeen,
+  onMarianaRadioCallDiscovered,
   onHexCallAnswered,
   onHexCallsPreserved,
   onUnknownRecordingFound,
@@ -327,13 +329,18 @@ export const CANONICAL_STORY_MANIFEST: CanonicalCheckpointDef[] = [
   { id: 'b03-janus-ready', steps: [], note: 'finishNicoInterview já libera o Puzzle 04.' },
   { id: 'b03-janus-done', steps: [{ puzzle: 'P04' }] },
   {
+    id: 'b03-radio-call-discovered',
+    steps: [{ h: 'onMarianaRadioCallDiscovered' }],
+    note: 'Canon pós-P04: mcall-radio no celular de Mariana com meta ativa.',
+  },
+  {
     id: 'b03-maralto-researched',
     steps: [
-      { act: [{ type: 'discoverSearchTerm', term: 'maralto' }] },
+      { act: [{ type: 'discoverSearchTerm', term: 'maralto' }], why: 'DEV replay — termo Maralto' },
       { doc: 'doc-maralto-cadastro' },
       { doc: 'doc-maralto-clipping' },
     ],
-    note: 'Replay/DEV apenas — jogador sem gatilho Maralto após P4 até revisão narrativa.',
+    note: 'Replay/DEV — atalho antigo via busca Maralto (paralelo ao histórico de chamadas).',
   },
   { id: 'b03-livia-ready', steps: [{ call: 'call-livia' }] },
   { id: 'b03-after-livia', steps: [{ vn: 'livia' }] },

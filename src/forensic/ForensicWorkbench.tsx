@@ -1817,9 +1817,11 @@ function ForensicDebug({
         </>
       ) : isSaturnalia ? (
         <>
-          <span>expectedOrder {(session.completion?.expectedSourceOrder ?? []).join('→')}</span>
-          <span>currentOrder {ui.clipSequence.join('→')}</span>
-          <span>nextWriteSlot 06</span>
+          <span>
+            slots {ui.clipSequence.length}/
+            {session.completion?.expectedSourceOrder?.length ?? 10}
+          </span>
+          <span>currentOrder {ui.clipSequence.length ? ui.clipSequence.join('→') : '—'}</span>
           <span>
             sequenceValid{' '}
             {String(

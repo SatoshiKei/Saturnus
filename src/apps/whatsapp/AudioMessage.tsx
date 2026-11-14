@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type MouseEvent } from 'react'
 import { assetPath } from '../../lib/assetPath'
 import type { ChatMessage } from '../../types/messaging'
 
@@ -12,6 +12,36 @@ function formatDuration(sec: number): string {
   return `${m}:${s.toString().padStart(2, '0')}`
 }
 
+async function playWhenReady(audio: HTMLAudioElement): Promise<void> {
+  try {
+    await audio.play()
+    return
+  } catch {
+    /* metadata ainda carregando — comum em MP3 grande */
+  }
+  await new Promise<void>((resolve, reject) => {
+    if (audio.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) {
+      resolve()
+      return
+    }
+    const onReady = () => {
+      cleanup()
+      resolve()
+    }
+    const onErr = () => {
+      cleanup()
+      reject(new Error('audio load failed'))
+    }
+    const cleanup = () => {
+      audio.removeEventListener('canplay', onReady)
+      audio.removeEventListener('error', onErr)
+    }
+    audio.addEventListener('canplay', onReady, { once: true })
+    audio.addEventListener('error', onErr, { once: true })
+  })
+  await audio.play()
+}
+
 export function AudioMessage({
   message,
   onPlayStart,
@@ -20,6 +50,8 @@ export function AudioMessage({
   onPlayStart?: () => void
 }) {
   const audioRef = useRef<HTMLAudioElement>(null)
+  const prevSrcRef = useRef<string | null>(null)
+  const narrativeSent = useRef(false)
   const [playing, setPlaying] = useState(false)
   const [progress, setProgress] = useState(0)
   const [speedIdx, setSpeedIdx] = useState(0)
@@ -36,36 +68,64 @@ export function AudioMessage({
   }, [speedIdx])
 
   useEffect(() => {
+    narrativeSent.current = false
     const audio = audioRef.current
     if (!audio) return
+  }, [src])
+
+  useEffect(() => {
+    const audio = audioRef.current
+    if (!audio) return
+    if (prevSrcRef.current === src) return
+    const hadPrev = prevSrcRef.current != null
+    prevSrcRef.current = src
+    if (!hadPrev) return
     audio.pause()
     audio.load()
     setPlaying(false)
     setProgress(0)
   }, [src])
 
-  const toggle = async () => {
+  useEffect(() => {
+    const audio = audioRef.current
+    if (!audio || !onPlayStart) return
+    const handlePlaying = () => {
+      if (narrativeSent.current) return
+      narrativeSent.current = true
+      window.setTimeout(() => onPlayStart(), 0)
+    }
+    audio.addEventListener('playing', handlePlaying)
+    return () => audio.removeEventListener('playing', handlePlaying)
+  }, [onPlayStart, src])
+
+  const toggle = async (e: MouseEvent) => {
+    e.stopPropagation()
     const audio = audioRef.current
     if (!audio) return
     if (playing) {
       audio.pause()
       setPlaying(false)
-    } else {
-      await audio.play()
+      return
+    }
+    try {
+      await playWhenReady(audio)
       setPlaying(true)
-      onPlayStart?.()
+    } catch {
+      setPlaying(false)
     }
   }
 
-  const cycleSpeed = () => setSpeedIdx((i) => (i + 1) % SPEEDS.length)
+  const cycleSpeed = (e: MouseEvent) => {
+    e.stopPropagation()
+    setSpeedIdx((i) => (i + 1) % SPEEDS.length)
+  }
 
   return (
     <div className="wa-audio" data-testid="audio-message">
       <audio
-        key={src}
         ref={audioRef}
         src={src}
-        preload="metadata"
+        preload="auto"
         onTimeUpdate={() => {
           const a = audioRef.current
           if (!a) return
@@ -78,6 +138,7 @@ export function AudioMessage({
             setProgress(1)
           }
         }}
+        onPause={() => setPlaying(false)}
         onEnded={() => setPlaying(false)}
       />
       <button

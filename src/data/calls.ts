@@ -73,6 +73,8 @@ export const callScripts: CallScript[] = [
       { type: 'completeCall', id: 'call-livia' },
       { type: 'discoverPerson', id: 'livia', status: 'located' },
       { type: 'unlockLocation', id: 'radio', status: 'visitAvailable' },
+      { type: 'completeTask', id: 'task_contact_radio_costeira' },
+      { type: 'addTask', id: 'task_talk_livia', label: 'Falar com Lívia Serrano' },
     ],
     repeat: [{ who: 'other', text: 'Já falamos. A redação fica aberta até tarde.' }],
   },

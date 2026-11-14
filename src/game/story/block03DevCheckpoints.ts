@@ -110,6 +110,7 @@ export const block03DevCheckpoints: { id: string; label: string; actions: StoryA
     label: 'Após entrevista Nico',
     actions: [
       { type: 'setFlag', id: 'block03_nico_interview_done', value: true },
+      { type: 'completeTask', id: 'task_talk_nico' },
       { type: 'setFlag', id: 'block03_nico_elisa', value: true },
       { type: 'setFlag', id: 'block03_nico_vertice_night', value: true },
       { type: 'setFlag', id: 'block03_nico_mariana', value: true },
@@ -144,6 +145,39 @@ export const block03DevCheckpoints: { id: string; label: string; actions: StoryA
       { type: 'addEvidence', id: 'vertice_clocks_unsynced' },
       { type: 'addEvidence', id: 'mariana_revising_elisa_chronology' },
       { type: 'addHypothesis', id: 'hyp_andre_imprecise_chronology' },
+      {
+        type: 'addTask',
+        id: 'task_review_mariana_call_log',
+        label: 'Rever o histórico de chamadas de Mariana',
+      },
+    ],
+  },
+  {
+    id: 'b03-radio-call-discovered',
+    label: 'Rádio Costeira vista no histórico (Mariana)',
+    actions: [
+      { type: 'setFlag', id: 'block03_janus_done', value: true },
+      {
+        type: 'addTask',
+        id: 'task_review_mariana_call_log',
+        label: 'Rever o histórico de chamadas de Mariana',
+      },
+      { type: 'setFlag', id: 'block03_radio_call_discovered', value: true },
+      { type: 'setFlag', id: 'radio_costeira_contact_unlocked', value: true },
+      { type: 'unlockContact', contactId: 'contact-livia' },
+      { type: 'completeTask', id: 'task_review_mariana_call_log' },
+      {
+        type: 'addTask',
+        id: 'task_contact_radio_costeira',
+        label: 'Entrar em contato com a Rádio Costeira',
+      },
+      {
+        type: 'notifyInvestigationUpdate',
+        id: 'radio-costeira-landline',
+        kind: 'contact',
+        title: 'Rádio Costeira — Redação',
+        subtitle: 'Número disponível no telefone fixo da delegacia',
+      },
     ],
   },
   {

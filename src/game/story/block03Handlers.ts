@@ -5,8 +5,13 @@ import type { StoryActionRef } from '../types'
 export function finishNicoInterview() {
   const s = getInvestigationState()
   const markVisited = { type: 'unlockLocation' as const, id: 'titan', status: 'visited' as const }
+  const completeTalk: StoryActionRef = { type: 'completeTask', id: 'task_talk_nico' }
+  const talkStillOpen = s.tasks.some((t) => t.id === 'task_talk_nico' && !t.completed)
   if (s.flags.block03_nico_interview_done) {
-    if (s.locations.titan?.status === 'visitAvailable') dispatchActions([markVisited])
+    const fixes: StoryActionRef[] = []
+    if (s.locations.titan?.status === 'visitAvailable') fixes.push(markVisited)
+    if (talkStillOpen) fixes.push(completeTalk)
+    if (fixes.length) dispatchActions(fixes)
     return
   }
   dispatchActions([
@@ -64,6 +69,11 @@ export function runJanusEpimetheusAnalysis() {
       title: 'JANUS E EPIMETHEUS',
       summary: 'Sincronizou duas fontes independentes da noite do Vértice.',
       refId: 'vertice_clocks_unsynced',
+    },
+    {
+      type: 'addTask',
+      id: 'task_review_mariana_call_log',
+      label: 'Rever o histórico de chamadas de Mariana',
     },
   ])
 }

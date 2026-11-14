@@ -131,6 +131,9 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
     el.scrollTop = el.scrollHeight
   }, [chatId, visibleMessages.length, pendingReplies])
 
+  const onRafaelVerticeAudio = useCallback(() => onRafaelAudioPlayed(), [])
+  const onRafaelClubAudio = useCallback(() => onRafaelClubAudioPlayed(), [])
+
   const choose = useCallback(
     (optionIndex: number) => {
       if (!script || pendingReplies > 0) return
@@ -144,7 +147,8 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
       setPendingReplies(replies.length)
       replies.forEach((r, j) => {
         const len = r.kind === 'text' ? r.text.length : 30
-        const delay = 900 + j * 1100 + Math.min(1400, len * 14)
+        const audioLead = r.kind === 'audio' ? 450 : 0
+        const delay = 900 + j * 1100 + audioLead + Math.min(1400, len * 14)
         timers.current.push(
           window.setTimeout(() => {
             playSfx('msg-in')
@@ -242,9 +246,9 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
             onImageOpen={(src, alt, caption) => setLightbox({ src, alt, caption })}
             onAudioPlay={
               live.kind === 'audio' && live.id === 'rf-audio-reply'
-                ? onRafaelAudioPlayed
+                ? onRafaelVerticeAudio
                 : live.kind === 'audio' && live.id === 'r2-audio-forward'
-                  ? onRafaelClubAudioPlayed
+                  ? onRafaelClubAudio
                   : undefined
             }
           />

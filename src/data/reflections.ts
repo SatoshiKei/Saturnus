@@ -137,9 +137,10 @@ export const reflections: ReflectionDef[] = [
     whenFlag: 'block04_andre_interview_done',
     background: sceneBackgrounds.andre,
     blocks: [
-      'André respondeu pouco e devolveu quase tudo em pergunta. Um homem que aprendeu que cada resposta vira prova.',
-      'Ele tem motivo para usar a irmã. Também tem motivo para querer que ela pare.',
-      'Antes de decidir qualquer coisa sobre o número sem nome, preciso comparar os horários das ligações com os registros da unidade.',
+      'André não tentou me convencer da própria inocência. Quando Mariana voltou disposta a revisar o processo, ele mandou que ela parasse.',
+      'Isso não elimina a possibilidade de que tenha usado a irmã, mas torna a hipótese menos simples.',
+      'Há outra coisa: Mariana reapareceu na vida dele sem uma causa aparente. Se alguém ou alguma descoberta provocou essa mudança, ainda não sei qual.',
+      'E André negou conhecer Maralto ou Morsa. Por enquanto, só tenho a palavra dele.',
     ],
   },
   {

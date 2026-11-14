@@ -33,7 +33,7 @@ export const block02DevCheckpoints: { id: string; label: string; actions: StoryA
       { type: 'addEvidence', id: 'rafael_recording_vertice_tag' },
       { type: 'addEvidence', id: 'mariana_club_recording_missing' },
       { type: 'unlockLocation', id: 'vertice', status: 'visitAvailable' },
-      { type: 'addTask', id: 'task_vertice_dj', label: 'Ir ao Vértice e perguntar por Mariana' },
+      { type: 'addTask', id: 'task_vertice_dj', label: 'Ir ao Vértice e falar com a equipe' },
       {
         type: 'addTask',
         id: 'task_rafael_recording',

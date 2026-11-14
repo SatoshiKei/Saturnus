@@ -27,7 +27,7 @@ export const seedContacts: Contact[] = [
   {
     id: 'contact-livia',
     personId: 'livia',
-    displayName: 'Rádio Costeira FM — redação',
+    displayName: 'Rádio Costeira — Redação',
     phone: '21 3xxx-4410',
     institution: true,
     unlocked: false,

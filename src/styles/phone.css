@@ -177,6 +177,11 @@
   background: rgba(255, 255, 255, 0.32);
 }
 
+.wa-calls--phone.wa-calls--detail-view,
+.wa-calls--phone.wa-calls--detail-view .wa-calls__detail {
+  background: #f2f2f7;
+}
+
 .phone-app-recents--in-call {
   background: #000;
   position: relative;

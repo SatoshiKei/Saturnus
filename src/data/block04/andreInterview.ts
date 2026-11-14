@@ -1,25 +1,17 @@
-export type AndreTopicId = 'mariana' | 'elisa' | 'stop' | 'maralto' | 'trust'
+export type AndreTopicId = 'mariana' | 'elisa' | 'maralto' | 'trust'
 
-export const ANDRE_TOPIC_IDS: AndreTopicId[] = [
-  'mariana',
-  'elisa',
-  'stop',
-  'maralto',
-  'trust',
-]
+export const ANDRE_TOPIC_IDS: AndreTopicId[] = ['mariana', 'elisa', 'maralto', 'trust']
 
 export const andreTopicLabels: Record<AndreTopicId, string> = {
-  mariana: 'Contato com Mariana',
-  elisa: 'Mudança sobre o caso',
-  stop: 'O que você pediu a ela',
-  maralto: 'Maralto e protestos',
-  trust: 'Por que falar comigo',
+  mariana: 'Mariana',
+  elisa: 'A mudança de Mariana',
+  maralto: 'Maralto',
+  trust: 'Por que Mariana voltou',
 }
 
 export const andreTopicFlags: Record<AndreTopicId, string> = {
   mariana: 'block04_andre_mariana',
   elisa: 'block04_andre_elisa',
-  stop: 'block04_andre_stop',
   maralto: 'block04_andre_maralto',
   trust: 'block04_andre_trust',
 }
@@ -28,65 +20,112 @@ export type AndreBeat = { speaker?: string; text: string; portrait?: 'andre' }
 
 export const andreBeats: Record<AndreTopicId, AndreBeat[]> = {
   mariana: [
-    { speaker: 'Augusto', text: 'Obrigado por aceitar a visita, André.' },
-    { speaker: 'André', text: 'Eu aceitei?\nMe avisaram que tinha um policial.\nÉ diferente.', portrait: 'andre' },
-    { speaker: 'Augusto', text: 'Sua irmã voltou a procurar o senhor.' },
+    { speaker: 'Augusto', text: 'Obrigado por me receber.' },
+    { speaker: 'André', text: 'Não fui eu que marquei a visita.', portrait: 'andre' },
+    { speaker: 'Augusto', text: 'Mariana esteve aqui recentemente.' },
+    { speaker: 'André', text: 'Duas vezes.', portrait: 'andre' },
+    { speaker: 'Augusto', text: 'Depois de quanto tempo sem vir?' },
+    { speaker: 'André', text: 'Anos.', portrait: 'andre' },
+    { speaker: 'Augusto', text: 'Como foram essas visitas?' },
+    { speaker: 'André', text: 'Estranhas.', portrait: 'andre' },
     {
       speaker: 'André',
-      text: 'Voltou.\nDepois de anos fingindo que eu não existia.\nIsso lá é pergunta ou é constatação?',
+      text:
+        'Na primeira eu achei que tinha acontecido alguma coisa com a família. Depois ela começou a falar da Elisa.',
       portrait: 'andre',
     },
-    { speaker: 'Augusto', text: 'Ela veio mais de uma vez?' },
+    { speaker: 'Augusto', text: 'O que ela queria saber?' },
     {
       speaker: 'André',
-      text: 'Uma.\nTalvez duas.\nEu perdi a conta do que conta aqui dentro.',
+      text:
+        'Coisas que já estavam no processo. Onde eu estava, com quem eu tinha falado, o que eu lembrava daquela noite.\n\nCoisas que ela nunca quis ouvir de mim antes.',
       portrait: 'andre',
     },
-    { speaker: 'Augusto', text: 'Sabe o que ela queria?' },
-    { speaker: 'André', text: 'Se eu soubesse, o senhor estaria perguntando?', portrait: 'andre' },
+    { speaker: 'Augusto', text: 'E na segunda?' },
+    {
+      speaker: 'André',
+      text:
+        'Voltou com mais perguntas.\n\nJá não parecia querer saber o que aconteceu. Parecia querer encontrar onde alguém tinha errado.',
+      portrait: 'andre',
+    },
   ],
   elisa: [
-    { speaker: 'Augusto', text: 'Ela passou a dizer que o senhor era inocente?' },
+    { speaker: 'Augusto', text: 'Ela disse que acreditava na sua inocência?' },
     {
       speaker: 'André',
-      text: 'Do nada.\nAnos acreditando no contrário e, de repente, o processo virou mentira.',
+      text: 'Não desse jeito.\n\nDisse que talvez tivesse acreditado em coisas erradas por tempo demais.',
       portrait: 'andre',
     },
-    { speaker: 'Augusto', text: 'O senhor a incentivou?' },
-    { speaker: 'André', text: 'Por que incentivaria?', portrait: 'andre' },
-    { speaker: 'André', text: 'Pedi pra ela parar.', portrait: 'andre' },
-  ],
-  stop: [
-    { speaker: 'Augusto', text: 'Parar de quê, exatamente?' },
+    { speaker: 'Augusto', text: 'Isso surpreendeu o senhor.' },
     {
       speaker: 'André',
-      text: 'De mexer nisso.\nDe me usar pra se sentir útil.\nO que já me enterrou uma vez, não precisa ser aberto de novo.',
+      text:
+        'Minha irmã passou seis anos acreditando que eu matei uma garota.\n\nAí aparece aqui dizendo que quer revisar tudo.\n\nO que o senhor acha?',
       portrait: 'andre',
     },
-    { speaker: 'Augusto', text: 'E ela parou?' },
-    { speaker: 'André', text: 'O senhor está aqui. Me diga o senhor.', portrait: 'andre' },
+    { speaker: 'Augusto', text: 'O senhor pediu que ela continuasse?' },
+    { speaker: 'André', text: 'Pedi para ela parar.', portrait: 'andre' },
+    { speaker: 'Augusto', text: 'Por quê?' },
+    {
+      speaker: 'André',
+      text:
+        'Porque eu conheço esse processo.\n\nCada vez que alguém resolve abrir aquilo de novo, aparece uma nova versão da minha vida escrita por alguém que não estava lá.',
+      portrait: 'andre',
+    },
+    { speaker: 'Augusto', text: 'Mesmo que ela pudesse encontrar alguma coisa a seu favor?' },
+    {
+      speaker: 'André',
+      text:
+        'Mariana não estava bem.\n\nEla esquecia coisa. Voltava no mesmo assunto. Às vezes perguntava uma coisa que eu tinha respondido na visita anterior.\n\nEu não queria que ela passasse meses vivendo dentro disso.',
+      portrait: 'andre',
+    },
+    { speaker: 'Augusto', text: 'Ela ouviu?' },
+    { speaker: 'André', text: 'Não.', portrait: 'andre' },
   ],
   maralto: [
-    { speaker: 'Augusto', text: 'Maralto Granéis. Os protestos de seis anos atrás. Morsa.' },
+    { speaker: 'Augusto', text: 'Ela falou sobre a Maralto Granéis?' },
+    { speaker: 'André', text: 'Não comigo.', portrait: 'andre' },
+    { speaker: 'Augusto', text: 'Sobre os protestos de seis anos atrás?' },
+    { speaker: 'André', text: 'Ela veio falar da Elisa.', portrait: 'andre' },
+    { speaker: 'Augusto', text: 'O nome Morsa significa alguma coisa para o senhor?' },
+    { speaker: 'André', text: 'Não.', portrait: 'andre' },
+    { speaker: 'Augusto', text: 'Mariana nunca mencionou esse nome?' },
+    { speaker: 'André', text: 'Não.', portrait: 'andre' },
+    { speaker: 'Augusto', text: 'Nem Maralto?' },
+    { speaker: 'André', text: 'Não.', portrait: 'andre' },
     {
-      speaker: 'André',
-      text: 'Não sei o que o senhor quer ouvir.\nEu não tenho nada disso.',
-      portrait: 'andre',
+      speaker: 'Augusto',
+      text: 'Curioso. Ela estava pesquisando os dois assuntos praticamente ao mesmo tempo.',
     },
-    { speaker: 'Augusto', text: 'Mariana mencionou algum desses nomes?' },
     {
       speaker: 'André',
-      text: 'Mariana falava da Elisa.\nO resto, não acompanhei.\nO que tem a ver uma coisa com a outra?',
+      text: 'Então pergunta para quem falou com ela sobre isso.\n\nEu não falei.',
       portrait: 'andre',
     },
   ],
   trust: [
-    { speaker: 'Augusto', text: 'Preciso entender o que ela estava fazendo.' },
+    { speaker: 'Augusto', text: 'Por que acha que ela voltou depois de tantos anos?' },
+    { speaker: 'André', text: 'Não sei.\n\nEssa é a parte que me incomoda.', portrait: 'andre' },
+    { speaker: 'Augusto', text: 'Por quê?' },
     {
       speaker: 'André',
-      text: 'O senhor precisa fechar um desaparecimento.\nEu preciso sobreviver a uma condenação.\nA gente não é aliado.',
+      text:
+        'Porque não aconteceu nada entre nós.\n\nNenhuma conversa. Nenhuma reconciliação.\n\nEla simplesmente apareceu.',
       portrait: 'andre',
     },
-    { speaker: 'André', text: 'O tempo de visita está acabando. Mais alguma coisa?', portrait: 'andre' },
+    { speaker: 'Augusto', text: 'E começou a questionar a condenação.' },
+    { speaker: 'André', text: 'Sim.', portrait: 'andre' },
+    { speaker: 'Augusto', text: 'Pode ter encontrado alguma coisa.' },
+    { speaker: 'André', text: 'Pode.', portrait: 'andre' },
+    { speaker: 'Augusto', text: 'Ou alguém pode ter convencido ela.' },
+    { speaker: 'André', text: 'Então descubra quem.', portrait: 'andre' },
+    { speaker: 'André', text: 'Acabou?', portrait: 'andre' },
+    { speaker: 'Augusto', text: 'Por enquanto.' },
+    {
+      speaker: 'André',
+      text:
+        'Então faz uma coisa antes de voltar aqui.\n\nDescobre por que a Mariana começou tudo isso.\n\nPorque eu também quero saber.',
+      portrait: 'andre',
+    },
   ],
 }

@@ -66,6 +66,14 @@ const OMITIDO_ASSIST_SOURCES = new Set([
 export function onDocumentConsulted(docId: string) {
   const s = getInvestigationState()
 
+  // Save legado: entrevista concluída sem `completeTask` (DEV / ordem cadastro→visita).
+  if (
+    s.flags.block03_nico_interview_done &&
+    s.tasks.some((t) => t.id === 'task_talk_nico' && !t.completed)
+  ) {
+    dispatchActions([{ type: 'completeTask', id: 'task_talk_nico' }])
+  }
+
   // Origem da ligação: resultado técnico já no registro da central (após P01).
   if (
     docId === 'doc-central-chamada' &&

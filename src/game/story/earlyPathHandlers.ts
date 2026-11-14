@@ -76,7 +76,13 @@ export function maybeQueueMaraltoRetaliationTheory() {
   const s = getInvestigationState()
   if (s.flags.theory_maralto_retaliation_pending) return
   if (!s.flags.samuel_accidental_done) return
-  if (!s.flags.block03_livia_interview_done && !s.flags.block03_maralto_researched) return
+  if (
+    !s.flags.block03_livia_interview_done &&
+    !s.flags.block03_maralto_researched &&
+    !s.flags.block03_radio_call_discovered
+  ) {
+    return
+  }
   dispatchActions([{ type: 'setFlag', id: 'theory_maralto_retaliation_pending', value: true }])
 }
 
