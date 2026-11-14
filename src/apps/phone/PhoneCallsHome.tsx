@@ -11,6 +11,7 @@ import {
 } from '../../game/story/block07Handlers'
 import { markContactSeen, newContactIds } from '../../lib/contactsSeen'
 import { CallList } from '../whatsapp/CallList'
+import { UiGlyph } from '../../components/UiGlyph'
 
 interface PhoneCallsHomeProps {
   onBack: () => void
@@ -84,7 +85,7 @@ export function PhoneCallsHome({ onBack }: PhoneCallsHomeProps) {
         {isAugusto && tab === 'contacts' && !session ? (
           <div className="phone-contacts__search" role="search" aria-label="Buscar (apenas visual)">
             <span className="phone-contacts__search-icon" aria-hidden>
-              ⌕
+              <UiGlyph name="search" />
             </span>
             <span className="phone-contacts__search-placeholder">Buscar</span>
           </div>

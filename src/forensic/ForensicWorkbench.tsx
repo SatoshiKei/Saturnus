@@ -67,6 +67,8 @@ import { Timeline } from './components/Timeline'
 import { TrackRow } from './components/TrackRow'
 import { Transport } from './components/Transport'
 import { Inspector } from './components/Inspector'
+import { SegmentMonitor } from './components/SegmentMonitor'
+import { opaqueSegmentLabel } from './opaqueSegmentId'
 import { buildCassiniStreamBArtifact } from './derivedArtifact'
 import { getInvestigationState, markForensicDerivedArtifact } from '../game/state/investigationStore'
 
@@ -86,6 +88,7 @@ export function ForensicWorkbench({
   onSpectrogramViewed,
   specializedWorkspace,
   hideTimeline,
+  devToolbar,
 }: {
   session: ForensicSession
   fileNameBadge?: string
@@ -110,6 +113,8 @@ export function ForensicWorkbench({
   specializedWorkspace?: ReactNode
   /** Esconde a Timeline genérica (default: true quando specializedWorkspace está definido). */
   hideTimeline?: boolean
+  /** DEV: ações de QA no cabeçalho (só renderiza com import.meta.env.DEV). */
+  devToolbar?: ReactNode
 }) {
   const suppressTimeline = hideTimeline ?? Boolean(specializedWorkspace)
   const [ui, setUi] = useState<ForensicUiState>(() => {
@@ -136,6 +141,7 @@ export function ForensicWorkbench({
     maxHz: number
   } | null>(null)
   const [clarityDebug, setClarityDebug] = useState<SegmentClarity[]>([])
+  const [heardSegmentIds, setHeardSegmentIds] = useState<Set<string>>(() => new Set())
   const [extraSources, setExtraSources] = useState<ForensicSource[]>([])
   const [hydratedPacketRows, setHydratedPacketRows] = useState<
     import('./forensicTypes').PacketRow[] | null
@@ -396,6 +402,13 @@ export function ForensicWorkbench({
           ? structureReady
           : row.clarityScore >= row.threshold
         if (playing && inSegment && clearEnough && reachable && structureReady) {
+          // heard ≠ recovered: audição da região inteligível; texto só após hold.
+          setHeardSegmentIds((prev) => {
+            if (prev.has(row.segmentId)) return prev
+            const next = new Set(prev)
+            next.add(row.segmentId)
+            return next
+          })
           const need = Math.min(holdNeed, Math.max(0.35, seg.durationSec * 0.75))
           holdRef.current[row.segmentId] = (holdRef.current[row.segmentId] ?? 0) + dt
           if ((holdRef.current[row.segmentId] ?? 0) >= need) {
@@ -542,6 +555,7 @@ export function ForensicWorkbench({
             <span>{sampleRate}</span>
           </span>
         </div>
+        {showDebug && devToolbar ? <div className="fw-top__dev">{devToolbar}</div> : null}
         <button type="button" className="fw-btn fw-btn--ghost" onClick={onClose}>
           Fechar
         </button>
@@ -718,6 +732,7 @@ export function ForensicWorkbench({
             onPlay={() => void play()}
             onPause={pause}
             onStop={stop}
+            onSeek={seek}
             onLoop={(loop) => {
               patchUi({ loop })
               engineRef.current?.setLoop(loop, ui.selection)
@@ -733,9 +748,18 @@ export function ForensicWorkbench({
               stop()
               setUi((u) => resetProcess(u))
               holdRef.current = {}
+              setHeardSegmentIds(new Set())
               setStatus(null)
             }}
           />
+          {source?.speechSegments?.length ? (
+            <SegmentMonitor
+              segments={source.speechSegments}
+              clarity={clarityDebug}
+              recovered={ui.recoveredSpeech}
+              heardIds={heardSegmentIds}
+            />
+          ) : null}
         </div>
 
         <Inspector
@@ -1652,12 +1676,11 @@ function ForensicDebug({
         </>
       )}
       {clarity.map((c) => {
-        const seg = source.speechSegments?.find((s) => s.id === c.segmentId)
-        // Não vazar spoiler: texto só depois do unlock.
-        const label = c.unlocked ? (seg?.text ?? c.segmentId) : c.segmentId
+        // Player/DEV monitor: ID opaco + score. Texto só em Recovered Speech após audição.
+        const label = opaqueSegmentLabel(c.segmentId)
         return (
-          <span key={c.segmentId}>
-            {label.toUpperCase()} v{c.effectiveVoiceGain.toFixed(2)} m
+          <span key={c.segmentId} data-testid={`dev-clarity-${c.segmentId}`}>
+            {label} v{c.effectiveVoiceGain.toFixed(2)} m
             {c.effectiveMaskGain.toFixed(2)} {c.clarityScore.toFixed(2)}/{c.threshold.toFixed(2)}
             {c.unlocked ? ' ✓' : ''}
           </span>

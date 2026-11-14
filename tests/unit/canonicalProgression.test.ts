@@ -3,13 +3,12 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { seedAchievements } from '../../src/data/game/seedAchievements'
-import { buildStateFromActions } from '../../src/game/state/gameSave'
-import { getCumulativeActions } from '../../src/game/story/devCheckpointCatalog'
+import { buildCanonicalCheckpointState } from '../../src/game/story/canonicalStoryManifest'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 
 function stateAt(checkpointId: string) {
-  return buildStateFromActions(getCumulativeActions(checkpointId))
+  return buildCanonicalCheckpointState(checkpointId)
 }
 
 const PUZZLE_ACHIEVEMENTS = [
@@ -64,7 +63,8 @@ describe('progressão canônica DEV', () => {
       { id: 'b02-nico-identified', flag: 'block02_rings_provisional' },
       { id: 'b03-janus-done', flag: 'block03_janus_done' },
       { id: 'b03-saturnalia-done', flag: 'block03_saturnalia_done' },
-      { id: 'b04-hex-done', flag: 'block04_hexagon_done' },
+      { id: 'b04-hex-done', flag: 'block04_hex_spectrograms_inspected' },
+      { id: 'b04-diary-open', flag: 'block04_hexagon_done' },
       { id: 'b06-pastor-done', flag: 'block06_pastor_done' },
       { id: 'b07-enceladus-done', flag: 'block07_enceladus_done' },
       { id: 'b07-end', flag: 'block07_cassini_done' },

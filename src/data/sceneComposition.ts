@@ -145,6 +145,8 @@ export const sceneObjects: SceneObjectDef[] = [
     interactive: true,
     cursor: 'pointer',
     hubTarget: 'wall-board',
+    // Área de cortiça do PNG (moldura excluída) — recebe a miniatura viva do quadro.
+    miniature: { kind: 'link-board', rect: [0.085, 0.105, 0.83, 0.79] },
     hit: [0.06, 0.08, 0.9, 0.84],
     label: 'Quadro investigativo',
     ariaLabel: 'Quadro de cortiça na parede',

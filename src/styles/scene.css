@@ -90,6 +90,20 @@
   filter: brightness(1.14) saturate(1.08) drop-shadow(0 0 12px rgba(200, 150, 62, 0.38));
 }
 
+/* Miniatura viva (ex.: quadro de ligações na parede) — abaixo do botão de hit */
+.scene-object__miniature {
+  position: absolute;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  transition: filter var(--t-fast) ease;
+}
+
+.scene-object:has(.scene-object__hit:hover) .scene-object__miniature,
+.scene-object:has(.scene-object__hit:focus-visible) .scene-object__miniature {
+  filter: brightness(1.1) saturate(1.06);
+}
+
 /* ───────────── Legendas (hover / dica inicial) ───────────── */
 .scene-labels {
   position: absolute;

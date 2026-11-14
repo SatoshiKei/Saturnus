@@ -1,4 +1,5 @@
 import type { StoryActionRef } from '../game/types'
+import type { ChatMessage } from '../types/messaging'
 
 /**
  * Conversas que o jogador inicia no celular de Augusto. Cada etapa oferece 2–3 formulações
@@ -43,6 +44,47 @@ export function repliesForOption(step: ScriptStep, optionIndex: number): ScriptR
   const byOpt = step.repliesByOption?.[optionIndex]
   if (byOpt && byOpt.length) return byOpt
   return step.replies
+}
+
+/** Mensagens geradas ao escolher `optionIndex` no step `stepIndex` (minha + respostas). */
+export function buildScriptStepMessages(
+  script: ChatScript,
+  stepIndex: number,
+  optionIndex: number,
+): { mine: ChatMessage; replies: ChatMessage[] } | null {
+  const step = script.steps[stepIndex]
+  if (!step) return null
+  const chatId = script.chatId
+  const stamp = (n: number) => formatClock(script.startTime, stepIndex * 2 + n)
+  const mine: ChatMessage = {
+    id: `${chatId}-s${stepIndex}-me`,
+    kind: 'text',
+    from: 'me',
+    text: step.options[optionIndex],
+    timestamp: stamp(0),
+    status: 'read',
+  }
+  const replies: ChatMessage[] = repliesForOption(step, optionIndex).map((r, j) =>
+    r.kind === 'text'
+      ? {
+          id: `${chatId}-s${stepIndex}-r${j}`,
+          kind: 'text',
+          from: 'them',
+          text: r.text,
+          timestamp: stamp(1),
+        }
+      : {
+          id: r.id,
+          kind: 'audio',
+          from: 'them',
+          audioSrc: r.audioSrc,
+          durationSec: r.durationSec,
+          playableUntilSec: r.playableUntilSec,
+          timestamp: stamp(1),
+          showAvatar: true,
+        },
+  )
+  return { mine, replies }
 }
 
 export const paulaScript: ChatScript = {

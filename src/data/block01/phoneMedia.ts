@@ -29,11 +29,23 @@ export const PROVENANCE_LABEL: Record<PhoneMediaProvenance, string> = {
   forensic_restored: 'Recuperado pela perícia',
 }
 
-export const marianaPhotosLibrary: PhoneMediaItem[] = [
-  { id: 'mp-1', label: 'Plantão — corredor', spriteId: 'mariana', folder: 'Câmera' },
-  { id: 'mp-2', label: 'Júlia', spriteId: 'julia', folder: 'Câmera' },
-  { id: 'mp-3', label: 'Camila', spriteId: 'camila', folder: 'Câmera' },
-  { id: 'mp-4', label: 'Equipe — PA', spriteId: 'paula', folder: 'Câmera' },
+/**
+ * Fotos — catálogos ESTRITAMENTE separados por aparelho.
+ * Cada item pertence a um único aparelho (`device`) e sempre tem imagem própria (`spriteId`);
+ * nunca cai em fundo genérico da mesa/escritório (isso era o vazamento Augusto → Mariana).
+ */
+export type PhonePhotoDevice = 'mariana' | 'augusto'
+
+export type PhonePhotoItem = PhoneMediaItem & {
+  device: PhonePhotoDevice
+  spriteId: string
+}
+
+export const marianaPhotosLibrary: PhonePhotoItem[] = [
+  { id: 'mp-1', label: 'Plantão — corredor', spriteId: 'mariana', folder: 'Câmera', device: 'mariana' },
+  { id: 'mp-2', label: 'Júlia', spriteId: 'julia', folder: 'Câmera', device: 'mariana' },
+  { id: 'mp-3', label: 'Camila', spriteId: 'camila', folder: 'Câmera', device: 'mariana' },
+  { id: 'mp-4', label: 'Equipe — PA', spriteId: 'paula', folder: 'Câmera', device: 'mariana' },
 ]
 
 export const marianaFilesLibrary: PhoneMediaItem[] = [
@@ -42,11 +54,16 @@ export const marianaFilesLibrary: PhoneMediaItem[] = [
   { id: 'mf-dl-1', label: 'Escala outubro.pdf', folder: 'Downloads' },
 ]
 
-export const augustoPhotosLibrary: PhoneMediaItem[] = [
-  { id: 'ap-1', label: 'Identificação', spriteId: 'augusto', folder: 'Câmera' },
-  { id: 'ap-2', label: 'Camila — plantão', spriteId: 'camila', folder: 'Câmera' },
+export const augustoPhotosLibrary: PhonePhotoItem[] = [
+  { id: 'ap-1', label: 'Identificação', spriteId: 'augusto', folder: 'Câmera', device: 'augusto' },
+  { id: 'ap-2', label: 'Camila — plantão', spriteId: 'camila', folder: 'Câmera', device: 'augusto' },
 ]
 
 export const augustoFilesLibrary: PhoneMediaItem[] = [
   { id: 'af-wa-1', label: 'Prontuário — trecho', spriteId: 'camila', folder: 'WhatsApp' },
 ]
+
+/** Única porta de entrada para o app Fotos: só devolve o acervo do aparelho pedido. */
+export function photosForDevice(device: PhonePhotoDevice): readonly PhonePhotoItem[] {
+  return device === 'augusto' ? augustoPhotosLibrary : marianaPhotosLibrary
+}

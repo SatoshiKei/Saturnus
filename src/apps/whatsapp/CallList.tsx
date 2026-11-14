@@ -4,6 +4,7 @@ import { contactById } from '../../data/mockContacts'
 import type { Contact } from '../../types/messaging'
 import { phoneFeatureLocks } from '../../data/phoneFeatures'
 import { Avatar } from '../../components/Avatar'
+import { UiGlyph } from '../../components/UiGlyph'
 import { onUnknownCallerNumberSeen } from '../../game/story/block04PhoneHooks'
 
 interface CallListProps {
@@ -93,7 +94,13 @@ function CallDirectionIcon({
     direction === 'missed' ? '#e74c3c' : direction === 'incoming' ? '#27ae60' : '#3498db'
   return (
     <span className="wa-calls__dir" style={{ color }} aria-hidden>
-      {video ? '📹' : direction === 'incoming' ? '↙' : direction === 'outgoing' ? '↗' : '↩'}
+      {video ? (
+        <UiGlyph name="video" />
+      ) : (
+        <UiGlyph
+          name={direction === 'incoming' ? 'call-in' : direction === 'outgoing' ? 'call-out' : 'call-missed'}
+        />
+      )}
     </span>
   )
 }

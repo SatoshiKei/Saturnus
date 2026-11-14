@@ -1,4 +1,5 @@
 import { phoneFeatureLocks } from '../../data/phoneFeatures'
+import { UiGlyph } from '../../components/UiGlyph'
 import type { WhatsAppTab } from '../../types/phone'
 
 interface WhatsAppTabBarProps {
@@ -30,7 +31,9 @@ export function WhatsAppTabBar({ active, onSelect }: WhatsAppTabBarProps) {
         >
           <TabIcon tab={tab.id} />
           <span className="wa-tabs__label">{tab.label}</span>
-          {tab.locked ? <span className="wa-tabs__lock" aria-hidden>🔒</span> : null}
+          {tab.locked ? <span className="wa-tabs__lock" aria-hidden>
+              <UiGlyph name="lock" />
+            </span> : null}
         </button>
       ))}
     </nav>

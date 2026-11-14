@@ -97,10 +97,12 @@ function AppGlyph({ appId }: { appId: PhoneAppId }) {
     case 'phone':
       return (
         <svg viewBox="0 0 48 48" className="app-icon__svg">
-          <path
-            fill="#fff"
-            d="M16 10c1.2 3.2 2.8 6.1 4.8 8.6l-3 3c1.8 3.6 4.2 6.9 7.2 9.8 2.9 2.9 6.2 5.3 9.8 7.2l3-3c2.5 2 5.4 3.6 8.6 4.8l1.4-5.2c-3.8-1.2-7.3-3-10.5-5.3-3.2-2.3-6-5.1-8.3-8.3-2.3-3.2-4.1-6.7-5.3-10.5L16 10z"
-          />
+          <g transform="translate(8.4 8.4) scale(1.3)">
+            <path
+              fill="#fff"
+              d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"
+            />
+          </g>
         </svg>
       )
     case 'settings':
@@ -185,8 +187,10 @@ function AppGlyph({ appId }: { appId: PhoneAppId }) {
     case 'maps':
       return (
         <svg viewBox="0 0 48 48" className="app-icon__svg">
-          <path fill="#fff" d="M24 6c-6.600 0-12 5.200-12 11.700C12 27 24 42 24 42s12-15 12-24.300C36 11.200 30.600 6 24 6z" />
-          <circle cx="24" cy="18" r="4.500" fill="#e74c3c" />
+          <path fill="#fff" d="M7 13l11-5 12 4 11-4v27l-11 5-12-4-11 4z" />
+          <path d="M18 8v27M30 12v27" fill="none" stroke="#3b9b5a" strokeWidth="1.6" opacity="0.4" />
+          <path fill="#e74c3c" d="M30 14c-4.2 0-7.500 3.200-7.500 7.300 0 5.200 7.500 12.200 7.500 12.200s7.500-7 7.500-12.200c0-4.100-3.300-7.300-7.500-7.300z" />
+          <circle cx="30" cy="21.300" r="2.600" fill="#fff" />
         </svg>
       )
     case 'clock':

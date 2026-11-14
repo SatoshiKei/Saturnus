@@ -8,9 +8,9 @@ import {
 } from '../../data/block01/hospitalInterview'
 import { portraitSrcForStory } from '../../lib/characterSprites'
 import { assetPath } from '../../lib/assetPath'
-import { dispatchActions, setFlag } from '../../game/state/investigationStore'
+import { setFlag } from '../../game/state/investigationStore'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
-import { vnLinesThrough } from '../../lib/vnBeatLog'
+import { finishHospitalVisit } from '../../game/story/block01Handlers'
 import { VisualNovelDialog, VNSceneShell } from './VisualNovelDialog'
 import '../../styles/visual-novel.css'
 
@@ -40,13 +40,7 @@ export function HospitalInterviewScene({ onClose }: { onClose: () => void }) {
 
   const finishHospital = useCallback(() => {
     if (inv.flags.block01_hospital_done) return
-    dispatchActions([
-      { type: 'setFlag', id: 'block01_hospital_done', value: true },
-      { type: 'setFlag', id: 'block01_renata_seen', value: true },
-      { type: 'addEvidence', id: 'camila_witness_note' },
-      { type: 'unlockContact', contactId: 'contact-fernanda' },
-      { type: 'unlockLocation', id: 'hospital', status: 'visited' },
-    ])
+    finishHospitalVisit()
     setMode('outro')
   }, [inv.flags.block01_hospital_done])
 
@@ -67,11 +61,6 @@ export function HospitalInterviewScene({ onClose }: { onClose: () => void }) {
 
   const currentBeat =
     mode === 'play' && activeTopic ? hospitalBeats[activeTopic][beatIndex] : null
-
-  const playLogLines = useMemo(() => {
-    if (!activeTopic) return []
-    return vnLinesThrough(hospitalBeats[activeTopic], beatIndex, (k) => portraits[k as keyof typeof portraits])
-  }, [activeTopic, beatIndex])
 
   return (
     <VNSceneShell
@@ -110,7 +99,6 @@ export function HospitalInterviewScene({ onClose }: { onClose: () => void }) {
           speaker={currentBeat.speaker}
           text={currentBeat.text}
           portraitSrc={currentBeat.portrait ? portraits[currentBeat.portrait] : undefined}
-          logLines={playLogLines}
           onRewind={() => setBeatIndex((i) => Math.max(0, i - 1))}
           onContinue={() => {
             const beats = activeTopic ? hospitalBeats[activeTopic] : []

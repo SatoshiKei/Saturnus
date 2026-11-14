@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import { useVnSceneHistory } from '../../lib/vnSceneHistory'
 import { ADVDialogue } from './vn/ADVDialogue'
-import { BacklogView, NVLView } from './vn/NVLView'
+import { BacklogView } from './vn/NVLView'
 import { ChoiceOverlay } from './vn/ChoiceOverlay'
 import { VNCharacterLayer } from './vn/VNCharacterLayer'
 import { VNControls } from './vn/VNControls'
-import { paginateNvlLines } from './vn/nvlPages'
 import '../../styles/visual-novel.css'
 
 export interface VnChoice {
@@ -18,6 +18,7 @@ interface VisualNovelDialogProps {
   speaker?: string
   text: string
   portraitSrc?: string
+  /** @deprecated Histórico vem do buffer da cena (`VnSceneHistoryProvider`). */
   logLines?: VnLine[]
   choices?: VnChoice[]
   /** Texto curto acima das opções (não dentro da caixa ADV). */
@@ -37,7 +38,6 @@ export function VisualNovelDialog({
   speaker,
   text,
   portraitSrc,
-  logLines = [],
   choices,
   choiceHint,
   choiceVariant = 'default',
@@ -48,103 +48,103 @@ export function VisualNovelDialog({
   terminalBeat,
   extra,
 }: VisualNovelDialogProps) {
-  const [nvlOpen, setNvlOpen] = useState(false)
+  const sceneHistory = useVnSceneHistory()
+  const localLinesRef = useRef<VnLine[]>([])
+  const localSeenRef = useRef(new Set<string>())
+  const [localLines, setLocalLines] = useState<VnLine[]>([])
   const [endPrimed, setEndPrimed] = useState(false)
-  const [nvlPage, setNvlPage] = useState(0)
-  const [backlogOpen, setBacklogOpen] = useState(false)
+  const [historyOpen, setHistoryOpen] = useState(false)
   const wheelLock = useRef(0)
 
   const hasChoices = Boolean(choices?.length)
   const canAdvance = Boolean(onContinue) && !hasChoices
-  const canRewind = Boolean(onRewind) && !hasChoices && !nvlOpen && !backlogOpen
-  const history = logLines.length ? logLines : [{ speaker, text, portraitSrc }]
+  const canRewind = Boolean(onRewind) && !hasChoices && !historyOpen
 
-  const nvlPages = useMemo(() => paginateNvlLines(history), [history])
-  const nvlPageLines = nvlPages[nvlPage] ?? []
+  const fallbackPush = useCallback((line: VnLine) => {
+    if (!line.text && !line.speaker) return
+    const key = `${line.speaker ?? ''}\u0000${line.text}`
+    if (localSeenRef.current.has(key)) return
+    localSeenRef.current.add(key)
+    const next = [...localLinesRef.current, line]
+    localLinesRef.current = next
+    setLocalLines(next)
+  }, [])
+
+  useEffect(() => {
+    if (hasChoices) return
+    if (!text.trim() && !speaker) return
+    const line: VnLine = { speaker, text, portraitSrc }
+    if (sceneHistory) sceneHistory.pushLine(line)
+    else fallbackPush(line)
+  }, [fallbackPush, hasChoices, portraitSrc, sceneHistory, speaker, text])
+
+  const history = sceneHistory?.lines.length
+    ? sceneHistory.lines
+    : localLines.length
+      ? localLines
+      : [{ speaker, text, portraitSrc }]
 
   useEffect(() => {
     setEndPrimed(false)
   }, [text, speaker, terminalBeat])
 
+  const closeHistory = useCallback(() => {
+    setHistoryOpen(false)
+  }, [])
+
+  const openHistory = useCallback(() => {
+    if (hasChoices || history.length === 0) return
+    setHistoryOpen(true)
+  }, [hasChoices, history.length])
+
   const advance = useCallback(() => {
-    if (backlogOpen) return
-    if (nvlOpen) {
-      if (nvlPage < nvlPages.length - 1) setNvlPage((p) => p + 1)
-      else {
-        setNvlOpen(false)
-        setNvlPage(0)
-      }
-      return
-    }
+    if (historyOpen) return
     if (!canAdvance) return
     if (terminalBeat && !endPrimed) {
       setEndPrimed(true)
       return
     }
     onContinue?.()
-  }, [backlogOpen, canAdvance, endPrimed, nvlOpen, nvlPage, nvlPages.length, onContinue, terminalBeat])
-
-  const openNvl = useCallback(() => {
-    if (hasChoices || history.length === 0) return
-    setBacklogOpen(false)
-    setNvlPage(0)
-    setNvlOpen(true)
-  }, [hasChoices, history.length])
-
-  const closeOverlays = useCallback(() => {
-    setNvlOpen(false)
-    setNvlPage(0)
-    setBacklogOpen(false)
-  }, [])
+  }, [canAdvance, endPrimed, historyOpen, onContinue, terminalBeat])
 
   const handleWheel = useCallback(
     (e: React.WheelEvent) => {
+      if (historyOpen) return
       const now = Date.now()
       if (now - wheelLock.current < 100) return
       wheelLock.current = now
 
-      if (backlogOpen) return
-      if (nvlOpen) {
-        if (e.deltaY > 0) advance()
-        else if (e.deltaY < 0 && nvlPage === 0) closeOverlays()
-        e.preventDefault()
-        return
-      }
       if (hasChoices) return
       e.preventDefault()
       if (e.deltaY > 0) advance()
-      else if (e.deltaY < 0) openNvl()
+      else if (e.deltaY < 0) openHistory()
     },
-    [advance, backlogOpen, closeOverlays, hasChoices, nvlOpen, nvlPage, openNvl],
+    [advance, hasChoices, historyOpen, openHistory],
   )
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (hasChoices) return
-      if (backlogOpen) {
-        if (e.key === 'Escape') closeOverlays()
-        return
-      }
-      if (nvlOpen) {
-        if (e.key === ' ' || e.key === 'Enter' || e.key === 'ArrowDown') {
+      if (historyOpen) {
+        if (e.key === 'Escape' || e.key === 'PageDown') {
           e.preventDefault()
-          advance()
+          closeHistory()
         }
-        if (e.key === 'Escape') closeOverlays()
         return
       }
       if (e.key === 'l' || e.key === 'L') {
         e.preventDefault()
-        setNvlOpen(false)
-        setBacklogOpen((v) => !v)
+        setHistoryOpen((v) => !v)
+        return
+      }
+      if (e.key === 'PageUp' || e.key === 'ArrowUp') {
+        e.preventDefault()
+        openHistory()
         return
       }
       if (e.key === ' ' || e.key === 'Enter' || e.key === 'ArrowDown') {
         e.preventDefault()
         advance()
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault()
-        openNvl()
       } else if (e.key === 'Backspace' && canRewind) {
         e.preventDefault()
         onRewind?.()
@@ -152,7 +152,19 @@ export function VisualNovelDialog({
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [advance, backlogOpen, canRewind, closeOverlays, hasChoices, nvlOpen, onRewind, openNvl])
+  }, [advance, canRewind, closeHistory, hasChoices, historyOpen, onRewind, openHistory])
+
+  const handleChoice = useCallback(
+    (id: string) => {
+      const label = choices?.find((c) => c.id === id)?.label
+      if (label) {
+        if (sceneHistory) sceneHistory.pushChoice(label)
+        else fallbackPush({ text: `▸ ${label.trim()}` })
+      }
+      onChoice?.(id)
+    },
+    [choices, fallbackPush, onChoice, sceneHistory],
+  )
 
   const choiceHeading = choiceVariant === 'topics' ? 'Escolha um assunto' : undefined
   const portraitSide =
@@ -162,7 +174,7 @@ export function VisualNovelDialog({
     <div
       className="vn"
       data-testid="vn-dialog"
-      data-mode={hasChoices ? 'choices' : nvlOpen ? 'nvl' : backlogOpen ? 'backlog' : 'adv'}
+      data-mode={hasChoices ? 'choices' : historyOpen ? 'backlog' : 'adv'}
       onWheel={handleWheel}
     >
       <VNCharacterLayer
@@ -175,9 +187,9 @@ export function VisualNovelDialog({
           heading={choiceHeading}
           hint={choiceHint}
           choices={choices!}
-          onChoice={(id) => onChoice?.(id)}
+          onChoice={handleChoice}
         />
-      ) : nvlOpen || backlogOpen ? null : (
+      ) : historyOpen ? null : (
         <ADVDialogue
           speaker={speaker}
           text={text}
@@ -193,19 +205,9 @@ export function VisualNovelDialog({
         />
       )}
 
-      {nvlOpen ? (
-        <NVLView
-          pageLines={nvlPageLines}
-          pageIndex={nvlPage}
-          pageCount={nvlPages.length}
-          onAdvance={advance}
-          onClose={closeOverlays}
-        />
-      ) : null}
+      {historyOpen ? <BacklogView lines={history} onClose={closeHistory} /> : null}
 
-      {backlogOpen ? <BacklogView lines={history} onClose={closeOverlays} /> : null}
-
-      <VNControls onLog={() => setBacklogOpen(true)} />
+      <VNControls onLog={() => setHistoryOpen(true)} />
     </div>
   )
 }

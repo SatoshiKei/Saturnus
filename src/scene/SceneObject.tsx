@@ -1,6 +1,7 @@
 import { assetPath } from '../lib/assetPath'
 import type { SceneObjectDef } from '../types/scene'
 import { PhoneObject } from '../phone/PhoneObject'
+import { LinkBoard } from '../components/investigation/LinkBoard'
 
 export interface ObjectFx {
   /** Objeto tocando/vibrando (ligação, novo contato). */
@@ -51,6 +52,20 @@ export function SceneObject({ def, onActivate, onHover, fx }: SceneObjectProps) 
           draggable={false}
           style={def.objectPosition ? { objectPosition: def.objectPosition } : undefined}
         />
+      ) : null}
+      {def.miniature?.kind === 'link-board' ? (
+        <div
+          className="scene-object__miniature"
+          style={{
+            left: `${def.miniature.rect[0] * 100}%`,
+            top: `${def.miniature.rect[1] * 100}%`,
+            width: `${def.miniature.rect[2] * 100}%`,
+            height: `${def.miniature.rect[3] * 100}%`,
+          }}
+          data-testid={`scene-${def.id}-miniature`}
+        >
+          <LinkBoard interactive={false} scale="thumbnail" />
+        </div>
       ) : null}
       {interactive ? (
         <button

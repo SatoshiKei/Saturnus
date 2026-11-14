@@ -73,7 +73,8 @@ CLIP_TARGET_DBFS: dict[str, float] = {
     "desde aquela noite": -37.0,
     "eu estava com medo": -26.0,
     "eu estava confusa": -30.0,
-    "eu não lembro": -18.0,
+    # Raw: presença de voz, frase NÃO claramente entendida (degradação leve vs resto fácil).
+    "eu não lembro": -28.0,
 }
 
 # Nível absoluto da senoide 1700 Hz durante o clip (None = só cama global).
@@ -83,7 +84,7 @@ CLIP_LOCAL_TONE_DBFS: dict[str, float | None] = {
     "desde aquela noite": -18.0,
     "eu estava com medo": -30.0,
     "eu estava confusa": -22.0,
-    "eu não lembro": None,
+    "eu não lembro": -19.0,
 }
 
 # Noise band-limited contínuo sob o clip inteiro (mascaramento de fundo local).
@@ -92,7 +93,7 @@ CLIP_UNDERLAY_NOISE_DBFS: dict[str, float | None] = {
     "desde aquela noite": -22.0,
     "eu estava com medo": -32.0,
     "eu estava confusa": -27.0,
-    "eu não lembro": None,
+    "eu não lembro": -23.0,
 }
 
 # Bursts locais: (start_frac, end_frac, dBFS) — mais altos que a voz nos difíceis.
@@ -116,7 +117,12 @@ CLIP_LOCAL_BURSTS: dict[str, list[tuple[float, float, float]]] = {
         (0.20, 0.42, -18.0),
         (0.55, 0.80, -19.0),
     ],
-    "eu não lembro": [],
+    "eu não lembro": [
+        (0.00, 0.22, -16.0),
+        (0.28, 0.52, -17.0),
+        (0.58, 0.82, -16.5),
+        (0.85, 0.98, -17.5),
+    ],
 }
 
 # Dropouts curtos nas bordas / sílabas (frações).
@@ -125,7 +131,7 @@ CLIP_EDGE_DROPOUTS: dict[str, list[tuple[float, float]]] = {
     "desde aquela noite": [(0.00, 0.08), (0.35, 0.42), (0.60, 0.68), (0.92, 1.00)],
     "eu estava com medo": [(0.00, 0.04), (0.96, 1.00)],
     "eu estava confusa": [(0.00, 0.05), (0.48, 0.54), (0.95, 1.00)],
-    "eu não lembro": [],
+    "eu não lembro": [(0.00, 0.08), (0.40, 0.48), (0.92, 1.00)],
 }
 
 WHITE_NOISE_DBFS = -32.0
@@ -157,7 +163,12 @@ JUNK_MS_RANGE = (40, 120)
 JUNK_ON_SPEECH_EDGE = True
 JUNK_SPEECH_EDGE_FRAC = 0.18
 JUNK_ON_HARD_CLIP_MID = True
-JUNK_HARD_PHRASES = ("escute isso até o fim", "desde aquela noite", "eu estava confusa")
+JUNK_HARD_PHRASES = (
+    "escute isso até o fim",
+    "desde aquela noite",
+    "eu estava confusa",
+    "eu não lembro",
+)
 
 PHONE_LOW_HZ = 300.0
 PHONE_HIGH_HZ = 3400.0

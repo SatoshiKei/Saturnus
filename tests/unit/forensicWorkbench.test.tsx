@@ -133,13 +133,16 @@ describe('ForensicWorkbench UI', () => {
     stubAudio()
     vi.useFakeTimers({ shouldAdvanceTime: true })
     const onSeg = vi.fn()
-    render(
+    const { container } = render(
       <ForensicWorkbench
         session={puzzle01CassiniSession}
         onClose={() => {}}
         onSegmentRecovered={onSeg}
       />,
     )
+    expect(screen.getByTestId('fw-transport')).toBeInTheDocument()
+    expect(screen.getByTestId('fw-play-pause')).toBeInTheDocument()
+    expect(screen.getByTestId('fw-analysis-log')).toBeInTheDocument()
     const center = screen.getByText('Center').closest('.fw-param')?.querySelector('input')
     const width = screen.getByText('Width').closest('.fw-param')?.querySelector('input')
     const reduction = screen.getAllByText('Reduction')[0]?.closest('.fw-param')?.querySelector('input')
@@ -153,6 +156,14 @@ describe('ForensicWorkbench UI', () => {
     expect(onSeg).not.toHaveBeenCalled()
     await userEvent.click(screen.getByRole('tab', { name: 'Notes' }))
     expect(screen.getByTestId('recovered-speech-empty')).toBeInTheDocument()
+    // Notch ~1700 não injeta “EU NÃO LEMBRO” no Recovered Speech nem no monitor.
+    expect(container.textContent?.toLowerCase() ?? '').not.toMatch(/eu não lembro/)
+    expect(screen.getByTestId('segment-monitor-seg_lembro').textContent?.toLowerCase() ?? '').not.toMatch(
+      /lembro|não/,
+    )
+    expect(screen.getByTestId('segment-monitor-seg_lembro').getAttribute('data-opaque')).toMatch(
+      /^SEG_/,
+    )
     vi.useRealTimers()
   })
 

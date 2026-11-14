@@ -16,6 +16,8 @@ import {
 } from '../../../game/story/block02Handlers'
 import { ForensicWorkbench } from '../../../forensic/ForensicWorkbench'
 import { getForensicSessionForEvidence } from '../../../forensic/forensicRegistry'
+import { puzzleIdForEvidence } from '../../../forensic/canonicalPuzzleCompletion'
+import { DevPuzzleToolbar } from '../../../forensic/DevPuzzleToolbar'
 import {
   runJanusEpimetheusAnalysis,
   runSaturnaliaReconstruct,
@@ -156,6 +158,8 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
   const [exportMsg, setExportMsg] = useState<string | null>(null)
   const [playing, setPlaying] = useState(false)
   const [progress, setProgress] = useState(0)
+  const [devRemount, setDevRemount] = useState(0)
+  const [ringsRevealRequest, setRingsRevealRequest] = useState(0)
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
   const current = allFiles.find((f) => f.id === sel)
@@ -175,6 +179,7 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
     setPlaying(false)
     setProgress(0)
     setExportMsg(null)
+    setRingsRevealRequest(0)
   }, [current?.id])
 
   useEffect(() => () => audioRef.current?.pause(), [])
@@ -298,8 +303,19 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
               {(() => {
                 const forensicSession = getForensicSessionForEvidence(current.id)
                 if (forensicSession) {
+                  const puzzleId = puzzleIdForEvidence(current.id)
+                  const specialized =
+                    puzzleId === 'P10' ? (
+                      showRings ? <RingsSession revealRequest={ringsRevealRequest} /> : null
+                    ) : puzzleId === 'P11' ? (
+                      showRotation ? <RotationSession /> : null
+                    ) : puzzleId === 'P12' ? (
+                      showMemory ? <MemorySession /> : null
+                    ) : null
                   const done =
-                    forensicSession.completion?.onCompleteAction ===
+                    puzzleId === 'P10' || puzzleId === 'P11' || puzzleId === 'P12'
+                      ? analysisState(current.id, inv.flags) === 'done'
+                      : forensicSession.completion?.onCompleteAction ===
                     'runProvisionalRafaelForwardAnalysis'
                       ? Boolean(inv.flags.block02_rafael_forward_provisional)
                       : forensicSession.completion?.onCompleteAction ===
@@ -327,8 +343,18 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                   const containerState = inv.forensicContainerState?.[current.id]
                   return (
                     <ForensicWorkbench
-                      key={forensicSession.id === 'puzzle-06-hexagon' ? 'puzzle-06-hexagon' : current.id}
+                      key={`${forensicSession.id === 'puzzle-06-hexagon' ? 'puzzle-06-hexagon' : current.id}:${devRemount}`}
                       session={forensicSession}
+                      specializedWorkspace={specialized ?? undefined}
+                      devToolbar={
+                        import.meta.env.DEV && puzzleId ? (
+                          <DevPuzzleToolbar
+                            puzzleId={puzzleId}
+                            onApplied={() => setDevRemount((n) => n + 1)}
+                            onPlayReveal={() => setRingsRevealRequest((n) => n + 1)}
+                          />
+                        ) : undefined
+                      }
                       fileNameBadge={current.displayFileName ?? current.title}
                       initialSourceId={hexFile?.id}
                       completed={done}
@@ -440,10 +466,6 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                   ) : null}
                 </div>
               ) : null}
-
-              {!getForensicSessionForEvidence(current.id) && showRings ? <RingsSession /> : null}
-              {!getForensicSessionForEvidence(current.id) && showRotation ? <RotationSession /> : null}
-              {!getForensicSessionForEvidence(current.id) && showMemory ? <MemorySession /> : null}
 
               {!getForensicSessionForEvidence(current.id) && showUnknownAnalyze ? (
                 <div className="aw-orbit" data-testid="unknown-recording-panel">

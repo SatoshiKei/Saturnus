@@ -155,7 +155,6 @@ export function TopicInterviewScene<T extends string>({ config, onClose }: Props
           speaker={currentBeat.speaker}
           text={currentBeat.text}
           portraitSrc={portraitForBeat(currentBeat)}
-          logLines={[]}
           onRewind={() => setBeatIndex((i) => Math.max(0, i - 1))}
           terminalBeat={beatIndex >= beats.length - 1}
           onContinue={() => {

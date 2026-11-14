@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { UiGlyph } from '../../components/UiGlyph'
 import { archivedChats } from '../../data/mockChats'
 import { phoneFeatureLocks } from '../../data/phoneFeatures'
 import { usePhoneSession } from '../../app/PhoneSessionContext'
@@ -79,7 +80,7 @@ export function WhatsAppShell({ initialTab = 'chats', onBackToPhone }: WhatsAppS
           <>
             <label className="wa-search">
               <span className="wa-search__icon" aria-hidden>
-                🔍
+                <UiGlyph name="search" />
               </span>
               <input type="search" placeholder="Buscar" readOnly aria-label="Buscar conversas" />
             </label>
@@ -91,7 +92,7 @@ export function WhatsAppShell({ initialTab = 'chats', onBackToPhone }: WhatsAppS
                 onClick={() => push(openWhatsAppArchived())}
               >
                 <span className="wa-archived-row__icon" aria-hidden>
-                  📥
+                  <UiGlyph name="archive" />
                 </span>
                 <span className="wa-archived-row__label">Arquivadas</span>
                 <span className="wa-archived-row__count">{archivedChats.length}</span>

@@ -2,13 +2,12 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { contactById } from '../../data/mockContacts'
 import { getChatById } from '../../data/mockChats'
 import {
+  buildScriptStepMessages,
   chatScripts,
-  formatClock,
   RAFAEL_FORWARD_AUDIO,
   RAFAEL_VERTICE_AUDIO_SRC,
   RAFAEL_VERTICE_DURATION_SEC,
   RAFAEL_VERTICE_PLAYABLE_UNTIL_SEC,
-  repliesForOption,
 } from '../../data/chatScripts'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { appendChatMessages, dispatchActions } from '../../game/state/investigationStore'
@@ -125,39 +124,9 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
   const choose = useCallback(
     (optionIndex: number) => {
       if (!script || pendingReplies > 0) return
-      const step = script.steps[progress.step]
-      if (!step) return
-      const text = step.options[optionIndex]
-      const stamp = (n: number) => formatClock(script.startTime, progress.step * 2 + n)
-      const mine: ChatMessage = {
-        id: `${chatId}-s${progress.step}-me`,
-        kind: 'text',
-        from: 'me',
-        text,
-        timestamp: stamp(0),
-        status: 'read',
-      }
-      const scriptReplies = repliesForOption(step, optionIndex)
-      const replies: ChatMessage[] = scriptReplies.map((r, j) =>
-        r.kind === 'text'
-          ? {
-              id: `${chatId}-s${progress.step}-r${j}`,
-              kind: 'text',
-              from: 'them',
-              text: r.text,
-              timestamp: stamp(1),
-            }
-          : {
-              id: r.id,
-              kind: 'audio',
-              from: 'them',
-              audioSrc: r.audioSrc,
-              durationSec: r.durationSec,
-              playableUntilSec: r.playableUntilSec,
-              timestamp: stamp(1),
-              showAvatar: true,
-            },
-      )
+      const built = buildScriptStepMessages(script, progress.step, optionIndex)
+      if (!built) return
+      const { mine, replies } = built
       playSfx('msg-out')
       setComposing(false)
       setOptionsReady(false)

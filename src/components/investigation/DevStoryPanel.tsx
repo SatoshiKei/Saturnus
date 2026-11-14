@@ -1,15 +1,19 @@
 import { useMemo, useState } from 'react'
 import {
-  campaignProgressPercent,
   DEV_BLOCK_SECTIONS,
-  getCumulativeActions,
   resolveBlockStatus,
   resolveCheckpointStatus,
   type DevCheckpointDef,
 } from '../../game/story/devCheckpointCatalog'
 import {
+  buildCanonicalCheckpointState,
+  canonicalCampaignProgress,
+  getCanonicalCheckpointDef,
+  validateCanonicalManifest,
+} from '../../game/story/canonicalStoryManifest'
+import {
   getInvestigationState,
-  loadDevCheckpoint,
+  loadDevCheckpointState,
   resetGame,
   subscribeInvestigation,
 } from '../../game/state/investigationStore'
@@ -25,6 +29,10 @@ function useInvestigationFlags() {
   )
 }
 
+/**
+ * DEV STORY — cada checkpoint é reconstruído do estado inicial pelo manifesto canônico
+ * (replay das interações obrigatórias). Voltar/avançar nunca reaproveita o estado atual.
+ */
 export function DevStoryPanel() {
   const [open, setOpen] = useState(false)
   const [pending, setPending] = useState<DevCheckpointDef | null>(null)
@@ -32,12 +40,20 @@ export function DevStoryPanel() {
   const { shell } = useUiState()
   const { closeHub, closeLocationScene } = useGameHub()
 
-  const progress = useMemo(() => campaignProgressPercent(flags), [flags])
+  const progress = useMemo(() => (open ? canonicalCampaignProgress(flags) : null), [open, flags])
+  const validation = useMemo(() => {
+    if (!open) return null
+    const v = validateCanonicalManifest()
+    if (!v.ok) console.warn('[DEV STORY] manifesto canônico com problemas', v)
+    return v
+  }, [open])
+  const currentBlock =
+    DEV_BLOCK_SECTIONS.flatMap((s) => s.checkpoints).find((c) => c.id === progress?.currentCheckpointId)?.block ?? 1
   const [expanded, setExpanded] = useState<Record<number, boolean>>({})
 
   const isExpanded = (block: number) => {
     if (expanded[block] !== undefined) return expanded[block]
-    return block === progress.currentBlock
+    return block === currentBlock
   }
 
   const toggleBlock = (block: number) => {
@@ -45,7 +61,7 @@ export function DevStoryPanel() {
   }
 
   const applyCheckpoint = (cp: DevCheckpointDef) => {
-    loadDevCheckpoint(getCumulativeActions(cp.id))
+    loadDevCheckpointState(buildCanonicalCheckpointState(cp.id))
     closeHub()
     closeLocationScene()
     setPending(null)
@@ -53,7 +69,7 @@ export function DevStoryPanel() {
     if (shell !== 'playing') enterGameplay()
   }
 
-  if (!open) {
+  if (!open || !progress) {
     return (
       <button
         type="button"
@@ -66,6 +82,8 @@ export function DevStoryPanel() {
       </button>
     )
   }
+
+  const pendingNote = pending ? getCanonicalCheckpointDef(pending.id)?.note : undefined
 
   return (
     <>
@@ -88,15 +106,20 @@ export function DevStoryPanel() {
           <p className="inv-dev__current-block">
             Bloco atual
             <strong>
-              BLOCO {String(progress.currentBlock).padStart(2, '0')} —{' '}
-              {DEV_BLOCK_SECTIONS.find((s) => s.block === progress.currentBlock)?.title}
+              BLOCO {String(currentBlock).padStart(2, '0')} —{' '}
+              {DEV_BLOCK_SECTIONS.find((s) => s.block === currentBlock)?.title}
             </strong>
           </p>
+          {validation && !validation.ok ? (
+            <p className="inv-dev__current-block" data-testid="dev-manifest-issues" style={{ color: '#e0a84a' }}>
+              Manifesto: {validation.issues.length + validation.orderMismatch.length} problema(s) — ver console
+            </p>
+          ) : null}
         </div>
 
         <div className="inv-dev__scroll">
           {DEV_BLOCK_SECTIONS.map((section) => {
-            const status = resolveBlockStatus(section.block, flags, progress.currentBlock)
+            const status = resolveBlockStatus(section.block, flags, currentBlock)
             const openBlock = isExpanded(section.block)
             return (
               <section key={section.block} className="inv-dev__block" data-status={status}>
@@ -155,8 +178,10 @@ export function DevStoryPanel() {
               Bloco {pending.block} — {pending.label}
             </p>
             <p className="inv-dev__modal-copy">
-              O estado atual será substituído por um snapshot de desenvolvimento.
+              O estado atual será substituído pelo estado canônico deste ponto, reconstruído do início da
+              campanha (caminho principal, sem descobertas opcionais).
             </p>
+            {pendingNote ? <p className="inv-dev__modal-copy">{pendingNote}</p> : null}
             <div className="inv-dev__modal-actions">
               <button type="button" onClick={() => setPending(null)}>
                 Cancelar

@@ -11,9 +11,7 @@ export interface LinkBoardNodeDef {
   kind: LinkBoardNodeKind
   title: string
   subtitle?: string
-  /** Posição canônica no mundo do quadro (px). */
-  x: number
-  y: number
+  /** Posição vem de oardLayout (cluster + slot); o catálogo só guarda gates e conteúdo. */
   cluster: LinkBoardCluster
   /** Secundários só aparecem com foco no cluster ou no nó pai. */
   tier?: 'primary' | 'secondary'
@@ -65,9 +63,22 @@ export interface LinkBoardEdge {
   to: string
   label?: string
   style: LinkBoardEdgeStyle
+  /** Liga clusters diferentes (renderizada mais discreta). */
+  crossCluster: boolean
+}
+
+export interface LinkBoardRegion {
+  cluster: LinkBoardCluster
+  minX: number
+  minY: number
+  maxX: number
+  maxY: number
+  nodeCount: number
 }
 
 export interface LinkBoardLayout {
+  /** Regiões (halo) dos clusters com ao menos um nó visível. */
+  regions: LinkBoardRegion[]
   nodes: LinkBoardNode[]
   edges: LinkBoardEdge[]
   /** Cluster sugerido ao abrir (núcleo atualizado). */

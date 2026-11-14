@@ -1,16 +1,36 @@
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
   type PointerEvent as PE,
-  type WheelEvent,
 } from 'react'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { boardBounds, buildLinkBoard, clusterCenter } from '../../game/board/buildLinkBoard'
-import type { LinkBoardFilter, LinkBoardNode, LinkBoardNodeKind } from '../../game/board/linkBoardTypes'
+import {
+  BOARD_ZOOM_LIMITS,
+  FALLBACK_VIEWPORT,
+  centerOnPoint,
+  clampPan,
+  clampZoom,
+  fitRect,
+  transformCss,
+  wheelZoomFactor,
+  zoomAtPoint,
+  zoomByFactor,
+  type BoardTransform,
+  type BoardViewport,
+} from '../../game/board/boardTransform'
+import type {
+  LinkBoardCluster,
+  LinkBoardFilter,
+  LinkBoardNode,
+} from '../../game/board/linkBoardTypes'
 import { loadLinkBoardSession, saveLinkBoardSession } from '../../app/uiStore'
+import { KIND_LABEL, LinkBoardCanvas } from './LinkBoardCanvas'
+import { LinkBoardThumbnail } from './LinkBoardThumbnail'
 
 const FILTERS: { id: LinkBoardFilter; label: string }[] = [
   { id: 'all', label: 'Tudo' },
@@ -21,38 +41,36 @@ const FILTERS: { id: LinkBoardFilter; label: string }[] = [
   { id: 'contradiction', label: 'Contradições' },
 ]
 
-const KIND_LABEL: Record<LinkBoardNodeKind, string> = {
-  person: 'Pessoa',
-  event: 'Evento',
-  evidence: 'Evidência-chave',
-  hypothesis: 'Hipótese',
-  contradiction: 'Contradição',
+const BUTTON_ZOOM_STEP = 1.2
+
+export interface LinkBoardProps {
+  onOpen?: (tab: string, id: string) => void
+  /** `false` ou `scale="thumbnail"` → miniatura estática do mesmo estado (sem filtros/pan/zoom). */
+  interactive?: boolean
+  scale?: 'full' | 'thumbnail'
 }
 
-function edgePath(a: LinkBoardNode, b: LinkBoardNode) {
-  const x1 = a.x + 96
-  const y1 = a.y + 36
-  const x2 = b.x + 96
-  const y2 = b.y + 36
-  const mx = (x1 + x2) / 2
-  const my = (y1 + y2) / 2
-  return { x1, y1, x2, y2, mx, my }
+export function LinkBoard({ onOpen, interactive = true, scale = 'full' }: LinkBoardProps) {
+  if (!interactive || scale === 'thumbnail') return <LinkBoardThumbnail />
+  return <LinkBoardFull onOpen={onOpen ?? (() => undefined)} />
 }
 
-export function LinkBoard({ onOpen }: { onOpen: (tab: string, id: string) => void }) {
+function LinkBoardFull({ onOpen }: { onOpen: (tab: string, id: string) => void }) {
   const inv = useInvestigation()
   const sessionRef = useRef(loadLinkBoardSession())
   const [filter, setFilter] = useState<LinkBoardFilter>('all')
   const [sel, setSel] = useState<string | null>(null)
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set())
-  const pan = useRef({
+  const view = useRef<BoardTransform>({
     x: sessionRef.current.panX,
     y: sessionRef.current.panY,
-    z: sessionRef.current.zoom,
+    z: clampZoom(sessionRef.current.zoom),
   })
+  const viewportRef = useRef<HTMLDivElement>(null)
   const layerRef = useRef<HTMLDivElement>(null)
   const drag = useRef<{ x: number; y: number; px: number; py: number } | null>(null)
   const openedRef = useRef(false)
+  const persistTimer = useRef<number | null>(null)
 
   const layout = useMemo(
     () =>
@@ -60,45 +78,101 @@ export function LinkBoard({ onOpen }: { onOpen: (tab: string, id: string) => voi
         knownNodeIds: sessionRef.current.knownNodeIds,
         expandedClusters: expanded,
       }),
-  [inv, expanded],
+    [inv, expanded],
   )
 
+  const bounds = useMemo(() => boardBounds(layout.nodes, 160), [layout.nodes])
+  const boundsRef = useRef(bounds)
+  boundsRef.current = bounds
+  const layoutRef = useRef(layout)
+  layoutRef.current = layout
+
   const persistSession = useCallback(() => {
-    const ids = layout.nodes.map((n) => n.id)
+    const ids = layoutRef.current.nodes.map((n) => n.id)
     const merged = Array.from(new Set([...sessionRef.current.knownNodeIds, ...ids]))
     sessionRef.current = {
-      panX: pan.current.x,
-      panY: pan.current.y,
-      zoom: pan.current.z,
+      panX: view.current.x,
+      panY: view.current.y,
+      zoom: view.current.z,
       knownNodeIds: merged,
     }
     saveLinkBoardSession(sessionRef.current)
-  }, [layout.nodes])
+  }, [])
+
+  const schedulePersist = useCallback(() => {
+    if (persistTimer.current != null) window.clearTimeout(persistTimer.current)
+    persistTimer.current = window.setTimeout(() => {
+      persistTimer.current = null
+      persistSession()
+    }, 200)
+  }, [persistSession])
+
+  useEffect(
+    () => () => {
+      if (persistTimer.current != null) window.clearTimeout(persistTimer.current)
+    },
+    [],
+  )
+
+  const getViewport = useCallback((): BoardViewport => {
+    const el = viewportRef.current
+    if (!el || !el.clientWidth || !el.clientHeight) return FALLBACK_VIEWPORT
+    return { width: el.clientWidth, height: el.clientHeight }
+  }, [])
 
   const applyTransform = useCallback(() => {
     const el = layerRef.current
     if (!el) return
-    const { x, y, z } = pan.current
-    el.style.transform = `translate(${x}px, ${y}px) scale(${z})`
+    el.style.transform = transformCss(view.current)
   }, [])
 
-  useEffect(() => {
+  const commit = useCallback(
+    (next: BoardTransform, opts?: { clamp?: boolean; persist?: 'now' | 'later' | false }) => {
+      view.current =
+        opts?.clamp === false ? next : clampPan(next, getViewport(), boundsRef.current)
+      applyTransform()
+      if (opts?.persist === 'now') persistSession()
+      else if (opts?.persist !== false) schedulePersist()
+    },
+    [applyTransform, getViewport, persistSession, schedulePersist],
+  )
+
+  useLayoutEffect(() => {
     if (openedRef.current) return
     openedRef.current = true
-    if (sessionRef.current.panX === 0 && sessionRef.current.panY === 0 && sessionRef.current.zoom === 1) {
-      const c = clusterCenter(layout.focusCluster)
-      const vw = 720
-      const vh = 480
-      pan.current.x = vw / 2 - c.x
-      pan.current.y = vh / 2 - c.y
+    const s = sessionRef.current
+    if (s.panX === 0 && s.panY === 0 && s.zoom === 1) {
+      view.current = centerOnPoint(view.current, clusterCenter(layout.focusCluster), getViewport(), 1)
+    } else {
+      view.current = clampPan(view.current, getViewport(), boundsRef.current)
     }
     applyTransform()
-    window.setTimeout(() => persistSession(), 520)
-  }, [applyTransform, layout.focusCluster, persistSession])
+    const t = window.setTimeout(() => persistSession(), 520)
+    return () => window.clearTimeout(t)
+  }, [applyTransform, getViewport, layout.focusCluster, persistSession])
 
-  const bounds = useMemo(() => boardBounds(layout.nodes), [layout.nodes])
-  const worldW = bounds.maxX - bounds.minX + 200
-  const worldH = bounds.maxY - bounds.minY + 200
+  /** Posição do ponteiro relativa ao viewport, em px de layout (compensa escala CSS de ancestrais). */
+  const toLocal = useCallback((clientX: number, clientY: number) => {
+    const el = viewportRef.current
+    if (!el) return { x: 0, y: 0, k: 1 }
+    const rect = el.getBoundingClientRect()
+    const k = el.offsetWidth > 0 && rect.width > 0 ? rect.width / el.offsetWidth : 1
+    return { x: (clientX - rect.left) / k, y: (clientY - rect.top) / k, k }
+  }, [])
+
+  // Wheel precisa de listener não-passivo para impedir scroll da página.
+  useEffect(() => {
+    const el = viewportRef.current
+    if (!el) return
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault()
+      const p = toLocal(e.clientX, e.clientY)
+      const factor = wheelZoomFactor(e.deltaY, e.deltaMode)
+      commit(zoomByFactor(view.current, factor, p.x, p.y, BOARD_ZOOM_LIMITS))
+    }
+    el.addEventListener('wheel', onWheel, { passive: false })
+    return () => el.removeEventListener('wheel', onWheel)
+  }, [commit, toLocal])
 
   const related = useMemo(() => {
     if (!sel) return new Set<string>()
@@ -113,54 +187,52 @@ export function LinkBoard({ onOpen }: { onOpen: (tab: string, id: string) => voi
   const selected = layout.nodes.find((n) => n.id === sel)
 
   const focusCluster = useCallback(
-    (cluster: string) => {
-      const c = clusterCenter(cluster as import('../../game/board/linkBoardTypes').LinkBoardCluster)
-      pan.current.x = 360 - c.x * pan.current.z
-      pan.current.y = 280 - c.y * pan.current.z
-      applyTransform()
-      persistSession()
+    (cluster: LinkBoardCluster) => {
+      commit(centerOnPoint(view.current, clusterCenter(cluster), getViewport()), { persist: 'now' })
     },
-    [applyTransform, persistSession],
+    [commit, getViewport],
   )
 
   const fitBoard = useCallback(() => {
-    if (!layout.nodes.length) return
-    const b = boardBounds(layout.nodes)
-    const w = b.maxX - b.minX
-    const h = b.maxY - b.minY
-    const z = Math.min(1.25, Math.min(900 / w, 620 / h))
-    pan.current.z = z
-    pan.current.x = 420 - ((b.minX + b.maxX) / 2) * z
-    pan.current.y = 320 - ((b.minY + b.maxY) / 2) * z
-    applyTransform()
-    persistSession()
-  }, [layout.nodes, applyTransform, persistSession])
+    if (!layoutRef.current.nodes.length) return
+    const b = boardBounds(layoutRef.current.nodes, 40)
+    commit(fitRect(b, getViewport(), { padding: 24, maxZoom: 1.25, minZoom: BOARD_ZOOM_LIMITS.min }), {
+      persist: 'now',
+    })
+  }, [commit, getViewport])
 
   const recenter = useCallback(() => {
     focusCluster(layout.focusCluster)
   }, [focusCluster, layout.focusCluster])
 
+  const zoomButton = useCallback(
+    (factor: number) => {
+      const vp = getViewport()
+      commit(zoomAtPoint(view.current, view.current.z * factor, vp.width / 2, vp.height / 2), {
+        persist: 'now',
+      })
+    },
+    [commit, getViewport],
+  )
+
   const onPointerDown = (e: PE<HTMLDivElement>) => {
-    if ((e.target as HTMLElement).closest('.lb-node')) return
-    drag.current = { x: e.clientX, y: e.clientY, px: pan.current.x, py: pan.current.y }
+    const target = e.target as HTMLElement
+    if (target.closest('.lb-node') || target.closest('.lb-toolbar')) return
+    const p = toLocal(e.clientX, e.clientY)
+    drag.current = { x: p.x, y: p.y, px: view.current.x, py: view.current.y }
     e.currentTarget.setPointerCapture(e.pointerId)
   }
   const onPointerMove = (e: PE<HTMLDivElement>) => {
     if (!drag.current) return
-    pan.current.x = drag.current.px + (e.clientX - drag.current.x)
-    pan.current.y = drag.current.py + (e.clientY - drag.current.y)
-    applyTransform()
+    const p = toLocal(e.clientX, e.clientY)
+    commit(
+      { x: drag.current.px + (p.x - drag.current.x), y: drag.current.py + (p.y - drag.current.y), z: view.current.z },
+      { persist: false },
+    )
   }
   const onPointerUp = () => {
     if (drag.current) persistSession()
     drag.current = null
-  }
-  const onWheel = (e: WheelEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    const next = Math.min(1.6, Math.max(0.45, pan.current.z * (e.deltaY > 0 ? 0.94 : 1.06)))
-    pan.current.z = next
-    applyTransform()
-    persistSession()
   }
 
   const pickNode = (n: LinkBoardNode) => {
@@ -174,21 +246,6 @@ export function LinkBoard({ onOpen }: { onOpen: (tab: string, id: string) => voi
         return copy
       })
     }
-  }
-
-  const opacityFor = (n: LinkBoardNode) => {
-    if (filter !== 'all' && n.kind !== filter) return 0.22
-    if (sel && !related.has(n.id)) return 0.35
-    return 1
-  }
-
-  const edgeVisible = (from: string, to: string) => {
-    const a = layout.nodes.find((n) => n.id === from)
-    const b = layout.nodes.find((n) => n.id === to)
-    if (!a || !b) return false
-    if (filter !== 'all' && (a.kind !== filter || b.kind !== filter)) return false
-    if (sel && (!related.has(from) || !related.has(to))) return false
-    return true
   }
 
   return (
@@ -211,15 +268,21 @@ export function LinkBoard({ onOpen }: { onOpen: (tab: string, id: string) => voi
 
       <div className="lb-stage">
         <div
+          ref={viewportRef}
           className="lb-viewport"
           data-testid="evidence-board-view"
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
           onPointerCancel={onPointerUp}
-          onWheel={onWheel}
         >
           <div className="lb-toolbar">
+            <button type="button" className="lb-toolbar__btn" onClick={() => zoomButton(1 / BUTTON_ZOOM_STEP)} aria-label="Reduzir zoom">
+              −
+            </button>
+            <button type="button" className="lb-toolbar__btn" onClick={() => zoomButton(BUTTON_ZOOM_STEP)} aria-label="Aumentar zoom">
+              +
+            </button>
             <button type="button" className="lb-toolbar__btn" onClick={recenter}>
               Recentralizar
             </button>
@@ -227,43 +290,16 @@ export function LinkBoard({ onOpen }: { onOpen: (tab: string, id: string) => voi
               Ajustar ao quadro
             </button>
           </div>
-          <div ref={layerRef} className="lb-world" style={{ width: worldW, height: worldH }}>
-            <svg className="lb-edges" width={worldW} height={worldH} aria-hidden>
-              {layout.edges.map((e) => {
-                if (!edgeVisible(e.from, e.to)) return null
-                const a = layout.nodes.find((n) => n.id === e.from)!
-                const b = layout.nodes.find((n) => n.id === e.to)!
-                const { x1, y1, x2, y2, mx, my } = edgePath(a, b)
-                return (
-                  <g key={e.id} className={`lb-edge lb-edge--${e.style}`}>
-                    <line x1={x1} y1={y1} x2={x2} y2={y2} />
-                    {e.label ? (
-                      <text x={mx} y={my - 4} className="lb-edge__label">
-                        {e.label}
-                      </text>
-                    ) : null}
-                  </g>
-                )
-              })}
-            </svg>
-            {layout.nodes.map((n) => (
-              <button
-                key={n.id}
-                type="button"
-                className="lb-node"
-                data-kind={n.kind}
-                data-enter={layout.enteringNodeIds.includes(n.id) || undefined}
-                data-active={n.id === sel || undefined}
-                style={{ left: n.x, top: n.y, opacity: opacityFor(n) }}
-                onClick={() => pickNode(n)}
-              >
-                {n.portraitSrc ? <img src={n.portraitSrc} alt="" className="lb-node__face" /> : null}
-                <small>{KIND_LABEL[n.kind]}</small>
-                <strong>{n.title}</strong>
-                {n.subtitle ? <span className="lb-node__sub">{n.subtitle}</span> : null}
-              </button>
-            ))}
-          </div>
+          <LinkBoardCanvas
+            ref={layerRef}
+            layout={layout}
+            interactive
+            scale="full"
+            filter={filter}
+            selectedId={sel}
+            related={related}
+            onPick={pickNode}
+          />
           {layout.nodes.length === 0 ? (
             <p className="lb-empty">Nada no quadro ainda — continue a investigação.</p>
           ) : null}
@@ -306,7 +342,7 @@ export function LinkBoard({ onOpen }: { onOpen: (tab: string, id: string) => voi
             ) : null}
           </aside>
         ) : (
-          <p className="lb-hint">Arraste · zoom · clique para focar · secundários ao expandir cluster</p>
+          <p className="lb-hint">Arraste · roda para zoom no cursor · clique para focar · secundários ao expandir cluster</p>
         )}
       </div>
     </div>

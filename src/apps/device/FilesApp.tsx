@@ -7,6 +7,7 @@ import {
   type PhoneMediaItem,
 } from '../../data/block01/phoneMedia'
 import { contactAvatarSrc } from '../../lib/characterSprites'
+import { UiGlyph } from '../../components/UiGlyph'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { onMarianaMaraltoRecordingFound } from '../../game/story/block03Handlers'
 import { comparePhoneFilesSequence } from '../../game/story/block05Handlers'
@@ -160,7 +161,7 @@ function FileRow({ item }: { item: PhoneMediaItem }) {
         <img src={src} alt="" className="ios-files__thumb" />
       ) : (
         <span className="ios-files__icon" aria-hidden>
-          📄
+          <UiGlyph name="doc" />
         </span>
       )}
       {maraltoAction ? (

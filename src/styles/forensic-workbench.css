@@ -82,8 +82,8 @@
 }
 
 .fw-main {
-  flex: 1;
-  min-height: 0;
+  flex: 1 1 auto;
+  min-height: 12em;
   padding: 0.35em 0.55em 0;
   overflow: auto;
 }
@@ -550,32 +550,43 @@
 
 .fw-transport {
   display: flex;
+  flex-direction: column;
+  gap: 0.45em;
+  padding: 0.65em 0.85em 0.7em;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent), var(--fw-panel);
+  border-top: 1px solid var(--fw-line);
+  flex: 0 0 auto;
+}
+
+.fw-transport__row {
+  display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 0.75em 1em;
-  padding: 0.45em 0.7em;
-  background: var(--fw-panel);
-  border-top: 1px solid var(--fw-line);
+}
+
+.fw-transport__row--primary {
+  min-height: 3.1em;
 }
 
 .fw-transport__controls {
   display: inline-flex;
   align-items: center;
-  gap: 0.25em;
+  gap: 0.35em;
 }
 
 .fw-icon-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2em;
-  height: 2em;
+  width: 2.25em;
+  height: 2.25em;
   font: inherit;
-  font-size: 0.78em;
+  font-size: 0.85em;
   color: var(--text-muted);
   background: transparent;
   border: 0;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
 }
 
@@ -589,16 +600,39 @@
   cursor: not-allowed;
 }
 
-.fw-icon-btn--primary {
-  width: 2.35em;
-  height: 2.35em;
-  color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.05);
+.fw-icon-btn--primary,
+.fw-icon-btn--play {
+  width: 3.15em;
+  height: 3.15em;
+  font-size: 1.05em;
+  color: #1a1510;
+  background: var(--fw-accent);
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px rgba(200, 150, 62, 0.35);
 }
 
-.fw-icon-btn--primary:hover:not(:disabled) {
-  color: var(--fw-accent);
-  background: rgba(200, 150, 62, 0.12);
+.fw-icon-btn--primary:hover:not(:disabled),
+.fw-icon-btn--play:hover:not(:disabled) {
+  color: #120e0a;
+  background: #e0b45a;
+  filter: brightness(1.05);
+}
+
+.fw-icon-btn--stop {
+  width: 2.5em;
+  height: 2.5em;
+}
+
+.fw-transport__seek {
+  width: 100%;
+  padding: 0 0.15em;
+}
+
+.fw-transport__scrub {
+  width: 100%;
+  accent-color: var(--fw-accent);
+  height: 0.45em;
+  cursor: pointer;
 }
 
 .fw-transport__time {
@@ -609,9 +643,67 @@
 }
 
 .fw-transport__now {
-  font-size: 1.05em;
-  font-weight: 600;
+  font-size: 1.2em;
+  font-weight: 650;
   letter-spacing: 0.02em;
+}
+
+.fw-analysis-log {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 9.5em;
+  max-height: 14em;
+  border-top: 1px solid var(--fw-line);
+  background: var(--fw-inset);
+  padding: 0.45em 0.7em 0.55em;
+}
+
+.fw-analysis-log__head {
+  font-size: 0.68em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 0.35em;
+}
+
+.fw-analysis-log__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.28em;
+  font-family: ui-monospace, monospace;
+  font-size: 0.82em;
+  scrollbar-width: thin;
+}
+
+.fw-analysis-log__row {
+  padding: 0.28em 0.4em;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-muted);
+}
+
+.fw-analysis-log__row[data-phase='processable'] {
+  color: var(--text-primary);
+}
+
+.fw-analysis-log__row[data-phase='intelligible'],
+.fw-analysis-log__row[data-phase='heard'],
+.fw-analysis-log__row[data-phase='recoveredSpeech'] {
+  color: var(--fw-accent);
+  background: rgba(200, 150, 62, 0.08);
+}
+
+.fw-analysis-log__hint {
+  margin: 0.4em 0 0;
+  font-size: 0.68em;
+  color: var(--text-faint);
 }
 
 .fw-transport__sep,
@@ -668,6 +760,37 @@
   background: rgba(255, 255, 255, 0.04);
 }
 
+.fw-top__dev {
+  margin-left: auto;
+  min-width: 0;
+}
+
+.fw-dev-complete {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4em;
+}
+
+.fw-btn--dev {
+  color: #ffb347;
+  border-color: rgba(255, 179, 71, 0.45);
+  background: rgba(255, 179, 71, 0.08);
+}
+
+.fw-btn--dev:hover:not(:disabled) {
+  background: rgba(255, 179, 71, 0.16);
+}
+
+.fw-dev-complete__msg {
+  max-width: 40em;
+  font-size: 0.68em;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .fw-select {
   appearance: none;
   font: inherit;
@@ -700,6 +823,7 @@
   background: var(--fw-panel);
   border-left: 1px solid var(--fw-line);
   overflow: hidden;
+  gap: 0;
 }
 
 .fw-inspector__head {
@@ -745,7 +869,13 @@
   flex: 1;
   min-height: 0;
   overflow: auto;
-  padding: 0.35em 0.7em 1em;
+  padding: 0.45em 0.75em 1.1em;
+  scrollbar-width: thin;
+}
+
+.fw-recovered__text {
+  font-size: 1.05em;
+  line-height: 1.45;
 }
 
 .fw-panel {

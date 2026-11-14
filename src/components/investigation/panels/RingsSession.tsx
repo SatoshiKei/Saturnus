@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   DVR_CATALOG,
   RING_CAMERAS,
@@ -34,7 +34,7 @@ type Phase =
  * Puzzle 10 — Ordem dos Anéis.
  * Fingerprint → frame pattern → rota → DVR → storage → cutscene CAM11.
  */
-export function RingsSession() {
+export function RingsSession({ revealRequest = 0 }: { revealRequest?: number } = {}) {
   const inv = useInvestigation()
   const fullyDone = Boolean(inv.flags.block08_rings_done)
   const routeUnlocked = Boolean(inv.flags.block08_rings_timeline_solved) || fullyDone
@@ -64,6 +64,11 @@ export function RingsSession() {
   )
   const [showCctv, setShowCctv] = useState(false)
   const [devOpen, setDevOpen] = useState(false)
+
+  // DEV QA: “COMPLETE + PLAY REVEAL” pede a mesma cutscene que “Open segment” abre.
+  useEffect(() => {
+    if (revealRequest > 0 && routeUnlocked && !revealDone) setShowCctv(true)
+  }, [revealRequest, routeUnlocked, revealDone])
 
   const camerasOpen = routeUnlocked
   const canInspectDvr = camerasOpen

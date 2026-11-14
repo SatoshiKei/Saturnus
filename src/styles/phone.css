@@ -8,11 +8,17 @@
 }
 
 .phone-shell__device {
+  /* Safe areas: ilha da câmera/status em cima, indicador de início embaixo. */
   --phone-inset-top: 47px;
   --phone-inset-bottom: 22px;
+  --phone-radius: 46px;
+  --phone-font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
   width: 320px;
   height: 680px;
-  border-radius: 44px;
+  border-radius: var(--phone-radius);
+  font-family: var(--phone-font);
+  -webkit-font-smoothing: antialiased;
   background: #050506;
   /* moldura fina de metal escovado + bordas de vidro finas */
   box-shadow:
@@ -30,11 +36,11 @@
 .phone-shell__device::before {
   content: '';
   position: absolute;
-  top: 10px;
+  top: 9px;
   left: 50%;
   z-index: 40;
-  width: 86px;
-  height: 24px;
+  width: 90px;
+  height: 26px;
   transform: translateX(-50%);
   border-radius: 14px;
   background: #020203;
@@ -49,23 +55,35 @@
     inset 0 0 0 1px rgba(255, 255, 255, 0.07);
 }
 
+/* Tela: coluna flex. Cada app raiz ocupa o espaço restante e PODE encolher (min-height: 0),
+   para que o scroller interno de cada app tenha altura definida. Nada rola aqui. */
 .phone-shell__content {
-  flex: 1;
+  flex: 1 1 0;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
   background: #000;
   position: relative;
   overflow: hidden;
+  border-radius: inherit;
+}
+
+.phone-shell .phone-shell__content > * {
+  flex: 1 1 0;
+  min-height: 0;
+  height: auto;
+  max-height: none;
 }
 
 .phone-shell__home-indicator {
   position: absolute;
-  bottom: 6px;
+  bottom: 8px;
   left: 50%;
   transform: translateX(-50%);
-  width: 112px;
-  height: 4px;
-  border-radius: 4px;
-  background: rgba(0, 0, 0, 0.22);
+  width: 120px;
+  height: 5px;
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.3);
   z-index: 25;
   pointer-events: none;
 }
@@ -97,10 +115,11 @@
 .phone-status {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: flex-start;
   height: var(--phone-inset-top);
-  padding: 12px 22px 6px;
+  padding: 12px 30px 0;
   font-size: 15px;
+  line-height: 20px;
   font-weight: 600;
   letter-spacing: -0.02em;
   color: #fff;
@@ -116,6 +135,7 @@
   display: flex;
   gap: 5px;
   align-items: center;
+  height: 20px;
 }
 
 .phone-status__glyph {
@@ -163,29 +183,37 @@
 }
 
 .phone-home {
+  --home-pad-x: 18px;
+  --dock-h: 80px;
+  --dock-bottom: 20px;
   height: 100%;
   position: relative;
   display: flex;
   flex-direction: column;
-  padding: var(--phone-inset-top) 14px calc(var(--phone-inset-bottom) + 86px);
+  padding: calc(var(--phone-inset-top) + 16px) var(--home-pad-x) 0;
   overflow: hidden;
 }
 
 .phone-home__wallpaper {
   position: absolute;
   inset: 0;
-  background: linear-gradient(165deg, #2b5876 0%, #1e3250 40%, #0f1a2e 100%);
+  background:
+    radial-gradient(120% 60% at 20% 0%, rgba(120, 170, 220, 0.35) 0%, rgba(120, 170, 220, 0) 60%),
+    linear-gradient(170deg, #2b5876 0%, #1e3250 45%, #0f1a2e 100%);
   z-index: 0;
 }
 
 .phone-home__pages {
   position: relative;
   z-index: 1;
-  flex: 1;
+  flex: 1 1 0;
   min-height: 0;
+  /* reserva dock + pontos de página */
+  margin-bottom: calc(var(--dock-h) + var(--dock-bottom) + 30px);
   display: flex;
   overflow-x: auto;
   overflow-y: hidden;
+  overscroll-behavior: contain;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -209,32 +237,35 @@
   width: 100%;
   box-sizing: border-box;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(3, min-content);
-  gap: 16px 4px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: min-content;
+  justify-items: center;
+  gap: 20px 0;
   align-content: start;
   overflow: hidden;
-  padding: 4px 2px;
+  padding: 0;
   scroll-snap-align: start;
   scroll-snap-stop: always;
 }
 
 .phone-home__dots {
-  position: relative;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--dock-h) + var(--dock-bottom) + 12px);
   z-index: 2;
   display: flex;
   justify-content: center;
   gap: 7px;
-  margin: 8px 0 4px;
 }
 
 .phone-home__dot {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   padding: 0;
   border: 0;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.32);
+  background: rgba(255, 255, 255, 0.34);
   cursor: pointer;
 }
 
@@ -247,6 +278,8 @@
   flex-direction: column;
   align-items: center;
   gap: 6px;
+  width: 100%;
+  min-width: 0;
   cursor: pointer;
   color: #fff;
 }
@@ -257,51 +290,70 @@
 }
 
 .phone-home__app-label {
+  display: block;
+  max-width: 100%;
   font-size: 11px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  font-weight: 500;
+  line-height: 14px;
+  letter-spacing: -0.01em;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
 }
 
 .phone-home__dock {
   position: absolute;
-  bottom: 24px;
-  left: 16px;
-  right: 16px;
+  bottom: var(--dock-bottom);
+  left: 10px;
+  right: 10px;
+  height: var(--dock-h);
   z-index: 2;
-  display: flex;
-  justify-content: space-around;
-  padding: 12px;
-  border-radius: 28px;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(12px);
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  justify-items: center;
+  align-items: center;
+  padding: 0 8px;
+  border-radius: 34px;
+  background: rgba(255, 255, 255, 0.2);
+  -webkit-backdrop-filter: blur(22px) saturate(1.4);
+  backdrop-filter: blur(22px) saturate(1.4);
 }
 
 .phone-home__dock-app {
   cursor: pointer;
+  display: flex;
 }
 
 .phone-home__clock {
   display: none;
 }
 
+/* Ícones: 60px, cantos ~22%, mesma medida na grade e no dock. */
 .app-icon {
-  width: 54px;
-  height: 54px;
-  border-radius: 14px;
+  width: 60px;
+  height: 60px;
+  border-radius: 22.5%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.28);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.28),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.18);
   color: #fff;
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
 .app-icon--dock {
-  width: 58px;
-  height: 58px;
+  width: 60px;
+  height: 60px;
 }
 
 .app-icon__svg {
-  width: 62%;
-  height: 62%;
+  width: 60%;
+  height: 60%;
 }
 
 .app-icon--whatsapp {
@@ -333,7 +385,7 @@
 }
 
 .app-icon--phone {
-  background: linear-gradient(160deg, #81ecec, #00b894);
+  background: linear-gradient(160deg, #6be585, #1fa84a);
 }
 
 .app-icon--settings {
@@ -389,7 +441,7 @@
 }
 
 .phone-app-recents {
-  --ios-font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --ios-font: var(--phone-font, -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -447,8 +499,15 @@
 }
 
 .phone-contacts__search-icon {
-  font-size: 15px;
-  opacity: 0.45;
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  opacity: 0.55;
+}
+
+.phone-contacts__search-icon svg {
+  width: 100%;
+  height: 100%;
 }
 
 .phone-contacts__search-placeholder {
@@ -621,6 +680,13 @@
   flex: none;
   width: 100%;
   height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+
+.phone-app-recents--in-call .cs--ios::-webkit-scrollbar {
+  display: none;
 }
 
 .cs--ios.cs--compact {
@@ -852,10 +918,11 @@
 }
 .phone-home__badge {
   position: absolute;
-  top: -4px;
-  right: 2px;
-  min-width: 16px;
-  height: 16px;
+  top: -5px;
+  right: -5px;
+  min-width: 18px;
+  height: 18px;
+  box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.12);
   padding: 0 4px;
   display: inline-flex;
   align-items: center;
@@ -865,4 +932,160 @@
   color: #fff;
   background: #d33b2c;
   border-radius: 999px;
+}
+
+/* ───────── Scroll estrutural dos apps do celular ─────────
+   Todo scroller de app: altura definida pelo pai flex (min-height: 0), eixo Y próprio,
+   sem vazar a rolagem para a cena (overscroll contain) e barra discreta. */
+.wa-chat-list,
+.wa-messages,
+.wa-chat-messages,
+.wa-calls,
+.wa-archived-list,
+.phone-contacts,
+.notes-list,
+.notes-view__article,
+.calendar-events,
+.calendar-event-view__body,
+.ios-files__list,
+.ios-photos__scroll,
+.device-app,
+.diary-app {
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(120, 120, 128, 0.4) transparent;
+}
+
+.wa-chat-list,
+.wa-calls,
+.phone-contacts,
+.notes-list,
+.calendar-events,
+.ios-files__list,
+.ios-photos__scroll {
+  flex: 1 1 0;
+}
+
+.calendar-event-view__body {
+  flex: 1 1 auto;
+}
+
+.wa-chat-list::-webkit-scrollbar,
+.wa-messages::-webkit-scrollbar,
+.wa-chat-messages::-webkit-scrollbar,
+.wa-calls::-webkit-scrollbar,
+.wa-archived-list::-webkit-scrollbar,
+.phone-contacts::-webkit-scrollbar,
+.notes-list::-webkit-scrollbar,
+.notes-view__article::-webkit-scrollbar,
+.calendar-events::-webkit-scrollbar,
+.calendar-event-view__body::-webkit-scrollbar,
+.ios-files__list::-webkit-scrollbar,
+.ios-photos__scroll::-webkit-scrollbar,
+.device-app::-webkit-scrollbar,
+.diary-app::-webkit-scrollbar {
+  width: 3px;
+}
+
+.wa-chat-list::-webkit-scrollbar-thumb,
+.wa-messages::-webkit-scrollbar-thumb,
+.wa-chat-messages::-webkit-scrollbar-thumb,
+.wa-calls::-webkit-scrollbar-thumb,
+.wa-archived-list::-webkit-scrollbar-thumb,
+.phone-contacts::-webkit-scrollbar-thumb,
+.notes-list::-webkit-scrollbar-thumb,
+.notes-view__article::-webkit-scrollbar-thumb,
+.calendar-events::-webkit-scrollbar-thumb,
+.calendar-event-view__body::-webkit-scrollbar-thumb,
+.ios-files__list::-webkit-scrollbar-thumb,
+.ios-photos__scroll::-webkit-scrollbar-thumb,
+.device-app::-webkit-scrollbar-thumb,
+.diary-app::-webkit-scrollbar-thumb {
+  background: rgba(120, 120, 128, 0.4);
+  border-radius: 3px;
+}
+
+/* Apps raiz que contêm scroller filho: não rolam elas mesmas. */
+.wa-shell,
+.wa-app,
+.wa-chat-view,
+.notes-app,
+.notes-view,
+.calendar-app,
+.calendar-event-view,
+.ios-files,
+.ios-photos,
+.phone-app-recents {
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Bordas inferiores respeitam o indicador de início. */
+.wa-chat-list,
+.wa-calls,
+.notes-list,
+.calendar-events {
+  padding-bottom: calc(var(--phone-inset-bottom, 22px) + 4px);
+}
+
+/* Visualizador de fotos é escuro: status e indicador claros. */
+.phone-shell__device:has(.ios-photos-viewer) .phone-status {
+  color: #fff;
+}
+
+.phone-shell__device:has(.ios-photos-viewer) .phone-shell__home-indicator {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* Glifos de interface (UiGlyph) */
+.ui-glyph {
+  width: 1em;
+  height: 1em;
+  display: block;
+}
+
+.wa-search__icon,
+.wa-archived-row__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wa-search__icon {
+  width: 16px;
+  height: 16px;
+}
+
+.wa-archived-row__icon .ui-glyph {
+  width: 18px;
+  height: 18px;
+}
+
+.wa-search__icon .ui-glyph {
+  width: 16px;
+  height: 16px;
+}
+
+.wa-tabs__lock {
+  display: inline-flex;
+}
+
+.wa-tabs__lock .ui-glyph {
+  width: 9px;
+  height: 9px;
+}
+
+.wa-calls__dir {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wa-calls__dir .ui-glyph {
+  width: 14px;
+  height: 14px;
 }

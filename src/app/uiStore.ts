@@ -101,7 +101,8 @@ export function takeNotebookFocus() {
   return f
 }
 
-const LINK_BOARD_KEY = 'saturnus-link-board-v1'
+/** v2: layout por clusters normalizados — pans salvos do v1 não valem mais. */
+const LINK_BOARD_KEY = 'saturnus-link-board-v2'
 
 export interface LinkBoardSession {
   panX: number

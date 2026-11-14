@@ -3,7 +3,7 @@ import type { Page } from '@playwright/test'
 /** Avança N falas VN (para sem terminar o tópico). */
 export async function vnAdvanceSteps(page: Page, sceneTestId: string, steps: number) {
   const scene = page.getByTestId(sceneTestId)
-  if (await page.getByTestId('vn-nvl').isVisible()) {
+  if (await page.getByTestId('vn-backlog').isVisible()) {
     await page.keyboard.press('Escape')
   }
   for (let i = 0; i < steps; i++) {
@@ -15,7 +15,7 @@ export async function vnAdvanceSteps(page: Page, sceneTestId: string, steps: num
   }
 }
 
-/** Abre modo NVL (↑) — requer cena em ADV com histórico. */
+/** Abre histórico rolável (↑ / PageUp) — requer cena em ADV com histórico. */
 export async function vnOpenNvl(page: Page) {
   await page.keyboard.press('ArrowUp')
 }

@@ -401,6 +401,18 @@ export interface InvestigationState {
    * Persistidos no save — Puzzle 12 consulta o artifact runtime, não só meta de build.
    */
   forensicDerivedArtifacts?: Record<string, ForensicDerivedArtifact>
+  /**
+   * DEV QA: puzzles concluídos pela ferramenta DEV (nunca em produção).
+   * Marca de auditoria — o estado narrativo vem dos handlers reais.
+   */
+  devPuzzleCompletions?: Record<string, DevPuzzleCompletionRecord>
+}
+
+export interface DevPuzzleCompletionRecord {
+  puzzleId: string
+  stages: string[]
+  /** Etapa sintetizada sem análise real possível (ex.: asset pendente). */
+  devBypass?: { reason: string; detail: string }
 }
 
 export interface ForensicDerivedArtifact {

@@ -8,10 +8,8 @@ import {
 } from '../../data/block02/verticeInterview'
 import { portraitSrcForStory } from '../../lib/characterSprites'
 import { assetPath } from '../../lib/assetPath'
-import { dispatchActions, setFlag } from '../../game/state/investigationStore'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
-import { completeVerticeTopic, finishVerticeArchive } from '../../game/story/block02Handlers'
-import { vnLinesThrough } from '../../lib/vnBeatLog'
+import { completeVerticeTopicById, finishVerticeVisit } from '../../game/story/block02Handlers'
 import { VisualNovelDialog, VNSceneShell } from './VisualNovelDialog'
 import '../../styles/visual-novel.css'
 
@@ -49,27 +47,13 @@ export function VerticeInterviewScene({ onClose }: { onClose: () => void }) {
   const bg = assetPath('/assets/backgrounds/processed/nightclub/nightclub-01-lights-haze.jpg')
 
   const finishVisit = useCallback(() => {
-    dispatchActions([
-      { type: 'unlockLocation', id: 'vertice', status: 'visited' },
-      { type: 'setFlag', id: 'block02_vertice_visit_done', value: true },
-    ])
+    finishVerticeVisit()
     onClose()
   }, [onClose])
 
   const completeTopic = useCallback(
     (topic: VerticeTopicId) => {
-      const flag = verticeTopicFlags[topic]
-      if (topic === 'iara') {
-        completeVerticeTopic(flag, [
-          { type: 'addEvidence', id: 'mariana_vertice_visit' },
-          { type: 'addEvidence', id: 'mariana_repeated_questions' },
-        ])
-      } else if (topic === 'archive') {
-        finishVerticeArchive()
-        setFlag(flag, true)
-      } else {
-        completeVerticeTopic(flag)
-      }
+      completeVerticeTopicById(topic)
       setActiveTopic(null)
       setBeatIndex(0)
       setMode('menu')
@@ -84,11 +68,6 @@ export function VerticeInterviewScene({ onClose }: { onClose: () => void }) {
   })
 
   const currentBeat = mode === 'play' && activeTopic ? verticeBeats[activeTopic][beatIndex] : null
-
-  const playLogLines = useMemo(() => {
-    if (!activeTopic) return []
-    return vnLinesThrough(verticeBeats[activeTopic], beatIndex, (k) => portraits[k as keyof typeof portraits])
-  }, [activeTopic, beatIndex])
 
   return (
     <VNSceneShell
@@ -127,7 +106,6 @@ export function VerticeInterviewScene({ onClose }: { onClose: () => void }) {
           speaker={currentBeat.speaker}
           text={currentBeat.text}
           portraitSrc={currentBeat.portrait ? portraits[currentBeat.portrait] : undefined}
-          logLines={playLogLines}
           onRewind={() => setBeatIndex((i) => Math.max(0, i - 1))}
           onContinue={() => {
             const beats = activeTopic ? verticeBeats[activeTopic] : []

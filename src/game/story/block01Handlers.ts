@@ -99,6 +99,19 @@ export function onNoteRead(storyFlag: string) {
   dispatchActions(actions)
 }
 
+/** Fim da visita ao hospital (Júlia + Camila ouvidas). */
+export function finishHospitalVisit() {
+  const s = getInvestigationState()
+  if (s.flags.block01_hospital_done) return
+  dispatchActions([
+    { type: 'setFlag', id: 'block01_hospital_done', value: true },
+    { type: 'setFlag', id: 'block01_renata_seen', value: true },
+    { type: 'addEvidence', id: 'camila_witness_note' },
+    { type: 'unlockContact', contactId: 'contact-fernanda' },
+    { type: 'unlockLocation', id: 'hospital', status: 'visited' },
+  ])
+}
+
 export function runProvisionalEmergencyAnalysis() {
   const s = getInvestigationState()
   if (s.flags.block01_emergency_provisional) return

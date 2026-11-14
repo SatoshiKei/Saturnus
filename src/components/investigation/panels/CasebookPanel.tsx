@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type CSSProperties } from 'react'
+import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react'
 import { visibleMarianaContactChronology } from '../../../data/block05/contactChronology'
 import { contradictionDefs } from '../../../data/game/seedStory'
 import { seedDocuments } from '../../../data/game/seedDocuments'
@@ -8,7 +8,7 @@ import { organizeMarianaContactChronology } from '../../../game/story/block05Han
 import { organizeMemoryOnset } from '../../../game/story/block07Handlers'
 import { takeNotebookFocus } from '../../../app/uiStore'
 import { CasebookFilterBar } from '../CasebookFilterBar'
-import type { Evidence, InvestigationState, Location, Person } from '../../../game/types'
+import type { Evidence, EvidenceType, InvestigationState, Location, Person } from '../../../game/types'
 import {
   confidenceLabel,
   evidenceOriginLabel,
@@ -20,6 +20,7 @@ import {
   personStatusLabel,
   precisionLabel,
 } from '../../../lib/labels'
+import { personPortraitSrc } from '../../../lib/personPortraits'
 import { GamePanel } from '../../ui/GamePanel'
 
 type Tab = 'people' | 'evidence' | 'locations' | 'timeline' | 'hypotheses' | 'contradictions'
@@ -37,6 +38,16 @@ const tabs: { id: Tab; label: string; hue: string }[] = [
 function titleOf(inv: InvestigationState, id: string) {
   const owned = inv.evidenceOwned.includes(id)
   return owned ? (inv.evidence[id]?.title ?? 'Registro sem título') : 'Evidência ainda não reunida'
+}
+
+/** Resumo curto para cartões — nunca o texto completo. */
+export function clampSummary(text: string | undefined, max = 110): string {
+  if (!text) return ''
+  const flat = text.replace(/\s+/g, ' ').trim()
+  if (flat.length <= max) return flat
+  const cut = flat.slice(0, max)
+  const lastSpace = cut.lastIndexOf(' ')
+  return `${(lastSpace > max * 0.6 ? cut.slice(0, lastSpace) : cut).replace(/[\s,;:.\-–—]+$/, '')}…`
 }
 
 function Chips({ items, empty, limit = 5 }: { items: string[]; empty: string; limit?: number }) {
@@ -60,74 +71,181 @@ function Chips({ items, empty, limit = 5 }: { items: string[]; empty: string; li
   )
 }
 
+/* ---------------- Estrutura compartilhada (grade de cartões) ---------------- */
+
+/** Painel de aba: barra de título fixa + área rolável independente (grade ou detalhe). */
+function Pane({
+  title,
+  count,
+  filter,
+  testId,
+  children,
+}: {
+  title: string
+  count?: number
+  filter?: ReactNode
+  testId?: string
+  children: ReactNode
+}) {
+  return (
+    <div className="nb-pane" data-testid={testId}>
+      <header className="nb-toolbar">
+        <h3 className="nb-toolbar__title">
+          {title}
+          {count !== undefined ? <span className="nb-toolbar__count"> · {count}</span> : null}
+        </h3>
+        {filter}
+      </header>
+      <div className="nb-scroll" data-testid={testId ? `${testId}-scroll` : undefined}>
+        {children}
+      </div>
+    </div>
+  )
+}
+
+/** Vista de detalhe aberta ao clicar num cartão. */
+function Detail({
+  backLabel,
+  onBack,
+  testId,
+  children,
+}: {
+  backLabel: string
+  onBack: () => void
+  testId: string
+  children: ReactNode
+}) {
+  return (
+    <div className="nb-detail" data-testid={testId}>
+      <button type="button" className="nb-back" data-testid="nb-detail-back" onClick={onBack}>
+        ← {backLabel}
+      </button>
+      {children}
+    </div>
+  )
+}
+
+/** Retrato com sprite existente; sem sprite → placeholder neutro consistente. */
+function Portrait({ person, decorative = false }: { person: Pick<Person, 'id' | 'name'>; decorative?: boolean }) {
+  const src = personPortraitSrc(person.id)
+  return (
+    <span
+      className="nb-portrait"
+      data-testid={`portrait-${person.id}`}
+      data-fallback={src ? undefined : 'true'}
+    >
+      {src ? (
+        <img src={src} alt={decorative ? '' : `Retrato de ${person.name}`} loading="lazy" draggable={false} />
+      ) : (
+        <span className="nb-portrait__ph" aria-hidden />
+      )}
+    </span>
+  )
+}
+
 /* ---------------- Pessoas ---------------- */
+function personRelationLine(person: Person, inv: InvestigationState): string {
+  if (person.occupation) return person.occupation
+  const rel = person.relatedPersonIds
+    .filter((id) => isPersonVisibleInRegistry(id, inv))
+    .map((id) => inv.people[id])
+    .find((p): p is Person => Boolean(p))
+  return rel ? `Ligado(a) a ${rel.name}` : 'Relação ainda não confirmada'
+}
+
 function PeopleTab({ inv }: { inv: InvestigationState }) {
   const people = Object.values(inv.people).filter((p) => isPersonVisibleInRegistry(p.id, inv))
   const [sel, setSel] = useState<string | null>(null)
-  const person: Person | undefined = people.find((p) => p.id === sel) ?? people[0]
-  if (!person) return <p className="nb-muted">Nenhuma pessoa registrada ainda.</p>
+  const person: Person | undefined = sel ? people.find((p) => p.id === sel) : undefined
 
-  const relatedEvidence = inv.evidenceOwned
-    .map((id) => inv.evidence[id])
-    .filter((e): e is Evidence => Boolean(e) && e.relatedPersonIds.includes(person.id))
-  const relatedPeople = person.relatedPersonIds
-    .map((id) => inv.people[id])
-    .filter((p): p is Person => Boolean(p))
-  const places = Object.values(inv.locations).filter(
-    (l) => l.status !== 'unknown' && (l.id === person.locationId || l.relatedPersonIds.includes(person.id)),
-  )
+  if (person) {
+    const relatedEvidence = inv.evidenceOwned
+      .map((id) => inv.evidence[id])
+      .filter((e): e is Evidence => Boolean(e) && e.relatedPersonIds.includes(person.id))
+    const relatedPeople = person.relatedPersonIds
+      .map((id) => inv.people[id])
+      .filter((p): p is Person => Boolean(p))
+    const places = Object.values(inv.locations).filter(
+      (l) => l.status !== 'unknown' && (l.id === person.locationId || l.relatedPersonIds.includes(person.id)),
+    )
+    return (
+      <Pane title="Pessoas" count={people.length} testId="nb-people">
+        <Detail backLabel="Todas as pessoas" onBack={() => setSel(null)} testId="nb-person-detail">
+          <article className="nb-page nb-ficha" data-testid={`person-detail-${person.id}`}>
+            <div className="nb-ficha__photo">
+              <Portrait person={person} />
+            </div>
+            <h3 className="nb-name">{person.name}</h3>
+            {person.occupation ? <p className="nb-role">{person.occupation}</p> : null}
+            <p className="nb-status">Situação: {personStatusLabel[person.status]}</p>
+            {person.aliases?.length ? (
+              <p className="nb-muted">Também conhecido(a) como {person.aliases.join(', ')}</p>
+            ) : null}
+
+            <h4>Relação com o caso</h4>
+            {relatedPeople.length ? (
+              <p>
+                Ligado(a) a {relatedPeople.map((p) => p.name).join(', ')}.
+              </p>
+            ) : (
+              <p className="nb-muted">Nenhuma relação confirmada.</p>
+            )}
+
+            {person.notes?.length ? (
+              <>
+                <h4>Informações registradas</h4>
+                <ul className="nb-bullets">
+                  {person.notes.map((n) => (
+                    <li key={n}>{n}</li>
+                  ))}
+                </ul>
+              </>
+            ) : null}
+
+            <h4>Evidências relacionadas</h4>
+            <Chips items={relatedEvidence.map((e) => e.title)} empty="Nenhuma evidência vinculada ainda." />
+
+            <h4>Locais relacionados</h4>
+            <Chips items={places.map((l) => l.name)} empty="Nenhum local associado." />
+          </article>
+        </Detail>
+      </Pane>
+    )
+  }
 
   return (
-    <div className="nb-split">
-      <ul className="nb-list">
-        {people.map((p) => (
-          <li key={p.id}>
-            <button
-              type="button"
-              className="nb-list__item"
-              data-active={p.id === person.id}
-              data-testid={`person-${p.id}`}
-              onClick={() => setSel(p.id)}
-            >
-              <span>{p.name}</span>
-              <small>{personStatusLabel[p.status]}</small>
-            </button>
-          </li>
-        ))}
-      </ul>
-      <article className="nb-page nb-ficha">
-        <h3 className="nb-name">{person.name}</h3>
-        {person.occupation ? <p className="nb-role">{person.occupation}</p> : null}
-        <p className="nb-status">Situação: {personStatusLabel[person.status]}</p>
-        {person.aliases?.length ? <p className="nb-muted">Também conhecido(a) como {person.aliases.join(', ')}</p> : null}
-
-        <h4>Relação com o caso</h4>
-        {relatedPeople.length ? (
-          <p>
-            Ligado(a) a {relatedPeople.map((p) => p.name).join(', ')}.
-          </p>
-        ) : (
-          <p className="nb-muted">Nenhuma relação confirmada.</p>
-        )}
-
-        {person.notes?.length ? (
-          <>
-            <h4>Informações registradas</h4>
-            <ul className="nb-bullets">
-              {person.notes.map((n) => (
-                <li key={n}>{n}</li>
-              ))}
-            </ul>
-          </>
-        ) : null}
-
-        <h4>Evidências relacionadas</h4>
-        <Chips items={relatedEvidence.map((e) => e.title)} empty="Nenhuma evidência vinculada ainda." />
-
-        <h4>Locais relacionados</h4>
-        <Chips items={places.map((l) => l.name)} empty="Nenhum local associado." />
-      </article>
-    </div>
+    <Pane title="Pessoas" count={people.length} testId="nb-people">
+      {!people.length ? (
+        <p className="nb-muted nb-empty">Nenhuma pessoa registrada ainda.</p>
+      ) : (
+        <ul className="nb-cards nb-cards--people" data-testid="people-grid">
+          {people.map((p) => (
+            <li key={p.id}>
+              <button
+                type="button"
+                className="nb-hyp nb-card nb-card--person"
+                data-state={p.status}
+                data-testid={`person-${p.id}`}
+                onClick={() => setSel(p.id)}
+              >
+                <Portrait person={p} decorative />
+                <span className="nb-card__body">
+                  <span className="nb-name nb-card__title">{p.name}</span>
+                  <span className="nb-card__meta">{personRelationLine(p, inv)}</span>
+                  <span
+                    className="nb-badge nb-badge--flat nb-badge--person"
+                    data-person-status={p.status}
+                    data-testid={`person-status-${p.id}`}
+                  >
+                    {personStatusLabel[p.status]}
+                  </span>
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </Pane>
   )
 }
 
@@ -140,81 +258,85 @@ const EVIDENCE_FILTERS = [
   { id: 'fact' as const, label: 'Fatos' },
 ]
 
+/** "Fatos" = material derivado (análise/extração); "Fontes" = originais/incertos. */
+function isDerivedFact(e: Evidence) {
+  return e.originalOrDerived === 'derived' || e.type === 'derived'
+}
+
+const EVIDENCE_GLYPH: Record<EvidenceType, string> = {
+  document: '▤',
+  audio: '♪',
+  photo: '▣',
+  message: '✉',
+  physical: '◈',
+  digital: '▥',
+  derived: '◇',
+  other: '•',
+}
+
 function EvidenceTab({ inv, focusId }: { inv: InvestigationState; focusId: string | null }) {
-  const owned = inv.evidenceOwned
-    .map((id) => inv.evidence[id])
-    .filter((e): e is Evidence => Boolean(e) && !e.catalogHidden)
+  const owned = useMemo(
+    () =>
+      inv.evidenceOwned
+        .map((id) => inv.evidence[id])
+        .filter((e): e is Evidence => Boolean(e) && !e.catalogHidden),
+    [inv.evidenceOwned, inv.evidence],
+  )
+  const hasFacts = owned.some(isDerivedFact)
+  const hasSources = owned.some((e) => !isDerivedFact(e))
+  // O filtro só tem função quando existem as duas classes; senão fica oculto e nunca bloqueia conteúdo.
+  const filterUseful = hasFacts && hasSources
   const [filter, setFilter] = useState<EvidenceFilter>('all')
-  const items = owned.filter((e) => {
-    if (filter === 'all') return true
-    const fact = e.originalOrDerived === 'derived' || e.type === 'derived'
-    return filter === 'fact' ? fact : !fact
-  })
+  const activeFilter: EvidenceFilter = filterUseful ? filter : 'all'
+  const items = useMemo(
+    () =>
+      owned.filter((e) =>
+        activeFilter === 'all' ? true : activeFilter === 'fact' ? isDerivedFact(e) : !isDerivedFact(e),
+      ),
+    [owned, activeFilter],
+  )
   const [sel, setSel] = useState<string | null>(focusId)
   useEffect(() => {
     if (focusId) setSel(focusId)
   }, [focusId])
-  const itemIds = items.map((e) => e.id).join('|')
-  useEffect(() => {
-    if (sel && !itemIds.split('|').includes(sel)) setSel(items[0]?.id ?? null)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- só reage a mudança de filtro/lista
-  }, [filter, itemIds])
-  const ev = items.find((e) => e.id === sel) ?? items[0]
+  // Foco vindo de fora abre a evidência mesmo que o filtro a esconda.
+  const ev = sel ? owned.find((e) => e.id === sel) : undefined
 
-  const doc = ev?.contentRef ? seedDocuments.find((d) => d.id === ev.contentRef) : undefined
-  const content = ev ? (ev.description ?? doc?.blocks[0]?.text) : undefined
-  const people = ev
-    ? (ev.relatedPersonIds.map((id) => inv.people[id]?.name).filter(Boolean) as string[])
-    : []
-  const places = ev
-    ? ev.relatedLocationIds
-        .map((id) => inv.locations[id])
-        .filter((l): l is Location => Boolean(l) && l.status !== 'unknown')
-        .map((l) => l.name)
-    : []
-  const parent = ev?.sourceId ? inv.evidence[ev.sourceId] : undefined
-  const protectedItem = ev ? ev.exportable === false || ev.deviceLocked : false
+  const summaries = useMemo(() => {
+    const docs = new Map(seedDocuments.map((d) => [d.id, d]))
+    return new Map(
+      items.map((e) => {
+        const doc = e.contentRef ? docs.get(e.contentRef) : undefined
+        return [e.id, clampSummary(e.description ?? doc?.blocks[0]?.text)] as const
+      }),
+    )
+  }, [items])
 
-  return (
-    <div className="nb-split nb-split--index">
-      <div className="nb-index">
-        <CasebookFilterBar
-          ariaLabel="Filtrar evidências"
-          options={EVIDENCE_FILTERS}
-          value={filter}
-          onChange={setFilter}
-        />
-        {!owned.length ? (
-          <p className="nb-muted nb-empty">Nenhuma evidência reunida ainda.</p>
-        ) : !items.length ? (
-          <p className="nb-muted nb-empty">Nenhuma evidência desta categoria foi registrada.</p>
-        ) : (
-          <ul className="nb-list">
-            {items.map((e) => (
-              <li key={e.id}>
-                <button
-                  type="button"
-                  className="nb-list__item"
-                  data-active={e.id === ev?.id}
-                  onClick={() => setSel(e.id)}
-                >
-                  <span>{e.title}</span>
-                  <small>{evidenceTypeLabel[e.type]}</small>
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-      <article className="nb-page">
-        {!ev ? (
-          <p className="nb-muted nb-empty">
-            {owned.length
-              ? 'Nenhuma evidência desta categoria foi registrada.'
-              : 'Selecione uma evidência na lista.'}
-          </p>
-        ) : (
-          <>
+  const filterNode = filterUseful ? (
+    <CasebookFilterBar
+      compact
+      ariaLabel="Filtrar evidências"
+      options={EVIDENCE_FILTERS}
+      value={filter}
+      onChange={setFilter}
+      testIdPrefix="evidence-filter"
+    />
+  ) : undefined
+
+  if (ev) {
+    const doc = ev.contentRef ? seedDocuments.find((d) => d.id === ev.contentRef) : undefined
+    const content = ev.description ?? doc?.blocks[0]?.text
+    const people = ev.relatedPersonIds.map((id) => inv.people[id]?.name).filter(Boolean) as string[]
+    const places = ev.relatedLocationIds
+      .map((id) => inv.locations[id])
+      .filter((l): l is Location => Boolean(l) && l.status !== 'unknown')
+      .map((l) => l.name)
+    const parent = ev.sourceId ? inv.evidence[ev.sourceId] : undefined
+    const protectedItem = ev.exportable === false || ev.deviceLocked
+    return (
+      <Pane title="Evidências" count={items.length} testId="nb-evidence">
+        <Detail backLabel="Todas as evidências" onBack={() => setSel(null)} testId="nb-evidence-detail">
+          <article className="nb-page" data-testid={`evidence-detail-${ev.id}`}>
             <h3 className="nb-name">{ev.title}</h3>
             <p className="nb-role">{evidenceTypeLabel[ev.type]}</p>
             <dl className="nb-dl">
@@ -250,10 +372,62 @@ function EvidenceTab({ inv, focusId }: { inv: InvestigationState; focusId: strin
             <Chips items={people} empty="—" />
             <h4>Locais</h4>
             <Chips items={places} empty="—" />
-          </>
-        )}
-      </article>
-    </div>
+          </article>
+        </Detail>
+      </Pane>
+    )
+  }
+
+  return (
+    <Pane title="Evidências" count={items.length} filter={filterNode} testId="nb-evidence">
+      {!owned.length ? (
+        <p className="nb-muted nb-empty">Nenhuma evidência reunida ainda.</p>
+      ) : !items.length ? (
+        <p className="nb-muted nb-empty">Nenhuma evidência desta categoria foi registrada.</p>
+      ) : (
+        <ul className="nb-cards nb-cards--tiles" data-testid="evidence-grid">
+          {items.map((e) => {
+            const summary = summaries.get(e.id) ?? ''
+            const protectedItem = e.exportable === false || e.deviceLocked
+            const integrity = e.integrity ? integrityLabel(e.integrity) : null
+            return (
+              <li key={e.id}>
+                <button
+                  type="button"
+                  className="nb-hyp nb-card nb-card--evidence"
+                  data-state={e.originalOrDerived}
+                  data-type={e.type}
+                  data-testid={`nb-evidence-${e.id}`}
+                  onClick={() => setSel(e.id)}
+                >
+                  <span className="nb-card__icon" aria-hidden>
+                    {EVIDENCE_GLYPH[e.type]}
+                  </span>
+                  <span className="nb-card__body">
+                    <span className="nb-card__kicker">
+                      {evidenceTypeLabel[e.type]} · {evidenceSourceLabel(e)}
+                    </span>
+                    <span className="nb-name nb-card__title">{e.title}</span>
+                    {summary ? <span className="nb-card__summary">{summary}</span> : null}
+                    <span className="nb-card__states">
+                      <span className="nb-badge nb-badge--flat" data-state-origin={e.originalOrDerived}>
+                        {evidenceOriginLabel(e.originalOrDerived)}
+                      </span>
+                      {integrity ? (
+                        <span className="nb-badge nb-badge--flat" data-integrity={e.integrity}>
+                          {integrity}
+                        </span>
+                      ) : null}
+                      {protectedItem ? <span className="nb-badge nb-badge--flat">No aparelho</span> : null}
+                    </span>
+                  </span>
+                </button>
+              </li>
+            )
+          })}
+        </ul>
+      )}
+    </Pane>
   )
 }
 
@@ -261,43 +435,87 @@ function EvidenceTab({ inv, focusId }: { inv: InvestigationState; focusId: strin
 function LocationsTab({ inv }: { inv: InvestigationState }) {
   const places = Object.values(inv.locations).filter((l) => l.status !== 'unknown')
   const [sel, setSel] = useState<string | null>(null)
-  const place = places.find((l) => l.id === sel) ?? places[0]
-  if (!place) return <p className="nb-muted">Nenhum local conhecido.</p>
-  const people = place.relatedPersonIds.map((id) => inv.people[id]?.name).filter(Boolean) as string[]
-  const evidence = inv.evidenceOwned
-    .map((id) => inv.evidence[id])
-    .filter((e): e is Evidence => Boolean(e) && e.relatedLocationIds.includes(place.id))
-    .map((e) => e.title)
+  const place = sel ? places.find((l) => l.id === sel) : undefined
+
+  const evidenceFor = (placeId: string) =>
+    inv.evidenceOwned
+      .map((id) => inv.evidence[id])
+      .filter((e): e is Evidence => Boolean(e) && !e.catalogHidden && e.relatedLocationIds.includes(placeId))
+  const peopleFor = (l: Location) =>
+    l.relatedPersonIds.map((id) => inv.people[id]?.name).filter(Boolean) as string[]
+
+  if (place) {
+    const people = peopleFor(place)
+    const evidence = evidenceFor(place.id).map((e) => e.title)
+    return (
+      <Pane title="Locais" count={places.length} testId="nb-locations">
+        <Detail backLabel="Todos os locais" onBack={() => setSel(null)} testId="nb-location-detail">
+          <article className="nb-page" data-testid={`location-detail-${place.id}`}>
+            <h3 className="nb-name">{place.name}</h3>
+            <p className="nb-role">{locationStatusLabel[place.status]}</p>
+            {place.description ? <p>{place.description}</p> : null}
+            <h4>Pessoas relacionadas</h4>
+            <Chips items={people} empty="—" />
+            <h4>Evidências</h4>
+            <Chips items={evidence} empty="Nenhuma evidência ligada a este local." />
+            <h4>Visitas</h4>
+            <p className="nb-muted">
+              {place.status === 'visitAvailable'
+                ? 'Endereço anotado. Para ir até lá, abra o mapa.'
+                : place.status === 'visited'
+                  ? 'Local já visitado.'
+                  : 'Anotado no caderno.'}
+            </p>
+          </article>
+        </Detail>
+      </Pane>
+    )
+  }
+
   return (
-    <div className="nb-split">
-      <ul className="nb-list">
-        {places.map((l) => (
-          <li key={l.id}>
-            <button type="button" className="nb-list__item" data-active={l.id === place.id} onClick={() => setSel(l.id)}>
-              <span>{l.name}</span>
-              <small>{locationStatusLabel[l.status]}</small>
-            </button>
-          </li>
-        ))}
-      </ul>
-      <article className="nb-page">
-        <h3 className="nb-name">{place.name}</h3>
-        <p className="nb-role">{locationStatusLabel[place.status]}</p>
-        {place.description ? <p>{place.description}</p> : null}
-        <h4>Pessoas relacionadas</h4>
-        <Chips items={people} empty="—" />
-        <h4>Evidências</h4>
-        <Chips items={evidence} empty="Nenhuma evidência ligada a este local." />
-        <h4>Visitas</h4>
-        <p className="nb-muted">
-          {place.status === 'visitAvailable'
-            ? 'Endereço anotado. Para ir até lá, abra o mapa.'
-            : place.status === 'visited'
-              ? 'Local já visitado.'
-              : 'Anotado no caderno.'}
-        </p>
-      </article>
-    </div>
+    <Pane title="Locais" count={places.length} testId="nb-locations">
+      {!places.length ? (
+        <p className="nb-muted nb-empty">Nenhum local conhecido.</p>
+      ) : (
+        <ul className="nb-cards nb-cards--tiles" data-testid="locations-grid">
+          {places.map((l) => {
+            const nPeople = peopleFor(l).length
+            const nEvidence = evidenceFor(l.id).length
+            const summary = clampSummary(l.description, 100)
+            return (
+              <li key={l.id}>
+                <button
+                  type="button"
+                  className="nb-hyp nb-card nb-card--location"
+                  data-state={l.status}
+                  data-testid={`nb-location-${l.id}`}
+                  onClick={() => setSel(l.id)}
+                >
+                  <span className="nb-card__body">
+                    <span className="nb-card__kicker">Local</span>
+                    <span className="nb-name nb-card__title">{l.name}</span>
+                    {summary ? <span className="nb-card__summary">{summary}</span> : null}
+                    <span className="nb-card__states">
+                      <span className="nb-badge nb-badge--flat">{locationStatusLabel[l.status]}</span>
+                      {nPeople ? (
+                        <span className="nb-card__count">
+                          {nPeople} {nPeople === 1 ? 'pessoa' : 'pessoas'}
+                        </span>
+                      ) : null}
+                      {nEvidence ? (
+                        <span className="nb-card__count">
+                          {nEvidence} {nEvidence === 1 ? 'evidência' : 'evidências'}
+                        </span>
+                      ) : null}
+                    </span>
+                  </span>
+                </button>
+              </li>
+            )
+          })}
+        </ul>
+      )}
+    </Pane>
   )
 }
 
@@ -436,15 +654,15 @@ function ContradictionsTab({ inv }: { inv: InvestigationState }) {
   return (
     <div className="nb-contra" data-testid="contradiction-panel">
       {list.length ? (
-        <ul className="nb-confirmed" data-testid="contradiction-list">
+        <ul className="nb-cards nb-cards--tiles" data-testid="contradiction-list">
           {list.map((c) => {
             const def = contradictionDefs.find((d) => d.id === c.id)
             return (
-              <li key={c.id} data-testid={`contradiction-${c.id}`}>
+              <li key={c.id} className="nb-hyp nb-card nb-card--static" data-testid={`contradiction-${c.id}`}>
                 <span className="nb-badge nb-badge--stamp">Contradição registrada</span>
-                <strong>{def?.summary ?? 'Registro sem descrição'}</strong>
+                <strong className="nb-name nb-card__title">{def?.summary ?? 'Registro sem descrição'}</strong>
                 {def ? (
-                  <small>
+                  <small className="nb-card__meta">
                     {titleOf(inv, def.evidenceAId)} × {titleOf(inv, def.evidenceBId)}
                   </small>
                 ) : null}

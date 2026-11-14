@@ -59,12 +59,20 @@ export function NVLView({
   )
 }
 
-export function BacklogView({ lines, onClose }: { lines: VnLine[]; onClose: () => void }) {
+export function BacklogView({
+  lines,
+  onClose,
+  title = 'Registro',
+}: {
+  lines: VnLine[]
+  onClose: () => void
+  title?: string
+}) {
   return (
-    <div className="vn-backlog" data-testid="vn-backlog">
+    <div className="vn-backlog" data-testid="vn-backlog" data-vn-history-scroll>
       <div className="vn-nvl__veil" aria-hidden />
       <header className="vn-backlog__bar">
-        <span>Registro</span>
+        <span>{title}</span>
         <button type="button" className="vn-backlog__close" onClick={onClose}>
           Fechar
         </button>

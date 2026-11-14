@@ -3,6 +3,7 @@ import { HEX_PIN } from '../../data/block04/hexagonPuzzle'
 import type { ChatMessage } from '../../types/messaging'
 import type {
   ChatProgress,
+  DevPuzzleCompletionRecord,
   ForensicDerivedArtifact,
   InvestigationState,
   StoryActionRef,
@@ -27,6 +28,8 @@ type Listener = () => void
 
 let state: InvestigationState = createInitialState()
 const listeners = new Set<Listener>()
+/** >0 enquanto handlers reais rodam sobre um estado isolado (replay DEV / testes). */
+let sandboxDepth = 0
 
 function emit() {
   listeners.forEach((l) => l())
@@ -34,8 +37,38 @@ function emit() {
 
 function commit(next: InvestigationState, persist = true) {
   state = runStoryEngine(next)
+  if (sandboxDepth > 0) return
   if (persist) saveGame(state)
   emit()
+}
+
+/**
+ * Executa handlers reais (que leem/escrevem o store global) sobre `initial`, sem persistir,
+ * sem notificar a UI e sem tocar no estado vivo. Devolve o estado resultante.
+ */
+export function runInStoreSandbox(initial: InvestigationState, fn: () => void): InvestigationState {
+  const saved = state
+  state = initial
+  sandboxDepth++
+  try {
+    fn()
+    return state
+  } finally {
+    sandboxDepth--
+    state = saved
+  }
+}
+
+/** DEV: substitui o estado vivo mantendo discoveries (cartões de conquista etc.). */
+export function commitDevState(next: InvestigationState) {
+  commit(next)
+}
+
+export function markDevPuzzleCompletion(record: DevPuzzleCompletionRecord) {
+  commit({
+    ...state,
+    devPuzzleCompletions: { ...(state.devPuzzleCompletions ?? {}), [record.puzzleId]: record },
+  })
 }
 
 export function getInvestigationState(): InvestigationState {
@@ -344,9 +377,17 @@ export function restoreGameSnapshot(snapshot: GameSaveSnapshot, opts?: { persist
   emit()
 }
 
-/** Carrega checkpoint DEV a partir de actions cumulativas (sempre do zero). */
+/** @deprecated Preferir `loadDevCheckpointState` com estado do manifesto canônico. */
 export function loadDevCheckpoint(actions: StoryActionRef[]) {
-  const built = buildStateFromActions(actions)
+  loadDevCheckpointState(buildStateFromActions(actions))
+}
+
+/**
+ * Carrega um estado DEV já construído do zero pelo mesmo pipeline do Load normal
+ * (snapshot → migração → repair → engine). O board é reconstruído a partir do estado.
+ */
+export function loadDevCheckpointState(built: InvestigationState) {
+  resetLinkBoardSession()
   restoreGameSnapshot(createGameSaveSnapshot(built, null), { persist: true })
 }
 

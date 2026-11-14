@@ -1,16 +1,18 @@
+import { UiGlyph, type UiGlyphName } from '../../components/UiGlyph'
+
 interface DeviceSettingsAppProps {
   onBack: () => void
 }
 
-const rows: { label: string; value?: string; icon: string }[] = [
-  { icon: '📶', label: 'Wi-Fi', value: 'Rede_Casa_5G' },
-  { icon: '🔵', label: 'Bluetooth', value: 'Ativado' },
-  { icon: '🔔', label: 'Notificações' },
-  { icon: '⚙️', label: 'Geral' },
-  { icon: '🌗', label: 'Tela e brilho' },
-  { icon: '🔒', label: 'Privacidade' },
-  { icon: '🔋', label: 'Bateria', value: '63%' },
-  { icon: '💾', label: 'Armazenamento', value: '41 GB de 128 GB' },
+const rows: { label: string; value?: string; icon: UiGlyphName }[] = [
+  { icon: 'wifi', label: 'Wi-Fi', value: 'Rede_Casa_5G' },
+  { icon: 'bluetooth', label: 'Bluetooth', value: 'Ativado' },
+  { icon: 'bell', label: 'Notificações' },
+  { icon: 'gear', label: 'Geral' },
+  { icon: 'contrast', label: 'Tela e brilho' },
+  { icon: 'lock', label: 'Privacidade' },
+  { icon: 'battery', label: 'Bateria', value: '63%' },
+  { icon: 'storage', label: 'Armazenamento', value: '41 GB de 128 GB' },
 ]
 
 /** Ajustes comuns: nenhuma linha leva a lugar nenhum. O diário não está aqui nem em nenhum fluxo normal. */
@@ -25,7 +27,7 @@ export function DeviceSettingsApp({ onBack }: DeviceSettingsAppProps) {
         {rows.map((r) => (
           <li key={r.label} className="device-settings__row">
             <span className="device-settings__icon" aria-hidden>
-              {r.icon}
+              <UiGlyph name={r.icon} />
             </span>
             <span className="device-settings__label">{r.label}</span>
             {r.value ? <span className="device-settings__value">{r.value}</span> : null}

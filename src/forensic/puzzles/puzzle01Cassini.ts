@@ -28,7 +28,8 @@ const CLIPS: AudioClipConfig[] = [
   { id: 'c2', src: SRC.b, startSec: 12.5, durationSec: 1.593, gainDb: -2 },
   { id: 'c3', src: SRC.c, startSec: 22.0, durationSec: 1.045, gainDb: 0 },
   { id: 'c4', src: SRC.d, startSec: 29.5, durationSec: 1.071, gainDb: -1 },
-  { id: 'c5', src: SRC.e, startSec: 38.5, durationSec: 0.967, gainDb: 1 },
+  // gainDb mais baixo: no raw a presença de voz existe, mas a frase não deve ser clara.
+  { id: 'c5', src: SRC.e, startSec: 38.5, durationSec: 0.967, gainDb: -6 },
 ]
 
 /**
@@ -96,10 +97,11 @@ export const puzzle01SpeechSegments: SpeechSegment[] = [
     durationSec: 0.967,
     clarityThreshold: 0.7,
     recoveryWeights: { center: 0.8, depth: 0.15, width: 0.05, noise: 0 },
-    voiceWeight: 1.05,
-    toneWeight: 0.9,
-    noiseWeight: 0.22,
-    debrisWeight: 0.25,
+    voiceWeight: 1.0,
+    // Máscara extra no raw / parcialmente processado — só notch adequado + playback abre a frase.
+    toneWeight: 1.55,
+    noiseWeight: 0.55,
+    debrisWeight: 0.7,
   },
 ]
 
@@ -132,6 +134,11 @@ const DEBRIS: DebrisFragment[] = [
   { src: SRC.a, sourceOffsetSec: 1.8, durationMs: 62, timelineSec: 37.55, gainDb: -23, reverse: true },
   { src: SRC.c, sourceOffsetSec: 0.2, durationMs: 48, timelineSec: 39.75, gainDb: -18, reverse: true },
   { src: SRC.d, sourceOffsetSec: 0.4, durationMs: 96, timelineSec: 40.85, gainDb: -22, reverse: true },
+  // Debris leve extra sob "eu não lembro" (raw menos inteligível; notch + play recupera).
+  { src: SRC.e, sourceOffsetSec: 0.05, durationMs: 85, timelineSec: 38.35, gainDb: -12, reverse: true },
+  { src: SRC.a, sourceOffsetSec: 0.3, durationMs: 70, timelineSec: 38.55, gainDb: -14, reverse: false },
+  { src: SRC.e, sourceOffsetSec: 0.4, durationMs: 90, timelineSec: 38.75, gainDb: -11, reverse: true },
+  { src: SRC.b, sourceOffsetSec: 0.15, durationMs: 65, timelineSec: 39.05, gainDb: -13, reverse: true },
 ]
 
 const VOICE_WINDOWS = CLIPS.map((c) => ({
@@ -147,7 +154,8 @@ const TONE_WINDOWS = [
   { startSec: 12.2, endSec: 14.4, gain: 0.2, weight: 0.2 },
   { startSec: 21.75, endSec: 23.35, gain: 1.25, weight: 1.25 },
   { startSec: 29.2, endSec: 30.9, gain: 2.05, weight: 2.05 },
-  { startSec: 38.2, endSec: 39.75, gain: 1.05, weight: 1.05 },
+  // Tom mais forte sob "eu não lembro" no raw (notch 1700 deve importar).
+  { startSec: 38.2, endSec: 39.75, gain: 1.85, weight: 1.85 },
 ]
 
 /** Ruído elevado em "desde aquela noite". */

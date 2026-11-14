@@ -1,4 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react'
+import { VnSceneHistoryProvider } from '../../../lib/vnSceneHistory'
 import { VNTopBar } from './VNTopBar'
 import '../../../styles/visual-novel.css'
 
@@ -16,9 +17,11 @@ export function VNSceneShell({
   children: ReactNode
 }) {
   return (
-    <div className="vn-scene" data-testid={testId} style={backgroundStyle}>
-      <VNTopBar title={title} onClose={onClose} />
-      {children}
-    </div>
+    <VnSceneHistoryProvider>
+      <div className="vn-scene" data-testid={testId} style={backgroundStyle}>
+        <VNTopBar title={title} onClose={onClose} />
+        {children}
+      </div>
+    </VnSceneHistoryProvider>
   )
 }

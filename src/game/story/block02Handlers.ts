@@ -1,4 +1,5 @@
-import { dispatchActions, getInvestigationState } from '../state/investigationStore'
+import { verticeTopicFlags, type VerticeTopicId } from '../../data/block02/verticeInterview'
+import { dispatchActions, getInvestigationState, setFlag } from '../state/investigationStore'
 import type { StoryActionRef } from '../types'
 
 /** Rafael encaminhou o áudio e o jogador o abriu no WhatsApp de Augusto. */
@@ -41,6 +42,29 @@ export function completeVerticeTopic(topicFlag: string, actions: StoryActionRef[
   const s = getInvestigationState()
   if (s.flags[topicFlag]) return
   dispatchActions([{ type: 'setFlag', id: topicFlag, value: true }, ...actions])
+}
+
+/** Conclui um tópico da visita ao Vértice (mesma lógica da cena). */
+export function completeVerticeTopicById(topic: VerticeTopicId) {
+  const flag = verticeTopicFlags[topic]
+  if (topic === 'iara') {
+    completeVerticeTopic(flag, [
+      { type: 'addEvidence', id: 'mariana_vertice_visit' },
+      { type: 'addEvidence', id: 'mariana_repeated_questions' },
+    ])
+  } else if (topic === 'archive') {
+    finishVerticeArchive()
+    setFlag(flag, true)
+  } else {
+    completeVerticeTopic(flag)
+  }
+}
+
+export function finishVerticeVisit() {
+  dispatchActions([
+    { type: 'unlockLocation', id: 'vertice', status: 'visited' },
+    { type: 'setFlag', id: 'block02_vertice_visit_done', value: true },
+  ])
 }
 
 export function finishVerticeArchive() {

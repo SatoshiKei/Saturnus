@@ -17,6 +17,7 @@ import {
   type SegmentClarity,
 } from '../forensicEngine'
 import { RfWaterfall } from './RfWaterfall'
+import { opaqueSegmentLabel } from '../opaqueSegmentId'
 
 const HELP: Record<string, string> = {
   Gain: 'Ajusta amplitude linear da seleção ou da faixa ativa (dB).',
@@ -1545,11 +1546,11 @@ export function Inspector({
               <Section title="DEV — segment clarity">
                 <ul className="fw-recovered fw-recovered--debug">
                   {clarityDebug.map((c) => {
-                    const seg = source?.speechSegments?.find((s) => s.id === c.segmentId)
-                    const label = c.unlocked ? (seg?.text ?? c.segmentId) : c.segmentId
+                    // Nunca mostrar texto da fala aqui — só ID opaco + métricas.
+                    const label = opaqueSegmentLabel(c.segmentId)
                     return (
-                      <li key={c.segmentId} className="fw-mono">
-                        <div>{label.toUpperCase()}</div>
+                      <li key={c.segmentId} className="fw-mono" data-testid={`dev-notes-clarity-${c.segmentId}`}>
+                        <div>{label}</div>
                         <div>
                           center {c.centerContribution.toFixed(2)} depth {c.depthContribution.toFixed(2)}{' '}
                           width {c.widthContribution.toFixed(2)} noise {c.noiseContribution.toFixed(2)}
@@ -1559,7 +1560,7 @@ export function Inspector({
                         </div>
                         <div>
                           clarity {c.clarityScore.toFixed(2)} / threshold {c.threshold.toFixed(2)}{' '}
-                          {c.unlocked ? 'UNLOCKED' : 'LOCKED'}
+                          {c.unlocked ? 'INTELLIGIBLE' : 'LOCKED'}
                         </div>
                       </li>
                     )

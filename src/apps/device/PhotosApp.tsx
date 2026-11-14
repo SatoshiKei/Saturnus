@@ -1,60 +1,59 @@
-import { useState, useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useGameHub } from '../../app/GameHubContext'
-import {
-  augustoPhotosLibrary,
-  marianaPhotosLibrary,
-  type PhoneMediaItem,
-} from '../../data/block01/phoneMedia'
+import { photosForDevice, type PhonePhotoItem } from '../../data/block01/phoneMedia'
 import { contactAvatarSrc } from '../../lib/characterSprites'
-import { assetPath } from '../../lib/assetPath'
 
 interface PhotosAppProps {
   onBack: () => void
 }
 
-const MARIANA_EXTRA: PhoneMediaItem[] = [
-  { id: 'mp-5', label: 'Café — manhã', folder: 'Câmera' },
-  { id: 'mp-6', label: 'Corredor do hospital', folder: 'Câmera' },
-  { id: 'mp-7', label: 'Tela bloqueada', folder: 'Câmera' },
-  { id: 'mp-8', label: 'Selfie — plantão', spriteId: 'mariana', folder: 'Câmera' },
-  { id: 'mp-9', label: 'Rua — chuva', folder: 'Câmera' },
-  { id: 'mp-10', label: 'Documentos na mesa', folder: 'Câmera' },
-]
-
+/**
+ * Fotos: carrega SOMENTE o acervo do aparelho ativo (`photosForDevice`).
+ * Miniaturas não têm texto sobreposto; metadados ficam no cabeçalho e no painel do visualizador.
+ */
 export function PhotosApp({ onBack }: PhotosAppProps) {
   const { phoneDevice } = useGameHub()
-  const base = phoneDevice === 'augusto' ? augustoPhotosLibrary : marianaPhotosLibrary
-  const items = phoneDevice === 'mariana' ? [...base, ...MARIANA_EXTRA] : base
+  const items = photosForDevice(phoneDevice)
   const [viewer, setViewer] = useState<number | null>(null)
+
+  // Trocar de aparelho nunca mantém um índice de foto do outro acervo.
+  useEffect(() => setViewer(null), [phoneDevice])
 
   const closeViewer = useCallback(() => setViewer(null), [])
   const step = useCallback(
     (delta: number) => {
       setViewer((v) => {
-        if (v === null) return v
+        if (v === null || items.length === 0) return v
         return (v + delta + items.length) % items.length
       })
     },
     [items.length],
   )
 
+  const current = viewer !== null ? items[viewer] : undefined
+
   return (
-    <div className="ios-photos" data-testid="photos-app">
+    <div className="ios-photos" data-testid="photos-app" data-device={phoneDevice}>
       <header className="ios-app-header ios-app-header--photos">
-        <button type="button" className="ios-app-header__back" onClick={onBack}>
+        <button type="button" className="ios-app-header__back" data-testid="photos-back" onClick={onBack}>
           ‹ Início
         </button>
         <h1>Fotos</h1>
-        <p className="ios-photos__sub">Biblioteca · {items.length}</p>
+        <p className="ios-photos__sub">
+          {items.length} {items.length === 1 ? 'item' : 'itens'}
+        </p>
       </header>
-      <ul className="ios-photos__grid ios-photos__grid--rich">
-        {items.map((item, index) => (
-          <MediaTile key={item.id} item={item} onOpen={() => setViewer(index)} />
-        ))}
-      </ul>
-      {viewer !== null ? (
+      <div className="ios-photos__scroll" data-testid="photos-scroll">
+        <ul className="ios-photos__grid" data-testid="photos-grid">
+          {items.map((item, index) => (
+            <PhotoTile key={item.id} item={item} onOpen={() => setViewer(index)} />
+          ))}
+        </ul>
+        {items.length === 0 ? <p className="ios-photos__empty">Nenhuma foto.</p> : null}
+      </div>
+      {current && viewer !== null ? (
         <PhotoViewer
-          item={items[viewer]}
+          item={current}
           index={viewer}
           total={items.length}
           onClose={closeViewer}
@@ -66,25 +65,22 @@ export function PhotosApp({ onBack }: PhotosAppProps) {
   )
 }
 
-function MediaTile({ item, onOpen }: { item: PhoneMediaItem; onOpen: () => void }) {
-  const src = item.spriteId ? contactAvatarSrc(item.spriteId) : undefined
+function PhotoTile({ item, onOpen }: { item: PhonePhotoItem; onOpen: () => void }) {
+  const src = contactAvatarSrc(item.spriteId)
   return (
-    <li className="ios-photos__tile">
-      <button type="button" className="ios-photos__tile-btn" onClick={onOpen}>
-        <figure>
-          {src ? (
-            <img src={src} alt="" className="ios-photos__img" />
-          ) : (
-            <span
-              className="ios-photos__placeholder"
-              style={{
-                backgroundImage: `url(${assetPath('/assets/scene/hub-office-bg.jpg')})`,
-              }}
-              aria-hidden
-            />
-          )}
-          <figcaption>{item.label}</figcaption>
-        </figure>
+    <li className="ios-photos__tile" data-photo-id={item.id}>
+      <button
+        type="button"
+        className="ios-photos__tile-btn"
+        data-testid={`photo-tile-${item.id}`}
+        aria-label={`Abrir foto: ${item.label}`}
+        onClick={onOpen}
+      >
+        {src ? (
+          <img src={src} alt="" className="ios-photos__img" loading="lazy" draggable={false} />
+        ) : (
+          <span className="ios-photos__placeholder" aria-hidden />
+        )}
       </button>
     </li>
   )
@@ -98,39 +94,41 @@ function PhotoViewer({
   onPrev,
   onNext,
 }: {
-  item: PhoneMediaItem
+  item: PhonePhotoItem
   index: number
   total: number
   onClose: () => void
   onPrev: () => void
   onNext: () => void
 }) {
-  const src = item.spriteId ? contactAvatarSrc(item.spriteId) : assetPath('/assets/scene/hub-office-bg.jpg')
+  const src = contactAvatarSrc(item.spriteId)
   return (
-    <div className="ios-photos-viewer" data-testid="photos-viewer" role="dialog">
+    <div className="ios-photos-viewer" data-testid="photos-viewer" data-photo-id={item.id} role="dialog" aria-label={item.label}>
       <header className="ios-photos-viewer__head">
-        <button type="button" onClick={onClose} aria-label="Fechar">
-          ‹
+        <button type="button" className="ios-photos-viewer__back" data-testid="photos-viewer-back" onClick={onClose}>
+          ‹ Fotos
         </button>
-        <span>
-          {index + 1} / {total}
+        <span className="ios-photos-viewer__count">
+          {index + 1} de {total}
         </span>
       </header>
-      <figure className="ios-photos-viewer__stage">
-        <img src={src} alt={item.label} />
-        <figcaption>
-          <strong>{item.label}</strong>
-          {item.folder ? <span>{item.folder}</span> : null}
-        </figcaption>
-      </figure>
-      <nav className="ios-photos-viewer__nav" aria-label="Navegar fotos">
-        <button type="button" onClick={onPrev}>
-          Anterior
-        </button>
-        <button type="button" onClick={onNext}>
-          Próxima
-        </button>
-      </nav>
+      <div className="ios-photos-viewer__stage">
+        {src ? <img src={src} alt={item.label} draggable={false} /> : null}
+      </div>
+      <footer className="ios-photos-viewer__info">
+        <strong>{item.label}</strong>
+        {item.folder ? <span>{item.folder}</span> : null}
+      </footer>
+      {total > 1 ? (
+        <nav className="ios-photos-viewer__nav" aria-label="Navegar fotos">
+          <button type="button" data-testid="photos-viewer-prev" onClick={onPrev}>
+            Anterior
+          </button>
+          <button type="button" data-testid="photos-viewer-next" onClick={onNext}>
+            Próxima
+          </button>
+        </nav>
+      ) : null}
     </div>
   )
 }

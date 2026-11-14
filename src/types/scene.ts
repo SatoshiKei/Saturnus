@@ -41,6 +41,10 @@ export interface SceneObjectDef {
   hit?: HitRect
   /** Qual aparelho um objeto `phone` representa */
   phoneDevice?: 'mariana' | 'augusto'
+  /**
+   * Miniatura viva sobre o asset (mesmo estado/render do painel). `rect` = área útil (fração do objeto).
+   */
+  miniature?: { kind: 'link-board'; rect: HitRect }
   /** Aproximação de câmera ao abrir o painel (1 = sem zoom) */
   focusZoom?: number
   /** Ponto de foco da câmera (fração do objeto); padrão = centro */

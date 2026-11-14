@@ -196,15 +196,20 @@ export interface SpeechRecoveryWeights {
   noise: number
 }
 
-/** Segmento de fala analisável — unlock automático por clareza, sem input do jogador. */
+/** Segmento de fala analisável — unlock por clareza + audição (Recovered Speech). */
 export interface SpeechSegment {
+  /**
+   * Id interno estável (save/compat). Pode ser semântico (`seg_lembro`).
+   * Nunca exibir ao jogador — usar `opaqueSegmentLabel(id)`.
+   */
   id: string
+  /** Texto canónico — só em Recovered Speech após audição da região inteligível. */
   text: string
   startSec: number
   durationSec: number
   /** Id do clip limpo correspondente (ganho perceptivo por segmento). */
   clipId?: string
-  /** Threshold 0..1 do score ponderado para registrar o trecho. */
+  /** Threshold 0..1 do score ponderado para tornar a região inteligível. */
   clarityThreshold: number
   recoveryWeights: SpeechRecoveryWeights
   /**
