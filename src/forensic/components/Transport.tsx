@@ -1,6 +1,8 @@
+import { useEffect, useRef, type MutableRefObject } from 'react'
 import { PLAYBACK_RATES } from '../forensicTypes'
 import { fmtTime } from '../forensicEngine'
 import type { SelectionRange } from '../forensicTypes'
+import type { PlayheadLiveClock } from '../playheadLive'
 
 function fmtPrecise(sec: number): string {
   const s = Math.max(0, sec)
@@ -27,6 +29,7 @@ export function Transport({
   onSkipSelEnd,
   onBypass,
   onReset,
+  playheadLive,
 }: {
   playing: boolean
   playheadSec: number
@@ -45,9 +48,31 @@ export function Transport({
   onSkipSelEnd: () => void
   onBypass: (v: boolean) => void
   onReset: () => void
+  playheadLive?: MutableRefObject<PlayheadLiveClock>
 }) {
   const selDur = selection ? selection.endSec - selection.startSec : null
   const max = Math.max(0.001, durationSec)
+  const nowRef = useRef<HTMLSpanElement>(null)
+  const scrubRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    const nowEl = nowRef.current
+    const scrubEl = scrubRef.current
+    const apply = (sec: number) => {
+      if (nowEl) nowEl.textContent = fmtPrecise(sec)
+      if (scrubEl) scrubEl.value = String(Math.min(sec, max))
+    }
+    apply(playheadSec)
+    const live = playheadLive?.current
+    if (!live?.playing) return
+    let raf = 0
+    const tick = () => {
+      apply(live.fileSec())
+      raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [playheadSec, max, playing, playheadLive])
 
   return (
     <div className="fw-transport" data-testid="fw-transport">
@@ -104,7 +129,9 @@ export function Transport({
         </div>
 
         <div className="fw-transport__time" aria-live="polite">
-          <span className="fw-transport__now">{fmtPrecise(playheadSec)}</span>
+          <span className="fw-transport__now" ref={nowRef}>
+            {fmtPrecise(playheadSec)}
+          </span>
           <span className="fw-transport__sep">/</span>
           <span className="fw-transport__dur">{fmtTime(durationSec)}</span>
         </div>
@@ -150,13 +177,14 @@ export function Transport({
       {onSeek ? (
         <div className="fw-transport__seek">
           <input
+            ref={scrubRef}
             type="range"
             className="fw-transport__scrub"
             data-testid="fw-transport-seek"
             min={0}
             max={max}
             step={0.01}
-            value={Math.min(playheadSec, max)}
+            defaultValue={Math.min(playheadSec, max)}
             aria-label="Seek"
             onChange={(e) => onSeek(Number(e.target.value))}
           />

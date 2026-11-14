@@ -39,10 +39,8 @@ describe('Noite X canonical chronology', () => {
     expect(elisaSec).not.toBeNull()
     expect(sandraSec!).toBeLessThan(elisaSec!)
 
-    const finding = seedEvidenceCatalog.find((e) => e.id === 'sandra_first_sighting_not_elisa')
-    expect(finding?.title?.toLowerCase() ?? finding?.description?.toLowerCase() ?? '').toMatch(
-      /sandra|elisa/,
-    )
+    const clock = seedEvidenceCatalog.find((e) => e.id === 'vertice_clocks_unsynced')
+    expect(clock?.description?.toLowerCase() ?? '').toMatch(/atrasad|07:30|relógio/)
   })
 
   it('sequência Jana/Miro/Elisa/Sandra não é impossível; gaps UNSPECIFIED', () => {

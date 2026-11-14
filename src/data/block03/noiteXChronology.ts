@@ -142,7 +142,7 @@ export const NOITE_X_EVENTS: NoiteXEvent[] = [
       notes:
         'Saída de Elisa ancorada no evento musical corrigido (real 01:23:30). Não conflacionar com Sandra ~01:16 real.',
     },
-    sources: ['puzzle04Janus', 'sandra_first_sighting_not_elisa'],
+    sources: ['puzzle04Janus', 'vertice_clocks_unsynced'],
   },
   {
     id: 'miro_follows_elisa_as_jana',

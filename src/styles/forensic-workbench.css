@@ -9,8 +9,10 @@
   --fw-radius: 5px;
   display: flex;
   flex-direction: column;
-  height: min(82vh, 940px);
-  min-height: 560px;
+  flex: 1;
+  min-height: 0;
+  height: auto;
+  max-height: none;
   color: var(--text-primary);
   background: var(--fw-bg);
   border: 1px solid var(--fw-line);
@@ -64,6 +66,10 @@
   min-height: 0;
 }
 
+.fw-grid--wide {
+  grid-template-columns: minmax(0, 1fr) minmax(15.5em, 24em);
+}
+
 .fw-side {
   display: flex;
   flex-direction: column;
@@ -112,20 +118,11 @@
 }
 
 .fw-file {
-  display: grid;
-  grid-template-columns: 1.2em 1fr;
-  gap: 0.45em;
-  align-items: center;
+  display: flex;
+  align-items: stretch;
   width: 100%;
-  padding: 0.4em 0.5em;
-  text-align: left;
-  font: inherit;
-  color: inherit;
-  background: transparent;
-  border: 0;
   border-radius: var(--fw-radius);
   border-left: 2px solid transparent;
-  cursor: pointer;
 }
 
 .fw-file:hover {
@@ -135,6 +132,43 @@
 .fw-file[data-active='true'] {
   background: rgba(200, 150, 62, 0.08);
   border-left-color: var(--fw-accent);
+}
+
+.fw-file__open {
+  display: grid;
+  grid-template-columns: 1.2em 1fr;
+  gap: 0.45em;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  padding: 0.4em 0.35em 0.4em 0.5em;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.fw-file__grip {
+  flex: 0 0 0.85em;
+  margin: 0.2em 0.35em 0.2em 0;
+  border-radius: 2px;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(200, 150, 62, 0.55) 0 2px,
+    transparent 2px 4px
+  );
+  cursor: grab;
+  opacity: 0.65;
+}
+
+.fw-file__grip:hover {
+  opacity: 1;
+}
+
+.fw-file__grip:active {
+  cursor: grabbing;
 }
 
 .fw-file__icon {
@@ -214,6 +248,55 @@
   color: inherit;
   font: inherit;
   padding: 0.15em 0.3em;
+}
+
+.fw-compare-slots {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+  margin-bottom: 0.35rem;
+}
+
+.fw-compare-slot {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2rem;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.72em;
+  border: 1px dashed rgba(200, 150, 62, 0.35);
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.fw-compare-slot__label {
+  font-weight: 600;
+  color: var(--fw-accent);
+}
+
+.fw-compare-slot__file {
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fw-multi--compare {
+  min-height: 14rem;
+}
+
+.fw-multi__grip {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 0.65rem;
+  cursor: ew-resize;
+  background: linear-gradient(90deg, transparent, rgba(200, 150, 62, 0.45));
+  opacity: 0.5;
+}
+
+.fw-multi__grip:hover {
+  opacity: 1;
 }
 
 .fw-multi {

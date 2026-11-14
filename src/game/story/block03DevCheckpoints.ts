@@ -142,8 +142,6 @@ export const block03DevCheckpoints: { id: string; label: string; actions: StoryA
     actions: [
       { type: 'setFlag', id: 'block03_janus_done', value: true },
       { type: 'addEvidence', id: 'vertice_clocks_unsynced' },
-      { type: 'addEvidence', id: 'vertice_timeline_inconsistent' },
-      { type: 'addEvidence', id: 'sandra_first_sighting_not_elisa' },
       { type: 'addEvidence', id: 'mariana_revising_elisa_chronology' },
       { type: 'addHypothesis', id: 'hyp_andre_imprecise_chronology' },
       { type: 'setFlag', id: 'block03_reanalysis_unlocked', value: true },

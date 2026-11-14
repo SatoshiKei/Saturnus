@@ -12,7 +12,7 @@ export const puzzle04SourceAOriginSec = 450
 export const puzzle04SourceBOriginSec = 0
 
 export const puzzle04FindingText =
-  'Sandra não poderia ter visto Elisa no primeiro avistamento.'
+  'Offset de relógio formalizado: referência externa adiantada +00:07:30 em relação ao relógio local da cabine.'
 
 export const puzzle04SetLogVerticeTime = '01:16:00'
 export const puzzle04SandraApproxTime = '~01:16'

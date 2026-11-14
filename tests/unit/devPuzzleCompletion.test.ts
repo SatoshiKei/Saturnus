@@ -66,7 +66,7 @@ const LEGIT: Record<
   },
   P04: {
     flags: ['block03_janus_done', 'block03_reanalysis_unlocked'],
-    evidence: ['vertice_clocks_unsynced', 'vertice_timeline_inconsistent'],
+    evidence: ['vertice_clocks_unsynced'],
     achievements: ['ach-janus-epimetheus'],
   },
   P05: {

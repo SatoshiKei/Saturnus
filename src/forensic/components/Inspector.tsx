@@ -1511,16 +1511,11 @@ export function Inspector({
                       </dl>
                     ) : null}
                     {clockSync && bothAudio ? (
-                      <Section title="Clock align" tip="Clock align">
-                        <button
-                          type="button"
-                          className={`fw-btn${ui.compareClockAlign ? ' fw-btn--active' : ''}`}
-                          data-testid="compare-clock-align"
-                          aria-pressed={ui.compareClockAlign}
-                          onClick={() => clockSync.onSetCompareClockAlign(!ui.compareClockAlign)}
-                        >
-                          Clock align
-                        </button>
+                      <Section title="Timing offset" tip="Clock align">
+                        <p className="fw-muted">
+                          Arraste a protuberância no fim de cada faixa na timeline. Slots A/B aceitam
+                          arraste a partir de Files.
+                        </p>
                         <dl className="fw-meta">
                           <div>
                             <dt>Offset B</dt>
@@ -1544,7 +1539,7 @@ export function Inspector({
                           disabled={!clockSync.offsetValid}
                           onClick={clockSync.onFormalizeOffset}
                         >
-                          Save alignment
+                          Register analysis
                         </button>
                       </Section>
                     ) : null}

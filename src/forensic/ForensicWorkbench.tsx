@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import '../styles/forensic-workbench.css'
 import { ForensicAudioEngine } from './forensicAudio'
+import type { PlayheadLiveClock } from './playheadLive'
 import {
   captureNoiseProfile,
   computeRecoveryMetrics,
@@ -259,6 +260,44 @@ export function ForensicWorkbench({
     source?.metadata?.find((m) => m.key === 'sampleRate')?.value ??
     (playbackSource?.audio?.sampleRate ? `${playbackSource.audio.sampleRate} Hz` : '—')
 
+  const mapTimelinePlayhead = useCallback(
+    (fileSec: number) => {
+      if (compareDual && playbackSource) {
+        return (
+          (playbackSource.timelineOriginSec ?? 0) +
+          (ui.sourceOffsets[playbackSource.id] ?? 0) +
+          fileSec
+        )
+      }
+      return fileSec
+    },
+    [compareDual, playbackSource, ui.sourceOffsets],
+  )
+
+  const sampleFilePlayhead = useCallback(
+    () => engineRef.current?.getCurrentTime() ?? ui.playheadSec,
+    [ui.playheadSec],
+  )
+
+  const sampleTimelinePlayhead = useCallback(
+    () => mapTimelinePlayhead(sampleFilePlayhead()),
+    [mapTimelinePlayhead, sampleFilePlayhead],
+  )
+
+  const playheadLiveRef = useRef<PlayheadLiveClock>({
+    playing: false,
+    fileSec: () => 0,
+    timelineSec: () => 0,
+  })
+  playheadLiveRef.current.playing = ui.playing
+  playheadLiveRef.current.fileSec = sampleFilePlayhead
+  playheadLiveRef.current.timelineSec = sampleTimelinePlayhead
+
+  const timelinePlayheadSec = mapTimelinePlayhead(ui.playheadSec)
+
+  const transportDurationSec =
+    compareDual && playbackSource ? playbackSource.durationSec : duration
+
   useEffect(() => {
     const eng = new ForensicAudioEngine()
     engineRef.current = eng
@@ -266,7 +305,8 @@ export function ForensicWorkbench({
       setUi((u) => {
         const still = eng.isPlaying()
         if (u.playing && !still) return { ...u, playheadSec: t, playing: false }
-        return { ...u, playheadSec: t }
+        if (still && !u.playing) return { ...u, playing: true }
+        return u
       }),
     )
     eng.setWaveformHandler((peaks) => setMeasuredWave(peaks))
@@ -548,12 +588,17 @@ export function ForensicWorkbench({
     if (!eng) return
     const from =
       ui.loop && ui.selection ? ui.selection.startSec : ui.playheadSec
+    patchUi({ playing: true })
     await eng.play(from, ui.loop, ui.selection)
+    if (!eng.isPlaying()) {
+      patchUi({ playing: false })
+      return
+    }
     eng.setPlaybackRate(ui.playbackRate)
     const profile =
       ui.noiseProfiles.find((p) => p.id === ui.activeNoiseProfileId) ?? null
     eng.applyProcess(ui.process, profile, false, ui.selection)
-    patchUi({ playing: true })
+    if (!eng.isPlaying()) patchUi({ playing: false })
   }
 
   const pause = () => {
@@ -570,6 +615,24 @@ export function ForensicWorkbench({
     engineRef.current?.seek(sec)
     patchUi({ playheadSec: sec })
   }
+
+  const assignCompareSlot = (slot: 'A' | 'B', sourceId: string) => {
+    const src = liveSession.sources.find((s) => s.id === sourceId)
+    if (!src?.audio) return
+    const nextA = slot === 'A' ? sourceId : ui.compareSourceA
+    const nextB = slot === 'B' ? sourceId : ui.compareSourceB
+    stop()
+    setMeasuredWave(null)
+    setMeasuredSpec(null)
+    patchUi({
+      inspectorTab: 'compare',
+      compareSourceA: nextA,
+      compareSourceB: nextB,
+      playheadSec: 0,
+    })
+  }
+
+  const showCompareSlots = isClockSync || ui.inspectorTab === 'compare'
 
   return (
     <div className="fw" data-testid="forensic-workbench">
@@ -685,7 +748,9 @@ export function ForensicWorkbench({
             ) : !suppressTimeline ? (
               <Timeline
                 durationSec={duration}
-                playheadSec={ui.playheadSec}
+                playheadSec={timelinePlayheadSec}
+                playing={ui.playing}
+                playheadLive={playheadLiveRef}
                 waveform={waveform}
                 zoom={ui.zoom}
                 selection={ui.selection}
@@ -726,10 +791,8 @@ export function ForensicWorkbench({
                 }}
                 onWaveformZoomY={(waveformZoomY) => patchUi({ waveformZoomY })}
                 onLaneOffset={
-                  compareDual && compareA && compareB && ui.compareClockAlign
+                  compareDual && compareA && compareB
                     ? (laneId, nextStartSec) => {
-                        const refId = compareRefId
-                        if (!refId || laneId === refId) return
                         const src = [compareA, compareB].find((s) => s.id === laneId)
                         if (!src) return
                         const offset = nextStartSec - (src.timelineOriginSec ?? 0)
@@ -743,20 +806,23 @@ export function ForensicWorkbench({
                       }
                     : undefined
                 }
-                lockedLaneIds={
-                  compareDual && compareRefId && compareA && compareB
-                    ? ui.compareClockAlign
-                      ? [compareRefId]
-                      : [compareA.id, compareB.id]
+                compareSlots={
+                  showCompareSlots
+                    ? {
+                        a: compareA?.filename ?? null,
+                        b: compareB?.filename ?? null,
+                      }
                     : undefined
                 }
+                onCompareDrop={showCompareSlots ? assignCompareSlot : undefined}
               />
             ) : null}
           </main>
           <Transport
             playing={ui.playing}
             playheadSec={ui.playheadSec}
-            durationSec={duration}
+            playheadLive={playheadLiveRef}
+            durationSec={transportDurationSec}
             loop={ui.loop}
             rate={ui.playbackRate}
             selection={ui.selection}

@@ -693,6 +693,7 @@ export class ForensicAudioEngine {
     this.stopInternal()
     this.startOffsetSec = t
     this.playing = false
+    this.onTick?.(t)
   }
 
   stop() {

@@ -442,7 +442,7 @@ export const seedEvidenceCatalog: Evidence[] = [
     puzzleMeta: {
       puzzleId: 'puzzle-04-janus-epimetheus',
       implementation: 'full',
-      completionEvidenceId: 'sandra_first_sighting_not_elisa',
+      completionEvidenceId: 'vertice_clocks_unsynced',
     },
   },
   {
@@ -492,16 +492,17 @@ export const seedEvidenceCatalog: Evidence[] = [
     relatedEventIds: [],
   },
   {
+    /** Liberada só depois que Sandra é pessoa identificada na investigação (não vem do P04). */
     id: 'sandra_first_sighting_not_elisa',
-    title: 'Finding — primeiro avistamento de Sandra',
+    title: 'Cronologia — primeiro avistamento vs saída de Elisa',
     type: 'derived',
-    sourceType: 'audio-lab',
+    sourceType: 'case-file',
     originalOrDerived: 'derived',
-    integrity: 'verified',
-    sourceId: 'nico_recording_booth',
+    integrity: 'unverified',
+    sourceId: 'vertice_clocks_unsynced',
     description:
-      'Sandra não poderia ter visto Elisa no primeiro avistamento. Elisa ainda estava no Vértice (~01:23:30 real) quando Sandra viu a mulher de jaqueta clara sendo seguida (~01:16 real).',
-    relatedPersonIds: ['elisa', 'sandra', 'andre'],
+      'Cruzamento pendente: janela do primeiro avistamento e horário corrigido da saída de Elisa. Requer depoimentos e identificação das testemunhas.',
+    relatedPersonIds: ['elisa'],
     relatedLocationIds: ['vertice'],
     relatedEventIds: [],
   },

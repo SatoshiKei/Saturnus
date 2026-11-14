@@ -311,7 +311,7 @@ export const contradictionDefs: ContradictionDef[] = [
   },
   {
     id: 'contra_vertice_clock',
-    evidenceAId: 'vertice_timeline_inconsistent',
+    evidenceAId: 'vertice_clocks_unsynced',
     evidenceBId: 'elisa_original_chronology',
     summary:
       'A cronologia dos autos usa o registro sonoro da cabine como horário de referência, e esse registro não é confiável.',

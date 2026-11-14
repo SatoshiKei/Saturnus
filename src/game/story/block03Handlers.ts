@@ -40,15 +40,13 @@ export function runJanusEpimetheusAnalysis() {
   dispatchActions([
     { type: 'setFlag', id: 'block03_janus_done', value: true },
     { type: 'addEvidence', id: 'vertice_clocks_unsynced' },
-    { type: 'addEvidence', id: 'vertice_timeline_inconsistent' },
-    { type: 'addEvidence', id: 'sandra_first_sighting_not_elisa' },
     { type: 'addEvidence', id: 'mariana_revising_elisa_chronology' },
     { type: 'completeTask', id: 'task_janus_sync' },
     { type: 'addHypothesis', id: 'hyp_andre_imprecise_chronology' },
     {
       type: 'linkHypothesis',
       hypothesisId: 'hyp_andre_imprecise_chronology',
-      evidenceId: 'vertice_timeline_inconsistent',
+      evidenceId: 'vertice_clocks_unsynced',
       role: 'support',
     },
     {
@@ -71,7 +69,7 @@ export function runJanusEpimetheusAnalysis() {
       label: 'CONQUISTA',
       title: 'JANUS E EPIMETHEUS',
       summary: 'Sincronizou duas fontes independentes da noite do Vértice.',
-      refId: 'sandra_first_sighting_not_elisa',
+      refId: 'vertice_clocks_unsynced',
     },
   ])
 }

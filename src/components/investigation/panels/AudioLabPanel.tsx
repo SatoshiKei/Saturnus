@@ -155,6 +155,7 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
   const newCount = allFiles.filter((f) => isNew(f.id)).length
 
   const [sel, setSel] = useState<string | null>(null)
+  const [libraryRailOpen, setLibraryRailOpen] = useState(false)
   const [moduleId, setModuleId] = useState('metadata')
   const [exportMsg, setExportMsg] = useState<string | null>(null)
   const [playing, setPlaying] = useState(false)
@@ -224,82 +225,132 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
       variant="workbench"
       testId="hub-audio-lab"
       onClose={onClose}
+      barExtra={
+        current ? (
+          <button
+            type="button"
+            className="aw-bar-btn"
+            onClick={() => {
+              setLibraryRailOpen(false)
+              setSel(null)
+            }}
+          >
+            Galeria
+          </button>
+        ) : null
+      }
     >
-      <div className="aw" data-testid="audio-lab">
-        <aside className="aw-files" aria-label="Arquivos">
-          <h3 className="aw-h">
-            Arquivos
-            {newCount > 0 ? (
-              <span className="new-badge aw-h__new" data-testid="audio-new-count">
-                {newCount} novo{newCount > 1 ? 's' : ''}
-              </span>
-            ) : null}
-          </h3>
-          <div className="aw-filters" role="tablist" aria-label="Filtro de arquivos">
-            {filters.map((f) => (
-              <button
-                key={f.id}
-                type="button"
-                role="tab"
-                aria-selected={filter === f.id}
-                className="aw-filter"
-                data-active={filter === f.id}
-                data-testid={`audio-filter-${f.id}`}
-                onClick={() => setFilter(f.id)}
-              >
-                {f.label}
-              </button>
-            ))}
-          </div>
-          {allFiles.length === 0 ? <p className="aw-empty">Nenhum áudio reunido.</p> : null}
-          {allFiles.length > 0 && files.length === 0 ? (
-            <p className="aw-empty">Nenhum arquivo neste filtro.</p>
-          ) : null}
-          <ul data-testid="audio-file-list">
-            {files.map((f) => {
-              const lock = f.exportable === false || f.deviceLocked
-              const st = analysisState(f.id, inv.flags)
-              return (
-                <li key={f.id}>
-                  <button
-                    type="button"
-                    className="aw-file"
-                    data-active={f.id === current?.id}
-                    data-new={isNew(f.id)}
-                    data-testid={`audio-file-${f.id}`}
-                    onClick={() => select(f.id)}
-                  >
-                    <span className="aw-file__name">
-                      {f.displayFileName ?? f.title}
-                      {isNew(f.id) ? (
-                        <span className="new-badge" data-testid={`audio-new-${f.id}`}>
-                          NOVO
-                        </span>
-                      ) : null}
-                    </span>
-                    <span className="aw-file__meta">
-                      {fmt(f.durationSec)} ·{' '}
-                      {lock ? (
-                        <b className="aw-lock" data-testid={`export-blocked-${f.id}`}>
-                          protegido no aparelho
-                        </b>
-                      ) : st === 'pending' ? (
-                        'em análise'
-                      ) : st === 'done' ? (
-                        'analisado'
-                      ) : (
-                        'disponível'
-                      )}
-                    </span>
-                  </button>
-                </li>
-              )
-            })}
-          </ul>
-        </aside>
+      <div className={`aw${current ? ' aw--editor' : ' aw--gallery'}`} data-testid="audio-lab">
+        {current ? (
+          <aside
+            className="aw-library-rail"
+            data-expanded={libraryRailOpen}
+            aria-label="Outros arquivos da bancada"
+          >
+            <button
+              type="button"
+              className="aw-library-rail__toggle"
+              data-testid="audio-library-rail-toggle"
+              aria-expanded={libraryRailOpen}
+              aria-controls="audio-library-rail-panel"
+              title={libraryRailOpen ? 'Recolher lista de áudios' : 'Expandir lista de áudios'}
+              onClick={() => setLibraryRailOpen((v) => !v)}
+            >
+              <span className="aw-library-rail__chevron" aria-hidden />
+              <span className="aw-library-rail__label">Áudios</span>
+            </button>
+            <div id="audio-library-rail-panel" className="aw-library-rail__panel">
+              <h3 className="aw-h aw-library-rail__title">Outros arquivos</h3>
+              <ul className="aw-library-rail__list" data-testid="audio-file-list">
+                {files
+                  .filter((f) => f.id !== current.id)
+                  .map((f) => {
+                    const lock = f.exportable === false || f.deviceLocked
+                    const st = analysisState(f.id, inv.flags)
+                    return (
+                      <li key={f.id}>
+                        <button
+                          type="button"
+                          className="aw-file"
+                          data-new={isNew(f.id)}
+                          data-testid={`audio-file-${f.id}`}
+                          onClick={() => select(f.id)}
+                        >
+                          <span className="aw-file__name">{f.displayFileName ?? f.title}</span>
+                          <span className="aw-file__meta">
+                            {fmt(f.durationSec)} · {lock ? 'protegido' : st === 'done' ? 'analisado' : 'disponível'}
+                          </span>
+                        </button>
+                      </li>
+                    )
+                  })}
+              </ul>
+            </div>
+          </aside>
+        ) : null}
 
         <section className="aw-main">
-          {current ? (
+          {!current ? (
+            <>
+              <div className="aw-gallery-bar">
+                <h3 className="aw-h">
+                  Arquivos
+                  {newCount > 0 ? (
+                    <span className="new-badge aw-h__new" data-testid="audio-new-count">
+                      {newCount} novo{newCount > 1 ? 's' : ''}
+                    </span>
+                  ) : null}
+                </h3>
+                <div className="aw-filters" role="tablist" aria-label="Filtro de arquivos">
+                  {filters.map((f) => (
+                    <button
+                      key={f.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={filter === f.id}
+                      className="aw-filter"
+                      data-active={filter === f.id}
+                      data-testid={`audio-filter-${f.id}`}
+                      onClick={() => setFilter(f.id)}
+                    >
+                      {f.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {allFiles.length === 0 ? (
+                <p className="aw-empty aw-empty--big">Nenhum áudio reunido.</p>
+              ) : files.length === 0 ? (
+                <p className="aw-empty aw-empty--big">Nenhum arquivo neste filtro.</p>
+              ) : (
+                <div className="aw-gallery" data-testid="audio-gallery">
+                  {files.map((f) => {
+                    const lock = f.exportable === false || f.deviceLocked
+                    const st = analysisState(f.id, inv.flags)
+                    return (
+                      <button
+                        key={f.id}
+                        type="button"
+                        className="aw-card"
+                        data-new={isNew(f.id)}
+                        data-testid={`audio-card-${f.id}`}
+                        onClick={() => select(f.id)}
+                      >
+                        <div className="aw-card__wave">
+                          <Waveform id={f.id} progress={0} dim={lock} />
+                        </div>
+                        <span className="aw-card__title">{f.displayFileName ?? f.title}</span>
+                        <span className="aw-card__meta">
+                          {fmt(f.durationSec)} ·{' '}
+                          {st === 'pending' ? 'em análise' : st === 'done' ? 'analisado' : 'disponível'}
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+            </>
+          ) : (
             <>
               {(() => {
                 const forensicSession = getForensicSessionForEvidence(current.id)
@@ -538,12 +589,6 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                 </>
               ) : null}
             </>
-          ) : (
-            <p className="aw-empty aw-empty--big" data-testid="audio-no-selection">
-              {allFiles.length
-                ? 'Selecione um arquivo na lista para ouvir e analisar.'
-                : 'Sem material para analisar. Reúna áudios nos aparelhos e no caso.'}
-            </p>
           )}
         </section>
       </div>

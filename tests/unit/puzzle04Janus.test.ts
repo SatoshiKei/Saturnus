@@ -70,11 +70,11 @@ describe('Puzzle 04 — JANUS E EPIMETHEUS', () => {
     expect(fmtClockOffset(450)).toBe('+07:30')
   })
 
-  it('I/J/K: no finding that Sandra lied / Miro / André innocent', () => {
-    const finding = seedEvidenceCatalog.find((e) => e.id === 'sandra_first_sighting_not_elisa')
-    const blob = `${finding?.title ?? ''} ${finding?.description ?? ''} ${puzzle04FindingText}`
-    expect(blob).not.toMatch(/mentiu|Miro|inocente/i)
-    expect(blob).toMatch(/não poderia ter visto Elisa/i)
+  it('I/J/K: P04 completion é só descompasso de relógio (não finding de Sandra)', () => {
+    const booth = seedEvidenceCatalog.find((e) => e.id === 'nico_recording_booth')
+    expect(booth?.puzzleMeta?.completionEvidenceId).toBe('vertice_clocks_unsynced')
+    expect(puzzle04FindingText).toMatch(/relógio|offset|07:30/i)
+    expect(puzzle04FindingText).not.toMatch(/Sandra/i)
   })
 
   it('L: documents do not place André inside Vertice as premise', () => {
