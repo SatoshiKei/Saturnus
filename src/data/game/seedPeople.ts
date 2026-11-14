@@ -101,9 +101,9 @@ export const seedPeople: Person[] = [
   },
   {
     id: 'nico',
-    name: 'Nicolas “Nico”',
+    name: 'Nicolas “Nico” Prado Reis',
     status: 'mentioned',
-    occupation: 'DJ',
+    occupation: 'Ex-DJ residente e técnico de cabine do Vértice',
     relatedEvidenceIds: [],
     relatedPersonIds: [],
   },

@@ -17,7 +17,7 @@ export function VNSceneShell({
   children: ReactNode
 }) {
   return (
-    <VnSceneHistoryProvider>
+    <VnSceneHistoryProvider sceneTitle={title}>
       <div className="vn-scene" data-testid={testId} style={backgroundStyle}>
         <VNTopBar title={title} onClose={onClose} />
         {children}

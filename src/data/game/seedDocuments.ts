@@ -12,7 +12,7 @@ export const seedDocuments: Document[] = [
   // ───────────────────────── Bloco 1 ─────────────────────────
   {
     id: 'doc-bo-inicial',
-    title: 'Boletim de ocorrência — desaparecimento',
+    title: 'Boletim de ocorrência — desaparecimento de Mariana Silva',
     category: 'BO',
     issuer: 'Delegacia — plantão',
     dateLabel: '03/11/2026',
@@ -20,23 +20,19 @@ export const seedDocuments: Document[] = [
     blocks: [
       {
         id: 'b1',
-        text: 'Mariana Silva, 26 anos, enfermeira, não compareceu ao plantão previsto para 07:00.',
+        text: '03/11/2026 — Plantão\n\nMariana Silva, 26 anos, enfermeira, não compareceu ao plantão previsto para as 07:00.',
       },
       {
         id: 'b2',
-        text: 'Às 07:18, a colega Júlia Martins tentou contato telefônico sem resposta. Às 07:46, Júlia contatou Diego Azevedo, vizinho de Mariana, para verificar o apartamento. Diego tocou a campainha e bateu à porta, sem resposta.',
+        text: 'Às 07:18, Júlia Martins, colega de trabalho, tentou contato telefônico sem resposta. Às 07:46, pediu a Diego Azevedo, vizinho de Mariana, que verificasse o apartamento. Diego informou que tocou a campainha e bateu à porta, também sem resposta.',
       },
       {
         id: 'b3',
-        text: 'Às 08:03, a central de emergência recebeu uma chamada identificada pelo sistema como originada do número de Mariana. A gravação estava degradada; o operador compreendeu pedido de ajuda, ruído intenso e interrupção abrupta. Viatura enviada ao endereço.',
+        text: 'Às 08:03, a central de emergência recebeu uma chamada identificada pelo sistema como proveniente do número de Mariana. O áudio chegou com forte degradação; o atendente relatou ter compreendido um pedido de ajuda antes da interrupção da chamada.\n\nUma viatura foi enviada ao endereço.',
       },
       {
         id: 'b4',
-        text: 'No local, ninguém respondeu. Diante da chamada, da ausência inexplicada e dos relatos, a equipe realizou entrada forçada. Mariana não foi encontrada. Não havia sinais evidentes de luta.',
-      },
-      {
-        id: 'b5',
-        text: 'O celular pessoal de Mariana foi encontrado no apartamento, ligado e sem bloqueio de tela. O número associado ao aparelho era o mesmo registrado como origem da chamada de emergência.',
+        text: 'Sem resposta no imóvel e diante da chamada registrada pela central, a equipe realizou entrada forçada. Mariana não foi localizada. Não foram observados sinais evidentes de luta.\n\nO aparelho celular de Mariana foi encontrado sobre o sofá, ligado.',
       },
     ],
   },
@@ -50,21 +46,21 @@ export const seedDocuments: Document[] = [
     blocks: [
       {
         id: 'b1',
-        text: '08:03:12 — Chamada recebida, linha de entrada 3. Identificador de origem: terminal móvel registrado em nome de Mariana Silva.',
+        text: '08:03:12 — chamada recebida pela linha 3.\nOrigem informada pelo sistema: número cadastrado em nome de Mariana Silva.\nDuração: 22 segundos.\nQualidade: degradada.',
       },
       {
         id: 'b2',
-        text: 'Duração registrada: 22 segundos. Áudio arquivado sob o protocolo da central. Qualidade da gravação: degradada.',
+        text: 'Observação do atendente: voz feminina parcialmente compreensível; aparente pedido de ajuda; ruído intenso ao fundo; interrupção abrupta.',
       },
       {
         id: 'b3',
-        text: 'Anotação do operador: pedido de ajuda parcialmente compreendido; ruído intenso ao fundo; interrupção abrupta. Viatura despachada às 08:04.',
+        text: '08:04 — despacho de viatura.',
       },
     ],
   },
   {
     id: 'doc-entrada-apartamento',
-    title: 'Relatório de entrada — apartamento de Mariana',
+    title: 'Relatório de entrada — apartamento',
     category: 'Relatório de ocorrência',
     issuer: 'Equipe de viatura',
     dateLabel: '03/11/2026',
@@ -72,15 +68,15 @@ export const seedDocuments: Document[] = [
     blocks: [
       {
         id: 'b1',
-        text: '08:21 — Equipe no endereço. Campainha e chamados sem resposta. Vizinho Diego Azevedo acompanha a equipe.',
+        text: '08:21 — equipe no endereço. Chamados e campainha sem resposta. Diego Azevedo, vizinho, presente no corredor.',
       },
       {
         id: 'b2',
-        text: '08:26 — Entrada forçada pela porta principal. Luz da sala acesa; bolsa sobre a mesa; chaves no gancho da entrada. Nenhum sinal evidente de luta.',
+        text: '08:26 — entrada pela porta principal.\n\nLuz da sala acesa. Bolsa sobre a mesa. Chaves no gancho próximo à entrada. Nenhum sinal evidente de luta.',
       },
       {
         id: 'b3',
-        text: 'Aparelho celular localizado sobre o sofá, ligado e sem bloqueio de tela. Recolhido pela equipe e entregue à delegacia.',
+        text: 'Aparelho celular localizado sobre o sofá, ligado. Item recolhido e encaminhado à delegacia.',
       },
     ],
   },
@@ -94,17 +90,13 @@ export const seedDocuments: Document[] = [
     blocks: [
       {
         id: 'b1',
-        text: 'Item 1: smartphone, tela desbloqueada ao ser localizado. Lacre nº 0412. Apreensão determinada pela autoridade policial responsável.',
-      },
-      {
-        id: 'b2',
-        text: 'O aparelho foi entregue à delegacia e permanece sob guarda do delegado Augusto Nogueira.',
+        text: 'Item 01: smartphone encontrado no apartamento de Mariana Silva.\n\nO aparelho estava ligado no momento da apreensão e permanece sob custódia da Polícia Civil.\n\nLacre: 0412.',
       },
     ],
   },
   {
     id: 'doc-extracao-inicial',
-    title: 'Relatório de extração inicial — aparelho de Mariana',
+    title: 'Extração inicial — aparelho de Mariana',
     category: 'Relatório',
     issuer: 'Delegacia — extração superficial',
     dateLabel: '03/11/2026',
@@ -112,15 +104,11 @@ export const seedDocuments: Document[] = [
     blocks: [
       {
         id: 'b1',
-        text: 'Extração superficial feita na própria delegacia, sem recursos periciais. Itens listados: conversas de mensagens, notas, calendário, fotos, arquivos e registro de chamadas.',
+        text: 'Extração superficial realizada na delegacia.\n\nConteúdo acessível:\n- mensagens;\n- notas;\n- calendário;\n- fotografias;\n- arquivos locais;\n- registro de chamadas.',
       },
       {
         id: 'b2',
-        text: 'Registro de chamadas: últimos eventos em 02/11 (21:48, chamada perdida). Nenhum evento registrado em 03/11.',
-      },
-      {
-        id: 'b3',
-        text: 'A extração superficial não substitui análise pericial do aparelho.',
+        text: 'O histórico local não apresenta nenhuma chamada realizada ou recebida em 03/11.\n\nÚltimo evento registrado: 02/11, 21:48.\n\nA ausência de registro local não permite, isoladamente, determinar a origem da chamada recebida pela central.',
       },
     ],
   },
@@ -128,15 +116,18 @@ export const seedDocuments: Document[] = [
   // ───────────────────────── Bloco 2 ─────────────────────────
   {
     id: 'doc-lucas-cadastro',
-    title: 'Consulta cadastral — Lucas Moreira',
+    title: 'Consulta — Lucas Moreira',
     category: 'Cadastro (pessoas)',
     issuer: 'Sistema de consulta policial',
     system: 'consultas',
     blocks: [
-      { id: 'b1', text: 'Nome: Lucas Moreira. Idade: 27 anos. Sem antecedentes.' },
+      {
+        id: 'b1',
+        text: 'Nome: Lucas Moreira\nIdade: 27 anos\nAntecedentes: nenhum',
+      },
       {
         id: 'b2',
-        text: 'Vínculo atual: Universidade — Faculdade de Comunicação, secretaria acadêmica.',
+        text: 'Vínculo atual com a Universidade — Campus Central.\n\nLucas constava como aluno da instituição no período em que Elisa Duarte frequentava atividades e visitava o campus.',
       },
     ],
     leads: [
@@ -153,7 +144,7 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-elisa-resumo',
-    title: 'Processo criminal — resumo (Elisa Duarte)',
+    title: 'Processo — Elisa Duarte',
     category: 'Autos',
     issuer: 'Vara Criminal — consulta processual',
     dateLabel: 'Proc. 2020',
@@ -161,15 +152,11 @@ export const seedDocuments: Document[] = [
     blocks: [
       {
         id: 'b1',
-        text: 'Vítima: Elisa Duarte, 17 anos. Réu: André Silva. Imputação: homicídio doloso.',
+        text: 'Vítima: Elisa Duarte, 17 anos\nRéu: André Silva\nImputação: homicídio doloso\nResultado em primeira instância: condenado',
       },
       {
         id: 'b2',
-        text: 'Sentença de 1ª instância: condenação. Recurso pendente.',
-      },
-      {
-        id: 'b3',
-        text: 'Peças principais: boletim inicial, depoimentos (volume II) e cronologia da noite (fls. 41). Cópias simples disponíveis; cópias autenticadas somente pelo cartório da vara.',
+        text: 'Principais peças disponíveis:\n- boletim inicial;\n- depoimentos;\n- cronologia da noite;\n- registros do Vértice.',
       },
     ],
     leads: [{ type: 'institution', label: 'Cópias autenticadas', value: 'Cartório — ramal 204' }],
@@ -285,18 +272,14 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-vertice-escala',
-    title: 'Arquivo histórico — existência confirmada (Vértice)',
+    title: 'Arquivo histórico',
     category: 'Arquivo privado',
     issuer: 'Boate Vértice — administração',
     system: 'documentos',
     blocks: [
       {
         id: 'b1',
-        text: 'Confirmação de Sandro/Caio: o estabelecimento ainda possui exportações antigas de escala, cachê e logs de set da mesa.',
-      },
-      {
-        id: 'b2',
-        text: 'Sem chave técnica (transição de faixas / fingerprint / janela de microfone) o cruzamento não isola uma sessão. Voltar quando o material de áudio estiver analisado.',
+        text: 'O Vértice ainda conserva parte de escalas e registros antigos, mas não há uma busca útil sem um período ou referência mais específica.',
       },
     ],
   },

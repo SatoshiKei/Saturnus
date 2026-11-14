@@ -99,141 +99,58 @@ export const paulaScript: ChatScript = {
   emptyHint: 'Nenhuma mensagem ainda. Escreva para Paula.',
   steps: [
     {
+      // Abertura — formal / direta / seca. Mesma resposta de Paula.
       options: [
-        'Delegado Augusto Nogueira, Polícia Civil. Estou investigando o desaparecimento de Mariana Silva.',
-        'Sou Augusto, da Polícia Civil. Preciso falar com você sobre a Mariana.',
-        'Polícia Civil. Seu número apareceu entre os contatos de Mariana. Pode conversar?',
+        'Paula? Aqui é o delegado Augusto Nogueira. Estou investigando o desaparecimento de Mariana Silva.',
+        'Paula, sou Augusto Nogueira, da Polícia Civil. Preciso te perguntar uma coisa sobre a Mariana.',
+        'Paula? Polícia Civil. É sobre Mariana Silva.',
       ],
-      replies: [{ kind: 'text', text: 'Ela tá bem?' }],
-      repliesByOption: [
-        [{ kind: 'text', text: 'Ela tá bem?' }],
-        [{ kind: 'text', text: '…Ela tá bem?' }],
-        [{ kind: 'text', text: 'Ok.\nEla tá bem?' }],
-      ],
+      replies: [{ kind: 'text', text: 'Ela apareceu?' }],
     },
     {
       options: [
-        'Ainda estamos tentando localizá-la. Preciso entender o que ela fazia antes de desaparecer.',
-        'Ainda não sabemos onde ela está. Quero o que ela andava fazendo.',
-        'Não temos ela. Me conta o que rolou nos últimos dias.',
+        'Ainda não. Estou tentando reconstruir o que ela vinha fazendo antes de desaparecer. Ela te pediu ajuda com alguma coisa fora do normal?',
+        'Ainda não. Quero entender o que ela andava fazendo. Ela te pediu alguma coisa fora do normal?',
+        'Ainda não. Ela te pediu alguma coisa estranha nos últimos tempos?',
       ],
-      replies: [{ kind: 'text', text: 'Tá.' }],
-      repliesByOption: [
-        [{ kind: 'text', text: 'Tá.\nPode perguntar.' }],
-        [{ kind: 'text', text: 'Tá.' }],
-        [{ kind: 'text', text: 'Certo.\nManda.' }],
-      ],
+      replies: [{ kind: 'text', text: 'Pediu pra eu achar uma pessoa.' }],
+    },
+    {
+      options: ['Quem?', 'Achar quem?', 'Quem era a pessoa?'],
+      replies: [{ kind: 'text', text: 'Lucas Moreira.' }],
+    },
+    {
+      options: ['Você conhecia?', 'Você já conhecia esse Lucas?', 'Conhecia ele de algum lugar?'],
+      replies: [{ kind: 'text', text: 'Não.\nEla também não.' }],
     },
     {
       options: [
-        'Ela pediu alguma coisa incomum recentemente?',
-        'Mariana te pediu ajuda com alguma coisa?',
-        'Te procurou por algum favor estranho?',
-      ],
-      replies: [{ kind: 'text', text: 'Ela tava procurando um cara.' }],
-      repliesByOption: [
-        [{ kind: 'text', text: 'Ela tava procurando um cara.' }],
-        [{ kind: 'text', text: 'Pediu.\nTava procurando um cara.' }],
-        [{ kind: 'text', text: 'Estranho?\nEla tava atrás de um cara.' }],
-      ],
-    },
-    {
-      options: [
-        'Quem ela estava procurando?',
-        'Procurando quem?',
-        'Um cara. Nome?',
-      ],
-      replies: [{ kind: 'text', text: 'Lucas.' }],
-      repliesByOption: [
-        [{ kind: 'text', text: 'Lucas.' }],
-        [{ kind: 'text', text: 'Lucas.' }],
-        [{ kind: 'text', text: 'Lucas.\nSó isso.' }],
-      ],
-    },
-    {
-      options: [
-        'Você sabe o sobrenome dele?',
-        'Lucas o quê?',
-        'Lucas Neto?',
-      ],
-      replies: [{ kind: 'text', text: 'Moreira.' }],
-      repliesByOption: [
-        [{ kind: 'text', text: 'Moreira.\nLucas Moreira.' }],
-        [{ kind: 'text', text: 'Moreira.\nCalma, delegado.' }],
-        [{ kind: 'text', text: 'Não.\nMoreira.\nLucas Moreira.' }],
-      ],
-    },
-    {
-      options: [
-        'Você conhece esse Lucas Moreira?',
-        'Vocês dois conheciam ele?',
-        'Lucas Moreira — amigo de vocês?',
-      ],
-      replies: [{ kind: 'text', text: 'Não.\nNem ela conhecia.' }],
-      repliesByOption: [
-        [{ kind: 'text', text: 'Não.\nNem ela conhecia.' }],
-        [{ kind: 'text', text: 'Não.\nEla também não.' }],
-        [{ kind: 'text', text: 'Amigo?\nNão.\nNem ela conhecia.' }],
-      ],
-    },
-    {
-      options: [
-        'Então por que Mariana pediu a sua ajuda?',
-        'Por que ela veio falar com você, então?',
+        'Então por que pediu pra você?',
+        'Então por que ela procurou você?',
         'Se ninguém conhecia, por que você?',
       ],
       replies: [
         {
           kind: 'text',
-          text: 'Porque eu ainda tenho contato com gente da faculdade.\nEla sabia que ele tinha estudado lá.',
+          text: 'Porque eu ainda falo com gente da faculdade e ela sabia que ele tinha estudado lá.',
         },
       ],
-      repliesByOption: [
-        [
-          {
-            kind: 'text',
-            text: 'Porque eu ainda tenho contato com gente da faculdade.\nEla sabia que ele tinha estudado lá.',
-          },
-        ],
-        [
-          {
-            kind: 'text',
-            text: 'Eu ainda falo com gente da faculdade.\nEla sabia que ele tinha estudado lá.',
-          },
-        ],
-        [
-          {
-            kind: 'text',
-            text: 'Porque eu.\nAinda tenho contato na faculdade.\nEla sabia que ele tinha estudado lá.',
-          },
-        ],
-      ],
+    },
+    {
+      options: ['Conseguiu encontrar?', 'E vocês acharam ele?', 'Conseguiram localizar?'],
+      replies: [{ kind: 'text', text: 'Achei o Instagram e passei pra ela.' }],
     },
     {
       options: [
-        'Vocês conseguiram localizá-lo?',
-        'E acharam?',
-        'Conseguiram falar com ele?',
-      ],
-      replies: [{ kind: 'text', text: 'Eu consegui o Instagram.\nPassei pra ela.' }],
-      repliesByOption: [
-        [{ kind: 'text', text: 'Eu consegui o Instagram.\nPassei pra ela.' }],
-        [{ kind: 'text', text: 'Achei o Instagram.\nPassei pra ela.' }],
-        [{ kind: 'text', text: 'Falar, não.\nConsegui o Instagram e passei pra ela.' }],
-      ],
-    },
-    {
-      options: [
+        'Ela disse por que queria falar com ele?',
         'Ela explicou o que queria com ele?',
-        'Disse por que queria falar com ele?',
-        '“Coisa antiga da família” — ela usou essas palavras?',
+        'Ela chegou a dizer o motivo?',
       ],
-      replies: [{ kind: 'text', text: 'Não direito.\nDisse que era coisa antiga da família.' }],
-      repliesByOption: [
-        [{ kind: 'text', text: 'Não direito.\nDisse que era coisa antiga da família.' }],
-        [{ kind: 'text', text: 'Quase nada.\nSó que era coisa antiga da família.' }],
-        [{ kind: 'text', text: 'Mais ou menos.\nFoi isso que ela disse — coisa antiga da família.' }],
-      ],
+      replies: [{ kind: 'text', text: 'Só falou que era uma coisa antiga da família.\nNão forcei.' }],
+    },
+    {
+      options: ['Você ainda tem o perfil?', 'Ainda tem o perfil dele?', 'Pode me mandar o perfil?'],
+      replies: [{ kind: 'text', text: 'Tenho.\nTe mando.' }],
     },
   ],
   onComplete: [
@@ -278,188 +195,91 @@ export const rafaelScript: ChatScript = {
   requiresFlagsAll: ['block02_vertice_archive'],
   steps: [
     {
+      // Abertura — formal / direta / seca. Mesma resposta de Rafael.
       options: [
-        'Rafael? Delegado Augusto Nogueira. Estou investigando o desaparecimento de Mariana Silva.',
-        'Aqui é o delegado Augusto, da Polícia Civil. Você é o Rafael, amigo da Mariana?',
-        'Rafael, Polícia Civil. Preciso falar sobre Mariana Silva.',
+        'Rafael? Aqui é o delegado Augusto Nogueira. Estou com o celular da Mariana.',
+        'Rafael, sou Augusto Nogueira, da Polícia Civil. Preciso falar sobre a Mariana.',
+        'Rafael? Polícia Civil. É sobre a Mariana.',
       ],
-      replies: [{ kind: 'text', text: 'Delegado?\nCaralho.\nEla sumiu mesmo então?' }],
-      repliesByOption: [
-        [{ kind: 'text', text: 'Delegado?\nCaralho.\nEla sumiu mesmo então?' }],
-        [{ kind: 'text', text: 'Sou.\nCaralho.\nEla sumiu mesmo então?' }],
-        [{ kind: 'text', text: 'Delegado.\nCaralho.\nEla sumiu mesmo então?' }],
+      replies: [{ kind: 'text', text: 'Ela sumiu mesmo?' }],
+    },
+    {
+      options: [
+        'Ainda estamos procurando por ela. Eu vi a conversa de vocês no telefone. Tem um arquivo que ela te mandou e que não está mais no aparelho.',
+        'Ainda estamos procurando. Vi a conversa de vocês: o arquivo que ela te mandou sumiu do aparelho.',
+        'Ainda procurando. Um arquivo que ela te mandou não está mais no telefone dela.',
+      ],
+      replies: [{ kind: 'text', text: 'O áudio.' }],
+    },
+    {
+      options: ['Você ainda tem?', 'Ainda tem esse áudio?', 'Tem aí?'],
+      replies: [{ kind: 'text', text: 'Tenho.' }],
+    },
+    {
+      options: [
+        'É a mesma gravação que você ouviu antes de mandar aquela mensagem pra ela?',
+        'É a mesma que você ouviu antes de responder pra ela?',
+        'É a que você analisou?',
+      ],
+      replies: [{ kind: 'text', text: 'É.' }],
+    },
+    {
+      options: ['Preciso de uma cópia.', 'Me manda uma cópia.', 'Preciso desse arquivo.'],
+      // Não reenvia a mensagem de voz de Rafael (P2): só a gravação da balada.
+      replies: [
+        { kind: 'text', text: 'Tá.\nSó um segundo.' },
+        RAFAEL_FORWARD_AUDIO,
+        { kind: 'text', text: 'É esse.' },
       ],
     },
     {
       options: [
-        'Por que “mesmo”?',
-        '“Mesmo” — você já esperava isso?',
-        'Fala direito. O que você quis dizer com “mesmo”?',
+        'Mariana disse por que queria saber quem estava trabalhando naquela noite?',
+        'Ela disse por que queria saber quem estava trabalhando?',
+        'Ela explicou por que queria saber quem estava lá?',
+      ],
+      replies: [{ kind: 'text', text: 'Não.' }],
+    },
+    {
+      options: ['Você perguntou?', 'Chegou a perguntar?', 'Perguntou a ela?'],
+      replies: [{ kind: 'text', text: 'Perguntei.\nEla desviou.' }],
+    },
+    {
+      options: [
+        'Ela tinha certeza de que era o Vértice?',
+        'Ela tinha certeza do lugar?',
+        'Era o Vértice mesmo?',
       ],
       replies: [
         {
           kind: 'text',
-          text: 'A Júlia me chamou ontem perguntando se eu sabia onde ela tava.\nEu achei que ela só tinha desligado o celular ou sei lá.',
+          text: 'Ela disse que sabia de onde vinha.\nEu reconheci coisa do sistema de lá e falei que batia.',
         },
       ],
-      repliesByOption: [
-        [
-          {
-            kind: 'text',
-            text: 'A Júlia me chamou ontem perguntando se eu sabia onde ela tava.\nEu achei que ela só tinha desligado o celular ou sei lá.',
-          },
-        ],
-        [
-          {
-            kind: 'text',
-            text: 'Não esperava.\nMas a Júlia me chamou ontem perguntando se eu sabia onde ela tava.\nAchei que era celular desligado.',
-          },
-        ],
-        [
-          {
-            kind: 'text',
-            text: 'Calma.\nA Júlia me ligou ontem perguntando se eu sabia onde ela tava.\nEu achei que ela só tinha desligado o celular.',
-          },
-        ],
-      ],
     },
     {
       options: [
-        'Quando foi a última vez que você falou com ela?',
-        'Último contato — quando?',
-        'Vocês se falaram quando?',
+        'Mais alguma coisa que ela tenha dito sobre isso?',
+        'Ela disse mais alguma coisa?',
+        'Mais alguma coisa?',
       ],
-      replies: [{ kind: 'text', text: 'Sábado.\nPor mensagem.' }],
-      repliesByOption: [
-        [{ kind: 'text', text: 'Sábado.\nPor mensagem.' }],
-        [{ kind: 'text', text: 'Sábado.\nMensagem.' }],
-        [{ kind: 'text', text: 'Sábado, por mensagem.' }],
-      ],
+      replies: [{ kind: 'text', text: 'Só que precisava de um nome.' }],
     },
     {
-      options: [
-        'Vi no celular dela que vocês trocaram uma gravação.',
-        'Vocês estavam falando de uma gravação.',
-        'Aquela gravação que ela te mandou — ainda tem?',
-      ],
-      replies: [{ kind: 'text', text: 'Tá com o celular dela?' }],
-      repliesByOption: [
-        [{ kind: 'text', text: 'Tá com o celular dela?' }],
-        [{ kind: 'text', text: 'Tá.\nVocê tá com o celular dela?' }],
-        [{ kind: 'text', text: 'Tenho.\nMas… tá com o celular dela?' }],
-      ],
+      options: ['Que nome?', 'Nome de quem?', 'Qual nome?'],
+      replies: [{ kind: 'text', text: 'De quem estava trabalhando.' }],
     },
     {
-      options: [
-        'Estou com o que foi apreendido no apartamento. O arquivo que ela mandou não está mais no aparelho.',
-        'Estou com o celular. O arquivo sumiu do aparelho.',
-        'Tenho o aparelho. A gravação não está mais lá.',
-      ],
-      replies: [{ kind: 'text', text: 'Eu ainda tenho aqui.' }],
-      repliesByOption: [
-        [{ kind: 'text', text: 'Eu ainda tenho aqui.' }],
-        [{ kind: 'text', text: 'Sumiu?\nEu ainda tenho aqui.' }],
-        [{ kind: 'text', text: 'Beleza.\nEu ainda tenho aqui.' }],
-      ],
+      options: ['Certo.', 'Entendi.', 'Ok.'],
+      replies: [{ kind: 'text', text: 'Delegado.' }],
     },
     {
-      options: [
-        'Pode encaminhar para este número?',
-        'Me manda uma cópia agora.',
-        'Consegue me passar o arquivo?',
-      ],
-      replies: [{ kind: 'text', text: 'Mando agora.' }, RAFAEL_FORWARD_AUDIO],
-      repliesByOption: [
-        [{ kind: 'text', text: 'Mando agora.' }, RAFAEL_FORWARD_AUDIO],
-        [{ kind: 'text', text: 'Já.' }, RAFAEL_FORWARD_AUDIO],
-        [{ kind: 'text', text: 'Consigo.\nMando agora.' }, RAFAEL_FORWARD_AUDIO],
-      ],
+      options: ['Fala.', 'Pode falar.', 'Diga.'],
+      replies: [{ kind: 'text', text: 'Se achar ela, me avisa.' }],
     },
     {
-      options: [
-        'O que Mariana queria descobrir com essa gravação?',
-        'O que ela queria com isso?',
-        'Ela te disse o objetivo?',
-      ],
-      replies: [{ kind: 'text', text: 'Quem tava trabalhando no lugar quando isso foi gravado.' }],
-      repliesByOption: [
-        [{ kind: 'text', text: 'Quem tava trabalhando no lugar quando isso foi gravado.' }],
-        [{ kind: 'text', text: 'Saber quem tava trabalhando no lugar quando isso foi gravado.' }],
-        [
-          {
-            kind: 'text',
-            text: 'Disse.\nQuem tava trabalhando no lugar quando isso foi gravado.',
-          },
-        ],
-      ],
-    },
-    {
-      options: [
-        'Que lugar era esse?',
-        'Qual lugar?',
-        'O Vértice, certo?',
-      ],
-      replies: [{ kind: 'text', text: 'Eu falei pra ela que parecia o Vértice.' }],
-      repliesByOption: [
-        [{ kind: 'text', text: 'Eu falei pra ela que parecia o Vértice.' }],
-        [{ kind: 'text', text: 'Parecia o Vértice.\nFoi o que eu falei pra ela.' }],
-        [{ kind: 'text', text: 'Eu acho.\nFalei pra ela que parecia o Vértice.' }],
-      ],
-    },
-    {
-      options: [
-        'Parecia — ou você tem certeza?',
-        'Você tem certeza?',
-        '“Parecia” não me ajuda muito.',
-      ],
-      replies: [
-        { kind: 'text', text: 'Trabalho com som, não sou vidente.\nTem coisa ali que lembra o sistema antigo deles.' },
-      ],
-      repliesByOption: [
-        [
-          {
-            kind: 'text',
-            text: 'Trabalho com som, não sou vidente.\nTem coisa ali que lembra o sistema antigo deles.',
-          },
-        ],
-        [
-          {
-            kind: 'text',
-            text: 'Certeza absoluta, não.\nMas tem coisa ali que lembra o sistema antigo deles.',
-          },
-        ],
-        [
-          {
-            kind: 'text',
-            text: 'Eu sei.\nTrabalho com som, não sou vidente.\nTem coisa ali que lembra o sistema antigo deles.',
-          },
-        ],
-      ],
-    },
-    {
-      options: [
-        'Mariana disse de onde tirou a gravação?',
-        'Ela contou como conseguiu isso?',
-        'Origem do arquivo — ela falou?',
-      ],
-      replies: [
-        { kind: 'text', text: 'Disse que sabia de onde veio.\nNão disse como conseguiu.' },
-        { kind: 'text', text: 'Perguntei.\nEla mudou de assunto.' },
-      ],
-      repliesByOption: [
-        [
-          { kind: 'text', text: 'Disse que sabia de onde veio.\nNão disse como conseguiu.' },
-          { kind: 'text', text: 'Perguntei.\nEla mudou de assunto.' },
-        ],
-        [
-          { kind: 'text', text: 'Como, não.\nSó que sabia de onde veio.' },
-          { kind: 'text', text: 'Perguntei.\nEla mudou de assunto.' },
-        ],
-        [
-          { kind: 'text', text: 'Falou que sabia de onde veio.\nNão como conseguiu.' },
-          { kind: 'text', text: 'Insisti.\nEla mudou de assunto.' },
-        ],
-      ],
+      options: ['Aviso.', 'Aviso, sim.', 'Pode deixar.'],
+      replies: [],
     },
   ],
   onComplete: [{ type: 'setFlag', id: 'block02_rafael_chat_done', value: true }],

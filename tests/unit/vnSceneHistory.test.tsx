@@ -47,6 +47,24 @@ describe('VN scene scroll-up history', () => {
     }
   })
 
+  it('opens history scrolled to the latest line', async () => {
+    render(<PlaythroughHarness />)
+    const user = userEvent.setup()
+    const scene = screen.getByTestId('vn-history-test')
+    for (let i = 0; i < 5; i++) {
+      await user.click(within(scene).getByTestId('vn-advance-zone'))
+    }
+    await user.keyboard('{PageUp}')
+    const scroll = within(scene).getByTestId('vn-backlog').querySelector('.vn-backlog__scroll') as HTMLDivElement
+    const blocks = scroll.querySelectorAll('.vn-nvl__block')
+    expect(blocks[blocks.length - 1]?.textContent).toContain(BEATS[5]!.text)
+    expect(scroll.scrollTop).toBe(scroll.scrollHeight)
+    expect(within(scene).getByText(BEATS[5]!.text)).toBeInTheDocument()
+    const backlog = within(scene).getByTestId('vn-backlog')
+    expect(within(backlog).getByText('Falas desta cena · role para cima')).toBeInTheDocument()
+    expect(backlog.querySelector('.vn-backlog__scene')?.textContent).toBe('Teste')
+  })
+
   it('does not advance dialogue when opening history', async () => {
     render(<PlaythroughHarness />)
     const user = userEvent.setup()

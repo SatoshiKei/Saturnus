@@ -5,21 +5,21 @@ export const marianaBlock01Notes: NoteItem[] = [
   {
     id: 'n-quarta',
     title: 'QUARTA',
-    body: '07:00 plantão\ncomprar café\nligar Paula\nconfirmar com Júlia sexta\nNÃO confiar só no calendário',
+    body: '07:00 plantão\ncomprar café\nligar Paula\nconfirmar sexta com a Júlia\n\nnão confiar só no calendário',
     updatedAt: '28/10/2026',
     storyFlag: 'block01_note_quarta_read',
   },
   {
     id: 'n-pessoas',
     title: 'PESSOAS',
-    body: 'Júlia\nCamila\nRafael\nPaula\n\nse eu perguntar de novo não fala que eu já perguntei',
+    body: 'Júlia\nCamila\nRafael\nPaula\n\nse eu perguntar a mesma coisa de novo, não fala que eu já perguntei',
     updatedAt: '01/11/2026',
     storyFlag: 'block01_note_pessoas_read',
   },
   {
     id: 'n-certezas',
     title: 'Sem título',
-    body: 'lembrar ≠ ter certeza',
+    body: 'lembrar não é a mesma coisa que ter certeza',
     updatedAt: '01/11/2026',
     storyFlag: 'block01_note_certezas_read',
   },
@@ -30,7 +30,7 @@ export const marianaBlock01Notes: NoteItem[] = [
      */
     id: 'n-sess',
     title: 'sess',
-    body: 'hvalenca@ — truncado\nconta antiga / não abre\nconferir depois',
+    body: 'hvalenca@\nconta antiga?\nnão abre\nver depois',
     updatedAt: '12/09/2026',
     storyFlag: 'block01_note_sess_read',
   },

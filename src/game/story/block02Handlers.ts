@@ -24,7 +24,7 @@ export function onRafaelClubAudioPlayed() {
     {
       type: 'addTask',
       id: 'task_match_vertice_set',
-      label: 'Analisar a gravação da balada e extrair a transição musical',
+      label: 'Examinar a gravação recuperada',
     },
   ])
 }
@@ -50,12 +50,12 @@ export function runProvisionalRafaelForwardAnalysis() {
     {
       type: 'addTask',
       id: 'task_vertice_dj',
-      label: 'Investigar o Vértice — o que Mariana perguntou lá',
+      label: 'Ir ao Vértice e perguntar por Mariana',
     },
     {
       type: 'addTask',
       id: 'task_rafael_recording',
-      label: 'Recuperar a gravação original que Mariana enviou a Rafael',
+      label: 'Descobrir se Rafael ainda possui a gravação original',
     },
     {
       type: 'notifyInvestigationUpdate',
@@ -145,7 +145,7 @@ export function runProvisionalRingsAnalysis() {
     {
       type: 'addTask',
       id: 'task_vertice_cross_reference',
-      label: 'Cruzar a transição A→B com os registros históricos do Vértice',
+      label: 'Voltar ao Vértice com a gravação analisada',
     },
     {
       type: 'notifyInvestigationUpdate',
@@ -182,6 +182,16 @@ export function finishVerticeSetCrossRef() {
       id: 'task_locate_nico',
       label: 'Localizar Nico',
     },
+    {
+      type: 'addTask',
+      id: 'task_why_mariana_session',
+      label: 'Entender por que Mariana procurava aquela sessão',
+    },
+    {
+      type: 'addTask',
+      id: 'task_continue_elisa_case',
+      label: 'Continuar a revisão dos autos de Elisa Duarte',
+    },
     { type: 'unlockLocation', id: 'vertice', status: 'visited' },
   ])
 }
@@ -197,6 +207,7 @@ export function finishLucasInterview() {
     { type: 'setFlag', id: 'block02_lucas_interview_done', value: true },
     { type: 'addEvidence', id: 'lucas_knew_elisa' },
     { type: 'addEvidence', id: 'mariana_andre_innocence' },
+    { type: 'addEvidence', id: 'mariana_sought_schedules' },
     { type: 'discoverPerson', id: 'lucas', status: 'interviewed' },
     { type: 'discoverPerson', id: 'elisa', status: 'identified' },
     { type: 'discoverSearchTerm', term: 'elisa' },

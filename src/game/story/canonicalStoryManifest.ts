@@ -569,7 +569,7 @@ function extractActionsForBlock(docId: string, block: DocumentBlock): StoryActio
     }
   }
   if (block.extractAction) actions.push(block.extractAction)
-  if (docId === 'doc-bo-inicial' && block.id === 'b5') registerInitialPoliceReport()
+  if (docId === 'doc-bo-inicial' && block.id === 'b4') registerInitialPoliceReport()
   return actions
 }
 

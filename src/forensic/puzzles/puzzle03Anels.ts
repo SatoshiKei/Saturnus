@@ -41,7 +41,7 @@ const recording: ForensicSource = {
     { key: 'duration', label: 'Duration', value: '03:00.000' },
     { key: 'channels', label: 'Channels', value: '1' },
     { key: 'sampleRate', label: 'Sample rate', value: '44100 Hz' },
-    { key: 'source', label: 'Source', value: 'WhatsApp · Rafael → Augusto (cópia da gravação da balada)' },
+    { key: 'source', label: 'Source', value: 'WhatsApp · cópia enviada por Rafael (origem anterior: Mariana)' },
     { key: 'chain', label: 'Chain', value: 'Mariana → Rafael → Augusto' },
     { key: 'size', label: 'Size', value: '~4.2 MB' },
     { key: 'hash', label: 'Hash', value: 'sha1:c3a9…7e21' },

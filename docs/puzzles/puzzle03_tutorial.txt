@@ -1,53 +1,136 @@
 PUZZLE 03 — ANÉIS
-Dev only — não aparece para o jogador.
-Arquivo: REC_VTX_OLD_01.m4a (evidenceId: rec_vtx_old_01)
+Documento de desenvolvimento — NÃO aparece para o jogador.
+
+Arquivo: REC_VTX_OLD_01.m4a
+evidenceId: rec_vtx_old_01
 Runtime: public/assets/audio/forensic/puzzle03/rec_vtx_old_01_final.mp3
+Duração: 180 s
 
 
-STATUS DE ASSET
----------------
+========================================================================
+O QUE O JOGADOR ESTÁ RESOLVENDO
+========================================================================
+
+A gravação da balada tem três regiões:
+
+  A   — música antes do DJ abrir o microfone
+  MIC — voz do DJ + transição / crowd
+  B   — música depois da intervenção
+
+Pergunta técnica: qual a transição ordenada A→B?
+
+Resultado do puzzle na Bancada: chave A→B isolada (conquista ANÉIS).
+Nico NÃO aparece aqui — só na 2ª visita ao Vértice.
+
+
+========================================================================
+COMO CHEGAR AO ARQUIVO
+========================================================================
+
+1. P2 (áudio de Rafael no celular de Mariana) → aponta Vértice.
+2. 1ª visita ao Vértice → Mariana / arquivos históricos existem.
+   NÃO entrega REC_VTX_OLD_01. NÃO identifica Nico.
+3. WhatsApp Augusto → Rafael → pedir a gravação original que ela lhe mandou.
+4. Rafael envia a balada → evidência rec_vtx_old_01 na Bancada.
+
+Proveniência: Mariana → Rafael → Augusto (WhatsApp).
+NÃO é arquivo obtido no Vértice. NÃO é a voz do P2.
+
+
+========================================================================
+TIMING DO MASTER (referência)
+========================================================================
+
+  00:00 – 01:12   região A (música pré-DJ)
+  01:12 – 01:30   MIC / transição (djStart 72.000 → djEnd 90.678)
+  01:30 – 03:00   região B (música pós-DJ)
+
+Janelas limpas para fingerprint (evitar bordas do MIC):
+
+  A:  00:08 – 01:08   (8.0 – 68.0 s)
+  B:  01:36 – 02:30   (96.0 – 150.0 s)
+
+MIC (não usar para match forte):
+
+  01:12 – 01:30
+
+
+========================================================================
+PASSO A PASSO NA BANCADA
+========================================================================
+
+1. Abrir REC_VTX_OLD_01 / ouvir.
+   Perceber: música → microfone do DJ → música diferente (ou outra região).
+
+2. Selecionar um trecho limpo da região A (ex.: ~00:20–00:50).
+   Analysis → Fingerprint Search.
+   Esperado: match dominante TRACK_REF_A (forte).
+
+3. Selecionar um trecho limpo da região B (ex.: ~01:40–02:10).
+   Fingerprint Search de novo.
+   Esperado: match dominante TRACK_REF_B (forte).
+
+4. Com A e B confirmados, a UI estabelece transição A→B.
+   Archive do Vértice (local na bancada) pode filtrar por adjacência A→B.
+   Abrir sessão / ver record id é opcional para flavor — o operador
+   NÃO é revelado na bancada (“confirmar no Vértice”).
+
+5. Quando A→B estiver pronto → conclusão técnica:
+   - flag block02_rings_provisional
+   - evidence rec_vtx_fingerprint_transition
+   - conquista ANÉIS (ach-rings)
+   - Vértice reabre no mapa para a 2ª visita
+
+
+Seleção ruim (só MIC, crowd, crossfade curto):
+  confiança baixa / sem match forte — esperado.
+
+
+========================================================================
+DEPOIS DO PUZZLE (não é a Bancada)
+========================================================================
+
+2ª visita ao Vértice → tópico “Cruzar transição musical com registros de set”
+  → Sandro filtra o HD com A→B
+  → Nicolas “Nico” Prado Reis
+  → block02_vertice_set_crossref + nico_dj_identified
+
+Só então: localizar / entrevistar Nico → P4.
+
+
+========================================================================
+O QUE NÃO RESOLVE
+========================================================================
+
+- Só fingerprint A (ou só B)
+- Abrir sessão do archive sem A→B
+- Força bruta em registros sem análise
+- 1ª visita ao Vértice
+- Ouvir o áudio de Rafael (P2) de novo
+
+
+========================================================================
+IDs / FLAGS (dev)
+========================================================================
+
+Entrega do áudio:     block02_rafael_club_received + rec_vtx_old_01
+P3 técnico:           block02_rings_provisional + rec_vtx_fingerprint_transition
+Nico (2ª visita):     block02_vertice_set_crossref + nico_dj_identified
+Sessão canónica (id): vtx-set-2019-11-08-nico / VTX-SET-20-C
+Tracks:               TRACK_REF_A / TRACK_REF_B
+
+
+========================================================================
+STATUS DE ASSET (conteúdo musical)
+========================================================================
+
 PENDING ASSET — P03_SECOND_TRACK_REQUIRED
 
-Source A: src/assets/audios/p3/Give-Me-Everything-Tonight-Hardtekk-The-Dark-Triad-Song.mp3
-Source B: AUSENTE (não inventar).
+Design exige duas faixas genuinamente distintas (A ≠ B).
+Hoje só existe Source A aprovada em p3/:
+  Give-Me-Everything-Tonight-Hardtekk-The-Dark-Triad-Song.mp3
+Source B: ausente (não inventar / não stretch da mesma faixa).
 
-
-PROVENIÊNCIA (CANON DEFINITIVO)
--------------------------------
-Áudio B = gravação da balada.
-Mariana enviou a Rafael; Rafael preservou cópia; Rafael envia a Augusto.
-
-Cadeia: Mariana → Rafael → Augusto
-sourceType: augusto-whatsapp
-Canal: WhatsApp Rafael → Augusto (após 1ª visita ao Vértice)
-
-NÃO é location-archive.
-NÃO é “obtido no Vértice”.
-NÃO é a voz do P2.
-
-
-GATES
------
-1ª visita Vértice → arquivos existem (SEM este áudio, SEM Nico)
-Rafael envia balada → P3 na Bancada
-P3 técnico (A→B) → conquista ANÉIS; reabre Vértice; SEM Nico
-2ª visita → cruzamento institucional → Nico
-
-
-PERGUNTA / RESULTADO TÉCNICO
-----------------------------
-Extrair transição A→B / chave de busca.
-Nico NÃO nasce no handler do P3.
-
-
-ARQUITETURA
------------
-Fingerprint Search + regiões A/MIC/B + adjacência A→B + catálogo local.
-Operator names ocultos na bancada; revelação na 2ª visita.
-
-
-FLAGS
------
-block02_rafael_club_received + rec_vtx_old_01 (entrega)
-block02_rings_provisional + rec_vtx_fingerprint_transition + ach-rings (técnico)
-block02_vertice_set_crossref + nico_dj_identified (2ª visita)
+O master atual ainda é legado (uma música + DJ).
+Arquitetura Fingerprint + gates acima já funciona para playtest;
+o design musical só fica FIXED quando B real entrar e o master for rebuildado.

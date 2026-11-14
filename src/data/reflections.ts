@@ -78,9 +78,25 @@ export const reflections: ReflectionDef[] = [
     whenFlag: 'block02_lucas_interview_done',
     background: sceneBackgrounds.lucas,
     blocks: [
-      'Elisa Duarte. O nome não estava em nenhuma linha do desaparecimento de Mariana.',
-      'Lucas respondeu como quem já tinha feito aquela conta sozinho, mais de uma vez, e nunca gostou do resultado.',
-      'Se Mariana perguntou por horário e por testemunha, ela estava montando alguma coisa. Os autos do caso Elisa precisam estar em algum sistema.',
+      'Mariana não foi atrás de Lucas para perguntar se André era culpado. Ela já sabia a resposta dele.',
+      'O que ela fez foi mais específico: separou memória de interpretação. Lucas tinha visto ciúme, cobrança e um relacionamento ruim. Não tinha visto ameaça, agressão ou medo declarado.',
+      'Isso não inocentava André. Também não era a mesma coisa que o processo transformar todos aqueles fatos, anos depois, numa linha reta até o homicídio.',
+      'Depois Mariana passou aos horários.',
+      'Se ela estava desmontando motivo e oportunidade separadamente, eu precisava ler os autos sem começar pela condenação.',
+    ],
+  },
+  {
+    /** Fechamento de P3 — 2ª visita ao Vértice (Nico identificado). */
+    id: 'refl-aneis',
+    sceneId: 'vertice',
+    whenFlag: 'block02_vertice_set_crossref',
+    background: sceneBackgrounds.vertice,
+    blocks: [
+      'Mariana já tinha passado pelo Vértice antes de mim e perguntado pelas pessoas que trabalhavam ali anos atrás. Naquela primeira visita, eu só consegui repetir as perguntas dela.',
+      'A gravação mudou isso.',
+      'Rafael guardou a cópia que desapareceu do telefone de Mariana. Com o arquivo em mãos, os registros do Vértice deixaram de ser uma pilha de nomes antigos e apontaram para uma sessão específica.',
+      'Nico estava na cabine.',
+      'Isso ainda não dizia por que Mariana precisava encontrá-lo. Só me dava a chance de fazer a pergunta diretamente a alguém que esteve lá.',
     ],
   },
   {

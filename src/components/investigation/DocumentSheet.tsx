@@ -8,6 +8,9 @@ import { onRobertoExposed } from '../../game/story/block09Handlers'
 import { resolveChatMediaSrc } from '../../lib/characterSprites'
 import { playSfx } from '../../lib/sfx'
 
+/** Bloco final do BO inicial — “Registrar no caderno” abre o caso. */
+export const DOC_BO_REGISTRATION_BLOCK_ID = 'b4'
+
 /** Documentos que ficam na pasta física da mesa (entregues na passagem do caso). */
 export const PHYSICAL_DOC_IDS = [
   'doc-bo-inicial',
@@ -69,13 +72,17 @@ export function DocumentSheet({ docId, onBack, backLabel = '‹ Voltar' }: Docum
         </figure>
       ) : null}
       {doc.blocks.map((block) => {
-        const extractable = Boolean(block.id === 'b5' || block.extractableEvidenceId || block.extractAction)
+        const isBoRegistration =
+          doc.id === 'doc-bo-inicial' && block.id === DOC_BO_REGISTRATION_BLOCK_ID
+        const extractable = Boolean(
+          isBoRegistration || block.extractableEvidenceId || block.extractAction,
+        )
         const done = progress?.highlightedBlockIds.includes(block.id)
         const markButton = extractable ? (
           <button
             type="button"
             className="cf-mark"
-            data-testid={block.id === 'b5' ? 'extract-b1' : `extract-${block.id}`}
+            data-testid={isBoRegistration ? 'extract-b1' : `extract-${block.id}`}
             disabled={done}
             onClick={() => {
               const actions: Parameters<typeof extractFromDocument>[2] = []
@@ -89,7 +96,7 @@ export function DocumentSheet({ docId, onBack, backLabel = '‹ Voltar' }: Docum
                 }
               }
               if (block.extractAction) actions.push(block.extractAction)
-              if (doc.id === 'doc-bo-inicial' && block.id === 'b5') {
+              if (isBoRegistration) {
                 registerInitialPoliceReport()
               }
               extractFromDocument(block.id, doc.id, actions)

@@ -103,7 +103,7 @@ describe('puzzle 1 dataset', () => {
     expect(src.speechSegments?.map((s) => s.text)).toEqual([
       'escute isso até o fim',
       'desde aquela noite',
-      'eu sentia medo',
+      'eu estava com medo',
       'eu estava confusa',
       'eu não lembro',
     ])

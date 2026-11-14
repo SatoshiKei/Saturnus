@@ -123,7 +123,7 @@ export const puzzle02IapetusSession: ForensicSession = {
         { key: 'channels', label: 'Channels', value: '1' },
         { key: 'sampleRate', label: 'Sample rate', value: '48000 Hz' },
         { key: 'created', label: 'Created', value: '2026-11-03 21:47:10' },
-        { key: 'source', label: 'Source', value: 'WhatsApp · Rafael → Mariana (celular apreendido)' },
+        { key: 'source', label: 'Source', value: 'WhatsApp · mensagem de voz — Rafael (celular de Mariana)' },
         { key: 'size', label: 'Size', value: '539 KB' },
         { key: 'hash', label: 'Hash', value: 'sha1:9b1e…c4a2' },
         { key: 'decodeNote', label: 'Decode', value: 'Decode ended before container EOF.' },

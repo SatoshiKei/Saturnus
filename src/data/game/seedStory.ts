@@ -10,14 +10,18 @@ import type {
 } from '../../game/types'
 
 export const seedTasks: CaseTask[] = [
-  { id: 'task_review_bo', label: 'Revisar ocorrência inicial', completed: false },
-  { id: 'task_listen_emergency', label: 'Ouvir ligação de emergência', completed: false },
-  { id: 'task_mariana_phone', label: 'Examinar celular apreendido', completed: false },
+  { id: 'task_review_bo', label: 'Revisar a ocorrência de Mariana Silva', completed: false },
+  { id: 'task_listen_emergency', label: 'Ouvir a chamada das 08:03', completed: false },
+  { id: 'task_mariana_phone', label: 'Examinar o celular apreendido', completed: false },
 ]
 
 export const block01EndTasks: CaseTask[] = [
-  { id: 'task_trace_emergency_call', label: 'Analisar origem da ligação de emergência', completed: false },
-  { id: 'task_rafael_recording', label: 'Identificar gravação mencionada por Rafael', completed: false },
+  {
+    id: 'task_trace_emergency_call',
+    label: 'Verificar a divergência entre a central e o histórico do aparelho',
+    completed: false,
+  },
+  { id: 'task_rafael_recording', label: 'Descobrir se Rafael ainda possui a gravação original', completed: false },
   { id: 'task_rafael_venue_staff', label: 'Descobrir quem trabalhava no local da gravação', completed: false },
   { id: 'task_selective_lapses', label: 'Entender por que os lapsos de Mariana parecem seletivos', completed: false },
 ]
@@ -296,7 +300,8 @@ export const contradictionDefs: ContradictionDef[] = [
     id: 'contra_selective_memory',
     evidenceAId: 'mariana_memory_lapses',
     evidenceBId: 'rafael_call_memory',
-    summary: 'Os lapsos de Mariana parecem seletivos.',
+    summary:
+      'Memória irregular — os relatos não combinam com um esquecimento uniforme: Mariana perdia alguns fatos específicos enquanto preservava outros com precisão.',
     actions: [
       { type: 'updateHypothesis', id: 'hyp_memory', state: 'weakened' },
       { type: 'addHypothesis', id: 'hyp_manipulation' },
@@ -1162,7 +1167,19 @@ export const seedStoryTriggers: StoryTrigger[] = [
       },
       {
         type: 'replaceTasks',
-        tasks: [{ id: 'task_locate_nico', label: 'Localizar Nico — testemunha do caso Elisa', completed: false }],
+        tasks: [
+          { id: 'task_locate_nico', label: 'Localizar Nico', completed: false },
+          {
+            id: 'task_why_mariana_session',
+            label: 'Entender por que Mariana procurava aquela sessão',
+            completed: false,
+          },
+          {
+            id: 'task_continue_elisa_case',
+            label: 'Continuar a revisão dos autos de Elisa Duarte',
+            completed: false,
+          },
+        ],
       },
       { type: 'setFlag', id: 'block02_complete', value: true },
     ],

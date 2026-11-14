@@ -421,7 +421,20 @@
   transform: rotate(-45deg);
 }
 
-/* —— Backlog —— */
+/* —— Backlog (scroll-up) —— */
+.vn-scene:has(.vn[data-mode='backlog']) .vn-top {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.vn[data-mode='backlog'] {
+  z-index: 100;
+}
+
+.vn[data-mode='backlog'] .vn-controls {
+  display: none;
+}
+
 .vn-backlog {
   position: absolute;
   inset: 0;
@@ -434,25 +447,62 @@
 .vn-backlog__bar {
   position: relative;
   z-index: 2;
+  flex-shrink: 0;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: calc(var(--u) * 14px) var(--vn-safe-x);
+  align-items: flex-end;
+  gap: calc(var(--u) * 12px);
+  padding: calc(var(--u) * 18px) var(--vn-safe-x) calc(var(--u) * 12px);
+  background: linear-gradient(180deg, rgba(8, 6, 10, 0.94) 0%, rgba(8, 6, 10, 0.55) 72%, transparent 100%);
+}
+
+.vn-backlog__titles {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--u) * 4px);
+  min-width: 0;
+}
+
+.vn-backlog__scene {
   font-family: var(--font-ui);
-  font-size: var(--text-choice-heading);
-  letter-spacing: 0.2em;
+  font-size: var(--text-location);
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgba(141, 151, 158, 0.95);
+  color: rgba(226, 223, 213, 0.88);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
+}
+
+.vn-backlog__sub {
+  font-family: var(--font-ui);
+  font-size: calc(var(--u) * 12px);
+  letter-spacing: 0.06em;
+  text-transform: none;
+  color: rgba(141, 151, 158, 0.85);
 }
 
 .vn-backlog__close {
-  font: inherit;
-  color: var(--vn-speaker-color);
-  background: none;
+  flex-shrink: 0;
+  font-family: var(--font-ui);
+  font-size: calc(var(--u) * 14px);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(212, 176, 106, 0.9);
+  background: transparent;
   border: none;
   cursor: pointer;
-  letter-spacing: 0.08em;
-  text-transform: none;
+  padding: 0.35em 0.5em;
+  border-radius: 4px;
+  transition: color var(--vn-t-adv) var(--ease), background var(--vn-t-adv) var(--ease);
+}
+
+.vn-backlog__close:hover {
+  color: #f0e0b8;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.vn-backlog__close:focus-visible {
+  outline: 2px solid rgba(200, 150, 62, 0.65);
+  outline-offset: 3px;
 }
 
 .vn-backlog__scroll {

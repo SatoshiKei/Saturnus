@@ -1,4 +1,6 @@
+import { useLayoutEffect, useRef } from 'react'
 import type { VnLine } from '../VisualNovelDialog'
+import { useVnSceneHistory } from '../../../lib/vnSceneHistory'
 
 function NvlBlock({ line }: { line: VnLine }) {
   return (
@@ -62,22 +64,34 @@ export function NVLView({
 export function BacklogView({
   lines,
   onClose,
-  title = 'Registro',
 }: {
   lines: VnLine[]
   onClose: () => void
-  title?: string
 }) {
+  const sceneHistory = useVnSceneHistory()
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  useLayoutEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+    el.scrollTop = el.scrollHeight
+  }, [lines])
+
+  const sceneTitle = sceneHistory?.sceneTitle?.trim() || 'Cena'
+
   return (
     <div className="vn-backlog" data-testid="vn-backlog" data-vn-history-scroll>
       <div className="vn-nvl__veil" aria-hidden />
       <header className="vn-backlog__bar">
-        <span>{title}</span>
+        <div className="vn-backlog__titles">
+          <span className="vn-backlog__scene">{sceneTitle}</span>
+          <span className="vn-backlog__sub">Falas desta cena · role para cima</span>
+        </div>
         <button type="button" className="vn-backlog__close" onClick={onClose}>
           Fechar
         </button>
       </header>
-      <div className="vn-backlog__scroll">
+      <div ref={scrollRef} className="vn-backlog__scroll">
         {lines.map((line, i) => (
           <NvlBlock key={i} line={line} />
         ))}

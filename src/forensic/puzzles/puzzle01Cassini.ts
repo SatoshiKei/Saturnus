@@ -66,7 +66,7 @@ export const puzzle01SpeechSegments: SpeechSegment[] = [
   {
     id: 'seg_medo',
     clipId: 'c3',
-    text: 'eu sentia medo',
+    text: 'eu estava com medo',
     startSec: 22.0,
     durationSec: 1.045,
     clarityThreshold: 0.68,

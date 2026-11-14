@@ -33,11 +33,11 @@ export const block02DevCheckpoints: { id: string; label: string; actions: StoryA
       { type: 'addEvidence', id: 'rafael_recording_vertice_tag' },
       { type: 'addEvidence', id: 'mariana_club_recording_missing' },
       { type: 'unlockLocation', id: 'vertice', status: 'visitAvailable' },
-      { type: 'addTask', id: 'task_vertice_dj', label: 'Investigar o Vértice — o que Mariana perguntou lá' },
+      { type: 'addTask', id: 'task_vertice_dj', label: 'Ir ao Vértice e perguntar por Mariana' },
       {
         type: 'addTask',
         id: 'task_rafael_recording',
-        label: 'Recuperar a gravação original que Mariana enviou a Rafael',
+        label: 'Descobrir se Rafael ainda possui a gravação original',
       },
     ],
   },
@@ -74,7 +74,7 @@ export const block02DevCheckpoints: { id: string; label: string; actions: StoryA
       {
         type: 'addTask',
         id: 'task_match_vertice_set',
-        label: 'Analisar a gravação da balada e extrair a transição musical',
+        label: 'Examinar a gravação recuperada',
       },
     ],
   },
@@ -89,7 +89,7 @@ export const block02DevCheckpoints: { id: string; label: string; actions: StoryA
       {
         type: 'addTask',
         id: 'task_vertice_cross_reference',
-        label: 'Cruzar a transição A→B com os registros históricos do Vértice',
+        label: 'Voltar ao Vértice com a gravação analisada',
       },
     ],
   },
@@ -106,6 +106,16 @@ export const block02DevCheckpoints: { id: string; label: string; actions: StoryA
       { type: 'completeTask', id: 'task_vertice_dj' },
       { type: 'completeTask', id: 'task_vertice_cross_reference' },
       { type: 'addTask', id: 'task_locate_nico', label: 'Localizar Nico' },
+      {
+        type: 'addTask',
+        id: 'task_why_mariana_session',
+        label: 'Entender por que Mariana procurava aquela sessão',
+      },
+      {
+        type: 'addTask',
+        id: 'task_continue_elisa_case',
+        label: 'Continuar a revisão dos autos de Elisa Duarte',
+      },
       { type: 'unlockLocation', id: 'vertice', status: 'visited' },
     ],
   },

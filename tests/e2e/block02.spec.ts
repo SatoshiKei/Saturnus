@@ -44,8 +44,8 @@ test('Bloco 2 — Paula começa vazia, o jogador escreve; Lucas e Elisa chegam p
   await page.getByTestId('chat-row-paula').click()
   await expect(page.getByTestId('chat-empty-thread')).toBeVisible()
 
-  // Nove trocas; toca em Mensagem → escolhe uma opção cosmética (mesmo estado final).
-  for (let i = 0; i < 9; i++) {
+  // Oito trocas; toca em Mensagem → escolhe uma opção cosmética (mesmo estado final).
+  for (let i = 0; i < 8; i++) {
     await expect(page.getByTestId('chat-composer')).toHaveAttribute('data-compose-available', 'true', {
       timeout: 15_000,
     })
@@ -57,7 +57,7 @@ test('Bloco 2 — Paula começa vazia, o jogador escreve; Lucas e Elisa chegam p
     await expect(page.getByTestId('chat-typing')).toBeVisible()
     await expect(page.getByTestId('chat-typing')).toBeHidden({ timeout: 15_000 })
   }
-  await expect(page.getByText('Moreira.', { exact: true })).toBeVisible({ timeout: 15_000 })
+  await expect(page.getByText('Lucas Moreira.', { exact: true })).toBeVisible({ timeout: 15_000 })
   await expect(page.getByText(/coisa antiga da família/)).toBeVisible({ timeout: 15_000 })
   await expect(page.getByTestId('chat-script-options')).toBeHidden({ timeout: 15_000 })
   await expect
