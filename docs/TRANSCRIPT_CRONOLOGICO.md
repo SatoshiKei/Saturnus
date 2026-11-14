@@ -1999,10 +1999,6 @@ Texto diegético extraído das fontes do jogo (cenas, WhatsApp, notas, diário, 
 
 > Se os relógios não concordam entre si, a cronologia do processo também pode não concordar com a noite.
 
-### Celular de Mariana — Arquivos (após reanálise)
-
-- **REC_1102.m4a** (Downloads) — localizado após reanálise; gravação Maralto
-
 ### Bancada — Janus / Saturnalia
 
 *Puzzles de áudio (Lívia + Nico). Textos de resultado no caderno:*

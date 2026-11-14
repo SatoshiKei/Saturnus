@@ -345,12 +345,6 @@ export const seedDocuments: Document[] = [
       { type: 'discoverPerson', id: 'marcelo', status: 'mentioned' },
       { type: 'discoverSearchTerm', term: 'marcelo' },
       { type: 'addHypothesis', id: 'hyp_maralto_disappearance' },
-      {
-        type: 'linkHypothesis',
-        hypothesisId: 'hyp_maralto_disappearance',
-        evidenceId: 'mariana_maralto_recording',
-        role: 'support',
-      },
       { type: 'addHypothesis', id: 'hyp_elisa_maralto_open' },
     ],
   },

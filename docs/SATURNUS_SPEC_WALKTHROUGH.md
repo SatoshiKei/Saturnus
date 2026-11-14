@@ -399,7 +399,7 @@ Nico identificado + evidências Paula/Lucas + resumo Elisa + Nico testemunha →
 1. Monitor → cadastro completo de Nico → ligar (Augusto) → Titã no mapa  
 2. Titã → entrevista (Elisa, Noite X, Mariana, gravações)  
 3. Bancada → Janus (duas gravações Noite X)  
-4. Celular Mariana → Arquivos → `REC_1102.m4a` (após reanálise)  
+4. P4 (Janus) → consequência cronológica da Noite X (sem reanálise do celular da Mariana)  
 5. Monitor → Maralto (docs / reportagem)  
 6. Opcional: cruzar Maralto + Elisa  
 7. Reportagem → ligar Lívia → Rádio → entrevista → arquivo bruto  

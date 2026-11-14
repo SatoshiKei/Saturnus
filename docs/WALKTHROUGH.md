@@ -83,9 +83,9 @@ Quando você tiver **Nico identificado no Vértice**, evidência da **Paula/Luca
 
 1. **Monitor** → buscar nome completo de **Nico** (cadastro) → abrir documento → **ligar** pelo celular Augusto → **Titã** no mapa.
 2. **Mapa** → **Titã** → entrevista Nico → esgotar assuntos (Elisa, Noite X, Mariana, gravações).
-3. **Bancada** → duas gravações da Noite X → **Janus** (análise provisória / sincronizar).
-4. **Celular Mariana** → app **Arquivos** → ouvir **`REC_1102.m4a`** (só após reanálise liberada).
-5. **Monitor** → pesquisar **Maralto** → documentos públicos / reportagem.
+3. **Bancada** → duas gravações da Noite X → **Janus** (P4); desfecho = cronologia da Noite X.
+4. Ramo **Maralto / protestos** — gatilho em revisão (não encadeado ao P4).
+5. **Monitor** → **Maralto** → documentos públicos / reportagem (quando o termo estiver liberado).
 6. **Monitor** → (opcional) cruzar **Maralto + Elisa** se quiser o vínculo “sem ligação” explícito.
 7. **Lívia:** a partir da reportagem (Redação Rádio Costeira) → **ligar** → **Rádio** no mapa → entrevista → arquivo bruto na bancada.
 8. **Bancada** → transmissão de Lívia → **Saturnalia** (reconstrução provisória) → **Morsa** (apelido) + pista **Samuel** → fim do bloco.

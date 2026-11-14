@@ -65,7 +65,7 @@ const LEGIT: Record<
     achievements: ['ach-rings'],
   },
   P04: {
-    flags: ['block03_janus_done', 'block03_reanalysis_unlocked'],
+    flags: ['block03_janus_done'],
     evidence: ['vertice_clocks_unsynced'],
     achievements: ['ach-janus-epimetheus'],
   },

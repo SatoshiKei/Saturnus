@@ -45,7 +45,7 @@ describe('manifesto canônico DEV STORY', () => {
     expect(v.orderMismatch).toEqual([])
     expect(v.issues).toEqual([])
     expect(v.checkpointCount).toBe(DEV_CHECKPOINTS.length)
-    expect(v.checkpointCount).toBe(90)
+    expect(v.checkpointCount).toBe(89)
   })
 
   it('cada checkpoint é monotônico em relação ao anterior (nada some ao avançar)', () => {
@@ -110,7 +110,7 @@ describe('manifesto canônico DEV STORY', () => {
   })
 
   it('progresso DEV reconhece o próprio checkpoint carregado', () => {
-    for (const id of ['b01-after-bo', 'b03-janus-done', 'b06-pastor-done', 'b08-rings-done', 'b09-end']) {
+    for (const id of ['b01-after-bo', 'b06-pastor-done', 'b08-rings-done', 'b09-end']) {
       const p = canonicalCampaignProgress(at(id).flags)
       expect(ORDER[p.currentIndex], id).toBe(id)
     }

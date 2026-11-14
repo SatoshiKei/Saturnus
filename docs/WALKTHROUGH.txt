@@ -84,9 +84,9 @@ Pendência seguinte: quem era Morsa.
 
   1. Monitor → cadastro de Nico → ligar → Titã no mapa.
   2. Mapa → Titã → entrevista completa.
-  3. Bancada → duas gravações Noite X → Janus.
-  4. Celular Mariana → Arquivos → REC_1102.m4a (após reanálise liberada).
-  5. Monitor → Maralto (empresa, reportagem).
+  3. Bancada → duas gravações Noite X → Janus (consequência: cronologia Noite X).
+  4. (Maralto/Lívia/Saturnalia — gatilho em revisão; não encadeado ao P4.)
+  5. Monitor → Maralto (empresa, reportagem) — quando o termo estiver disponível.
   6. Opcional: cruzar Maralto + Elisa na consulta.
   7. Reportagem → ligar Rádio Costeira → mapa → Lívia → áudio na bancada.
   8. Bancada → Saturnalia → Morsa (apelido) + pista Samuel.

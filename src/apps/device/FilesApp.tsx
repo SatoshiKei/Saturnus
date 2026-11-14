@@ -9,7 +9,6 @@ import {
 import { contactAvatarSrc } from '../../lib/characterSprites'
 import { UiGlyph } from '../../components/UiGlyph'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
-import { onMarianaMaraltoRecordingFound } from '../../game/story/block03Handlers'
 import { comparePhoneFilesSequence } from '../../game/story/block05Handlers'
 import { onUnknownRecordingFound } from '../../game/story/block04Handlers'
 
@@ -43,15 +42,6 @@ export function FilesApp({ onBack }: FilesAppProps) {
   const items = useMemo(() => {
     if (phoneDevice !== 'mariana') return base
     const extra: PhoneMediaItem[] = []
-    if (inv.flags.block03_reanalysis_unlocked) {
-      extra.push({
-        id: 'mf-rec-maralto',
-        label: 'REC_1102.m4a',
-        folder: 'Downloads',
-        provenance: 'existing_hidden',
-        provenanceNote: 'Arquivo localizado após reanálise',
-      })
-    }
     const chkQuery = /chk[_\s-]?unk/i.test(query)
     const showChkUnk =
       inv.flags.block04_unknown_recording_found ||
@@ -72,7 +62,6 @@ export function FilesApp({ onBack }: FilesAppProps) {
     base,
     phoneDevice,
     query,
-    inv.flags.block03_reanalysis_unlocked,
     inv.flags.block04_unknown_recording_unlocked,
     inv.flags.block04_unknown_recording_found,
   ])
@@ -142,17 +131,11 @@ function provenanceHint(item: PhoneMediaItem, exported: boolean): string | null 
 function FileRow({ item }: { item: PhoneMediaItem }) {
   const inv = useInvestigation()
   const src = item.spriteId ? contactAvatarSrc(item.spriteId) : undefined
-  const maraltoAction =
-    item.id === 'mf-rec-maralto' &&
-    inv.flags.block03_reanalysis_unlocked &&
-    !inv.flags.block03_maralto_recording_found
   const unkAction =
     item.id === 'mf-chk-unk' &&
     inv.flags.block04_unknown_recording_unlocked &&
     !inv.flags.block04_unknown_recording_found
-  const exported =
-    (item.id === 'mf-rec-maralto' && inv.flags.block03_maralto_recording_found) ||
-    (item.id === 'mf-chk-unk' && inv.flags.block04_unknown_recording_found)
+  const exported = item.id === 'mf-chk-unk' && inv.flags.block04_unknown_recording_found
   const hint = provenanceHint(item, exported)
 
   return (
@@ -164,18 +147,7 @@ function FileRow({ item }: { item: PhoneMediaItem }) {
           <UiGlyph name="doc" />
         </span>
       )}
-      {maraltoAction ? (
-        <button
-          type="button"
-          className="ios-files__action"
-          data-testid="mariana-maralto-file"
-          onClick={() => onMarianaMaraltoRecordingFound()}
-        >
-          {item.label}
-          {hint ? <span className="ios-files__hint">{hint}</span> : null}
-          <span className="ios-files__hint ios-files__hint--action">Reanalisar</span>
-        </button>
-      ) : unkAction ? (
+      {unkAction ? (
         <button
           type="button"
           className="ios-files__action"

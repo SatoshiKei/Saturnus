@@ -144,33 +144,13 @@ export const block03DevCheckpoints: { id: string; label: string; actions: StoryA
       { type: 'addEvidence', id: 'vertice_clocks_unsynced' },
       { type: 'addEvidence', id: 'mariana_revising_elisa_chronology' },
       { type: 'addHypothesis', id: 'hyp_andre_imprecise_chronology' },
-      { type: 'setFlag', id: 'block03_reanalysis_unlocked', value: true },
-      {
-        type: 'addTask',
-        id: 'task_reanalyze_mariana_files',
-        label: 'Reexaminar gravações recentes no celular de Mariana',
-      },
-    ],
-  },
-  {
-    id: 'b03-maralto-found',
-    label: 'Gravação Maralto encontrada',
-    actions: [
-      { type: 'setFlag', id: 'block03_maralto_recording_found', value: true },
-      { type: 'addEvidence', id: 'mariana_maralto_recording' },
-      { type: 'addEvidence', id: 'mariana_investigating_protests' },
-      { type: 'setFlag', id: 'block03_maralto_search_unlocked', value: true },
-      {
-        type: 'addTask',
-        id: 'task_research_maralto',
-        label: 'Pesquisar Maralto Granéis no sistema de consulta',
-      },
     ],
   },
   {
     id: 'b03-maralto-researched',
-    label: 'Maralto pesquisada',
+    label: 'Maralto pesquisada (DEV)',
     actions: [
+      { type: 'discoverSearchTerm', term: 'maralto' },
       { type: 'addDocument', id: 'doc-maralto-cadastro' },
       { type: 'addDocument', id: 'doc-maralto-clipping' },
       { type: 'unlockContact', contactId: 'contact-livia' },

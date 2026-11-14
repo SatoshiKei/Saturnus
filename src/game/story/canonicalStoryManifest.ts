@@ -69,7 +69,7 @@ import {
   finishVerticeVisit,
   onRafaelClubAudioPlayed,
 } from './block02Handlers'
-import { finishLiviaInterview, finishNicoInterview, onMarianaMaraltoRecordingFound } from './block03Handlers'
+import { finishLiviaInterview, finishNicoInterview } from './block03Handlers'
 import {
   finishAndreInterview,
   finishSamuelInterview,
@@ -137,7 +137,6 @@ const HANDLERS = {
   onRafaelAudioPlayed,
   onRafaelClubAudioPlayed,
   finishVerticeVisit,
-  onMarianaMaraltoRecordingFound,
   onUnknownCallerNumberSeen,
   onHexCallAnswered,
   onHexCallsPreserved,
@@ -327,8 +326,15 @@ export const CANONICAL_STORY_MANIFEST: CanonicalCheckpointDef[] = [
   { id: 'b03-after-nico', steps: [{ vn: 'nico' }] },
   { id: 'b03-janus-ready', steps: [], note: 'finishNicoInterview já libera o Puzzle 04.' },
   { id: 'b03-janus-done', steps: [{ puzzle: 'P04' }] },
-  { id: 'b03-maralto-found', steps: [{ h: 'onMarianaMaraltoRecordingFound' }] },
-  { id: 'b03-maralto-researched', steps: [{ doc: 'doc-maralto-cadastro' }, { doc: 'doc-maralto-clipping' }] },
+  {
+    id: 'b03-maralto-researched',
+    steps: [
+      { act: [{ type: 'discoverSearchTerm', term: 'maralto' }] },
+      { doc: 'doc-maralto-cadastro' },
+      { doc: 'doc-maralto-clipping' },
+    ],
+    note: 'Replay/DEV apenas — jogador sem gatilho Maralto após P4 até revisão narrativa.',
+  },
   { id: 'b03-livia-ready', steps: [{ call: 'call-livia' }] },
   { id: 'b03-after-livia', steps: [{ vn: 'livia' }] },
   { id: 'b03-saturnalia-ready', steps: [], note: 'finishLiviaInterview já libera o Puzzle 05.' },

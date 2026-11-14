@@ -463,9 +463,6 @@ L('### Cena — Titã (Nico)')
 dumpBeats('Nico — tópicos', sceneIntros.nico.lines, nicoTopicLabels, nicoBeats)
 dumpRefl('refl-nico')
 
-L('### Celular de Mariana — Arquivos (após reanálise)')
-L('- **REC_1102.m4a** (Downloads) — localizado após reanálise; gravação Maralto')
-
 L('### Bancada — Janus / Saturnalia')
 L('*Puzzles de áudio (Lívia + Nico). Textos de resultado no caderno:*')
 dumpEvidence([
@@ -474,8 +471,6 @@ dumpEvidence([
   'vertice_clocks_unsynced',
   'vertice_timeline_inconsistent',
   'mariana_revising_elisa_chronology',
-  'mariana_maralto_recording',
-  'mariana_investigating_protests',
   'maralto_public_record',
   'maralto_no_elisa_link',
   'livia_sought_by_mariana',

@@ -372,7 +372,7 @@ Auditoria **somente** itens dinâmicos / gated (não a biblioteca estática inic
 
 | Arquivo | Quando aparece hoje | Origem atual | Problema | Origem diegética sugerida |
 |---|---|---|---|---|
-| `REC_1102.m4a` (`mf-rec-maralto`) | `block03_reanalysis_unlocked` | Flag pós-Janus; surge em Downloads | Sem “como chegou lá” | `existing_hidden` ou `forensic_restored` após reanálise; texto: “arquivo localizado após sincronização Janus” |
+| ~~`REC_1102.m4a`~~ | — | **Removido** (ponte P4→Maralto retirada; gatilho futuro separado) | — | — |
 | `CHK_UNK.m4a` (`mf-chk-unk`) | `block04_unknown_recording_unlocked` (diário aponta) | Flag após ler diário | Melhor: diário aponta; ainda some do nada na pasta | `existing_hidden` — diário revela path; UI: “encontrado em Downloads” com nota |
 | Escala outubro.pdf | Biblioteca inicial Mariana | Estático | Ok | `existing_locked` / já no aparelho |
 | Fotos/WA estáticos | Início | `phoneMedia.ts` | Ok | `existing` |
@@ -449,7 +449,7 @@ Etapa 3 (remover botão Caso Júlia) sobrepõe — coordenar. Diário antes de B
 3. Após laudo, ícone diário no Mariana; PIN no telefone abre entradas.  
 4. PC não é mais a única UI de leitura.  
 5. Sem botão “Conferir com Júlia”; contato/chat dispara as mesmas flags.  
-6. `REC_1102` mostra origem textual.  
+6. ~~`REC_1102`~~ removido.  
 
 ### Dúvidas humanas — **RESOLVIDAS**
 

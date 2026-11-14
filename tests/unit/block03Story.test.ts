@@ -12,7 +12,6 @@ import {
 import {
   finishLiviaInterview,
   finishNicoInterview,
-  onMarianaMaraltoRecordingFound,
   runProvisionalJanusSync,
   runProvisionalSaturnaliaReconstruct,
 } from '../../src/game/story/block03Handlers'
@@ -92,33 +91,17 @@ describe('Bloco 3 — progressão', () => {
     const s = getInvestigationState()
     expect(s.flags.block03_janus_done).toBe(true)
     expect(s.evidenceOwned).toContain('vertice_clocks_unsynced')
+    expect(s.evidenceOwned).toContain('mariana_revising_elisa_chronology')
     expect(s.evidenceOwned).not.toContain('sandra_first_sighting_not_elisa')
-    expect(s.flags.block03_reanalysis_unlocked).toBe(true)
+    expect(s.flags.block03_reanalysis_unlocked).toBeFalsy()
     expect(s.hypotheses.hyp_andre_imprecise_chronology).toBeTruthy()
-  })
-
-  it('reanálise Maralto só após Janus', () => {
-    seedBlock03Start()
-    onMarianaMaraltoRecordingFound()
-    expect(getInvestigationState().flags.block03_maralto_recording_found).toBeFalsy()
-
-    __setStateForTests(
-      applyStoryActions(getInvestigationState(), [
-        { type: 'setFlag', id: 'block03_reanalysis_unlocked', value: true },
-      ]),
-    )
-    onMarianaMaraltoRecordingFound()
-    const s = getInvestigationState()
-    expect(s.evidenceOwned).toContain('mariana_maralto_recording')
-    expect(s.flags.block03_maralto_search_unlocked).toBe(true)
   })
 
   it('pesquisa Maralto libera Lívia; cruzamento não liga a Elisa', () => {
     seedBlock03Start()
     __setStateForTests(
       applyStoryActions(getInvestigationState(), [
-        { type: 'setFlag', id: 'block03_maralto_search_unlocked', value: true },
-        { type: 'addEvidence', id: 'mariana_maralto_recording' },
+        { type: 'discoverSearchTerm', term: 'maralto' },
       ]),
     )
     openDocument('doc-maralto-cadastro')

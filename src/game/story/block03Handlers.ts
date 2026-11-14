@@ -55,12 +55,6 @@ export function runJanusEpimetheusAnalysis() {
       evidenceId: 'mariana_revising_elisa_chronology',
       role: 'support',
     },
-    { type: 'setFlag', id: 'block03_reanalysis_unlocked', value: true },
-    {
-      type: 'addTask',
-      id: 'task_reanalyze_mariana_files',
-      label: 'Reexaminar gravações recentes no celular de Mariana',
-    },
     {
       type: 'notifyInvestigationUpdate',
       id: 'ach-janus-epimetheus',
@@ -77,26 +71,6 @@ export function runJanusEpimetheusAnalysis() {
 /** @deprecated Prefer runJanusEpimetheusAnalysis — mantido para checkpoints legados. */
 export function runProvisionalJanusSync() {
   runJanusEpimetheusAnalysis()
-}
-
-/** Reanálise diegética — arquivo que já existia no aparelho ganha contexto. */
-export function onMarianaMaraltoRecordingFound() {
-  const s = getInvestigationState()
-  if (s.flags.block03_maralto_recording_found) return
-  if (!s.flags.block03_reanalysis_unlocked) return
-  dispatchActions([
-    { type: 'setFlag', id: 'block03_maralto_recording_found', value: true },
-    { type: 'addEvidence', id: 'mariana_maralto_recording' },
-    { type: 'addEvidence', id: 'mariana_investigating_protests' },
-    { type: 'completeTask', id: 'task_reanalyze_mariana_files' },
-    { type: 'setFlag', id: 'block03_maralto_search_unlocked', value: true },
-    { type: 'discoverSearchTerm', term: 'maralto' },
-    {
-      type: 'addTask',
-      id: 'task_research_maralto',
-      label: 'Pesquisar Maralto Granéis no sistema de consulta',
-    },
-  ])
 }
 
 export function finishLiviaInterview() {

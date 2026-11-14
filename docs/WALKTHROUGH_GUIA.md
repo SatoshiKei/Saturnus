@@ -87,9 +87,9 @@ Objetivo: achar Nico de verdade, ouvir a “Noite X”, entrar na linha Maralto/
 
 1. **Monitor** → busque o nome completo de **Nico** (cadastro). Leia o documento; ligue para ele pelo celular do Augusto. O **Titã** aparece no mapa.  
 2. **Mapa** → Titã → entrevista longa (Elisa, Noite X, visita de Mariana, gravações…).  
-3. **Bancada** → aparecem duas gravações da Noite X → use a análise **Janus** (sincronizar / provisória).  
-4. **Celular da Mariana** → **Arquivos** → ouça **REC_1102.m4a** (só depois que a reanálise do aparelho estiver liberada).  
-5. **Monitor** → pesquise **Maralto** (cadastro da empresa, reportagem…).  
+3. **Bancada** → duas gravações da Noite X → **Janus** (P4); desfecho = cronologia da Noite X no caderno.  
+4. Ramo **Maralto / protestos** — gatilho em revisão narrativa (não ligado ao fim do P4).  
+5. **Monitor** → **Maralto** (cadastro, reportagem…) quando a investigação liberar o termo.  
 6. Opcional: cruzar Maralto com Elisa na consulta, se quiser ver no papel que não há vínculo direto.  
 7. Na reportagem costuma aparecer a **Rádio Costeira** → ligue → **mapa** → entrevista com **Lívia** → áudio bruto vai para a bancada.  
 8. **Bancada** → reconstrução **Saturnalia** → você fica com Morsa como apelido e uma pista para **Samuel**.

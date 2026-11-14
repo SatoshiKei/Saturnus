@@ -30,13 +30,13 @@ Abertura (fluxo real, ver `docs/gameplay/INVESTIGATION_FLOW.md`): **Nico** — `
 | Regra | Flag | Termos | Evidências |
 |-------|------|--------|------------|
 | `block03_nico_cadastro` | `block03_nico_search_unlocked` | `nico` | `nico_current_record` |
-| `block03_maralto_public` | `block03_maralto_search_unlocked` | `maralto` | `maralto_public_record`, `livia_sought_by_mariana` |
+| `block03_maralto_public` | — | `maralto` (termo conhecido) | `maralto_public_record`, `livia_sought_by_mariana` |
 | `block03_maralto_elisa_cross` | `block03_maralto_researched` | `maralto` + `elisa` | `maralto_no_elisa_link` |
 | `block03_livia_contact` | `block03_livia_search_unlocked` | `livia` | `livia_contact_record` |
 
 ## Evidências (ids)
 
-`nico_current_record`, `nico_mariana_visit`, `mariana_night_x_focus`, `nico_recording_booth`, `nico_recording_portable`, `vertice_clocks_unsynced`, `vertice_timeline_inconsistent`, `mariana_revising_elisa_chronology`, `mariana_maralto_recording`, `mariana_investigating_protests`, `maralto_public_record`, `maralto_no_elisa_link`, `livia_sought_by_mariana`, `livia_contact_record`, `livia_radio_archive_raw`, `protest_records_incomplete`, `protest_masked_core`, `morsa_unidentified`, `samuel_protest_lead`
+`nico_current_record`, `nico_mariana_visit`, `mariana_night_x_focus`, `nico_recording_booth`, `nico_recording_portable`, `vertice_clocks_unsynced`, `vertice_timeline_inconsistent`, `mariana_revising_elisa_chronology`, `maralto_public_record`, `maralto_no_elisa_link`, `livia_sought_by_mariana`, `livia_contact_record`, `livia_radio_archive_raw`, `protest_records_incomplete`, `protest_masked_core`, `morsa_unidentified`, `samuel_protest_lead`
 
 ## Hipóteses
 
@@ -63,12 +63,11 @@ Handlers: `src/game/story/block03Handlers.ts`.
 
 1. Busca Nico ← fim Bloco 2 + identificação no Vértice.
 2. Entrevista Nico ← cadastro aberto (contato) + ligação + viagem ao Titã.
-3. Janus ← entrevista (duas gravações).
-4. Reanálise celular Mariana ← Puzzle 4.
-5. Maralto ← gravação `REC_1102.m4a`.
-6. Lívia ← pesquisa Maralto.
-7. Saturnalia ← material de Lívia.
-8. Morsa / Samuel ← Puzzle 5.
+3. Janus ← entrevista (duas gravações); P4 encerra na cronologia da Noite X.
+4. Maralto ← gatilho em revisão (removido: REC_1102 / reanálise pós-P4).
+5. Lívia ← pesquisa Maralto (quando liberado).
+6. Saturnalia ← material de Lívia.
+7. Morsa / Samuel ← Puzzle 5.
 
 ## Puzzle 4 — Janus / Epimetheus
 
@@ -89,7 +88,6 @@ Handlers: `src/game/story/block03Handlers.ts`.
 Gerada por `npm run audio:generate`:
 
 - `nico-booth-night-x.wav`, `nico-portable-night-x.wav`, `nico-sync-session-note.wav`
-- `mariana-maralto-clip.wav`
 - `livia-radio-archive-raw.wav`, `livia-radio-reconstructed.wav`
 
 ## Checkpoints DEV
@@ -104,5 +102,5 @@ Save com `block03_complete`, objetivo **descobrir quem era Morsa e por que Maria
 
 - Fundos de Nico/Lívia reutilizam backgrounds já processados (sem novos crops).
 - Cruzamento Maralto×Elisa é opcional via busca; se o jogador não cruzar, o Puzzle 5 ainda registra `maralto_no_elisa_link` para garantir o estado final obrigatório.
-- Reanálise Maralto: arquivo só aparece em Arquivos (Mariana) após Janus — não era listado antes (evita spoiler); justificado como filtro de “gravações recentes” pós-contradição.
+- ~~Reanálise REC_1102 pós-Janús~~ removida (gatilho Maralto em revisão).
 - Ação `markTriggersFired` evita que checkpoints DEV disparem `block01_end_block` e sobrescrevam `task_locate_nico`.
