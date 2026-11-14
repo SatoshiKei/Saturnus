@@ -16,10 +16,13 @@ describe('Bloco 1 — triggers e contradição', () => {
     expect(s.hypotheses.hyp_kidnapping).toBeTruthy()
   })
 
-  it('desbloqueia hospital após contradição de memória', () => {
+  it('desbloqueia hospital após revisar chats de Júlia e Camila', () => {
     resetGame()
     let s = createInitialState()
-    s = applyStoryActions(s, [{ type: 'setFlag', id: 'block01_contradiction_memory', value: true }])
+    s = applyStoryActions(s, [
+      { type: 'setFlag', id: 'block01_julia_memory', value: true },
+      { type: 'setFlag', id: 'block01_camila_memory', value: true },
+    ])
     s = runStoryEngine(s)
     expect(s.locations.hospital.status).toBe('visitAvailable')
   })
@@ -37,11 +40,15 @@ describe('Bloco 1 — triggers e contradição', () => {
   it('registra a contradição sozinha quando as duas evidências estão no caderno', () => {
     resetGame()
     dispatchActions([
+      { type: 'setFlag', id: 'block01_julia_memory', value: true },
       { type: 'addEvidence', id: 'mariana_memory_lapses' },
       { type: 'addHypothesis', id: 'hyp_memory' },
     ])
     expect(getInvestigationState().contradictionsConfirmed.length).toBe(0)
-    dispatchActions([{ type: 'addEvidence', id: 'rafael_call_memory' }])
+    dispatchActions([
+      { type: 'setFlag', id: 'block01_camila_memory', value: true },
+      { type: 'addEvidence', id: 'rafael_call_memory' },
+    ])
     const s = getInvestigationState()
     expect(s.contradictionsConfirmed.some((c) => c.id === 'contra_selective_memory')).toBe(true)
     expect(s.hypotheses.hyp_memory?.state).toBe('weakened')

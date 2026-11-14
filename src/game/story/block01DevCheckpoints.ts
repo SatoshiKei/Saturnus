@@ -51,7 +51,8 @@ export const block01DevCheckpoints: { id: string; label: string; actions: StoryA
     id: 'b01-hospital-open',
     label: 'Hospital desbloqueado',
     actions: [
-      { type: 'setFlag', id: 'block01_contradiction_memory', value: true },
+      { type: 'setFlag', id: 'block01_julia_memory', value: true },
+      { type: 'setFlag', id: 'block01_camila_memory', value: true },
       { type: 'unlockLocation', id: 'hospital', status: 'visitAvailable' },
     ],
   },

@@ -178,12 +178,13 @@ describe('Early paths — progressão', () => {
     expect(s.evidenceOwned).not.toContain('samuel_confirms_morsa')
   })
 
-  it('Morsa cedo retorna resultado inconclusivo', () => {
-    seed([{ type: 'discoverSearchTerm', term: 'morsa' }])
+  it('Morsa sozinha na consulta não devolve ficha cadastral antes dos protestos', () => {
+    seed([
+      { type: 'setFlag', id: 'block03_saturnalia_done', value: true },
+      { type: 'discoverSearchTerm', term: 'morsa' },
+    ])
     const hits = runPoliceSearch('morsa', getInvestigationState())
-    expect(hits.hits.some((h) => h.documentId === 'doc-morsa-inconclusive')).toBe(true)
-    openDocument('doc-morsa-inconclusive')
-    expect(getInvestigationState().people.morsa?.status).toBe('mentioned')
+    expect(hits.hits.length).toBe(0)
   })
 
   it('diário pode ser conhecido antes do PIN; Hexágono ainda fornece o PIN', () => {

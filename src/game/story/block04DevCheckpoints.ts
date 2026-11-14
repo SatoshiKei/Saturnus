@@ -1,3 +1,4 @@
+import { taskLabels } from '../../data/game/seedStory'
 import type { StoryActionRef } from '../types'
 import { HEX_EVIDENCE_IDS } from '../../data/block04/hexagonPuzzle'
 import { block03EntryActions } from './block03DevCheckpoints'
@@ -53,7 +54,7 @@ export const block04EntryActions: StoryActionRef[] = [
     tasks: [
       {
         id: 'task_identify_morsa',
-        label: 'Descobrir quem era Morsa e por que Mariana investigava os protestos',
+        label: taskLabels.identifyMorsa,
         completed: false,
       },
     ],

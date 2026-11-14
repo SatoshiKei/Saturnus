@@ -407,24 +407,6 @@ export const seedDocuments: Document[] = [
     ],
   },
   {
-    id: 'doc-morsa-inconclusive',
-    title: 'Consulta — termo “Morsa”',
-    category: 'Consulta',
-    issuer: 'Sistema de consulta policial',
-    system: 'consultas',
-    blocks: [
-      {
-        id: 'b1',
-        text: 'Busca textual pelo termo “Morsa”: ocorrências genéricas, alcunhas sem vínculo cadastral e menções em material de imprensa sem identificação civil.',
-      },
-      {
-        id: 'b2',
-        text: 'Nenhuma pessoa cadastrada sob esse nome. Nenhuma correlação institucional clara sem período, local ou outro filtro.',
-      },
-    ],
-    onOpen: [],
-  },
-  {
     id: 'doc-cruzamento-maralto-elisa',
     title: 'Pesquisa cruzada — autos Elisa / Maralto Granéis',
     category: 'Consulta',

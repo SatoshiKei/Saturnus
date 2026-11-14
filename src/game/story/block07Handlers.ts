@@ -1,3 +1,4 @@
+import { taskLabels } from '../../data/game/seedStory'
 import { appendChatMessages, dispatchActions, getInvestigationState } from '../state/investigationStore'
 import type { StoryActionRef } from '../types'
 
@@ -631,7 +632,7 @@ export function onTechReflectionDone() {
       tasks: [
         {
           id: 'task_identify_morsa',
-          label: 'Descobrir quem era Morsa',
+          label: taskLabels.identifyMorsa,
           completed: false,
         },
         {

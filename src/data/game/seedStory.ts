@@ -15,6 +15,11 @@ export const seedTasks: CaseTask[] = [
   { id: 'task_mariana_phone', label: 'Examinar o celular apreendido', completed: false },
 ]
 
+/** Rótulos únicos de pendências — importar nos handlers; não duplicar string meta. */
+export const taskLabels = {
+  identifyMorsa: 'Descobrir quem era Morsa',
+} as const
+
 export const block01EndTasks: CaseTask[] = [
   {
     id: 'task_trace_emergency_call',
@@ -447,7 +452,8 @@ export const seedSearchRules: SearchRule[] = [
   {
     id: 'block04_protests_term',
     category: 'police',
-    requiredKnownTerms: ['maralto'],
+    requiredFlags: ['block03_saturnalia_done'],
+    requiredKnownTerms: ['protesto'],
     requiredTerms: ['protesto'],
     results: [
       {
@@ -752,19 +758,6 @@ export const seedSearchRules: SearchRule[] = [
         title: 'Aster Sistemas — contato administrativo',
         snippet: 'Empresa reestruturada; arquivo de pessoal da época.',
         documentId: 'doc-aster-admin',
-      },
-    ],
-  },
-  {
-    id: 'block_morsa_inconclusive',
-    category: 'police',
-    requiredKnownTerms: ['morsa'],
-    requiredTerms: ['morsa'],
-    results: [
-      {
-        title: 'Consulta — termo “Morsa”',
-        snippet: 'Resultados textuais demais; nenhuma pessoa cadastrada; sem correlação institucional clara.',
-        documentId: 'doc-morsa-inconclusive',
       },
     ],
   },
@@ -1086,7 +1079,10 @@ export const seedStoryTriggers: StoryTrigger[] = [
   {
     id: 'block01_unlock_hospital',
     once: true,
-    conditions: [{ type: 'flag', id: 'block01_contradiction_memory', value: true }],
+    conditions: [
+      { type: 'flag', id: 'block01_julia_memory', value: true },
+      { type: 'flag', id: 'block01_camila_memory', value: true },
+    ],
     actions: [{ type: 'unlockLocation', id: 'hospital', status: 'visitAvailable' }],
   },
   {
@@ -1094,7 +1090,7 @@ export const seedStoryTriggers: StoryTrigger[] = [
     once: true,
     conditions: [
       { type: 'flag', id: 'block01_julia_memory', value: true },
-      { type: 'flag', id: 'block01_rafael_memory', value: true },
+      { type: 'flag', id: 'block01_camila_memory', value: true },
     ],
     actions: [{ type: 'completeTask', id: 'task_mariana_phone' }],
   },

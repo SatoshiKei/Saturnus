@@ -51,7 +51,7 @@ export function onMarianaPhoneOpened() {
 export function onMarianaPhoneClosed() {
   const s = getInvestigationState()
   if (!s.flags.block01_mariana_phone_opened || s.flags.block01_phone_reviewed) return
-  if (s.flags.block01_julia_memory && s.flags.block01_rafael_memory) {
+  if (s.flags.block01_julia_memory && s.flags.block01_camila_memory) {
     setFlag('block01_phone_reviewed', true)
   }
 }
@@ -65,6 +65,12 @@ export function onJuliaChatReviewed() {
     { type: 'addHypothesis', id: 'hyp_memory' },
     { type: 'linkHypothesis', hypothesisId: 'hyp_memory', evidenceId: 'mariana_memory_lapses', role: 'support' },
   ])
+}
+
+export function onCamilaChatReviewed() {
+  const s = getInvestigationState()
+  if (s.flags.block01_camila_memory) return
+  dispatchActions([{ type: 'setFlag', id: 'block01_camila_memory', value: true }])
 }
 
 export function onRafaelAudioPlayed() {

@@ -283,7 +283,7 @@ export const CANONICAL_STORY_MANIFEST: CanonicalCheckpointDef[] = [
   {
     id: 'b01-hospital-open',
     steps: [],
-    note: 'Contradição Júlia × Rafael (engine) já libera o hospital ao fechar o celular.',
+    note: 'Chats Júlia + Camila no celular de Mariana liberam o hospital (áudio de Rafael é contradição separada).',
   },
   { id: 'b01-after-interviews', steps: [{ vn: 'hospital' }] },
   {

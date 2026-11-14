@@ -1,0 +1,34 @@
+---
+description: Textos jogáveis sem ruído de prompt, walkthrough ou notas de design
+alwaysApply: true
+---
+
+# Cópia narrativa e UI — sem ruído de prompt
+
+Todo texto que o **jogador** vê (pendências, notificações, diálogos, documentos, tutoriais in-game, botões, conquistas) deve soar **no mundo**, na voz de Augusto ou de um sistema institucional — nunca como nota do autor, roteiro de implementação ou dica de walkthrough.
+
+## Proibido em texto jogável
+
+- Instruções de mecânica disfarçadas: "consultar no sistema", "a pista passa por X", "isso libera Y", "após o puzzle".
+- Meta de design: "termo", "flag", "evidência id", "bloco N", "canon", "DEV".
+- Sequências de solução: "faça A depois B para chegar em Samuel".
+- Tom de documentação interna ou pedido feito ao modelo.
+
+## Use em vez disso
+
+- **Pendências**: o que Augusto quer *saber* ou *fazer*, não onde clicar.
+- **Documentos**: linguagem do órgão emissor; fatos, não checklist.
+- **Notificações**: descoberta ou consequência narrativa, não tutorial de progressão.
+
+## Exemplos
+
+| Ruído (não usar) | Canônico (usar) |
+|---|---|
+| Consultar os protestos no sistema — a pista de Morsa passa pelos registros da Maralto | Descobrir quem era Morsa |
+| Ouça o áudio de Rafael para liberar o hospital | (não escrever; progressão é código, não UI) |
+| Pesquisar "protesto" na consulta | Cruzar o que Mariana gravou com o terminal Maralto |
+
+## Código
+
+- Centralize rótulos repetidos de `task_*` em `seedStory.ts` (ou módulo de copy) em vez de strings soltas em handlers.
+- Comentários e `docs/` podem ser técnicos; strings em `label`, `title`, `summary`, `blocks[].text`, `ChatView`, etc. seguem esta regra.

@@ -7,7 +7,7 @@ export const FLAG_KNOWN_TERM_SEEDS: { flag: string; terms: string[] }[] = [
   // Nico só após 2ª visita / cruzamento (não na 1ª consulta de arquivo).
   { flag: 'block02_vertice_set_crossref', terms: ['nico'] },
   { flag: 'block03_nico_search_unlocked', terms: ['nico'] },
-  { flag: 'block03_saturnalia_done', terms: ['morsa', 'protesto'] },
+  { flag: 'block03_saturnalia_done', terms: ['morsa', 'protesto', 'maralto'] },
   { flag: 'block04_samuel_search_unlocked', terms: ['samuel'] },
   { flag: 'block04_andre_records_unlocked', terms: ['andre'] },
   { flag: 'block05_jana_search_unlocked', terms: ['jana'] },

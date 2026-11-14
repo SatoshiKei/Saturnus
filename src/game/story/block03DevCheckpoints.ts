@@ -1,5 +1,5 @@
 import type { StoryActionRef } from '../types'
-import { block01EndTasks } from '../../data/game/seedStory'
+import { block01EndTasks, taskLabels } from '../../data/game/seedStory'
 
 /** Estado final do Bloco 2 — entrada do Bloco 3 (explícito, sem depender de flatMap). */
 export const block03EntryActions: StoryActionRef[] = [
@@ -256,7 +256,7 @@ export const block03DevCheckpoints: { id: string; label: string; actions: StoryA
         tasks: [
           {
             id: 'task_identify_morsa',
-            label: 'Descobrir quem era Morsa e por que Mariana investigava os protestos',
+            label: taskLabels.identifyMorsa,
             completed: false,
           },
         ],

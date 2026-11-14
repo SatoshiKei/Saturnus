@@ -15,7 +15,7 @@ import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { appendChatMessages, dispatchActions } from '../../game/state/investigationStore'
 import { onRafaelClubAudioPlayed } from '../../game/story/block02Handlers'
 import { phoneFeatureLocks } from '../../data/phoneFeatures'
-import { onJuliaChatReviewed, onRafaelAudioPlayed } from '../../game/story/block01Handlers'
+import { onCamilaChatReviewed, onJuliaChatReviewed, onRafaelAudioPlayed } from '../../game/story/block01Handlers'
 import { onMarianaChatOpened } from '../../game/story/block09Handlers'
 import { MARIANA_CHAT_ID } from '../../data/block09/marianaMessages'
 import { ANON_CHAT_ID, receiveAnonHospitalAudio } from '../../game/story/block07Handlers'
@@ -80,6 +80,7 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
   useEffect(() => {
     if (!chat) return
     if (chatId === 'chat-julia') onJuliaChatReviewed()
+    if (chatId === 'chat-camila') onCamilaChatReviewed()
   }, [chatId, chat])
 
   useEffect(() => {

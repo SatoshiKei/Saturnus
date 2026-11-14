@@ -138,6 +138,10 @@ describe('Bloco 3 — progressão', () => {
     expect(s.people.samuel.status).not.toBe('located')
     expect(s.people.samuel.status).not.toBe('interviewed')
     expect(s.tasks.some((t) => t.id === 'task_identify_morsa' && !t.completed)).toBe(true)
+    const protests = runPoliceSearch('protesto', s)
+    expect(protests.hits.some((h) => h.documentId === 'doc-protesto-ocorrencia')).toBe(true)
+    expect(protests.hits.some((h) => h.documentId === 'doc-protesto-detidos')).toBe(true)
+    expect(runPoliceSearch('morsa', s).hits.length).toBe(0)
   })
 
   it('entrevista Lívia entrega arquivo Saturnalia', () => {

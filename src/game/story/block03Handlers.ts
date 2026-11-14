@@ -1,3 +1,4 @@
+import { taskLabels } from '../../data/game/seedStory'
 import { dispatchActions, getInvestigationState } from '../state/investigationStore'
 import type { StoryActionRef } from '../types'
 
@@ -127,6 +128,7 @@ export function runSaturnaliaReconstruct() {
     { type: 'discoverPerson', id: 'morsa', status: 'identified' },
     { type: 'discoverSearchTerm', term: 'morsa' },
     { type: 'discoverSearchTerm', term: 'protesto' },
+    { type: 'discoverSearchTerm', term: 'maralto' },
     { type: 'completeTask', id: 'task_saturnalia' },
     { type: 'setFlag', id: 'block03_complete', value: true },
     {
@@ -134,7 +136,7 @@ export function runSaturnaliaReconstruct() {
       tasks: [
         {
           id: 'task_identify_morsa',
-          label: 'Descobrir quem era Morsa e por que Mariana investigava os protestos',
+          label: taskLabels.identifyMorsa,
           completed: false,
         },
       ],
