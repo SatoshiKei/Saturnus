@@ -177,5 +177,32 @@ export function repairInvestigationState(state: InvestigationState): Investigati
     }
   }
 
+  const TASK_LABEL_PATCH: Record<string, string> = {
+    task_rafael_recording: 'Encontrar a gravação perdida',
+    task_rafael_venue_staff: 'Descobrir a origem da gravação',
+  }
+  const REMOVED_TASK_IDS = new Set([
+    'task_selective_lapses',
+    'task_why_mariana_session',
+    'task_continue_elisa_case',
+  ])
+  const owned = new Set(next.evidenceOwned)
+  let tasks = (next.tasks ?? []).filter((t) => {
+    if (t.id === 'task_get_club_from_rafael') return false
+    if (REMOVED_TASK_IDS.has(t.id)) return false
+    return true
+  })
+  if (owned.has('rec_vtx_old_01')) {
+    tasks = tasks.map((t) =>
+      (t.id === 'task_rafael_recording' || t.id === 'task_get_club_from_rafael') && !t.completed
+        ? { ...t, completed: true }
+        : t,
+    )
+  }
+  next = {
+    ...next,
+    tasks: tasks.map((t) => (TASK_LABEL_PATCH[t.id] ? { ...t, label: TASK_LABEL_PATCH[t.id]! } : t)),
+  }
+
   return withKnownTermsFromFlags(next)
 }

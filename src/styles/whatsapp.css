@@ -255,8 +255,9 @@
 }
 
 .wa-chat-header__sub {
-  font-size: 11px;
-  color: #666;
+  font-size: 12px;
+  color: #8e8e93;
+  font-weight: 400;
 }
 
 .wa-chat-header__actions {
@@ -375,8 +376,8 @@
   flex-shrink: 0;
   position: relative;
   isolation: isolate;
-  padding-bottom: max(var(--phone-inset-bottom, 22px), 12px);
-  background: #f0f0f0;
+  padding-bottom: max(var(--phone-inset-bottom, 22px), 8px);
+  background: #f6f6f6;
   z-index: 2;
 }
 
@@ -599,11 +600,11 @@
 /* —— Composer —— */
 .wa-composer {
   display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 5px 6px 4px;
-  background: #f0f0f0;
-  border-top: 1px solid #dcdcdc;
+  align-items: flex-end;
+  gap: 6px;
+  padding: 6px 8px 4px;
+  background: #f6f6f6;
+  border-top: 0.5px solid #c8c8cc;
   flex-shrink: 0;
   max-width: 100%;
 }
@@ -615,34 +616,35 @@
   align-items: center;
   gap: 4px;
   background: #fff;
-  border-radius: 20px;
-  padding: 2px 6px 2px 10px;
-  min-height: 34px;
-  border: 1px solid #e0e0e0;
+  border-radius: 18px;
+  padding: 6px 8px 6px 12px;
+  min-height: 36px;
+  border: none;
   font: inherit;
   color: inherit;
   text-align: left;
   cursor: pointer;
+  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.08);
 }
 
 .wa-composer__input {
   flex: 1;
   min-width: 0;
   border: none;
-  font-size: 16px;
+  font-size: 17px;
   line-height: 1.25;
   color: #111;
   background: transparent;
   pointer-events: none;
 }
 
-.wa-composer[data-compose-available='true'] .wa-composer__input {
-  color: #667781;
+.wa-composer__field:not([data-compose-available='true']) .wa-composer__input {
+  color: #8e8e93;
 }
 
 .wa-composer[data-composing='true'] .wa-composer__input {
-  color: #667781;
-  font-style: italic;
+  color: #8e8e93;
+  font-style: normal;
 }
 
 .wa-composer__icon {
@@ -663,7 +665,7 @@
 }
 
 .wa-composer__icon--camera {
-  color: #007aff;
+  color: #54656f;
 }
 
 .wa-composer__icon--inline {
@@ -679,25 +681,6 @@
 
 .wa-composer__icon[aria-disabled='true'] {
   opacity: 0.65;
-}
-
-.wa-composer-hint {
-  position: absolute;
-  left: 50%;
-  bottom: calc(100% + 4px);
-  transform: translateX(-50%);
-  margin: 0;
-  padding: 6px 10px;
-  font-size: 11px;
-  color: #fff;
-  background: rgba(0, 0, 0, 0.78);
-  border-radius: 8px;
-  white-space: nowrap;
-  max-width: 92%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  z-index: 5;
-  pointer-events: none;
 }
 
 /* —— Lightbox —— */
@@ -836,15 +819,6 @@
   color: #555;
 }
 
-/* Conversas iniciadas pelo jogador (roteiro cosmético) */
-.wa-empty-thread {
-  margin: auto;
-  padding: 10px 16px;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.55);
-  text-align: center;
-}
-
 .wa-script-options {
   /* Overlay acima do composer: não empurra o layout no mesmo clique do campo. */
   position: absolute;
@@ -921,8 +895,9 @@
 }
 
 .wa-composer__field[data-active='true'] {
-  border-color: rgba(37, 211, 102, 0.55);
-  box-shadow: 0 0 0 2px rgba(37, 211, 102, 0.12);
+  box-shadow:
+    0 0 0 0.5px rgba(0, 0, 0, 0.08),
+    0 0 0 2px rgba(37, 211, 102, 0.22);
 }
 
 .wa-typing {

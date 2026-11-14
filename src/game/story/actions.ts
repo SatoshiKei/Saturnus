@@ -318,7 +318,6 @@ function applyOne(state: InvestigationState, action: StoryActionRef): Investigat
           id: `contradiction:${action.id}`,
           kind: 'contradiction',
           title: summary ?? 'Contradição registrada no caderno',
-          summary,
           refId: action.id,
         },
       )

@@ -83,7 +83,7 @@ const phoneSource: ForensicSource = {
     {
       key: 'chain',
       label: 'Chain',
-      value: 'Celular associado a Elisa → Lucas → Mariana → Rafael → Augusto',
+      value: 'L3 messaging backup — import id WA-2041104-NX',
     },
     { key: 'clock', label: 'Clock reference', value: 'External messaging server stamp' },
     { key: 'externalStamp', label: 'External stamp', value: 'WA_MEDIA_RX 01:25:18' },
@@ -113,8 +113,8 @@ const deskSource: ForensicSource = {
     sourceClock: 'Vertice local / cabine',
     referenceSourceId: 'janus_phone',
     offsetMs: 0,
-    absoluteStartLabel: '01:14:48 VÉRTICE',
-    eventClockAtDj: '01:16:00 VÉRTICE',
+    absoluteStartLabel: '01:14:48 local',
+    eventClockAtDj: '01:16:00 local',
   },
   metadata: [
     { key: 'filename', label: 'Filename', value: 'VTX_DESK_FEED_NX.wav' },
@@ -187,31 +187,6 @@ const infraSource: ForensicSource = {
   ],
 }
 
-const sandraCompareSource: ForensicSource = {
-  id: 'janus_sandra_window',
-  filename: 'SANDRA-SIGHTING-WINDOW.txt',
-  displayName: 'SANDRA-SIGHTING-WINDOW.txt',
-  type: 'data',
-  durationSec: 0,
-  metadata: [
-    {
-      key: 'first',
-      label: 'First sighting (approx.)',
-      value: `${puzzle04SandraApproxTime} real — woman with light jacket + bag, followed`,
-    },
-    {
-      key: 'help',
-      label: 'Help call (external)',
-      value: '~01:27 real — reliable call log',
-    },
-    {
-      key: 'second',
-      label: 'Second sighting',
-      value: 'Male silhouette leaving dark area near guardrail — face not identified',
-    },
-  ],
-}
-
 export const puzzle04JanusSession: ForensicSession = {
   id: 'puzzle-04-janus-epimetheus',
   title: 'FORENSIC AUDIO / DIGITAL WORKSTATION',
@@ -225,5 +200,5 @@ export const puzzle04JanusSession: ForensicSession = {
     correctedRealTime: puzzle04CorrectedRealTime,
     findingText: puzzle04FindingText,
   },
-  sources: [phoneSource, deskSource, setLogSource, infraSource, sandraCompareSource],
+  sources: [phoneSource, deskSource, setLogSource, infraSource],
 }

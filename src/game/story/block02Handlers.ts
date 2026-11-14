@@ -9,10 +9,16 @@ import type { StoryActionRef } from '../types'
 export function onRafaelClubAudioPlayed() {
   const s = getInvestigationState()
   if (s.flags.block02_rafael_club_received || s.flags.block02_rafael_forward_received) {
-    // Já recebeu (flag nova ou legado do forward).
+    const fixes: StoryActionRef[] = []
     if (!s.evidenceOwned.includes('rec_vtx_old_01')) {
-      dispatchActions([{ type: 'addEvidence', id: 'rec_vtx_old_01' }])
+      fixes.push({ type: 'addEvidence', id: 'rec_vtx_old_01' })
     }
+    const staleRafaelTasks = ['task_rafael_recording', 'task_get_club_from_rafael'] as const
+    for (const id of staleRafaelTasks) {
+      const task = s.tasks.find((t) => t.id === id)
+      if (task && !task.completed) fixes.push({ type: 'completeTask', id })
+    }
+    if (fixes.length) dispatchActions(fixes)
     return
   }
   dispatchActions([
@@ -21,6 +27,7 @@ export function onRafaelClubAudioPlayed() {
     { type: 'setFlag', id: 'block02_rafael_forward_received', value: true },
     { type: 'addEvidence', id: 'rec_vtx_old_01' },
     { type: 'completeTask', id: 'task_rafael_recording' },
+    { type: 'completeTask', id: 'task_get_club_from_rafael' },
     {
       type: 'addTask',
       id: 'task_match_vertice_set',
@@ -55,7 +62,7 @@ export function runProvisionalRafaelForwardAnalysis() {
     {
       type: 'addTask',
       id: 'task_rafael_recording',
-      label: 'Descobrir se Rafael ainda possui a gravação original',
+      label: 'Encontrar a gravação perdida',
     },
     {
       type: 'notifyInvestigationUpdate',
@@ -121,11 +128,6 @@ export function finishVerticeArchive() {
     { type: 'setFlag', id: 'block02_vertice_archive', value: true },
     { type: 'addDocument', id: 'doc-vertice-escala' },
     { type: 'completeTask', id: 'task_rafael_venue_staff' },
-    {
-      type: 'addTask',
-      id: 'task_get_club_from_rafael',
-      label: 'Pedir a Rafael a gravação original que Mariana lhe enviou',
-    },
   ])
 }
 
@@ -181,16 +183,6 @@ export function finishVerticeSetCrossRef() {
       type: 'addTask',
       id: 'task_locate_nico',
       label: 'Localizar Nico',
-    },
-    {
-      type: 'addTask',
-      id: 'task_why_mariana_session',
-      label: 'Entender por que Mariana procurava aquela sessão',
-    },
-    {
-      type: 'addTask',
-      id: 'task_continue_elisa_case',
-      label: 'Continuar a revisão dos autos de Elisa Duarte',
     },
     { type: 'unlockLocation', id: 'vertice', status: 'visited' },
   ])

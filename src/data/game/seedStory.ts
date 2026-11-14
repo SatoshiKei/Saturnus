@@ -21,9 +21,8 @@ export const block01EndTasks: CaseTask[] = [
     label: 'Verificar a divergência entre a central e o histórico do aparelho',
     completed: false,
   },
-  { id: 'task_rafael_recording', label: 'Descobrir se Rafael ainda possui a gravação original', completed: false },
-  { id: 'task_rafael_venue_staff', label: 'Descobrir quem trabalhava no local da gravação', completed: false },
-  { id: 'task_selective_lapses', label: 'Entender por que os lapsos de Mariana parecem seletivos', completed: false },
+  { id: 'task_rafael_recording', label: 'Encontrar a gravação perdida', completed: false },
+  { id: 'task_rafael_venue_staff', label: 'Descobrir a origem da gravação', completed: false },
 ]
 
 export const seedTimeline: TimelineEvent[] = [
@@ -1167,19 +1166,7 @@ export const seedStoryTriggers: StoryTrigger[] = [
       },
       {
         type: 'replaceTasks',
-        tasks: [
-          { id: 'task_locate_nico', label: 'Localizar Nico', completed: false },
-          {
-            id: 'task_why_mariana_session',
-            label: 'Entender por que Mariana procurava aquela sessão',
-            completed: false,
-          },
-          {
-            id: 'task_continue_elisa_case',
-            label: 'Continuar a revisão dos autos de Elisa Duarte',
-            completed: false,
-          },
-        ],
+        tasks: [{ id: 'task_locate_nico', label: 'Localizar Nico', completed: false }],
       },
       { type: 'setFlag', id: 'block02_complete', value: true },
     ],

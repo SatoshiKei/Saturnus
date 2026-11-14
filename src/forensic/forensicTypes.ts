@@ -601,6 +601,8 @@ export interface ForensicUiState {
   recoveredSpeech: RecoveredSpeechEntry[]
   compareSourceA: string | null
   compareSourceB: string | null
+  /** Compare: permite arrastar offset temporal (Clock align). */
+  compareClockAlign: boolean
   waveformZoomY: number
   /** Sequence overrides por page id (Structure). */
   structureSequences: Record<string, number>

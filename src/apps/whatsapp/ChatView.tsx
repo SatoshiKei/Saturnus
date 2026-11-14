@@ -68,7 +68,6 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
   const [lightbox, setLightbox] = useState<{ src: string; alt: string; caption?: string } | null>(
     null,
   )
-  const [composerHint, setComposerHint] = useState<string | null>(null)
   /** Campo de mensagem aberto: só então as opções cosméticas aparecem. */
   const [composing, setComposing] = useState(false)
   /** Libera clique nas opções só após o mouseup do toque no campo (evita escolher no mesmo gesto). */
@@ -91,7 +90,6 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
   useEffect(() => {
     setComposing(false)
     setOptionsReady(false)
-    setComposerHint(null)
   }, [chatId])
 
   useEffect(() => {
@@ -175,9 +173,6 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
   const canCompose = Boolean(currentStep) && pendingReplies === 0
   const showOptions = canCompose && composing
   const typing = pendingReplies > 0
-  const blockedByFlags =
-    scriptChat && script && !progress.done && !scriptReady && Boolean(script.requiresFlagsAll?.length)
-
   return (
     <div className="wa-chat-view" data-testid="whatsapp-chat-view">
       <header className="wa-chat-header">
@@ -235,12 +230,7 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
         </div>
       </header>
 
-      <div className="wa-messages" ref={messagesRef}>
-        {scriptChat && visibleMessages.length === 0 && !typing ? (
-          <p className="wa-empty-thread" data-testid="chat-empty-thread">
-            {script?.emptyHint}
-          </p>
-        ) : null}
+      <div className="wa-messages" ref={messagesRef} data-testid="chat-messages">
         {visibleMessages.map((message) => {
           const live = withLiveAudio(message)
           return (
@@ -296,12 +286,6 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
             ))}
           </div>
         ) : null}
-        {blockedByFlags ? (
-          <p className="wa-composer-hint" data-testid="chat-script-blocked">
-            Ainda não tenho o que perguntar com precisão. Volto depois de checar o Vértice.
-          </p>
-        ) : null}
-        {composerHint ? <p className="wa-composer-hint">{composerHint}</p> : null}
         {chatId === ANON_CHAT_ID && !inv.flags.block07_anon_audio_received ? (
           <button
             type="button"
@@ -315,19 +299,7 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
         <ChatComposer
           composeAvailable={canCompose}
           composing={composing}
-          onComposeOpen={() => {
-            setComposerHint(null)
-            setComposing(true)
-          }}
-          onBlockedAction={() =>
-            setComposerHint(
-              !scriptChat
-                ? 'Envio indisponível nesta fase da investigação.'
-                : typing
-                  ? 'Aguarde a resposta…'
-                  : 'Toque em Mensagem para escrever.',
-            )
-          }
+          onComposeOpen={() => setComposing(true)}
         />
       </footer>
 

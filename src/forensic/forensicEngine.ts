@@ -38,8 +38,10 @@ export function createInitialUiState(
     sourceOffsets[s.id] = 0
   }
   const audioSources = session.sources.filter((s) => s.audio)
+  const clockSync = session.completion?.kind === 'clock-sync'
+  const firstAudio = audioSources[0]
   return {
-    activeSourceId: first?.id ?? null,
+    activeSourceId: (clockSync ? firstAudio : first)?.id ?? null,
     inspectorTab: 'process',
     playheadSec: 0,
     zoom: 1,
@@ -54,8 +56,9 @@ export function createInitialUiState(
     noiseProfiles: [],
     activeNoiseProfileId: null,
     recoveredSpeech: [...recoveredSpeech],
-    compareSourceA: audioSources[0]?.id ?? null,
-    compareSourceB: audioSources[1]?.id ?? null,
+    compareSourceA: clockSync ? null : audioSources[0]?.id ?? null,
+    compareSourceB: clockSync ? null : audioSources[1]?.id ?? null,
+    compareClockAlign: false,
     waveformZoomY: 1,
     structureSequences: {},
     selectedStructurePageId: first?.structure?.pages?.[0]?.id ?? null,

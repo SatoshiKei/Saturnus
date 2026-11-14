@@ -31,7 +31,6 @@ import {
   evaluateRtpReconstruction,
   filterPacketRows,
   findSimilarCycleRegions,
-  fmtClockOffset,
   relativeSourceOffsetSec,
   rfChannelExtractComplete,
   rtpStreamSeparationComplete,
@@ -178,34 +177,63 @@ export function ForensicWorkbench({
     return { ...session, sources: [...sources, ...extraSources] }
   }, [session, extraSources, hydratedPacketRows])
   const source = getActiveSource(liveSession, ui)
-  /** Fonte com áudio para transport/timeline (registros de set não têm stems). */
-  const playbackSource = source?.audio
-    ? source
-    : liveSession.sources.find((s) => s.audio) ?? source
-  const audioSources = liveSession.sources.filter((s) => s.audio)
   const isClockSync = session.completion?.kind === 'clock-sync'
+  /** Só o arquivo ativo com stems — sem fallback para outro áudio. */
+  const playbackSource = source?.audio ? source : null
+  const audioSources = liveSession.sources.filter((s) => s.audio)
+  const compareA =
+    ui.inspectorTab === 'compare' && ui.compareSourceA
+      ? liveSession.sources.find((s) => s.id === ui.compareSourceA)
+      : null
+  const compareB =
+    ui.inspectorTab === 'compare' && ui.compareSourceB
+      ? liveSession.sources.find((s) => s.id === ui.compareSourceB)
+      : null
+  const compareDual = Boolean(compareA?.audio && compareB?.audio)
+  const compareRefId = ui.timingReferenceSourceId ?? compareA?.id ?? audioSources[0]?.id ?? null
+  const compareAdj =
+    compareDual && compareA && compareB
+      ? compareA.id === compareRefId
+        ? compareB
+        : compareB.id === compareRefId
+          ? compareA
+          : compareB
+      : null
+  const compareRef =
+    compareDual && compareA && compareB
+      ? compareA.id === compareRefId
+        ? compareA
+        : compareB.id === compareRefId
+          ? compareB
+          : compareA
+      : null
   const rfCapture =
     source?.rfCapture ?? liveSession.sources.find((s) => s.rfCapture)?.rfCapture ?? null
-  const playableUntil = effectivePlayableUntil(playbackSource, ui.containerRebuilt)
-  const spanDuration = isClockSync
-    ? Math.max(
-        ...audioSources.map(
-          (s) =>
-            (s.timelineOriginSec ?? 0) +
-            (ui.sourceOffsets[s.id] ?? 0) +
-            s.durationSec,
-        ),
-        playbackSource?.durationSec ?? 0,
-        630,
-      )
-    : (playbackSource?.durationSec ?? 0)
+  const playableUntil = effectivePlayableUntil(playbackSource ?? undefined, ui.containerRebuilt)
+  const spanDuration =
+    compareDual && compareA && compareB
+      ? Math.max(
+          (compareA.timelineOriginSec ?? 0) +
+            (ui.sourceOffsets[compareA.id] ?? 0) +
+            compareA.durationSec,
+          (compareB.timelineOriginSec ?? 0) +
+            (ui.sourceOffsets[compareB.id] ?? 0) +
+            compareB.durationSec,
+          630,
+        )
+      : (playbackSource?.durationSec ?? 0)
   const duration = spanDuration
-  const waveform = measuredWave ?? playbackSource?.audio?.waveform ?? []
+  const waveform =
+    compareDual || !playbackSource
+      ? []
+      : measuredWave ?? playbackSource.audio?.waveform ?? []
   const spectrogram = measuredSpec ?? playbackSource?.audio?.spectrogram
-  const syncPair = audioSources.length >= 2 ? [audioSources[0], audioSources[1]] : null
-  const placementDelta = syncPair
-    ? relativeSourceOffsetSec(syncPair[0], syncPair[1], ui.sourceOffsets)
-    : 0
+  const placementDelta =
+    compareRef && compareAdj
+      ? relativeSourceOffsetSec(compareRef, compareAdj, ui.sourceOffsets)
+      : isClockSync && audioSources.length >= 2
+        ? relativeSourceOffsetSec(audioSources[0], audioSources[1], ui.sourceOffsets)
+        : 0
   const correlation = approximateTrackCorrelation(
     placementDelta,
     session.completion?.offsetToleranceSec ?? 0.2,
@@ -219,7 +247,7 @@ export function ForensicWorkbench({
   )
   const sequenceValid = structureSequenceValid(source, ui.structureSequences)
   const fileMetadata = fileMetadataForContainer(source, ui.containerRebuilt)
-  const fileLabel = fileNameBadge ?? source?.filename ?? '—'
+  const fileLabel = fileNameBadge ?? source?.filename ?? playbackSource?.filename ?? '—'
   const channels =
     source?.metadata?.find((m) => m.key === 'channels')?.value ??
     (playbackSource?.audio?.channels === 1
@@ -580,19 +608,21 @@ export function ForensicWorkbench({
                   visible: t.visible,
                 }
               }
+              setMeasuredWave(null)
+              setMeasuredSpec(null)
               patchUi({ activeSourceId: id, tracks, playheadSec: 0 })
             }}
           />
           <div className="fw-tracks">
             <div className="fw-pane-h">Tracks</div>
-            {(isClockSync ? audioSources : playbackSource ? [playbackSource] : []).flatMap((src) =>
+            {(playbackSource ? [playbackSource] : []).flatMap((src) =>
               (src.tracks ?? [])
                 .filter((t) => t.visible)
                 .map((t) => (
                   <div key={`${src.id}-${t.id}`} className="fw-track-block">
                     <TrackRow
-                      name={isClockSync ? `${t.name}` : t.name}
-                      channel={isClockSync ? src.filename : t.channel}
+                      name={t.name}
+                      channel={t.channel}
                       selected={src.id === ui.activeSourceId}
                       track={
                         ui.tracks[t.id] ?? {
@@ -624,28 +654,6 @@ export function ForensicWorkbench({
                         }))
                       }
                     />
-                    {isClockSync ? (
-                      <label className="fw-track-offset">
-                        Time offset
-                        <input
-                          type="number"
-                          step={0.05}
-                          data-testid={`track-offset-${src.id}`}
-                          value={ui.sourceOffsets[src.id] ?? 0}
-                          onChange={(e) => {
-                            const v = Number(e.target.value)
-                            setUi((u) => ({
-                              ...u,
-                              sourceOffsets: { ...u.sourceOffsets, [src.id]: v },
-                              formalizedClockOffsetSec: null,
-                              correctedSetTime: null,
-                              findingUnlocked: false,
-                            }))
-                          }}
-                        />
-                        <span className="fw-mono">s</span>
-                      </label>
-                    ) : null}
                   </div>
                 )),
             )}
@@ -659,7 +667,22 @@ export function ForensicWorkbench({
                 {specializedWorkspace}
               </div>
             ) : null}
-            {!suppressTimeline ? (
+            {source && !source.audio ? (
+              <div className="fw-data-view" data-testid="fw-data-document-view">
+                <div className="fw-pane-h">{source.filename}</div>
+                <dl className="fw-meta fw-meta--stack">
+                  {(source.metadata ?? []).map((f) => (
+                    <div key={f.key}>
+                      <dt>{f.label}</dt>
+                      <dd className="fw-mono">{f.value || '—'}</dd>
+                    </div>
+                  ))}
+                </dl>
+                {source.setRecord ? (
+                  <p className="fw-muted">{source.setRecord.notes}</p>
+                ) : null}
+              </div>
+            ) : !suppressTimeline ? (
               <Timeline
                 durationSec={duration}
                 playheadSec={ui.playheadSec}
@@ -674,8 +697,8 @@ export function ForensicWorkbench({
                   playbackSource?.containerPlayback && !ui.containerRebuilt ? playableUntil : null
                 }
                 lanes={
-                  isClockSync
-                    ? audioSources.map((s) => ({
+                  compareDual && compareA && compareB
+                    ? [compareA, compareB].map((s) => ({
                         id: s.id,
                         label: s.filename,
                         waveform: s.audio?.waveform ?? [],
@@ -703,9 +726,11 @@ export function ForensicWorkbench({
                 }}
                 onWaveformZoomY={(waveformZoomY) => patchUi({ waveformZoomY })}
                 onLaneOffset={
-                  isClockSync
+                  compareDual && compareA && compareB && ui.compareClockAlign
                     ? (laneId, nextStartSec) => {
-                        const src = audioSources.find((s) => s.id === laneId)
+                        const refId = compareRefId
+                        if (!refId || laneId === refId) return
+                        const src = [compareA, compareB].find((s) => s.id === laneId)
                         if (!src) return
                         const offset = nextStartSec - (src.timelineOriginSec ?? 0)
                         setUi((u) => ({
@@ -716,6 +741,13 @@ export function ForensicWorkbench({
                           findingUnlocked: false,
                         }))
                       }
+                    : undefined
+                }
+                lockedLaneIds={
+                  compareDual && compareRefId && compareA && compareB
+                    ? ui.compareClockAlign
+                      ? [compareRefId]
+                      : [compareA.id, compareB.id]
                     : undefined
                 }
               />
@@ -848,9 +880,12 @@ export function ForensicWorkbench({
               ],
             }))
           }
-          onCompare={(compareSourceA, compareSourceB) =>
-            patchUi({ compareSourceA, compareSourceB })
-          }
+          onCompare={(compareSourceA, compareSourceB) => {
+            stop()
+            setMeasuredWave(null)
+            setMeasuredSpec(null)
+            patchUi({ compareSourceA, compareSourceB, playheadSec: 0 })
+          }}
           clipSequenceTools={
             session.completion?.kind === 'clip-sequence'
               ? {
@@ -900,7 +935,7 @@ export function ForensicWorkbench({
                       ...u,
                       formalizedClockOffsetSec: expectedOffset,
                     }))
-                    setStatus(`Clock difference: ${fmtClockOffset(expectedOffset)}`)
+                    setStatus('Alignment saved')
                   },
                   onApplyClockCorrection: () => {
                     if (ui.formalizedClockOffsetSec == null) {
@@ -924,7 +959,7 @@ export function ForensicWorkbench({
                       correctedSetTime: corrected,
                       findingUnlocked: true,
                     }))
-                    setStatus(`Set log ${setLog} (Vertice) + ${fmtClockOffset(offset)} → ${corrected} real`)
+                    setStatus(`Reference offset applied — ${corrected}`)
                   },
                   onSetTimingReference: (id) => patchUi({ timingReferenceSourceId: id }),
                   onSetSourceOffset: (id, sec) =>
@@ -935,6 +970,8 @@ export function ForensicWorkbench({
                       correctedSetTime: null,
                       findingUnlocked: false,
                     })),
+                  onSetCompareClockAlign: (on) => patchUi({ compareClockAlign: on }),
+                  compareChannelBId: compareAdj?.id ?? null,
                 }
               : undefined
           }

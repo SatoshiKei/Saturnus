@@ -50,7 +50,8 @@ export function ChatComposer({
       <button
         type="button"
         className="wa-composer__field"
-        data-active={composing || composeAvailable}
+        data-active={composing}
+        data-compose-available={composeAvailable}
         data-testid="composer-open"
         aria-label={composing ? 'Escolher como escrever' : 'Mensagem'}
         aria-expanded={composing}

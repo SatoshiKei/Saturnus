@@ -37,7 +37,7 @@ export const block02DevCheckpoints: { id: string; label: string; actions: StoryA
       {
         type: 'addTask',
         id: 'task_rafael_recording',
-        label: 'Descobrir se Rafael ainda possui a gravação original',
+        label: 'Encontrar a gravação perdida',
       },
     ],
   },
@@ -54,11 +54,6 @@ export const block02DevCheckpoints: { id: string; label: string; actions: StoryA
       { type: 'addEvidence', id: 'mariana_repeated_questions' },
       { type: 'addDocument', id: 'doc-vertice-escala' },
       { type: 'completeTask', id: 'task_rafael_venue_staff' },
-      {
-        type: 'addTask',
-        id: 'task_get_club_from_rafael',
-        label: 'Pedir a Rafael a gravação original que Mariana lhe enviou',
-      },
       { type: 'unlockLocation', id: 'vertice', status: 'visited' },
     ],
   },
@@ -71,6 +66,7 @@ export const block02DevCheckpoints: { id: string; label: string; actions: StoryA
       { type: 'setFlag', id: 'block02_rafael_forward_received', value: true },
       { type: 'addEvidence', id: 'rec_vtx_old_01' },
       { type: 'completeTask', id: 'task_rafael_recording' },
+      { type: 'completeTask', id: 'task_get_club_from_rafael' },
       {
         type: 'addTask',
         id: 'task_match_vertice_set',
@@ -106,16 +102,6 @@ export const block02DevCheckpoints: { id: string; label: string; actions: StoryA
       { type: 'completeTask', id: 'task_vertice_dj' },
       { type: 'completeTask', id: 'task_vertice_cross_reference' },
       { type: 'addTask', id: 'task_locate_nico', label: 'Localizar Nico' },
-      {
-        type: 'addTask',
-        id: 'task_why_mariana_session',
-        label: 'Entender por que Mariana procurava aquela sessão',
-      },
-      {
-        type: 'addTask',
-        id: 'task_continue_elisa_case',
-        label: 'Continuar a revisão dos autos de Elisa Duarte',
-      },
       { type: 'unlockLocation', id: 'vertice', status: 'visited' },
     ],
   },

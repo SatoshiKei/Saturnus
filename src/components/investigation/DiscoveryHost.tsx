@@ -132,7 +132,7 @@ function Notice({ ev, action, onAction }: { ev: DiscoveryEvent; action?: { label
         <p className="disc-notice__label">{noticeLabel(ev)}</p>
         <p className="disc-notice__title">{ev.title}</p>
         {ev.subtitle ? <p className="disc-notice__sub">{ev.subtitle}</p> : null}
-        {ev.summary && (ev.kind === 'contradiction' || !ev.subtitle) ? (
+        {ev.summary && ev.summary !== ev.title && !ev.subtitle ? (
           <p className="disc-notice__sub">{ev.summary}</p>
         ) : null}
       </div>

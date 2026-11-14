@@ -42,7 +42,7 @@ test('Bloco 2 — Paula começa vazia, o jogador escreve; Lucas e Elisa chegam p
   await openAugustoPhone(page)
   await page.getByTestId('app-whatsapp').click()
   await page.getByTestId('chat-row-paula').click()
-  await expect(page.getByTestId('chat-empty-thread')).toBeVisible()
+  await expect(page.getByTestId('chat-messages')).toBeVisible()
 
   // Oito trocas; toca em Mensagem → escolhe uma opção cosmética (mesmo estado final).
   for (let i = 0; i < 8; i++) {

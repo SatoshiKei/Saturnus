@@ -240,6 +240,8 @@ export function Inspector({
     onApplyClockCorrection: () => void
     onSetTimingReference: (id: string | null) => void
     onSetSourceOffset: (id: string, sec: number) => void
+    onSetCompareClockAlign: (on: boolean) => void
+    compareChannelBId: string | null
   }
   clipSequenceTools?: {
     order: string[]
@@ -1345,11 +1347,11 @@ export function Inspector({
                   disabled={ui.formalizedClockOffsetSec == null}
                   onClick={clockSync.onApplyClockCorrection}
                 >
-                  Apply clock correction
+                  Apply reference offset
                 </button>
                 {ui.findingUnlocked ? (
                   <p className="fw-muted" data-testid="timing-finding">
-                    Finding: Sandra não poderia ter visto Elisa no primeiro avistamento.
+                    Reference offset registered.
                   </p>
                 ) : null}
               </Section>
@@ -1367,11 +1369,13 @@ export function Inspector({
                 onChange={(e) => onCompare(e.target.value || null, ui.compareSourceB)}
               >
                 <option value="">—</option>
-                {sources.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.filename}
-                  </option>
-                ))}
+                {sources
+                  .filter((s) => s.audio)
+                  .map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.filename}
+                    </option>
+                  ))}
               </select>
             </label>
             <label className="fw-inline fw-inline--stack">
@@ -1382,11 +1386,13 @@ export function Inspector({
                 onChange={(e) => onCompare(ui.compareSourceA, e.target.value || null)}
               >
                 <option value="">—</option>
-                {sources.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.filename}
-                  </option>
-                ))}
+                {sources
+                  .filter((s) => s.audio)
+                  .map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.filename}
+                    </option>
+                  ))}
               </select>
             </label>
             {!ui.compareSourceA || !ui.compareSourceB ? (
@@ -1497,18 +1503,50 @@ export function Inspector({
                           <dd className="fw-mono">{b ? fmtTime(b.durationSec) : '—'}</dd>
                         </div>
                         {ui.correctedSetTime ? (
-                          <>
-                            <div>
-                              <dt>Sandra window</dt>
-                              <dd className="fw-mono">~01:16 real</dd>
-                            </div>
-                            <div>
-                              <dt>Elisa exit (corrected)</dt>
-                              <dd className="fw-mono">{ui.correctedSetTime} real</dd>
-                            </div>
-                          </>
+                          <div>
+                            <dt>Applied timestamp</dt>
+                            <dd className="fw-mono">{ui.correctedSetTime}</dd>
+                          </div>
                         ) : null}
                       </dl>
+                    ) : null}
+                    {clockSync && bothAudio ? (
+                      <Section title="Clock align" tip="Clock align">
+                        <button
+                          type="button"
+                          className={`fw-btn${ui.compareClockAlign ? ' fw-btn--active' : ''}`}
+                          data-testid="compare-clock-align"
+                          aria-pressed={ui.compareClockAlign}
+                          onClick={() => clockSync.onSetCompareClockAlign(!ui.compareClockAlign)}
+                        >
+                          Clock align
+                        </button>
+                        <dl className="fw-meta">
+                          <div>
+                            <dt>Offset B</dt>
+                            <dd className="fw-mono" data-testid="compare-offset-b">
+                              {clockSync.compareChannelBId != null
+                                ? fmtClockOffset(ui.sourceOffsets[clockSync.compareChannelBId] ?? 0)
+                                : '—'}
+                            </dd>
+                          </div>
+                          <div>
+                            <dt>Correlation</dt>
+                            <dd className="fw-mono" data-testid="compare-correlation-inline">
+                              {corr != null ? corr.toFixed(3) : '—'}
+                            </dd>
+                          </div>
+                        </dl>
+                        <button
+                          type="button"
+                          className="fw-btn"
+                          data-testid="compare-save-alignment"
+                          disabled={!clockSync.offsetValid}
+                          onClick={clockSync.onFormalizeOffset}
+                        >
+                          Save alignment
+                        </button>
+                      </Section>
                     ) : null}
                     <Section title="Link" tip="Link Source">
                       <button type="button" className="fw-btn" onClick={() => onLinkSource?.()}>

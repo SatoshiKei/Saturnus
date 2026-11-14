@@ -35,6 +35,7 @@ export function Timeline({
   onViewMode,
   onWaveformZoomY,
   onLaneOffset,
+  lockedLaneIds,
 }: {
   durationSec: number
   playheadSec: number
@@ -55,6 +56,8 @@ export function Timeline({
   onWaveformZoomY: (z: number) => void
   /** Arraste horizontal de uma lane (novo startSec absoluto). */
   onLaneOffset?: (laneId: string, nextStartSec: number) => void
+  /** Lanes que não podem ser arrastadas. */
+  lockedLaneIds?: string[]
 }) {
   const drag = useRef<{ a: number; selecting: boolean } | null>(null)
   const laneDrag = useRef<{ id: string; originStart: number; pointer0: number } | null>(null)
@@ -141,13 +144,16 @@ export function Timeline({
 
       {multi ? (
         <div className="fw-multi" data-testid="timeline-multitrack">
-          {lanes!.map((lane) => (
+          {lanes!.map((lane) => {
+            const locked = lockedLaneIds?.includes(lane.id)
+            return (
             <div
               key={lane.id}
-              className="fw-multi__lane"
+              className={`fw-multi__lane${locked ? ' fw-multi__lane--locked' : ''}`}
               data-testid={`timeline-lane-${lane.id}`}
+              data-locked={locked ? 'true' : undefined}
               onPointerDown={(e) => {
-                if (!onLaneOffset) return
+                if (!onLaneOffset || locked) return
                 const el = e.currentTarget
                 el.setPointerCapture(e.pointerId)
                 laneDrag.current = {
@@ -157,7 +163,7 @@ export function Timeline({
                 }
               }}
               onPointerMove={(e) => {
-                if (!laneDrag.current || laneDrag.current.id !== lane.id || !onLaneOffset) return
+                if (!laneDrag.current || laneDrag.current.id !== lane.id || !onLaneOffset || locked) return
                 const t = secFromClientX(e.currentTarget, e.clientX)
                 const delta = t - laneDrag.current.pointer0
                 onLaneOffset(lane.id, Math.max(0, laneDrag.current.originStart + delta))
@@ -167,6 +173,7 @@ export function Timeline({
               }}
             >
               <span className="fw-multi__label">{lane.label}</span>
+              {locked ? <span className="fw-multi__lock">reference</span> : null}
               <div
                 className="fw-multi__wave-wrap"
                 style={{
@@ -192,7 +199,7 @@ export function Timeline({
                 </svg>
               </div>
             </div>
-          ))}
+          )})}
           <div
             className="fw-playhead fw-playhead--multi"
             style={{ left: `${(playheadSec / visibleDur) * 100}%` }}
