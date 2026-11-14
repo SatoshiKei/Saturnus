@@ -131,7 +131,12 @@ describe('Puzzle 06 — HEXÁGONO', () => {
       expect(getForensicSessionForEvidence(id)?.id).toBe('puzzle-06-hexagon')
     }
     expect(puzzle06HexagonSession.sources.filter((s) => s.audio)).toHaveLength(6)
+    const bundle = puzzle06HexagonSession.sources.find((s) => s.childSourceIds?.length)
+    expect(bundle?.childSourceIds).toEqual([...puzzle06FileOrder])
     const ui = createInitialUiState(puzzle06HexagonSession)
+    expect(ui.compareSourceA).toBeNull()
+    expect(ui.compareSourceB).toBeNull()
+    expect(ui.activeSourceId).toBe('UNK_01')
     expect(spectrogramSurveyComplete(puzzle06HexagonSession, ui)).toBe(false)
     ui.spectrogramViewedSourceIds = [...puzzle06FileOrder]
     expect(spectrogramSurveyComplete(puzzle06HexagonSession, ui)).toBe(true)

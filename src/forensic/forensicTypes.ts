@@ -429,6 +429,8 @@ export interface ForensicSource {
   containerPlayback?: ContainerPlaybackConfig
   /** Regiões de tempo para Estimate tempo (Analysis). */
   tempoRegions?: TempoRegion[]
+  /** Fontes listadas dentro deste item no painel Files (ex.: entrega pericial única). */
+  childSourceIds?: string[]
   /** Campos de registro de set (COMPARE / LINK SOURCE). */
   setRecord?: SetRecordFields
   /** Captura RF / waterfall (Puzzle 07+). */

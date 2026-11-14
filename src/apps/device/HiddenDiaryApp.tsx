@@ -56,11 +56,12 @@ function DiaryPinGate() {
   const [pin, setPin] = useState('')
   const [error, setError] = useState<string | null>(null)
 
-  const submit = () => {
-    const res = tryDiaryPin(pin)
+  const submit = (attempt?: string) => {
+    const res = tryDiaryPin((attempt ?? pin).replace(/\D/g, '').slice(0, 6))
     if (res === 'wrong') {
       playSfx('error')
       setError('Código incorreto.')
+      setPin('')
       return
     }
     if (res === 'locked') {

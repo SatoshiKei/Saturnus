@@ -1,3 +1,8 @@
+import {
+  HEX_DELIVERY_EVIDENCE_ID,
+  HEX_LEGACY_FRAGMENT_EVIDENCE_IDS,
+  migrateHexEvidenceOwned,
+} from '../data/block04/hexagonPuzzle'
 import { knowsTerm } from './knowledge/knownTerms'
 import { withKnownTermsFromFlags } from './knowledge/seedTermsFromFlags'
 import type { InvestigationState } from './types'
@@ -125,6 +130,20 @@ export function isPersonVisibleInRegistry(personId: string, inv: InvestigationSt
 /** Corrige estado quando a evidência existe mas flags de Bloco 2 não foram gravadas. */
 export function repairInvestigationState(state: InvestigationState): InvestigationState {
   let next = state
+
+  const hexOwned = migrateHexEvidenceOwned(next.evidenceOwned)
+  const legacy = new Set(HEX_LEGACY_FRAGMENT_EVIDENCE_IDS)
+  const hexMigrated =
+    hexOwned.length !== next.evidenceOwned.length ||
+    hexOwned.some((id, i) => id !== next.evidenceOwned[i])
+  if (hexMigrated) {
+    const legacySeen = next.audioSeen.some((id) => legacy.has(id))
+    let audioSeen = next.audioSeen.filter((id) => !legacy.has(id))
+    if (legacySeen && !audioSeen.includes(HEX_DELIVERY_EVIDENCE_ID)) {
+      audioSeen = [...audioSeen, HEX_DELIVERY_EVIDENCE_ID]
+    }
+    next = { ...next, evidenceOwned: hexOwned, audioSeen }
+  }
 
   if (state.evidenceOwned.includes('paula_leads_lucas') && !state.flags.block02_paula_chat_done) {
     const lucas = state.people.lucas

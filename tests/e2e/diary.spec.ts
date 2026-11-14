@@ -44,18 +44,17 @@ test('Diário oculto — nenhum atalho: seis áudios → Puzzle 6 → Perícia �
   await closeHub(page)
   await dismissEvidenceCards(page)
 
-  // 6. Seis gravações preservadas, todas marcadas como NOVAS.
+  // 6. Entrega pericial única na grade (seis fragmentos dentro da workbench).
   save = await readSave(page)
   expect(save.flags.block04_hex_received).toBe(true)
+  expect(save.evidenceOwned).toContain('hex_pericia_delivery')
   await openHubObject(page, 'audio-station')
   await expect(page.getByTestId('audio-new-count')).toHaveText(/novos/)
-  for (const id of UNK) {
-    await expect(page.getByTestId(`audio-new-hex_audio_${id.toLowerCase()}`)).toBeVisible()
-  }
+  await expect(page.getByTestId('audio-new-hex_pericia_delivery')).toBeVisible()
 
   // 7–8. Puzzle 6: Spectrogram nos seis; PIN nunca aparece na bancada.
   await expect(page.locator('body')).not.toContainText('481526')
-  await page.getByTestId('audio-file-hex_audio_unk_01').click()
+  await page.getByTestId('audio-file-hex_pericia_delivery').click()
   for (const id of UNK) {
     await page.getByTestId(`fw-file-${id}`).click()
     await expect(page.getByTestId('timeline-spectrogram')).toBeEnabled({ timeout: 20_000 })

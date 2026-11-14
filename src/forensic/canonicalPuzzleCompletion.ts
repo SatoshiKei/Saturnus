@@ -10,7 +10,7 @@
  * Etapas `reveal` (ex.: cutscene CAM11 do P10) ficam fora do default para não auto-exibir
  * revelações; o caller decide entre tocar a cena ou marcá-la como vista.
  */
-import { HEX_EVIDENCE_IDS, HEX_PIN } from '../data/block04/hexagonPuzzle'
+import { HEX_EVIDENCE_IDS, HEX_PIN, hexDeliveryInInventory } from '../data/block04/hexagonPuzzle'
 import {
   CAD_FLAME_ID,
   CORRECT_CROSSING,
@@ -409,8 +409,8 @@ const P06: CanonicalPuzzleDef = {
       label: 'Espectrogramas dos seis UNK inspecionados',
       kind: 'technical',
       run: () => {
-        if (!HEX_EVIDENCE_IDS.every(owned)) {
-          return { status: 'failed', reason: 'Os seis UNK precisam estar na bancada.' }
+        if (!hexDeliveryInInventory(inv().evidenceOwned)) {
+          return { status: 'failed', reason: 'A entrega pericial precisa estar na bancada.' }
         }
         const s = puzzle06HexagonSession
         const ids = s.sources.filter((x) => x.audio).map((x) => x.id)

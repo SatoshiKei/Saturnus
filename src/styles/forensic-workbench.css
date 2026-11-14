@@ -125,6 +125,40 @@
   gap: 1px;
 }
 
+.fw-files__children {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0.15em;
+  display: grid;
+  gap: 1px;
+}
+
+.fw-file--bundle {
+  border-left-color: rgba(200, 150, 62, 0.35);
+}
+
+.fw-file__toggle {
+  flex: 0 0 1.1em;
+  margin: 0.25em 0 0.25em 0.25em;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-faint);
+  font: inherit;
+  font-size: 0.75em;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.fw-file__toggle:hover {
+  color: var(--fw-accent);
+}
+
+.fw-file__icon--save {
+  color: var(--fw-accent);
+  opacity: 0.85;
+}
+
 .fw-file {
   display: flex;
   align-items: stretch;

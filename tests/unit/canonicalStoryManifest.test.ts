@@ -327,7 +327,7 @@ describe('bancada: fontes só após aquisição', () => {
     { evidence: 'nico_dj_identified', acquiredAt: 'b02-nico-identified' },
     { evidence: 'nico_recording_booth', acquiredAt: 'b03-after-nico' },
     { evidence: 'livia_radio_archive_raw', acquiredAt: 'b03-after-livia' },
-    { evidence: 'hex_audio_unk_01', acquiredAt: 'b04-hex-received' },
+    { evidence: 'hex_pericia_delivery', acquiredAt: 'b04-hex-received' },
     { evidence: 'valter_group_active_intercepts', acquiredAt: 'b06-valter-trail' },
     { evidence: 'anon_hospital_burst_audio', acquiredAt: 'b07-morsa-memory' },
     { evidence: 'henrique_rtp_capture', acquiredAt: 'b07-after-cecilia' },

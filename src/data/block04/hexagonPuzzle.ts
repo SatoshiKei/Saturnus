@@ -98,13 +98,35 @@ export const HEX_FILES: HexFileDef[] = [
   },
 ]
 
-export const HEX_EVIDENCE_IDS = HEX_FILES.map((f) => f.evidenceId)
+/** Uma entrada na bancada — os seis UNK ficam dentro da workbench (save). */
+export const HEX_DELIVERY_EVIDENCE_ID = 'hex_pericia_delivery'
+
+/** Saves/checkpoints antigos (seis cartões na grade). */
+export const HEX_LEGACY_FRAGMENT_EVIDENCE_IDS = HEX_FILES.map((f) => f.evidenceId)
+
+export const HEX_EVIDENCE_IDS = [HEX_DELIVERY_EVIDENCE_ID] as const
+
+export function hexDeliveryInInventory(owned: readonly string[]): boolean {
+  if (owned.includes(HEX_DELIVERY_EVIDENCE_ID)) return true
+  return HEX_LEGACY_FRAGMENT_EVIDENCE_IDS.every((id) => owned.includes(id))
+}
+
+/** Compacta fragmentos legados num único pacote na lista da bancada. */
+export function migrateHexEvidenceOwned(owned: readonly string[]): string[] {
+  const legacy = new Set(HEX_LEGACY_FRAGMENT_EVIDENCE_IDS)
+  const hasBundle = owned.includes(HEX_DELIVERY_EVIDENCE_ID)
+  const hasLegacy = owned.some((id) => legacy.has(id))
+  if (hasBundle) return [...owned.filter((id) => !legacy.has(id))]
+  if (!hasLegacy) return [...owned]
+  return [...owned.filter((id) => !legacy.has(id)), HEX_DELIVERY_EVIDENCE_ID]
+}
 
 export function hexFile(id: HexFileId): HexFileDef {
   return HEX_FILES.find((f) => f.id === id)!
 }
 
 export function hexFileByEvidence(evidenceId: string): HexFileDef | undefined {
+  if (evidenceId === HEX_DELIVERY_EVIDENCE_ID) return undefined
   return HEX_FILES.find((f) => f.evidenceId === evidenceId)
 }
 

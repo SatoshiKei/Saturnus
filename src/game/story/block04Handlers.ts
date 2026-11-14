@@ -1,4 +1,4 @@
-import { HEX_EVIDENCE_IDS } from '../../data/block04/hexagonPuzzle'
+import { HEX_DELIVERY_EVIDENCE_ID, hexDeliveryInInventory } from '../../data/block04/hexagonPuzzle'
 import { dispatchActions, getInvestigationState } from '../state/investigationStore'
 import type { StoryActionRef } from '../types'
 
@@ -93,7 +93,7 @@ export function onHexCallsPreserved() {
   if (s.flags.block04_hex_received) return
   const actions: StoryActionRef[] = [
     { type: 'setFlag', id: 'block04_hex_received', value: true },
-    ...HEX_EVIDENCE_IDS.map((id) => ({ type: 'addEvidence' as const, id })),
+    { type: 'addEvidence', id: HEX_DELIVERY_EVIDENCE_ID },
     { type: 'setFlag', id: 'block04_hexagon_available', value: true },
     {
       type: 'addTask',
@@ -111,7 +111,7 @@ export function onHexCallsPreserved() {
 export function runHexagonSpectrogramSurvey() {
   const s = getInvestigationState()
   if (s.flags.block04_hex_spectrograms_inspected) return
-  if (!HEX_EVIDENCE_IDS.every((id) => s.evidenceOwned.includes(id))) return
+  if (!hexDeliveryInInventory(s.evidenceOwned)) return
   const actions: StoryActionRef[] = [
     { type: 'setFlag', id: 'block04_hex_spectrograms_inspected', value: true },
     { type: 'addEvidence', id: 'hex_spectral_patterns' },

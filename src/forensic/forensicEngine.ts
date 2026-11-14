@@ -39,9 +39,11 @@ export function createInitialUiState(
   }
   const audioSources = session.sources.filter((s) => s.audio)
   const clockSync = session.completion?.kind === 'clock-sync'
+  const spectrogramSurvey = session.completion?.kind === 'spectrogram-survey'
   const firstAudio = audioSources[0]
+  const noDefaultCompare = clockSync || spectrogramSurvey
   return {
-    activeSourceId: (clockSync ? firstAudio : first)?.id ?? null,
+    activeSourceId: (noDefaultCompare ? firstAudio : first)?.id ?? null,
     inspectorTab: 'process',
     playheadSec: 0,
     zoom: 1,
@@ -56,8 +58,8 @@ export function createInitialUiState(
     noiseProfiles: [],
     activeNoiseProfileId: null,
     recoveredSpeech: [...recoveredSpeech],
-    compareSourceA: clockSync ? null : (audioSources[0]?.id ?? null),
-    compareSourceB: clockSync ? null : (audioSources[1]?.id ?? null),
+    compareSourceA: noDefaultCompare ? null : (audioSources[0]?.id ?? null),
+    compareSourceB: noDefaultCompare ? null : (audioSources[1]?.id ?? null),
     compareClockAlign: false,
     waveformZoomY: 1,
     structureSequences: {},
