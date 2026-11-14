@@ -39,8 +39,10 @@ export function Timeline({
   onLaneOffset,
   playheadLive,
   playing = false,
-  compareSlots,
+  compareBar,
   onCompareDrop,
+  onFormalizeCompare,
+  formalizeCompareDisabled,
 }: {
   durationSec: number
   playheadSec: number
@@ -64,16 +66,19 @@ export function Timeline({
   /** Atualização da agulha no DOM durante play (sem re-render do workbench). */
   playheadLive?: MutableRefObject<PlayheadLiveClock>
   playing?: boolean
-  compareSlots?: { a: string | null; b: string | null }
-  onCompareDrop?: (slot: 'A' | 'B', sourceId: string) => void
+  compareBar?: { a: string; b: string }
+  onCompareDrop?: (sourceId: string) => void
+  onFormalizeCompare?: () => void
+  formalizeCompareDisabled?: boolean
 }) {
   const rootRef = useRef<HTMLDivElement>(null)
+  const multiRef = useRef<HTMLDivElement>(null)
   const drag = useRef<{ a: number; selecting: boolean } | null>(null)
   const laneDrag = useRef<{ id: string; originStart: number; pointer0: number } | null>(null)
   const visibleDur = durationSec / Math.max(0.25, zoom)
   const majorTicks = 9
   const minorPerMajor = 4
-  const multi = Boolean(lanes && lanes.length > 1)
+  const multi = Boolean(lanes && lanes.length > 0)
 
   const secFromClientX = (el: HTMLElement, clientX: number) => {
     const rect = el.getBoundingClientRect()
@@ -81,28 +86,37 @@ export function Timeline({
     return x * visibleDur
   }
 
-  const playPct = (sec: number) => `${(sec / Math.max(0.001, visibleDur)) * 100}%`
+  const timelineSecAt = (clientX: number) => {
+    const el = multi ? multiRef.current : rootRef.current?.querySelector<HTMLElement>('.fw-wave-stage')
+    if (!el) return 0
+    return secFromClientX(el, clientX)
+  }
 
+  const clampedPlayhead = Math.max(0, Math.min(playheadSec, durationSec))
+  const playheadLeft = `${(clampedPlayhead / Math.max(0.001, visibleDur)) * 100}%`
+
+  /** Durante play: rAF lê o motor de áudio; pausado/seek: React controla via `playheadLeft`. */
   useEffect(() => {
+    if (!playing || !playheadLive?.current) return
     const root = rootRef.current
-    if (!root) return
-    const apply = (sec: number) => {
-      const left = playPct(sec)
+    const live = playheadLive.current
+    if (!root || !live) return
+    let raf = 0
+    const applyLive = () => {
+      const sec = Math.max(0, Math.min(live.timelineSec(), durationSec))
+      const left = `${(sec / Math.max(0.001, visibleDur)) * 100}%`
       for (const el of root.querySelectorAll<HTMLElement>('.fw-playhead')) {
         el.style.left = left
       }
     }
-    apply(playheadSec)
-    const live = playheadLive?.current
-    if (!live?.playing) return
-    let raf = 0
     const tick = () => {
-      apply(live.timelineSec())
+      applyLive()
       raf = requestAnimationFrame(tick)
     }
+    applyLive()
     raf = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf)
-  }, [playheadSec, visibleDur, playing, playheadLive])
+  }, [playing, visibleDur, durationSec, playheadLive])
 
   return (
     <div className="fw-timeline" ref={rootRef}>
@@ -146,9 +160,28 @@ export function Timeline({
             onChange={(e) => onWaveformZoomY(Number(e.target.value))}
           />
         </label>
+        {onFormalizeCompare ? (
+          <button
+            type="button"
+            className="fw-btn fw-timeline__save"
+            data-testid="compare-save-alignment"
+            disabled={formalizeCompareDisabled}
+            onClick={onFormalizeCompare}
+          >
+            Registrar análise
+          </button>
+        ) : null}
       </div>
 
-      <div className="fw-ruler" aria-hidden>
+      <div
+        className="fw-ruler"
+        aria-hidden
+        onPointerDown={(e) => {
+          if (e.button !== 0) return
+          const t = timelineSecAt(e.clientX)
+          onSeek(Math.max(0, Math.min(durationSec, t)))
+        }}
+      >
         {Array.from({ length: majorTicks }, (_, i) => {
           const t = (i / (majorTicks - 1)) * visibleDur
           return (
@@ -163,7 +196,10 @@ export function Timeline({
           const frac = (seg + sub / minorPerMajor) / (majorTicks - 1)
           return <i key={`n-${i}`} className="fw-ruler__minor" style={{ left: `${frac * 100}%` }} />
         })}
-        <div className="fw-playhead fw-playhead--ruler" style={{ left: `${(playheadSec / visibleDur) * 100}%` }} />
+        <div
+          className="fw-playhead fw-playhead--ruler"
+          style={playing ? undefined : { left: playheadLeft }}
+        />
         {markers.map((m) => (
           <div
             key={m.id}
@@ -174,67 +210,77 @@ export function Timeline({
         ))}
       </div>
 
-      {compareSlots && onCompareDrop ? (
-        <div className="fw-compare-slots" data-testid="fw-compare-slots">
-          {(['A', 'B'] as const).map((slot) => (
-            <div
-              key={slot}
-              className="fw-compare-slot"
-              data-slot={slot}
-              onDragOver={(e) => {
-                e.preventDefault()
-                e.dataTransfer.dropEffect = 'copy'
-              }}
-              onDrop={(e) => {
-                e.preventDefault()
-                const id = forensicsSourceDragId(e)
-                if (id) onCompareDrop(slot, id)
-              }}
-            >
-              <span className="fw-compare-slot__label">{slot}</span>
-              <span className="fw-compare-slot__file">
-                {slot === 'A' ? compareSlots.a ?? '— arrastar áudio —' : compareSlots.b ?? '— arrastar áudio —'}
-              </span>
-            </div>
-          ))}
+      {compareBar ? (
+        <div className="fw-compare-bar" data-testid="fw-compare-bar">
+          <label className="fw-compare-bar__field">
+            <span className="fw-compare-bar__label">A</span>
+            <input className="fw-compare-bar__input" readOnly value={compareBar.a} aria-readonly />
+          </label>
+          <label className="fw-compare-bar__field">
+            <span className="fw-compare-bar__label">B</span>
+            <input className="fw-compare-bar__input" readOnly value={compareBar.b} aria-readonly />
+          </label>
         </div>
       ) : null}
 
       {multi ? (
-        <div className="fw-multi fw-multi--compare" data-testid="timeline-multitrack">
+        <div
+          ref={multiRef}
+          className="fw-multi fw-multi--compare"
+          data-testid="timeline-multitrack"
+          onDragOver={(e) => {
+            if (!onCompareDrop) return
+            e.preventDefault()
+            e.dataTransfer.dropEffect = 'copy'
+          }}
+          onDrop={(e) => {
+            if (!onCompareDrop) return
+            e.preventDefault()
+            const id = forensicsSourceDragId(e)
+            if (id) onCompareDrop(id)
+          }}
+          onPointerDown={(e) => {
+            if (e.button !== 0) return
+            if ((e.target as HTMLElement).closest('.fw-multi__grip')) return
+            const el = multiRef.current
+            if (!el) return
+            el.setPointerCapture(e.pointerId)
+            const t = secFromClientX(el, e.clientX)
+            drag.current = { a: t, selecting: false }
+            onSeek(Math.max(0, Math.min(durationSec, t)))
+          }}
+          onPointerMove={(e) => {
+            const el = multiRef.current
+            if (!el) return
+            if (laneDrag.current && onLaneOffset) {
+              const t = secFromClientX(el, e.clientX)
+              const delta = t - laneDrag.current.pointer0
+              onLaneOffset(
+                laneDrag.current.id,
+                Math.max(0, laneDrag.current.originStart + delta),
+              )
+              return
+            }
+            if (!drag.current) return
+            const t = secFromClientX(el, e.clientX)
+            onSeek(Math.max(0, Math.min(durationSec, t)))
+          }}
+          onPointerUp={() => {
+            drag.current = null
+            laneDrag.current = null
+          }}
+          onPointerCancel={() => {
+            drag.current = null
+            laneDrag.current = null
+          }}
+        >
           {lanes!.map((lane) => (
             <div
               key={lane.id}
               className="fw-multi__lane"
               data-testid={`timeline-lane-${lane.id}`}
-              onPointerMove={(e) => {
-                if (!laneDrag.current || laneDrag.current.id !== lane.id || !onLaneOffset) return
-                const t = secFromClientX(e.currentTarget, e.clientX)
-                const delta = t - laneDrag.current.pointer0
-                onLaneOffset(lane.id, laneDrag.current.originStart + delta)
-              }}
-              onPointerUp={() => {
-                if (laneDrag.current?.id === lane.id) laneDrag.current = null
-              }}
             >
               <span className="fw-multi__label">{lane.label}</span>
-              {onLaneOffset ? (
-                <span
-                  className="fw-multi__grip"
-                  title="Arrastar linha temporal"
-                  onPointerDown={(e) => {
-                    const row = e.currentTarget.closest('.fw-multi__lane') as HTMLElement | null
-                    if (!row) return
-                    row.setPointerCapture(e.pointerId)
-                    laneDrag.current = {
-                      id: lane.id,
-                      originStart: lane.startSec,
-                      pointer0: secFromClientX(row, e.clientX),
-                    }
-                    e.stopPropagation()
-                  }}
-                />
-              ) : null}
               <div
                 className="fw-multi__wave-wrap"
                 style={{
@@ -258,12 +304,30 @@ export function Timeline({
                     />
                   ))}
                 </svg>
+                {onLaneOffset ? (
+                  <span
+                    className="fw-multi__grip"
+                    title="Arrastar linha temporal"
+                    onPointerDown={(e) => {
+                      const stage = multiRef.current
+                      if (!stage) return
+                      stage.setPointerCapture(e.pointerId)
+                      laneDrag.current = {
+                        id: lane.id,
+                        originStart: lane.startSec,
+                        pointer0: secFromClientX(stage, e.clientX),
+                      }
+                      drag.current = null
+                      e.stopPropagation()
+                    }}
+                  />
+                ) : null}
               </div>
             </div>
           ))}
           <div
             className="fw-playhead fw-playhead--multi"
-            style={{ left: `${(playheadSec / visibleDur) * 100}%` }}
+            style={playing ? undefined : { left: playheadLeft }}
           />
         </div>
       ) : (
@@ -275,6 +339,17 @@ export function Timeline({
           aria-valuemax={durationSec}
           aria-valuenow={playheadSec}
           tabIndex={0}
+          onDragOver={(e) => {
+            if (!onCompareDrop) return
+            e.preventDefault()
+            e.dataTransfer.dropEffect = 'copy'
+          }}
+          onDrop={(e) => {
+            if (!onCompareDrop) return
+            e.preventDefault()
+            const id = forensicsSourceDragId(e)
+            if (id) onCompareDrop(id)
+          }}
           onPointerDown={(e) => {
             const el = e.currentTarget
             el.setPointerCapture(e.pointerId)
@@ -368,15 +443,13 @@ export function Timeline({
           )}
           <div
             className="fw-playhead"
-            style={{ left: `${(playheadSec / visibleDur) * 100}%` }}
+            style={playing ? undefined : { left: playheadLeft }}
           />
         </div>
       )}
-      <p className="fw-timeline__hint">
-        {multi
-          ? 'Protuberância na faixa = arrastar no tempo · soltar áudio nos slots A/B'
-          : 'Shift+drag to select · click to seek'}
-      </p>
+      {!multi ? (
+        <p className="fw-timeline__hint">Shift+drag to select · click to seek</p>
+      ) : null}
     </div>
   )
 }

@@ -182,14 +182,12 @@ export function ForensicWorkbench({
   /** Só o arquivo ativo com stems — sem fallback para outro áudio. */
   const playbackSource = source?.audio ? source : null
   const audioSources = liveSession.sources.filter((s) => s.audio)
-  const compareA =
-    ui.inspectorTab === 'compare' && ui.compareSourceA
-      ? liveSession.sources.find((s) => s.id === ui.compareSourceA)
-      : null
-  const compareB =
-    ui.inspectorTab === 'compare' && ui.compareSourceB
-      ? liveSession.sources.find((s) => s.id === ui.compareSourceB)
-      : null
+  const compareA = ui.compareSourceA
+    ? liveSession.sources.find((s) => s.id === ui.compareSourceA)
+    : null
+  const compareB = ui.compareSourceB
+    ? liveSession.sources.find((s) => s.id === ui.compareSourceB)
+    : null
   const compareDual = Boolean(compareA?.audio && compareB?.audio)
   const compareRefId = ui.timingReferenceSourceId ?? compareA?.id ?? audioSources[0]?.id ?? null
   const compareAdj =
@@ -220,7 +218,7 @@ export function ForensicWorkbench({
           (compareB.timelineOriginSec ?? 0) +
             (ui.sourceOffsets[compareB.id] ?? 0) +
             compareB.durationSec,
-          630,
+          isClockSync ? 630 : 0,
         )
       : (playbackSource?.durationSec ?? 0)
   const duration = spanDuration
@@ -260,29 +258,42 @@ export function ForensicWorkbench({
     source?.metadata?.find((m) => m.key === 'sampleRate')?.value ??
     (playbackSource?.audio?.sampleRate ? `${playbackSource.audio.sampleRate} Hz` : '—')
 
-  const mapTimelinePlayhead = useCallback(
-    (fileSec: number) => {
-      if (compareDual && playbackSource) {
-        return (
-          (playbackSource.timelineOriginSec ?? 0) +
-          (ui.sourceOffsets[playbackSource.id] ?? 0) +
-          fileSec
-        )
-      }
-      return fileSec
+  const timelineOriginOf = useCallback(
+    (src: { id: string; timelineOriginSec?: number }) =>
+      (src.timelineOriginSec ?? 0) + (ui.sourceOffsets[src.id] ?? 0),
+    [ui.sourceOffsets],
+  )
+
+  const fileSecFromTimeline = useCallback(
+    (timelineSec: number) => {
+      if (!compareDual || !playbackSource) return timelineSec
+      return timelineSec - timelineOriginOf(playbackSource)
     },
-    [compareDual, playbackSource, ui.sourceOffsets],
+    [compareDual, playbackSource, timelineOriginOf],
   )
 
-  const sampleFilePlayhead = useCallback(
-    () => engineRef.current?.getCurrentTime() ?? ui.playheadSec,
-    [ui.playheadSec],
+  const timelineSecFromFile = useCallback(
+    (fileSec: number) => {
+      if (!compareDual || !playbackSource) return fileSec
+      return timelineOriginOf(playbackSource) + fileSec
+    },
+    [compareDual, playbackSource, timelineOriginOf],
   )
 
-  const sampleTimelinePlayhead = useCallback(
-    () => mapTimelinePlayhead(sampleFilePlayhead()),
-    [mapTimelinePlayhead, sampleFilePlayhead],
-  )
+  const compareTimelineRef = useRef(compareDual)
+  compareTimelineRef.current = compareDual
+  const liveSessionRef = useRef(liveSession)
+  liveSessionRef.current = liveSession
+  const uiRef = useRef(ui)
+  uiRef.current = ui
+  const prevCompareDualRef = useRef(compareDual)
+
+  useEffect(() => {
+    if (prevCompareDualRef.current === compareDual) return
+    prevCompareDualRef.current = compareDual
+    engineRef.current?.stop()
+    setUi((u) => ({ ...u, playing: false, playheadSec: 0 }))
+  }, [compareDual])
 
   const playheadLiveRef = useRef<PlayheadLiveClock>({
     playing: false,
@@ -290,13 +301,43 @@ export function ForensicWorkbench({
     timelineSec: () => 0,
   })
   playheadLiveRef.current.playing = ui.playing
-  playheadLiveRef.current.fileSec = sampleFilePlayhead
-  playheadLiveRef.current.timelineSec = sampleTimelinePlayhead
+  playheadLiveRef.current.fileSec = () => {
+    const eng = engineRef.current
+    if (eng?.isPlaying()) return eng.getCurrentTime()
+    const u = uiRef.current
+    if (!compareTimelineRef.current) return u.playheadSec
+    const active = getActiveSource(liveSessionRef.current, u)
+    if (!active?.audio) return u.playheadSec
+    return (
+      u.playheadSec -
+      (active.timelineOriginSec ?? 0) -
+      (u.sourceOffsets[active.id] ?? 0)
+    )
+  }
+  playheadLiveRef.current.timelineSec = () => {
+    const eng = engineRef.current
+    const u = uiRef.current
+    if (eng?.isPlaying()) {
+      const fileT = eng.getCurrentTime()
+      if (compareTimelineRef.current) {
+        const active = getActiveSource(liveSessionRef.current, u)
+        if (active?.audio) {
+          return (
+            (active.timelineOriginSec ?? 0) +
+            (u.sourceOffsets[active.id] ?? 0) +
+            fileT
+          )
+        }
+      }
+      return fileT
+    }
+    return u.playheadSec
+  }
 
-  const timelinePlayheadSec = mapTimelinePlayhead(ui.playheadSec)
+  /** Single = segundos no arquivo; compare dual = segundos no eixo compartilhado. */
+  const timelinePlayheadSec = ui.playheadSec
 
-  const transportDurationSec =
-    compareDual && playbackSource ? playbackSource.durationSec : duration
+  const transportDurationSec = duration
 
   useEffect(() => {
     const eng = new ForensicAudioEngine()
@@ -304,8 +345,22 @@ export function ForensicWorkbench({
     eng.setTickHandler((t) =>
       setUi((u) => {
         const still = eng.isPlaying()
-        if (u.playing && !still) return { ...u, playheadSec: t, playing: false }
-        if (still && !u.playing) return { ...u, playing: true }
+        const active = getActiveSource(liveSessionRef.current, u)
+        const playheadSec =
+          compareTimelineRef.current && active?.audio
+            ? (active.timelineOriginSec ?? 0) +
+              (u.sourceOffsets[active.id] ?? 0) +
+              t
+            : t
+        if (u.playing && !still) {
+          return { ...u, playheadSec, playing: false }
+        }
+        if (still && !u.playing) {
+          return { ...u, playing: true, playheadSec }
+        }
+        if (still) {
+          return { ...u, playheadSec }
+        }
         return u
       }),
     )
@@ -586,8 +641,8 @@ export function ForensicWorkbench({
   const play = async () => {
     const eng = engineRef.current
     if (!eng) return
-    const from =
-      ui.loop && ui.selection ? ui.selection.startSec : ui.playheadSec
+    const head = ui.loop && ui.selection ? ui.selection.startSec : ui.playheadSec
+    const from = compareDual ? fileSecFromTimeline(head) : head
     patchUi({ playing: true })
     await eng.play(from, ui.loop, ui.selection)
     if (!eng.isPlaying()) {
@@ -603,7 +658,11 @@ export function ForensicWorkbench({
 
   const pause = () => {
     engineRef.current?.pause()
-    patchUi({ playing: false, playheadSec: engineRef.current?.getCurrentTime() ?? ui.playheadSec })
+    const fileT = engineRef.current?.getCurrentTime() ?? fileSecFromTimeline(ui.playheadSec)
+    patchUi({
+      playing: false,
+      playheadSec: compareDual ? timelineSecFromFile(fileT) : fileT,
+    })
   }
 
   const stop = () => {
@@ -612,27 +671,52 @@ export function ForensicWorkbench({
   }
 
   const seek = (sec: number) => {
-    engineRef.current?.seek(sec)
-    patchUi({ playheadSec: sec })
+    const t = Math.max(0, Math.min(duration, sec))
+    if (compareDual) {
+      patchUi({ playheadSec: t })
+      const fileSec = fileSecFromTimeline(t)
+      if (
+        playbackSource &&
+        fileSec >= 0 &&
+        fileSec <= playbackSource.durationSec
+      ) {
+        engineRef.current?.seek(fileSec)
+      }
+      return
+    }
+    engineRef.current?.seek(t)
+    patchUi({ playheadSec: t })
   }
 
-  const assignCompareSlot = (slot: 'A' | 'B', sourceId: string) => {
+  const absorbCompareSource = (sourceId: string) => {
     const src = liveSession.sources.find((s) => s.id === sourceId)
     if (!src?.audio) return
-    const nextA = slot === 'A' ? sourceId : ui.compareSourceA
-    const nextB = slot === 'B' ? sourceId : ui.compareSourceB
     stop()
     setMeasuredWave(null)
     setMeasuredSpec(null)
-    patchUi({
-      inspectorTab: 'compare',
-      compareSourceA: nextA,
-      compareSourceB: nextB,
-      playheadSec: 0,
-    })
+    if (!compareDual) {
+      const primary = ui.activeSourceId
+      if (!primary || !liveSession.sources.find((s) => s.id === primary)?.audio) {
+        patchUi({ activeSourceId: sourceId, playheadSec: 0 })
+        return
+      }
+      if (primary === sourceId) return
+      patchUi({
+        compareSourceA: primary,
+        compareSourceB: sourceId,
+        inspectorTab: 'compare',
+        playheadSec: 0,
+      })
+      return
+    }
+    if (ui.compareSourceB === sourceId) {
+      patchUi({ activeSourceId: sourceId, playheadSec: 0 })
+      return
+    }
+    if (sourceId !== ui.compareSourceA) {
+      patchUi({ compareSourceB: sourceId, playheadSec: 0 })
+    }
   }
-
-  const showCompareSlots = isClockSync || ui.inspectorTab === 'compare'
 
   return (
     <div className="fw" data-testid="forensic-workbench">
@@ -806,21 +890,35 @@ export function ForensicWorkbench({
                       }
                     : undefined
                 }
-                compareSlots={
-                  showCompareSlots
-                    ? {
-                        a: compareA?.filename ?? null,
-                        b: compareB?.filename ?? null,
+                compareBar={
+                  compareDual && compareA && compareB
+                    ? { a: compareA.filename, b: compareB.filename }
+                    : undefined
+                }
+                onCompareDrop={
+                  isClockSync || compareDual || ui.inspectorTab === 'compare'
+                    ? absorbCompareSource
+                    : undefined
+                }
+                onFormalizeCompare={
+                  isClockSync && compareDual
+                    ? () => {
+                        if (!offsetValid) {
+                          setStatus('Alinhamento insuficiente para registrar.')
+                          return
+                        }
+                        patchUi({ formalizedClockOffsetSec: expectedOffset })
+                        setStatus('Análise registrada')
                       }
                     : undefined
                 }
-                onCompareDrop={showCompareSlots ? assignCompareSlot : undefined}
+                formalizeCompareDisabled={!offsetValid}
               />
             ) : null}
           </main>
           <Transport
             playing={ui.playing}
-            playheadSec={ui.playheadSec}
+            playheadSec={timelinePlayheadSec}
             playheadLive={playheadLiveRef}
             durationSec={transportDurationSec}
             loop={ui.loop}

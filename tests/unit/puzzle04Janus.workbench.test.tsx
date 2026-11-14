@@ -90,9 +90,8 @@ describe('Puzzle 04 workbench', () => {
     for (const tab of INSPECTOR_TABS) {
       expect(screen.getByRole('tab', { name: tab.label })).toBeTruthy()
     }
-    expect(screen.getByTestId('timeline-multitrack')).toBeTruthy()
-    expect(screen.getByTestId('timeline-lane-janus_phone')).toBeTruthy()
-    expect(screen.getByTestId('timeline-lane-janus_desk')).toBeTruthy()
+    expect(screen.queryByTestId('timeline-multitrack')).toBeNull()
+    expect(screen.queryByTestId('fw-compare-bar')).toBeNull()
     expect(onComplete).not.toHaveBeenCalled()
   })
 

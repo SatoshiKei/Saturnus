@@ -150,7 +150,7 @@ export function Inspector({
   onCaptureProfile,
   onActivateProfile,
   onAddMarker,
-  onCompare,
+  onCompare: _onCompare,
   sources,
   showHelp,
   onToggleHelp,
@@ -1361,42 +1361,8 @@ export function Inspector({
 
         {tab === 'compare' && (
           <div className="fw-panel">
-            <label className="fw-inline fw-inline--stack">
-              Source A
-              <select
-                className="fw-select"
-                value={ui.compareSourceA ?? ''}
-                onChange={(e) => onCompare(e.target.value || null, ui.compareSourceB)}
-              >
-                <option value="">—</option>
-                {sources
-                  .filter((s) => s.audio)
-                  .map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.filename}
-                    </option>
-                  ))}
-              </select>
-            </label>
-            <label className="fw-inline fw-inline--stack">
-              Source B
-              <select
-                className="fw-select"
-                value={ui.compareSourceB ?? ''}
-                onChange={(e) => onCompare(ui.compareSourceA, e.target.value || null)}
-              >
-                <option value="">—</option>
-                {sources
-                  .filter((s) => s.audio)
-                  .map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.filename}
-                    </option>
-                  ))}
-              </select>
-            </label>
             {!ui.compareSourceA || !ui.compareSourceB ? (
-              <p className="fw-empty fw-empty--center">Select two sources to compare.</p>
+              <p className="fw-empty fw-empty--center">Compare ainda não iniciado.</p>
             ) : (
               (() => {
                 const a = sources.find((s) => s.id === ui.compareSourceA)
@@ -1474,6 +1440,19 @@ export function Inspector({
                     : approximateTrackCorrelation(delta, 0.2)
                 return (
                   <div className="fw-compare" data-testid="compare-panel">
+                    <div
+                      className="fw-compare-bar fw-compare-bar--inspector"
+                      data-testid="compare-source-names"
+                    >
+                      <label className="fw-compare-bar__field">
+                        <span className="fw-compare-bar__label">Fonte A</span>
+                        <input className="fw-compare-bar__input" readOnly value={a?.filename ?? '—'} />
+                      </label>
+                      <label className="fw-compare-bar__field">
+                        <span className="fw-compare-bar__label">Fonte B</span>
+                        <input className="fw-compare-bar__input" readOnly value={b?.filename ?? '—'} />
+                      </label>
+                    </div>
                     <div>
                       <strong>Source A</strong>
                       {side(a)}
@@ -1512,10 +1491,6 @@ export function Inspector({
                     ) : null}
                     {clockSync && bothAudio ? (
                       <Section title="Timing offset" tip="Clock align">
-                        <p className="fw-muted">
-                          Arraste a protuberância no fim de cada faixa na timeline. Slots A/B aceitam
-                          arraste a partir de Files.
-                        </p>
                         <dl className="fw-meta">
                           <div>
                             <dt>Offset B</dt>
@@ -1535,11 +1510,11 @@ export function Inspector({
                         <button
                           type="button"
                           className="fw-btn"
-                          data-testid="compare-save-alignment"
+                          data-testid="compare-save-alignment-inspector"
                           disabled={!clockSync.offsetValid}
                           onClick={clockSync.onFormalizeOffset}
                         >
-                          Register analysis
+                          Registrar análise
                         </button>
                       </Section>
                     ) : null}

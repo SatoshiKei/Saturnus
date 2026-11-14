@@ -58,21 +58,26 @@ export function Transport({
   useEffect(() => {
     const nowEl = nowRef.current
     const scrubEl = scrubRef.current
-    const apply = (sec: number) => {
-      if (nowEl) nowEl.textContent = fmtPrecise(sec)
-      if (scrubEl) scrubEl.value = String(Math.min(sec, max))
-    }
-    apply(playheadSec)
-    const live = playheadLive?.current
-    if (!live?.playing) return
+    if (nowEl) nowEl.textContent = fmtPrecise(playheadSec)
+    if (scrubEl) scrubEl.value = String(Math.min(playheadSec, max))
+  }, [playheadSec, max])
+
+  useEffect(() => {
+    if (!playing || !playheadLive?.current) return
+    const nowEl = nowRef.current
+    const scrubEl = scrubRef.current
+    const live = playheadLive.current
+    if (!live) return
     let raf = 0
     const tick = () => {
-      apply(live.fileSec())
+      const sec = Math.min(live.timelineSec(), max)
+      if (nowEl) nowEl.textContent = fmtPrecise(sec)
+      if (scrubEl) scrubEl.value = String(sec)
       raf = requestAnimationFrame(tick)
     }
     raf = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf)
-  }, [playheadSec, max, playing, playheadLive])
+  }, [playing, max, playheadLive])
 
   return (
     <div className="fw-transport" data-testid="fw-transport">
