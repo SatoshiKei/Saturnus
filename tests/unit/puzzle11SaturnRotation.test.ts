@@ -33,6 +33,16 @@ import {
 import { puzzle01CassiniSession } from '../../src/forensic/puzzles/puzzle01Cassini'
 import { puzzle09CassiniHuygensSession } from '../../src/forensic/puzzles/puzzle09CassiniHuygens'
 import { getForensicSessionForEvidence } from '../../src/forensic/forensicRegistry'
+import {
+  P11_TRAIN_REF_SOURCE_ID,
+  approachComparePatchForDrop,
+  approachConsultStatusMessage,
+  approachConsultTagActive,
+  avlUnitFromSourceId,
+  normalizeApproachComparePair,
+} from '../../src/forensic/puzzles/puzzle11ApproachReconstruction'
+import { createInitialUiState } from '../../src/forensic/forensicEngine'
+import { puzzle11ApproachSession } from '../../src/forensic/puzzles/puzzle11ApproachReconstruction'
 
 const ROOT = resolve(__dirname, '../..')
 const TRAIN = resolve(ROOT, 'src/assets/audios/p11/Train Sounds.mp3')
@@ -144,6 +154,42 @@ describe('Puzzle 11 — ROTAÇÃO DE SATURNO', () => {
     expect(ruiBeats.stop.some((b) => b.speaker === 'Augusto' && /Por que te deixaram seguir/.test(b.text))).toBe(
       true,
     )
+  })
+
+  it('avlUnitFromSourceId: id com hífen (VTR-08)', () => {
+    expect(avlUnitFromSourceId('p11_avl_vtr-08')).toBe('VTR-08')
+    expect(avlUnitFromSourceId('p11_avl_vtr08')).toBe('VTR-08')
+    expect(avlUnitFromSourceId('p11_avl_vtr-14')).toBe('VTR-14')
+  })
+
+  it('consulta: pode trocar CAD ativo no caderno', () => {
+    const ui = {
+      ...createInitialUiState(puzzle11ApproachSession),
+      rotationCadId: 'CAD-1851',
+      rotationConsultedTags: ['cad:CAD-1851', 'cad:CAD-1847'],
+    }
+    expect(approachConsultTagActive('cad:CAD-1851', ui)).toBe(true)
+    expect(approachConsultTagActive('cad:CAD-1847', ui)).toBe(false)
+  })
+
+  it('consulta Structure: mensagem institucional por tag', () => {
+    expect(approachConsultStatusMessage('crossing:PN-NORTE-03')).toMatch(/Passagem anotada/)
+    expect(approachConsultStatusMessage('cad:CAD-1847')).toMatch(/Ocorrência anotada/)
+  })
+
+  it('compare: trem em A e rádio em B ao montar o par', () => {
+    expect(
+      normalizeApproachComparePair('p11_audio_vtr08', P11_TRAIN_REF_SOURCE_ID),
+    ).toEqual({
+      compareSourceA: P11_TRAIN_REF_SOURCE_ID,
+      compareSourceB: 'p11_audio_vtr08',
+    })
+    expect(approachComparePatchForDrop(P11_TRAIN_REF_SOURCE_ID)).toEqual({
+      compareSourceA: P11_TRAIN_REF_SOURCE_ID,
+    })
+    expect(approachComparePatchForDrop('p11_audio_vtr14')).toEqual({
+      compareSourceB: 'p11_audio_vtr14',
+    })
   })
 
   it('L: puzzles 01–10 registry intacto + evidence puzzle-11', () => {

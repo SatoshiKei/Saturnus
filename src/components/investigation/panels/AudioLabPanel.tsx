@@ -25,6 +25,7 @@ import {
 import { runHexagonSpectrogramSurvey } from '../../../game/story/block04Handlers'
 import { runShepherdMoonsExtract } from '../../../game/story/block06Handlers'
 import { onCassiniSolved, onEnceladusSolved } from '../../../game/story/block07Handlers'
+import { onRotationSolved } from '../../../game/story/block08Handlers'
 import { markAudioSeen } from '../../../game/state/investigationStore'
 import {
   HEX_DELIVERY_EVIDENCE_ID,
@@ -33,7 +34,6 @@ import {
 } from '../../../data/block04/hexagonPuzzle'
 import { GamePanel } from '../../ui/GamePanel'
 import { RingsSession } from './RingsSession'
-import { RotationSession } from './RotationSession'
 import { MemorySession } from './MemorySession'
 
 /** PRNG determinístico a partir do id — a forma de onda é estável entre sessões. */
@@ -170,8 +170,6 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
   const hexFile = current ? hexFileByEvidence(current.id) : undefined
   const showRings =
     Boolean(inv.flags.block08_rings_available) && current?.id === 'protest_heterogeneous_sources'
-  const showRotation =
-    Boolean(inv.flags.block08_rotation_available) && current?.id === 'rui_police_approach_records'
   const showMemory =
     Boolean(inv.flags.block09_memory_available) && current?.id === 'mariana_recent_recording_claim'
   const blocked = Boolean(current && (current.exportable === false || current.deviceLocked))
@@ -360,16 +358,15 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                   const specialized =
                     puzzleId === 'P10' ? (
                       showRings ? <RingsSession revealRequest={ringsRevealRequest} /> : null
-                    ) : puzzleId === 'P11' ? (
-                      showRotation ? <RotationSession /> : null
                     ) : puzzleId === 'P12' ? (
                       showMemory ? <MemorySession /> : null
                     ) : null
                   const done =
-                    puzzleId === 'P10' || puzzleId === 'P11' || puzzleId === 'P12'
+                    puzzleId === 'P10' || puzzleId === 'P12'
                       ? analysisState(current.id, inv.flags) === 'done'
-                      : forensicSession.completion?.onCompleteAction ===
-                    'runProvisionalRafaelForwardAnalysis'
+                      : puzzleId === 'P11'
+                        ? Boolean(inv.flags.block08_rotation_done)
+                        : forensicSession.completion?.onCompleteAction === 'runProvisionalRafaelForwardAnalysis'
                       ? Boolean(inv.flags.block02_rafael_forward_provisional)
                       : forensicSession.completion?.onCompleteAction ===
                           'runProvisionalRingsAnalysis'
@@ -440,6 +437,8 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                           onEnceladusSolved()
                         } else if (action === 'runCassiniHuygensAnalysis') {
                           onCassiniSolved()
+                        } else if (action === 'onRotationSolved') {
+                          onRotationSolved()
                         } else {
                           runProvisionalEmergencyAnalysis()
                         }

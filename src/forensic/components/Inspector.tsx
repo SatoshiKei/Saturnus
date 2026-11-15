@@ -19,6 +19,11 @@ import {
 } from '../forensicEngine'
 import { RfWaterfall } from './RfWaterfall'
 import { opaqueSegmentLabel } from '../opaqueSegmentId'
+import {
+  approachConsultTagActive,
+  avlUnitFromSourceId,
+} from '../puzzles/puzzle11ApproachReconstruction'
+import { CAD_FLAME_ID } from '../../data/block08/rotationPuzzle'
 
 const HELP: Record<string, string> = {
   Gain: 'Ajusta amplitude linear da seleção ou da faixa ativa (dB).',
@@ -151,7 +156,7 @@ export function Inspector({
   onCaptureProfile,
   onActivateProfile,
   onAddMarker,
-  onCompare: _onCompare,
+  onCompare,
   sources,
   showHelp,
   onToggleHelp,
@@ -185,6 +190,7 @@ export function Inspector({
   onCreateStreamFromSelection,
   onSelectDerivedStream,
   onReconstructAudio,
+  approachTools,
 }: {
   tab: ForensicInspectorTab
   onTab: (t: ForensicInspectorTab) => void
@@ -264,6 +270,11 @@ export function Inspector({
   onCreateStreamFromSelection?: () => void
   onSelectDerivedStream?: (id: string) => void
   onReconstructAudio?: () => void
+  approachTools?: {
+    onConsult: (consultTag: string) => void
+    onRejectUnit: (sourceId: string) => void
+    onFingerprintCompare: () => void
+  }
 }) {
   const p = ui.process
   const hasProfile = Boolean(ui.activeNoiseProfileId)
@@ -796,6 +807,29 @@ export function Inspector({
 
         {tab === 'structure' && (
           <div className="fw-panel">
+            {approachTools ? (
+              <Section title="Caderno da mesa" data-testid="approach-notebook">
+                <p className="fw-muted">
+                  Cada consulta anota o registro no caderno desta sessão — o arquivo original não é alterado.
+                </p>
+                <dl className="fw-meta" data-testid="approach-notebook-summary">
+                  <div>
+                    <dt>Passagem vinculada</dt>
+                    <dd className="fw-mono">{ui.rotationCrossingId ?? '— ainda não anotada'}</dd>
+                  </div>
+                  <div>
+                    <dt>Ocorrência CAD</dt>
+                    <dd className="fw-mono">{ui.rotationCadId ?? '— ainda não anotada'}</dd>
+                  </div>
+                </dl>
+                {ui.rotationCadId && ui.rotationCadId !== CAD_FLAME_ID ? (
+                  <p className="fw-approach-consult__notice" role="status" data-testid="approach-cad-mismatch">
+                    A ocorrência anotada não cai na mesma janela horária da abordagem que Rui descreveu — revise o
+                    dispatch.
+                  </p>
+                ) : null}
+              </Section>
+            ) : null}
             {clipSequenceTools ? (
               <Section title="Sequence" tip="Link Source">
                 <p className="fw-muted">Order clips for Assemble / Build sequence.</p>
@@ -971,6 +1005,33 @@ export function Inspector({
                         </div>
                       ))}
                     </dl>
+                    {approachTools && b.consultTag ? (
+                      <div className="fw-approach-consult">
+                        {approachConsultTagActive(b.consultTag, ui) ? (
+                          <p
+                            className="fw-approach-consult__ack"
+                            role="status"
+                            data-testid={`approach-bound-${b.id}`}
+                          >
+                            Vinculado ao caderno da mesa.
+                          </p>
+                        ) : ui.rotationConsultedTags.includes(b.consultTag) ? (
+                          <p className="fw-muted" data-testid={`approach-read-${b.id}`}>
+                            Registro lido — pode consultar de novo para substituir a anotação ativa.
+                          </p>
+                        ) : null}
+                        <button
+                          type="button"
+                          className="fw-btn"
+                          data-testid={`approach-consult-${b.id}`}
+                          onClick={() => approachTools.onConsult(b.consultTag!)}
+                        >
+                          {approachConsultTagActive(b.consultTag, ui)
+                            ? 'Vinculado ao caderno'
+                            : 'Consultar registro'}
+                        </button>
+                      </div>
+                    ) : null}
                   </div>
                 ))}
               </>
@@ -985,7 +1046,79 @@ export function Inspector({
 
         {tab === 'packets' && (
           <div className="fw-panel" data-testid="packets-panel">
-            {source?.packets?.rows?.length ? (
+            {approachTools && source?.structure?.kind === 'avl' && source.packets?.rows?.length ? (
+              (() => {
+                const unit = avlUnitFromSourceId(source.id)
+                const eliminated = unit ? ui.rotationEliminated.includes(unit) : false
+                const keepCandidate = unit === 'VTR-14'
+                return (
+                  <>
+                    <Section title="Trajetória exportada" data-testid="approach-avl-trajectory">
+                      <p className="fw-muted" role="note">
+                        Leitura da exportação AVL desta viatura — não é captura de pacotes RTP. Revise
+                        horário, setor e evento; se a rota não couber na ocorrência, arquive abaixo.
+                      </p>
+                      <div className="fw-packet-table-wrap" style={{ maxHeight: '22rem', overflow: 'auto' }}>
+                        <table className="fw-table" data-testid="approach-avl-table">
+                          <thead>
+                            <tr>
+                              <th>Registro</th>
+                              <th>Evento</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {source.packets.rows.map((r) => (
+                              <tr key={r.index}>
+                                <td className="fw-mono">{r.payload ?? '—'}</td>
+                                <td>{r.status ?? '—'}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </Section>
+                    <Section title="Revisão de rota">
+                      {ui.rotationAvlFeedback ? (
+                        <p
+                          className={
+                            eliminated ? 'fw-approach-consult__ack' : 'fw-approach-consult__notice'
+                          }
+                          role="status"
+                          data-testid="approach-avl-feedback"
+                        >
+                          {ui.rotationAvlFeedback}
+                        </p>
+                      ) : null}
+                      {eliminated ? (
+                        <p className="fw-approach-consult__ack" role="status" data-testid="approach-avl-archived">
+                          Trajetória de {unit} arquivada como incompatível com a janela da ocorrência.
+                        </p>
+                      ) : keepCandidate ? (
+                        <p className="fw-muted" data-testid="approach-avl-keep">
+                          Pontos desta exportação coincidem com a passagem e com o deslocamento para a ocorrência
+                          urgente — mantenha a unidade em análise. Arquivar só as outras viaturas.
+                        </p>
+                      ) : (
+                        <>
+                          <p className="fw-muted">
+                            Arquivar só se, depois de cruzar passagem e CAD, esta unidade não puder ter
+                            atendido a abordagem.
+                          </p>
+                          <button
+                            type="button"
+                            className="fw-btn"
+                            data-testid="approach-reject-unit"
+                            onClick={() => approachTools!.onRejectUnit(source.id)}
+                          >
+                            Arquivar trajetória incompatível
+                          </button>
+                        </>
+                      )}
+                    </Section>
+                  </>
+                )
+              })()
+            ) : source?.packets?.rows?.length ? (
               <>
                 <Section title="Packet capture" tip="Packets">
                   <div className="fw-packet-tools">
@@ -1113,6 +1246,11 @@ export function Inspector({
                     <p className="fw-muted">Showing first 400 visible rows — filter SSRC to refine.</p>
                   ) : null}
                 </div>
+                {approachTools && source?.structure?.kind === 'avl' ? (
+                  <Section title="Route review">
+                    <p className="fw-muted">Use a vista simplificada acima (export AVL P11).</p>
+                  </Section>
+                ) : null}
                 <Section title="Derived streams" tip="Create Stream From Selection">
                   {ui.derivedRtpStreams.length ? (
                     <ul className="fw-profiles" data-testid="derived-rtp-streams">
@@ -1452,20 +1590,78 @@ export function Inspector({
                   delta == null
                     ? null
                     : approximateTrackCorrelation(delta, 0.2)
+                const audioPickList = sources.filter((s) => s.audio)
                 return (
                   <div className="fw-compare" data-testid="compare-panel">
                     <div
                       className="fw-compare-bar fw-compare-bar--inspector"
                       data-testid="compare-source-names"
                     >
-                      <label className="fw-compare-bar__field">
-                        <span className="fw-compare-bar__label">Fonte A</span>
-                        <input className="fw-compare-bar__input" readOnly value={a?.filename ?? '—'} />
-                      </label>
-                      <label className="fw-compare-bar__field">
-                        <span className="fw-compare-bar__label">Fonte B</span>
-                        <input className="fw-compare-bar__input" readOnly value={b?.filename ?? '—'} />
-                      </label>
+                      {approachTools ? (
+                        <>
+                          <label className="fw-compare-bar__field">
+                            <span className="fw-compare-bar__label">Fonte A</span>
+                            <select
+                              className="fw-compare-bar__input"
+                              data-testid="compare-source-a"
+                              value={ui.compareSourceA ?? ''}
+                              onChange={(e) => {
+                                const next = e.target.value
+                                if (!next || next === ui.compareSourceB) return
+                                onCompare(next, ui.compareSourceB)
+                              }}
+                            >
+                              {audioPickList.map((s) => (
+                                <option key={s.id} value={s.id}>
+                                  {s.filename}
+                                </option>
+                              ))}
+                            </select>
+                          </label>
+                          <label className="fw-compare-bar__field">
+                            <span className="fw-compare-bar__label">Fonte B</span>
+                            <select
+                              className="fw-compare-bar__input"
+                              data-testid="compare-source-b"
+                              value={ui.compareSourceB ?? ''}
+                              onChange={(e) => {
+                                const next = e.target.value
+                                if (!next || next === ui.compareSourceA) return
+                                onCompare(ui.compareSourceA, next)
+                              }}
+                            >
+                              {audioPickList.map((s) => (
+                                <option key={s.id} value={s.id}>
+                                  {s.filename}
+                                </option>
+                              ))}
+                            </select>
+                          </label>
+                          <button
+                            type="button"
+                            className="fw-btn fw-btn--ghost"
+                            data-testid="compare-swap-ab"
+                            title="Trocar A e B"
+                            onClick={() => {
+                              if (!ui.compareSourceA || !ui.compareSourceB) return
+                              onCompare(ui.compareSourceB, ui.compareSourceA)
+                            }}
+                          >
+                            ⇄
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <label className="fw-compare-bar__field">
+                            <span className="fw-compare-bar__label">Fonte A</span>
+                            <input className="fw-compare-bar__input" readOnly value={a?.filename ?? '—'} />
+                          </label>
+                          <label className="fw-compare-bar__field">
+                            <span className="fw-compare-bar__label">Fonte B</span>
+                            <input className="fw-compare-bar__input" readOnly value={b?.filename ?? '—'} />
+                          </label>
+                        </>
+                      )}
                     </div>
                     <div>
                       <strong>Source A</strong>
@@ -1475,7 +1671,23 @@ export function Inspector({
                       <strong>Source B</strong>
                       {side(b)}
                     </div>
-                    {bothAudio ? (
+                    {approachTools && bothAudio ? (
+                      <Section title="Audio Fingerprint Compare" tip="Audio Fingerprint Compare">
+                        <button
+                          type="button"
+                          className="fw-btn"
+                          data-testid="approach-fingerprint-compare"
+                          onClick={() => approachTools.onFingerprintCompare()}
+                        >
+                          Compare fingerprints
+                        </button>
+                        {ui.rotationCompareStatus ? (
+                          <p className="fw-muted" data-testid="approach-fingerprint-status">
+                            {ui.rotationCompareStatus}
+                          </p>
+                        ) : null}
+                      </Section>
+                    ) : bothAudio ? (
                       <dl className="fw-meta">
                         <div>
                           <dt>Placement delta</dt>

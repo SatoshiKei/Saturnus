@@ -271,6 +271,8 @@ export interface StructureBlock {
   id: string
   label: string
   fields: MetadataField[]
+  /** Marcador interno (estrutura / conclusão P11) — não exibir como rótulo ao jogador. */
+  consultTag?: string
 }
 
 /** Página/bloco estrutural genérico (Ogg, etc.). */
@@ -498,6 +500,7 @@ export interface ForensicSession {
       | 'rf-channel-extract'
       | 'cycle-difference'
       | 'rtp-stream-separation'
+      | 'approach-reconstruction'
     /** Chama handler externo quando completo. */
     onCompleteAction?:
       | 'runProvisionalEmergencyAnalysis'
@@ -509,6 +512,7 @@ export interface ForensicSession {
       | 'runShepherdMoonsExtract'
       | 'runEnceladusAnalysis'
       | 'runCassiniHuygensAnalysis'
+      | 'onRotationSolved'
     /** Segmentos obrigatórios além do rebuild (se houver). */
     requireSpeechSegmentIds?: string[]
     /** source id do registro correto (source-link). */
@@ -696,6 +700,17 @@ export interface ForensicUiState {
   archiveMatchedSessionIds: string[]
   openedArchiveSessionId: string | null
   archiveStatus: string | null
+  /** P11 — registros consultados na bancada (sem checklist na UI). */
+  rotationCrossingId: string | null
+  rotationCadId: string | null
+  /** Tags consultados em Structure (crossing:/passage:/cad:). */
+  rotationConsultedTags: string[]
+  rotationAvlViewed: string[]
+  rotationEliminated: string[]
+  /** Última ação na revisão AVL (mensagem no painel Packets). */
+  rotationAvlFeedback: string | null
+  rotationFingerprintVehicle: string | null
+  rotationCompareStatus: string | null
 }
 
 export const DEFAULT_PROCESS: ProcessParams = {

@@ -110,14 +110,25 @@ augustoRevealed, puzzleComplete
 Dataset
 -------
 src/data/block08/rotationPuzzle.ts
+src/forensic/puzzles/puzzle11ApproachReconstruction.ts
 src/forensic/puzzles/puzzle11SaturnRotation.ts
 src/forensic/puzzles/puzzle11Meta.json
 
 
 UI
 --
-RotationSession na bancada (evidence rui_police_approach_records)
-Sem painel exclusivo “Puzzle 11”; sem checklist ✓trem/✓ocorrência
+Bancada forense genérica (evidence rui_police_approach_records)
+Fontes: rail_crossing_ops.ndjson · cad_dispatch_tape.log · avl_vtr-*.csv
+        · train_reference_clean.wav · vtr08/14/21_radio_window.wav
+
+Fluxo do jogador (sem checklist):
+  Structure → “Consultar registro” (passagem PN-NORTE-03 + composição; CAD-1847)
+  Abrir exports AVL de cada viatura (consulta automática ao selecionar o arquivo)
+  Compare → duas fontes de áudio → “Compare fingerprints”
+  Packets (AVL) → “Arquivar trajetória incompatível” para VTR-08 e VTR-21
+  Conclusão automática quando todos os critérios de rotationPuzzle fecham
+
+Sem painel “Puzzle 11”; sem scores/porcentagem na UI; DEV snapshot recolhido no rodapé
 
 
 NÃO

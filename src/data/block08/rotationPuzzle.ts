@@ -283,8 +283,8 @@ export const ROTATION_AUDIO: Record<
 > = {
   train_ref: {
     id: 'train_ref',
-    label: 'Referência ferroviária (filtrada / rádio)',
-    src: meta.audio.reference,
+    label: 'Referência ambiental — filtro institucional',
+    src: meta.audio.clean,
   },
   vtr08: {
     id: 'vtr08',
@@ -344,7 +344,14 @@ function envFor(id: RotationAudioId): number[] {
   return ENV.vtr21
 }
 
-/** Audio Fingerprint Compare — referência do trem × rádio de viatura. */
+function fingerprintCompareMessage(score: number, match: boolean): string {
+  const pct = Math.round(score * 100)
+  const lim = Math.round(THRESHOLD * 100)
+  const prefix = `Correlação de assinatura: ${pct}%`
+  return match ? `${prefix} — acima do limiar (${lim}%).` : `${prefix} — abaixo do limiar (${lim}%).`
+}
+
+/** Audio Fingerprint Compare — referência ambiental × canal de rádio (lógica interna; UI só mostra correlação). */
 export function compareTrainFingerprints(
   left: RotationAudioId,
   right: RotationAudioId,
@@ -356,27 +363,11 @@ export function compareTrainFingerprints(
   const score = Math.max(0, pearson(envFor(left), envFor(right)))
   const isTrainVs14 = pair.has('train_ref') && pair.has('vtr14')
   const match = isTrainVs14 && score >= THRESHOLD
-  if (match) {
-    return {
-      match: true,
-      score,
-      message: 'Assinatura compartilhada forte — a gravação foi feita perto da mesma passagem durante aquele trem.',
-      vehicleHit: 'VTR-14',
-    }
-  }
-  if (pair.has('train_ref') && (pair.has('vtr08') || pair.has('vtr21'))) {
-    return {
-      match: false,
-      score,
-      message: 'Sobreposição fraca — o padrão ferroviário de referência não aparece neste canal.',
-      vehicleHit: null,
-    }
-  }
   return {
-    match: false,
+    match,
     score,
-    message: 'Sem assinatura ferroviária compartilhada relevante.',
-    vehicleHit: null,
+    message: fingerprintCompareMessage(score, match),
+    vehicleHit: match ? 'VTR-14' : null,
   }
 }
 
@@ -423,11 +414,3 @@ export function evaluateRotationCase(state: RotationCaseState): {
   }
 }
 
-/** @deprecated placeholder API — mantido só se algum import antigo restar. */
-export type RotationSystemId = 'radio' | 'cad' | 'dispatch' | 'scale'
-export function resolveCallsignAfterSync(): string {
-  return ROTATION_CALLSIGN
-}
-export function isRotationSynced(_o: Record<string, number>): boolean {
-  return false
-}

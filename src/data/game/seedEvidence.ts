@@ -1983,8 +1983,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'approach_callsign_reconstructed',
-    title:
-      'VTR-14 realizou uma abordagem não registrada na rota de Rui pouco antes da colisão.',
+    title: 'VTR-14 realizou uma abordagem não registrada compatível com o relato de Rui.',
     type: 'derived',
     sourceType: 'audio-lab',
     originalOrDerived: 'derived',

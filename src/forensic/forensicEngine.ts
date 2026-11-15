@@ -40,8 +40,9 @@ export function createInitialUiState(
   const audioSources = session.sources.filter((s) => s.audio)
   const clockSync = session.completion?.kind === 'clock-sync'
   const spectrogramSurvey = session.completion?.kind === 'spectrogram-survey'
+  const approach = session.completion?.kind === 'approach-reconstruction'
   const firstAudio = audioSources[0]
-  const noDefaultCompare = clockSync || spectrogramSurvey
+  const noDefaultCompare = clockSync || spectrogramSurvey || approach
   return {
     activeSourceId: (noDefaultCompare ? firstAudio : first)?.id ?? null,
     inspectorTab: 'process',
@@ -117,6 +118,14 @@ export function createInitialUiState(
     archiveMatchedSessionIds: [],
     openedArchiveSessionId: null,
     archiveStatus: null,
+    rotationCrossingId: null,
+    rotationCadId: null,
+    rotationConsultedTags: [],
+    rotationAvlViewed: [],
+    rotationEliminated: [],
+    rotationAvlFeedback: null,
+    rotationFingerprintVehicle: null,
+    rotationCompareStatus: null,
   }
 }
 

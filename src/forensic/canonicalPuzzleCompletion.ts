@@ -607,7 +607,7 @@ const P11: CanonicalPuzzleDef = {
   stages: [
     {
       id: 'vtr14',
-      label: `Passagem + CAD + AVL + fingerprint → ${ROTATION_CALLSIGN}`,
+      label: 'Passagem + CAD + AVL + fingerprint — unidade compatível',
       kind: 'technical',
       run: () => {
         const ev = evaluateRotationCase({

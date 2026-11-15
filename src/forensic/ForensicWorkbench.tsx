@@ -53,6 +53,16 @@ import {
   sessionListHidesOperatorNames,
   summarizeTransition,
 } from './puzzles/puzzle03Fingerprint'
+import {
+  approachDevSnapshot,
+  approachReconstructionComplete,
+  avlUnitFromSourceId,
+  approachComparePatchForDrop,
+  approachConsultStatusMessage,
+  normalizeApproachComparePair,
+  parseApproachConsultTag,
+  runApproachFingerprintCompare,
+} from './puzzles/puzzle11ApproachReconstruction'
 import type {
   ForensicSession,
   ForensicSource,
@@ -70,6 +80,7 @@ import { Inspector } from './components/Inspector'
 import { SegmentMonitor } from './components/SegmentMonitor'
 import { opaqueSegmentLabel } from './opaqueSegmentId'
 import { buildCassiniStreamBArtifact } from './derivedArtifact'
+import { ensureRotationApproachDiscovery } from '../game/story/block08Handlers'
 import { getInvestigationState, markForensicDerivedArtifact } from '../game/state/investigationStore'
 
 export function ForensicWorkbench({
@@ -132,6 +143,7 @@ export function ForensicWorkbench({
   })
   const [showHelp, setShowHelp] = useState(false)
   const [status, setStatus] = useState<string | null>(null)
+  const [approachCaseClosed, setApproachCaseClosed] = useState(false)
   const [timelineView, setTimelineView] = useState<'waveform' | 'spectrogram'>('waveform')
   const [measuredWave, setMeasuredWave] = useState<number[] | null>(null)
   const [measuredSpec, setMeasuredSpec] = useState<{
@@ -179,6 +191,7 @@ export function ForensicWorkbench({
   }, [session, extraSources, hydratedPacketRows])
   const source = getActiveSource(liveSession, ui)
   const isClockSync = session.completion?.kind === 'clock-sync'
+  const isApproach = session.completion?.kind === 'approach-reconstruction'
   /** Só o arquivo ativo com stems — sem fallback para outro áudio. */
   const playbackSource = source?.audio ? source : null
   const audioSources = liveSession.sources.filter((s) => s.audio)
@@ -189,6 +202,16 @@ export function ForensicWorkbench({
     ? liveSession.sources.find((s) => s.id === ui.compareSourceB)
     : null
   const compareDual = Boolean(compareA?.audio && compareB?.audio)
+
+  useEffect(() => {
+    if (!isApproach) return
+    const unit = avlUnitFromSourceId(ui.activeSourceId)
+    if (!unit) return
+    setUi((u) => {
+      if (u.rotationAvlViewed.includes(unit)) return u
+      return { ...u, rotationAvlViewed: [...u.rotationAvlViewed, unit] }
+    })
+  }, [isApproach, ui.activeSourceId])
   const compareRefId = ui.timingReferenceSourceId ?? compareA?.id ?? audioSources[0]?.id ?? null
   const compareAdj =
     compareDual && compareA && compareB
@@ -568,9 +591,24 @@ export function ForensicWorkbench({
   }, [source?.id, source?.speechSegments, source?.audio, onSegmentRecovered])
 
   useEffect(() => {
-    if (completed || completedRef.current || !onPuzzleComplete) return
+    if (!onPuzzleComplete || !session.completion) return
     const completion = session.completion
-    if (!completion) return
+
+    if (completion.kind === 'approach-reconstruction') {
+      if (!approachReconstructionComplete(session, ui)) return
+      if (!completed) {
+        completedRef.current = true
+        onPuzzleComplete()
+        setApproachCaseClosed(true)
+        setStatus('Análise registrada no caderno de investigação.')
+      } else {
+        ensureRotationApproachDiscovery()
+        setApproachCaseClosed(true)
+      }
+      return
+    }
+
+    if (completed || completedRef.current) return
     if (completion.kind === 'speech-recovery') {
       if (!source?.speechSegments) return
       if (!speechRecoveryComplete(ui.recoveredSpeech, source.speechSegments)) return
@@ -627,6 +665,11 @@ export function ForensicWorkbench({
     ui.fingerprintBId,
     ui.transitionOrder,
     ui.openedArchiveSessionId,
+    ui.rotationCrossingId,
+    ui.rotationCadId,
+    ui.rotationAvlViewed,
+    ui.rotationEliminated,
+    ui.rotationFingerprintVehicle,
     ui.recoveredSpeech,
     source?.speechSegments,
     source,
@@ -639,6 +682,70 @@ export function ForensicWorkbench({
   const patchUi = (patch: Partial<ForensicUiState>) => setUi((u) => ({ ...u, ...patch }))
   const patchProcess = (patch: Partial<ProcessParams>) =>
     setUi((u) => ({ ...u, process: { ...u.process, ...patch } }))
+
+  const onApproachConsult = useCallback((tag: string) => {
+    const parsed = parseApproachConsultTag(tag)
+    if (!parsed) return
+    const ack = approachConsultStatusMessage(tag)
+    setUi((u) => {
+      const rotationConsultedTags = u.rotationConsultedTags.includes(tag)
+        ? u.rotationConsultedTags
+        : [...u.rotationConsultedTags, tag]
+      if (parsed.kind === 'crossing' || parsed.kind === 'passage') {
+        return { ...u, rotationCrossingId: parsed.id, rotationConsultedTags }
+      }
+      if (parsed.kind === 'cad') {
+        return { ...u, rotationCadId: parsed.id, rotationConsultedTags }
+      }
+      return u
+    })
+    setStatus(ack ?? 'Registro anotado no caderno da mesa.')
+  }, [])
+
+  const onApproachRejectUnit = useCallback((sourceId: string) => {
+    const unit = avlUnitFromSourceId(sourceId)
+    if (!unit) {
+      const msg = 'Não foi possível identificar a viatura neste export.'
+      setUi((u) => ({ ...u, rotationAvlFeedback: msg }))
+      setStatus(msg)
+      return
+    }
+    if (unit === 'VTR-14') {
+      const msg =
+        'Trajetória compatível com passagem, ocorrência e horário — manter esta unidade em análise (não arquivar).'
+      setUi((u) => ({ ...u, rotationAvlFeedback: msg }))
+      setStatus(msg)
+      return
+    }
+    if (ui.rotationEliminated.includes(unit)) {
+      const msg = `Trajetória de ${unit} já estava arquivada.`
+      setUi((u) => ({ ...u, rotationAvlFeedback: msg }))
+      setStatus(msg)
+      return
+    }
+    const msg = `Trajetória de ${unit} arquivada como incompatível com a janela da ocorrência.`
+    setUi((u) => ({
+      ...u,
+      rotationEliminated: [...u.rotationEliminated, unit],
+      rotationAvlFeedback: msg,
+    }))
+    setStatus(msg)
+  }, [ui.rotationEliminated])
+
+  const onApproachFingerprint = useCallback(() => {
+    const r = runApproachFingerprintCompare(ui.compareSourceA, ui.compareSourceB)
+    if (!r) {
+      setStatus('Selecione duas gravações de áudio para comparar.')
+      patchUi({ rotationCompareStatus: 'Fontes inválidas para comparação acústica.' })
+      return
+    }
+    setUi((u) => ({
+      ...u,
+      rotationCompareStatus: r.message,
+      rotationFingerprintVehicle: r.match && r.vehicleHit ? r.vehicleHit : u.rotationFingerprintVehicle,
+    }))
+    setStatus(r.message)
+  }, [ui.compareSourceA, ui.compareSourceB])
 
   const play = async () => {
     const eng = engineRef.current
@@ -709,6 +816,31 @@ export function ForensicWorkbench({
     stop()
     setMeasuredWave(null)
     setMeasuredSpec(null)
+    if (isApproach) {
+      if (ui.compareSourceA === sourceId || ui.compareSourceB === sourceId) {
+        patchUi({ activeSourceId: sourceId, playheadSec: 0 })
+        return
+      }
+      if (!compareDual) {
+        const primary = ui.activeSourceId
+        if (!primary || !liveSession.sources.find((s) => s.id === primary)?.audio) {
+          patchUi({ activeSourceId: sourceId, playheadSec: 0 })
+          return
+        }
+        if (primary === sourceId) return
+        patchUi({
+          ...normalizeApproachComparePair(primary, sourceId),
+          inspectorTab: 'compare',
+          playheadSec: 0,
+        })
+        return
+      }
+      const slot = approachComparePatchForDrop(sourceId)
+      if (slot) {
+        patchUi({ ...slot, playheadSec: 0 })
+        return
+      }
+    }
     if (!compareDual) {
       const primary = ui.activeSourceId
       if (!primary || !liveSession.sources.find((s) => s.id === primary)?.audio) {
@@ -777,6 +909,16 @@ export function ForensicWorkbench({
           </button>
         </div>
       </header>
+      {isApproach && approachCaseClosed ? (
+        <p
+          className="fw-approach-case-closed fw-approach-consult__ack"
+          role="status"
+          data-testid="approach-case-closed"
+        >
+          Cruzamento fechado — análise registrada no caderno. Ao sair da bancada, confira o cartão de
+          evidência no canto da tela.
+        </p>
+      ) : null}
 
       <div className="fw-grid">
         <aside className="fw-side">
@@ -786,6 +928,9 @@ export function ForensicWorkbench({
             onSelect={(id) => {
               stop()
               const src = liveSession.sources.find((s) => s.id === id)
+              if (isApproach && src?.structure?.kind === 'avl') {
+                patchUi({ rotationAvlFeedback: null })
+              }
               const tracks: Record<string, TrackRuntime> = {}
               for (const t of src?.tracks ?? []) {
                 tracks[t.id] = {
@@ -1089,6 +1234,15 @@ export function ForensicWorkbench({
             setMeasuredSpec(null)
             patchUi({ compareSourceA, compareSourceB, playheadSec: 0 })
           }}
+          approachTools={
+            isApproach
+              ? {
+                  onConsult: onApproachConsult,
+                  onRejectUnit: onApproachRejectUnit,
+                  onFingerprintCompare: onApproachFingerprint,
+                }
+              : undefined
+          }
           clipSequenceTools={
             session.completion?.kind === 'clip-sequence'
               ? {
@@ -1747,6 +1901,7 @@ function ForensicDebug({
   const isShepherd = session.completion?.kind === 'rf-channel-extract'
   const isEnceladus = session.completion?.kind === 'cycle-difference'
   const isCassiniHuygens = session.completion?.kind === 'rtp-stream-separation'
+  const isApproachDbg = session.completion?.kind === 'approach-reconstruction'
   const recording = session.sources.find((s) => s.tempoRegions?.length)
   const audioPair = session.sources.filter((s) => s.audio)
   const a = audioPair[0]
@@ -1913,6 +2068,21 @@ function ForensicDebug({
               DEV reset puzzle
             </button>
           ) : null}
+        </>
+      ) : isApproachDbg ? (
+        <>
+          <span>crossing {ui.rotationCrossingId ?? '—'}</span>
+          <span>cad {ui.rotationCadId ?? '—'}</span>
+          <span>avl {ui.rotationAvlViewed.length ? ui.rotationAvlViewed.join(', ') : '—'}</span>
+          <span>elim {ui.rotationEliminated.length ? ui.rotationEliminated.join(', ') : '—'}</span>
+          <span>fp {ui.rotationFingerprintVehicle ?? '—'}</span>
+          <span>
+            complete {String(approachReconstructionComplete(session, ui))}
+          </span>
+          <details className="fw-debug__dump" data-testid="approach-dev-snapshot">
+            <summary>Snapshot (DEV)</summary>
+            <pre>{JSON.stringify(approachDevSnapshot(ui))}</pre>
+          </details>
         </>
       ) : source.containerPlayback ? (
         <>

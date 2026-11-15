@@ -353,9 +353,33 @@ export function onAccidentReflectionDone() {
   ])
 }
 
+const P11_APPROACH_NOTIFY_ID = 'p11-approach-reconstructed'
+
+const P11_APPROACH_NOTIFY = {
+  type: 'notifyInvestigationUpdate' as const,
+  id: P11_APPROACH_NOTIFY_ID,
+  kind: 'evidence' as const,
+  presentation: 'card' as const,
+  label: 'EVIDÊNCIA',
+  title: 'Abordagem na via auxiliar',
+  summary:
+    'Passagem, ocorrência e rastros de rádio fecham na mesma viatura que atendeu o chamado sem registro formal.',
+  refId: 'approach_callsign_reconstructed',
+}
+
+/** Cartão perdido (save antigo / bancada em tela cheia) — idempotente. */
+export function ensureRotationApproachDiscovery() {
+  const s = getInvestigationState()
+  if (s.discoveries.some((d) => d.id === `notify:${P11_APPROACH_NOTIFY_ID}`)) return
+  dispatchActions([P11_APPROACH_NOTIFY])
+}
+
 export function onRotationSolved() {
   const s = getInvestigationState()
-  if (s.flags.block08_rotation_done) return
+  if (s.flags.block08_rotation_done) {
+    ensureRotationApproachDiscovery()
+    return
+  }
   dispatchActions([
     { type: 'setFlag', id: 'block08_rotation_done', value: true },
     { type: 'addEvidence', id: 'approach_callsign_reconstructed' },
@@ -366,6 +390,7 @@ export function onRotationSolved() {
       id: 'task_lookup_callsign_scale',
       label: `Consultar a escala da ${ROTATION_CALLSIGN}`,
     },
+    P11_APPROACH_NOTIFY,
   ])
 }
 

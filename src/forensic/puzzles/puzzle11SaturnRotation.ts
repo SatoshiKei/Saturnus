@@ -1,11 +1,7 @@
 /**
- * Puzzle 11 — Rotação de Saturno.
- * Dataset: passagens, trem, CAD, AVL, rádio, fingerprint → VTR-14.
- * Lógica específica fica aqui / em rotationPuzzle; não na UI genérica.
+ * Puzzle 11 — Rotação de Saturno (sessão forense + reexport de dados).
  */
 
-import type { ForensicSession, ForensicSource } from '../forensicTypes'
-import meta from './puzzle11Meta.json'
 import {
   ROTATION_CALLSIGN,
   ROTATION_CROSSINGS,
@@ -19,6 +15,8 @@ import {
   type RotationCrossingId,
   type RotationVehicleId,
 } from '../../data/block08/rotationPuzzle'
+import meta from './puzzle11Meta.json'
+import { puzzle11ApproachSession } from './puzzle11ApproachReconstruction'
 
 export const puzzle11Meta = meta
 
@@ -47,42 +45,4 @@ export const puzzle11SaturnRotation = {
 
 export type { RotationAudioId, RotationCrossingId, RotationVehicleId }
 
-const noteSource: ForensicSource = {
-  id: 'rui_police_approach_records',
-  filename: 'approach_window_bundle.log',
-  displayName: 'approach_window_bundle.log',
-  type: 'data',
-  durationSec: 12,
-  metadata: [
-    { key: 'filename', label: 'Filename', value: 'approach_window_bundle.log' },
-    { key: 'format', label: 'Format', value: 'Institutional records bundle' },
-    {
-      key: 'origin',
-      label: 'Origin',
-      value: 'Passagem ferroviária / CAD / AVL / rádio — janela da abordagem',
-    },
-    {
-      key: 'note',
-      label: 'Note',
-      value: 'Specialized rotation workspace active. Use center panel tools.',
-    },
-  ],
-  structure: {
-    kind: 'generic',
-    emptyMessage: 'Rotation reconstruction runs in the specialized workspace.',
-  },
-  audio: {
-    sampleRate: 22050,
-    channels: 1,
-    seed: 11,
-    waveform: Array.from({ length: 128 }, (_, i) => Math.sin(i / 6) * 0.04),
-    stems: [],
-  },
-}
-
-export const puzzle11SaturnRotationSession: ForensicSession = {
-  id: 'puzzle-11-saturn-rotation',
-  title: 'FORENSIC AUDIO / DIGITAL WORKSTATION',
-  evidenceId: 'rui_police_approach_records',
-  sources: [noteSource],
-}
+export const puzzle11SaturnRotationSession = puzzle11ApproachSession
