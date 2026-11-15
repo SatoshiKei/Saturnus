@@ -18,7 +18,7 @@ import { phoneFeatureLocks } from '../../data/phoneFeatures'
 import { onCamilaChatReviewed, onJuliaChatReviewed, onRafaelAudioPlayed } from '../../game/story/block01Handlers'
 import { onMarianaChatOpened } from '../../game/story/block09Handlers'
 import { MARIANA_CHAT_ID } from '../../data/block09/marianaMessages'
-import { ANON_CHAT_ID, receiveAnonHospitalAudio } from '../../game/story/block07Handlers'
+import { receiveAnonHospitalAudio } from '../../game/story/block07Handlers'
 import { Avatar } from '../../components/Avatar'
 import { playSfx } from '../../lib/sfx'
 import type { ChatMessage } from '../../types/messaging'
@@ -134,6 +134,7 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
 
   const onRafaelVerticeAudio = useCallback(() => onRafaelAudioPlayed(), [])
   const onRafaelClubAudio = useCallback(() => onRafaelClubAudioPlayed(), [])
+  const onAnonHospitalBurst = useCallback(() => receiveAnonHospitalAudio(), [])
 
   const choose = useCallback(
     (optionIndex: number) => {
@@ -250,7 +251,9 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
                 ? onRafaelVerticeAudio
                 : live.kind === 'audio' && live.id === 'r2-audio-forward'
                   ? onRafaelClubAudio
-                  : undefined
+                  : live.kind === 'audio' && live.id === 'anon-burst-1'
+                    ? onAnonHospitalBurst
+                    : undefined
             }
           />
           )
@@ -290,16 +293,6 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
               </button>
             ))}
           </div>
-        ) : null}
-        {chatId === ANON_CHAT_ID && !inv.flags.block07_anon_audio_received ? (
-          <button
-            type="button"
-            className="wa-script-options__btn"
-            data-testid="anon-forward-bench"
-            onClick={() => receiveAnonHospitalAudio()}
-          >
-            Encaminhar à bancada
-          </button>
         ) : null}
         <ChatComposer
           composeAvailable={canCompose}

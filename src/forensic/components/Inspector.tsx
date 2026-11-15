@@ -14,6 +14,7 @@ import {
   fmtClockOffset,
   fmtTime,
   relativeSourceOffsetSec,
+  resolveRfTargetChannel,
   type SegmentClarity,
 } from '../forensicEngine'
 import { RfWaterfall } from './RfWaterfall'
@@ -1201,15 +1202,37 @@ export function Inspector({
                           : '—'}
                       </dd>
                     </div>
+                    {ui.rfExtractedChannelIds.length > 0 ? (
+                      <div>
+                        <dt>Extracted</dt>
+                        <dd className="fw-mono" data-testid="rf-extracted-channels">
+                          {ui.rfExtractedChannelIds.join(' · ')}
+                        </dd>
+                      </div>
+                    ) : null}
                   </dl>
                   <button
                     type="button"
                     className="fw-btn"
                     data-testid="rf-extract-channel"
-                    disabled={ui.rfCenterMhz == null || ui.rfBandwidthMhz == null || ui.rfExtracted}
+                    disabled={
+                      ui.rfCenterMhz == null ||
+                      ui.rfBandwidthMhz == null ||
+                      (() => {
+                        const target = resolveRfTargetChannel(source.rfCapture!, ui.rfCenterMhz!)
+                        return target != null && ui.rfExtractedChannelIds.includes(target.id)
+                      })()
+                    }
                     onClick={() => onExtractChannel?.()}
                   >
-                    {ui.rfExtracted ? 'Channel extracted' : 'Extract Channel'}
+                    {(() => {
+                      if (ui.rfCenterMhz == null) return 'Extract Channel'
+                      const target = resolveRfTargetChannel(source.rfCapture!, ui.rfCenterMhz)
+                      if (target && ui.rfExtractedChannelIds.includes(target.id)) {
+                        return `Channel ${target.id} extracted`
+                      }
+                      return target ? `Extract channel ${target.id}` : 'Extract Channel'
+                    })()}
                   </button>
                   {ui.rfStatus ? (
                     <p className="fw-empty" role="status" data-testid="rf-extract-status">

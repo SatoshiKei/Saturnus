@@ -46,8 +46,8 @@ Como jogar
 2. Inspector → Spectrum: waterfall (X=freq, Y=tempo).
 3. Perceber atividade entre os dois canais catalogados.
 4. Arrastar banda ~462.575 + bandwidth ~22 kHz.
-5. Extract Channel → DERIVED CHANNEL — 462.575 MHz.
-6. Ouvir bursts → G17N / 23:40.
+5. Extract Channel em cada coluna (A · B · C) — um de cada vez; aparecem em Files como faixa contínua.
+6. No canal B (meio): ouvir até G17N / 23:40 (não fecha o caso só com o áudio).
 7. Abrir doc-tabela-logistica-g17n → Galpão 17 — Pátio Norte.
 8. Operação → prisão de Miro.
 

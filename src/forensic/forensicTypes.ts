@@ -20,12 +20,22 @@ export type ForensicInspectorTab =
   | 'notes'
 
 /** Captura RF simulada (waterfall / extract channel) — genérica. */
+export interface RfChannelDerivedAsset {
+  derivedSourceId: string
+  derivedAudioSrc: string
+  derivedDisplayName: string
+  /** Duração da faixa contínua (pode exceder a captura wideband). */
+  durationSec?: number
+}
+
 export interface RfChannelDef {
   id: string
   centerMhz: number
   known: boolean
   label?: string
   nominalPower?: number
+  /** Faixa contínua do canal (pós-extract), quando definido. */
+  derived?: RfChannelDerivedAsset
 }
 
 export interface RfBurstDef {
@@ -640,8 +650,12 @@ export interface ForensicUiState {
   rfBandwidthMhz: number | null
   rfExtractionQuality: number | null
   rfHiddenOverlap: number | null
+  /** @deprecated Use rfExtractedChannelIds — true when o canal oculto foi extraído. */
   rfExtracted: boolean
   rfDerivedSourceId: string | null
+  /** Canais já extraídos nesta sessão (A/B/C em Luas Pastoras). */
+  rfExtractedChannelIds: string[]
+  rfChannelExtractionQuality: Record<string, number>
   rfStatus: string | null
   /** Ciclos / Find Similar (Puzzle 08). */
   similarRegions: Array<{ cycleIndex: number; startSec: number; endSec: number; correlation: number }>

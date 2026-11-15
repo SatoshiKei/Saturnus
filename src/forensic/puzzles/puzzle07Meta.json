@@ -27,6 +27,11 @@
     "C": 13
   },
   "seed": 4071707,
+  "fullChannelDurationSec": {
+    "A": 22.674,
+    "B": 38.113,
+    "C": 29.649
+  },
   "bursts": [
     {
       "id": "burst_A_00",

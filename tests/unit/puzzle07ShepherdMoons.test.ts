@@ -52,7 +52,9 @@ describe('Puzzle 07 — LUAS PASTORAS', () => {
     expect(existsSync(resolve(SRC, 'Capangas do Valter - Secret Track B.mp3'))).toBe(true)
     expect(existsSync(resolve(SRC, 'Capangas do Valter - Track C.mp3'))).toBe(true)
     expect(existsSync(resolve(PUBLIC, 'INTERCEPT_0511_RF_CAPTURE.wav'))).toBe(true)
+    expect(existsSync(resolve(PUBLIC, 'DERIVED_CHANNEL_462_525.wav'))).toBe(true)
     expect(existsSync(resolve(PUBLIC, 'DERIVED_CHANNEL_462_575.wav'))).toBe(true)
+    expect(existsSync(resolve(PUBLIC, 'DERIVED_CHANNEL_462_625.wav'))).toBe(true)
   })
 
   it('B/C: known channels strong; hidden weaker between them', () => {
@@ -70,12 +72,18 @@ describe('Puzzle 07 — LUAS PASTORAS', () => {
     expect(Math.max(...powersB)).toBeLessThan(Math.min(...powersA))
   })
 
-  it('D/E: selecting A or C does not extract hidden', () => {
+  it('D/E: A and C extract cleanly; puzzle só fecha com B', () => {
     const rf = puzzle07RfCapture
     const onA = evaluateRfExtraction(rf, puzzle07Frequencies.A, 0.022)
     const onC = evaluateRfExtraction(rf, puzzle07Frequencies.C, 0.022)
-    expect(onA.ok).toBe(false)
-    expect(onC.ok).toBe(false)
+    expect(onA.ok).toBe(true)
+    expect(onC.ok).toBe(true)
+    expect(onA.targetChannelId).toBe('A')
+    expect(onC.targetChannelId).toBe('C')
+    const ui = createInitialUiState(puzzle07ShepherdMoonsSession)
+    ui.rfExtractedChannelIds = ['A']
+    ui.rfChannelExtractionQuality = { A: onA.quality }
+    expect(rfChannelExtractComplete(puzzle07ShepherdMoonsSession, ui)).toBe(false)
   })
 
   it('F: intermediate frequency extracts hidden channel', () => {
@@ -115,6 +123,7 @@ describe('Puzzle 07 — LUAS PASTORAS', () => {
     s = getInvestigationState()
     expect(s.flags.block06_pastor_done).toBe(true)
     expect(s.evidenceOwned).toContain('galpao17_operational_site')
+    expect(s.discoveries.some((d) => d.id === 'notify:ach-shepherd-moons')).toBe(true)
     expect(lookupPastorToken(PASTOR_TOKEN)).toBe('Galpão 17 — Pátio Norte')
     expect(PASTOR_CODE_TABLE.some((r) => r.token === 'G17N')).toBe(true)
   })
@@ -146,6 +155,8 @@ describe('Puzzle 07 — LUAS PASTORAS', () => {
     )
     const ui = createInitialUiState(puzzle07ShepherdMoonsSession)
     expect(rfChannelExtractComplete(puzzle07ShepherdMoonsSession, ui)).toBe(false)
+    ui.rfExtractedChannelIds = ['B']
+    ui.rfChannelExtractionQuality = { B: 0.8 }
     ui.rfExtracted = true
     ui.rfExtractionQuality = 0.8
     expect(rfChannelExtractComplete(puzzle07ShepherdMoonsSession, ui)).toBe(true)

@@ -15753,6 +15753,11 @@
   "idealBandwidthMhz": 0.022,
   "minBandwidthMhz": 0.012,
   "maxBandwidthMhz": 0.045,
+  "fullChannelDurationSec": {
+    "A": 22.674,
+    "B": 38.113,
+    "C": 29.649
+  },
   "publicDir": "public\\assets\\audio\\forensic\\puzzle07",
   "debugDir": "tools\\audio\\out\\puzzle07_debug"
 }

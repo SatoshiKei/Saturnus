@@ -4,7 +4,7 @@ Dev only — não aparece para o jogador.
 Lore / origem
 -------------
 Número desconhecido → WhatsApp de Augusto → AUD_0008.wav (sem texto).
-Augusto encaminha/importa para a Bancada (receiveAnonHospitalAudio).
+Augusto ouve o áudio no WhatsApp (Sem nome) — ao dar play, o arquivo entra na bancada (receiveAnonHospitalAudio).
 O arquivo NÃO aparece sozinho na Bancada.
 Proveniência do áudio permanece aberta (não explicar câmera/telefone/arquivo).
 

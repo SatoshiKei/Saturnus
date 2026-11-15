@@ -23,6 +23,7 @@ import {
   clockSyncOffsetValid,
   clipSequenceComplete,
   buildDerivedRfSource,
+  resolveRfTargetChannel,
   cycleDifferenceComplete,
   fingerprintArchiveComplete,
   createDerivedRtpStream,
@@ -617,6 +618,8 @@ export function ForensicWorkbench({
     ui.sequenceAssembled,
     ui.spectrogramViewedSourceIds,
     ui.rfExtracted,
+    ui.rfExtractedChannelIds,
+    ui.rfChannelExtractionQuality,
     ui.rfExtractionQuality,
     ui.cycleDifferenceDone,
     ui.streamARecovered,
@@ -1359,7 +1362,7 @@ export function ForensicWorkbench({
           onExtractChannel={() => {
             if (!rfCapture || ui.rfCenterMhz == null || ui.rfBandwidthMhz == null) return
             const result = evaluateRfExtraction(rfCapture, ui.rfCenterMhz, ui.rfBandwidthMhz)
-            if (!result.ok) {
+            if (!result.ok || !result.targetChannelId) {
               setUi((u) => ({
                 ...u,
                 rfExtractionQuality: result.quality,
@@ -1369,19 +1372,37 @@ export function ForensicWorkbench({
               setStatus(result.message)
               return
             }
-            const derived = buildDerivedRfSource(rfCapture)
+            const channelId = result.targetChannelId
+            if (ui.rfExtractedChannelIds.includes(channelId)) {
+              setStatus('Este canal já foi extraído.')
+              return
+            }
+            const derived = buildDerivedRfSource(rfCapture, channelId)
             setExtraSources((prev) =>
               prev.some((s) => s.id === derived.id) ? prev : [...prev, derived],
             )
-            setUi((u) => ({
-              ...u,
-              rfExtracted: true,
-              rfDerivedSourceId: derived.id,
-              rfExtractionQuality: result.quality,
-              rfHiddenOverlap: result.hiddenOverlap,
-              rfStatus: result.message,
-              activeSourceId: derived.id,
-            }))
+            const hiddenId = rfCapture.hiddenChannelId
+            setUi((u) => {
+              const rfExtractedChannelIds = [...u.rfExtractedChannelIds, channelId]
+              const rfChannelExtractionQuality = {
+                ...u.rfChannelExtractionQuality,
+                [channelId]: result.quality,
+              }
+              const hiddenExtracted = rfExtractedChannelIds.includes(hiddenId)
+              return {
+                ...u,
+                rfExtractedChannelIds,
+                rfChannelExtractionQuality,
+                rfExtracted: hiddenExtracted,
+                rfDerivedSourceId: derived.id,
+                rfExtractionQuality: hiddenExtracted
+                  ? rfChannelExtractionQuality[hiddenId] ?? result.quality
+                  : u.rfExtractionQuality,
+                rfHiddenOverlap: result.hiddenOverlap,
+                rfStatus: result.message,
+                activeSourceId: derived.id,
+              }
+            })
             setStatus(result.message)
           }}
           onFindSimilar={() => {

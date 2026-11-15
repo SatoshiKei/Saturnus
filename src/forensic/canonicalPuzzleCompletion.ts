@@ -467,7 +467,15 @@ const P07: CanonicalPuzzleDef = {
         const r = evaluateRfExtraction(rf, rf.extract.hiddenCenterMhz, p07Meta.idealBandwidthMhz)
         const ok =
           r.ok &&
-          rfChannelExtractComplete(s, uiFor(s, { rfExtracted: true, rfExtractionQuality: r.quality }))
+          rfChannelExtractComplete(
+            s,
+            uiFor(s, {
+              rfExtracted: true,
+              rfExtractionQuality: r.quality,
+              rfExtractedChannelIds: ['B'],
+              rfChannelExtractionQuality: { B: r.quality },
+            }),
+          )
         if (!ok) return { status: 'failed', reason: r.message }
         runShepherdMoonsExtract()
         return inv().flags.block06_pastor_extracted

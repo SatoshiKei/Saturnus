@@ -1,4 +1,5 @@
 import type { ForensicSession, ForensicSource, RfCaptureConfig } from '../forensicTypes'
+import { buildDerivedRfSource } from '../forensicEngine'
 import { buildCompositeWaveform } from '../forensicMix'
 import meta from './puzzle07Meta.json'
 import waterfall from './puzzle07Waterfall.json'
@@ -8,7 +9,12 @@ import {
 } from '../../data/block06/pastorMoonsPuzzle'
 
 export const puzzle07CaptureId = 'INTERCEPT_0511_RF_CAPTURE'
-export const puzzle07DerivedId = 'DERIVED_CHANNEL_462_575'
+export const puzzle07DerivedIds = {
+  A: 'DERIVED_CHANNEL_462_525',
+  B: 'DERIVED_CHANNEL_462_575',
+  C: 'DERIVED_CHANNEL_462_625',
+} as const
+export const puzzle07DerivedId = puzzle07DerivedIds.B
 export const puzzle07ExpectedToken = PASTOR_TOKEN
 export const puzzle07ExpectedTime = meta.expectedTime as string
 export const puzzle07ExpectedLocation = PASTOR_LOCATION_LABEL
@@ -52,6 +58,12 @@ export const puzzle07RfCapture: RfCaptureConfig = {
       known: true,
       label: '462.525 MHz',
       nominalPower: 0.92,
+      derived: {
+        derivedSourceId: puzzle07DerivedIds.A,
+        derivedAudioSrc: '/assets/audio/forensic/puzzle07/DERIVED_CHANNEL_462_525.wav',
+        derivedDisplayName: 'DERIVED CHANNEL — 462.525 MHz',
+        durationSec: meta.fullChannelDurationSec?.A as number | undefined,
+      },
     },
     {
       id: 'B',
@@ -59,6 +71,12 @@ export const puzzle07RfCapture: RfCaptureConfig = {
       known: false,
       label: '462.575 MHz',
       nominalPower: 0.42,
+      derived: {
+        derivedSourceId: puzzle07DerivedIds.B,
+        derivedAudioSrc: '/assets/audio/forensic/puzzle07/DERIVED_CHANNEL_462_575.wav',
+        derivedDisplayName: 'DERIVED CHANNEL — 462.575 MHz',
+        durationSec: meta.fullChannelDurationSec?.B as number | undefined,
+      },
     },
     {
       id: 'C',
@@ -66,6 +84,12 @@ export const puzzle07RfCapture: RfCaptureConfig = {
       known: true,
       label: '462.625 MHz',
       nominalPower: 0.9,
+      derived: {
+        derivedSourceId: puzzle07DerivedIds.C,
+        derivedAudioSrc: '/assets/audio/forensic/puzzle07/DERIVED_CHANNEL_462_625.wav',
+        derivedDisplayName: 'DERIVED CHANNEL — 462.625 MHz',
+        durationSec: meta.fullChannelDurationSec?.C as number | undefined,
+      },
     },
   ],
   bursts: puzzle07Bursts.map((b) => ({
@@ -145,47 +169,8 @@ const captureSource: ForensicSource = {
 }
 
 /** Fonte derivada — só entra na sessão após Extract Channel bem-sucedido. */
-export function buildPuzzle07DerivedSource(): ForensicSource {
-  return {
-    id: puzzle07DerivedId,
-    filename: 'DERIVED_CHANNEL_462_575.wav',
-    displayName: 'DERIVED CHANNEL — 462.575 MHz',
-    type: 'audio',
-    durationSec: meta.durationSec,
-    tracks: [{ id: 'master', name: 'CH-B', channel: '1 / mono', visible: true, gainDb: 0, pan: 0 }],
-    metadata: [
-      { key: 'filename', label: 'Filename', value: 'DERIVED_CHANNEL_462_575.wav' },
-      { key: 'center', label: 'Center frequency', value: `${puzzle07Frequencies.B.toFixed(3)} MHz` },
-      { key: 'kind', label: 'Kind', value: 'Extracted channel' },
-      { key: 'note', label: 'Note', value: 'Bursts only · temporal gaps preserved' },
-    ],
-    structure: { kind: 'wav', emptyMessage: 'No editable structure for this fragment.' },
-    audio: {
-      sampleRate: 44100,
-      channels: 1,
-      seed: (meta.seed as number) + 1,
-      waveform: buildCompositeWaveform({
-        durationSec: meta.durationSec,
-        seed: (meta.seed as number) + 1,
-        noiseFloor: 0.05,
-        voice: puzzle07Bursts
-          .filter((b) => b.channelId === 'B')
-          .map((b) => ({
-            startSec: b.startSec,
-            endSec: b.startSec + b.durationSec,
-            amplitude: 0.85,
-          })),
-      }),
-      stems: [
-        {
-          id: 'FILE',
-          kind: 'file',
-          initialGain: 1,
-          src: '/assets/audio/forensic/puzzle07/DERIVED_CHANNEL_462_575.wav',
-        },
-      ],
-    },
-  }
+export function buildPuzzle07DerivedSource(channelId: 'A' | 'B' | 'C' = 'B'): ForensicSource {
+  return buildDerivedRfSource(puzzle07RfCapture, channelId)
 }
 
 export const puzzle07ShepherdMoonsSession: ForensicSession = {

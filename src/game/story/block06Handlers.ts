@@ -141,6 +141,16 @@ export function onPastorLogisticsCrossRef() {
       label: `Deflagrar operação no ponto ${PASTOR_TOKEN} — Galpão 17 — Pátio Norte`,
     },
     { type: 'setFlag', id: 'block06_operation_ready', value: true },
+    {
+      type: 'notifyInvestigationUpdate',
+      id: 'ach-shepherd-moons',
+      kind: 'evidence',
+      presentation: 'card',
+      label: 'CONQUISTA',
+      title: 'LUAS PASTORAS',
+      summary: 'Identificou a transmissão oculta entre os canais monitorados.',
+      refId: 'pastor_delivery_finding',
+    },
   ])
 }
 

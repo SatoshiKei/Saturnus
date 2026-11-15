@@ -356,13 +356,23 @@ def main() -> None:
         meta["audioSrc"] = f"/assets/audio/forensic/puzzle07/{fname}"
         bursts_meta.append(meta)
 
-    # Capture mix: A+C audible, B barely (bleed) — player must extract B
+    # Captura wideband: A+C audíveis, B só bleed — jogador isola canais no spectrum
     mix_known = build_mix(events, {"A", "C"}, bleed_b=0.04)
-    mix_b = build_mix(events, {"B"})
     sf.write(str(PUBLIC_DIR / "INTERCEPT_0511_RF_CAPTURE.wav"), mix_known, SR)
-    sf.write(str(PUBLIC_DIR / "DERIVED_CHANNEL_462_575.wav"), mix_b, SR)
     sf.write(str(OUT_DIR / "puzzle07_capture.wav"), mix_known, SR)
-    sf.write(str(OUT_DIR / "puzzle07_hidden.wav"), mix_b, SR)
+
+    # Faixas contínuas pós-extract (áudio íntegro por canal, não só bursts na timeline)
+    full_channel_duration: dict[str, float] = {}
+    for ch, freq in (("A", FREQ_A), ("B", FREQ_B), ("C", FREQ_C)):
+        path = SRC_DIR / CHANNEL_FILES[ch]
+        raw = load_mono(path)
+        full = radio_process(raw, ch, rng)
+        dur_sec = len(full) / 1000.0
+        full_channel_duration[ch] = round(dur_sec, 3)
+        fname = f"DERIVED_CHANNEL_{freq:.3f}".replace(".", "_") + ".wav"
+        sf.write(str(PUBLIC_DIR / fname), to_np(full).astype(np.float32), SR)
+        sf.write(str(OUT_DIR / f"puzzle07_full_{ch}.wav"), to_np(full).astype(np.float32), SR)
+    sf.write(str(OUT_DIR / "puzzle07_hidden.wav"), to_np(radio_process(load_mono(SRC_DIR / CHANNEL_FILES["B"]), "B", rng)).astype(np.float32), SR)
 
     wf = build_waterfall(events)
     write_debug_waterfall(DEBUG_DIR / "waterfall.png", wf, events)
@@ -387,6 +397,7 @@ def main() -> None:
         "idealBandwidthMhz": 0.022,
         "minBandwidthMhz": 0.012,
         "maxBandwidthMhz": 0.045,
+        "fullChannelDurationSec": full_channel_duration,
         "publicDir": str(PUBLIC_DIR.relative_to(ROOT)),
         "debugDir": str(DEBUG_DIR.relative_to(ROOT)),
     }
@@ -418,6 +429,7 @@ def main() -> None:
             "maxBandwidthMhz",
             "turnCounts",
             "seed",
+            "fullChannelDurationSec",
         ]
     }
     slim["bursts"] = bursts_meta
