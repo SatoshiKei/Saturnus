@@ -58,7 +58,7 @@ export const callScripts: CallScript[] = [
   },
   {
     id: 'call-livia',
-    speaker: 'Rádio Costeira FM — redação',
+    speaker: 'Rádio Costeira FM, redação',
     contactId: 'contact-livia',
     available: () => true,
     lines: [
@@ -78,7 +78,7 @@ export const callScripts: CallScript[] = [
   },
   {
     id: 'call-presidio-visit',
-    speaker: 'Unidade prisional — setor de visitas',
+    speaker: 'Unidade prisional, setor de visitas',
     /** Institucional: agenda do telefone fixo (contact.institution), não o iPhone. */
     contactId: 'contact-presidio',
     available: () => true,
@@ -110,7 +110,7 @@ export const callScripts: CallScript[] = [
       { who: 'other', text: 'Pode falar.' },
       {
         who: 'augusto',
-        text: 'Naquele começo — meses antes do desaparecimento — aconteceu alguma coisa excepcional no hospital? Acidente, crise, agressão, algo fora do normal com ela?',
+        text: 'Naquele começo, meses antes do desaparecimento, aconteceu alguma coisa excepcional no hospital? Acidente, crise, agressão, algo fora do normal com ela?',
       },
       {
         who: 'other',
@@ -140,7 +140,7 @@ export const callScripts: CallScript[] = [
     ],
     notYet: [
       { who: 'other', text: 'Alô?' },
-      { who: 'augusto', text: 'Júlia — ainda estou organizando umas datas. Te ligo em breve.' },
+      { who: 'augusto', text: 'Júlia, ainda estou organizando umas datas. Te ligo em breve.' },
       { who: 'other', text: 'Tudo bem.' },
     ],
   },
@@ -158,7 +158,7 @@ export const callScripts: CallScript[] = [
     timeSkip: 'Algumas horas depois…',
     result: {
       label: 'Documento recebido',
-      detail: 'Cronologia da noite — cópia autenticada (fls. 41). Arquivado em Processos / Autos.',
+      detail: 'Cronologia da noite, cópia autenticada (fls. 41). Arquivado em Processos / Autos.',
     },
     onComplete: [
       { type: 'completeCall', id: 'call-cartorio-elisa' },
@@ -173,7 +173,7 @@ export const callScripts: CallScript[] = [
   },
   {
     id: 'call-pericia-guardrail',
-    speaker: 'Perícia — criminalística',
+    speaker: 'Perícia, criminalística',
     ext: '212',
     available: (s) =>
       flag(s, 'block08_guardrail_reexam_unlocked') && !flag(s, 'block08_guardrail_done'),
@@ -205,7 +205,7 @@ export const callScripts: CallScript[] = [
     timeSkip: 'Algumas horas depois…',
     result: {
       label: 'Documento recebido',
-      detail: 'Laudo complementar — Guardrail / proteção da via. Consulte o módulo Perícia.',
+      detail: 'Laudo complementar. Guardrail / proteção da via. Consulte o módulo Perícia.',
     },
     onComplete: [
       { type: 'completeCall', id: 'call-pericia-guardrail' },
@@ -214,7 +214,7 @@ export const callScripts: CallScript[] = [
         type: 'notifyInvestigationUpdate',
         id: 'doc-received-guardrail',
         kind: 'document',
-        title: 'Laudo complementar — Guardrail',
+        title: 'Laudo complementar. Guardrail',
         subtitle: 'Encaminhado pela Perícia',
       },
     ],
@@ -248,13 +248,13 @@ export const callScripts: CallScript[] = [
         text: 'Aqui quase ninguém queria pegar isso.\n\nFala com o Dênis. Ele mexia bastante com importado velho e carro que os outros não queriam encostar.',
       },
     ],
-    result: { label: 'Indicação', detail: 'Oficina Dênis — importados antigos.' },
+    result: { label: 'Indicação', detail: 'Oficina Dênis, importados antigos.' },
     onComplete: [{ type: 'completeCall', id: 'call-parts-jaguar-lead' }],
     repeat: [{ who: 'other', text: 'Já te indiquei o Dênis, delegado.' }],
   },
   {
     id: 'call-detran-jaguar',
-    speaker: 'DETRAN — histórico de frota',
+    speaker: 'DETRAN, histórico de frota',
     ext: 'DETRAN',
     available: (s) => flag(s, 'block08_detran_call_unlocked') && !flag(s, 'block08_detran_done'),
     lines: [
@@ -276,14 +276,14 @@ export const callScripts: CallScript[] = [
       { who: 'augusto', text: 'Proprietário?' },
       { who: 'other', text: 'Mauro.' },
     ],
-    result: { label: 'Levantamento', detail: 'Um Jaguar XJ6 verde nesta cidade — titular Mauro.' },
+    result: { label: 'Levantamento', detail: 'Um Jaguar XJ6 verde nesta cidade, titular Mauro.' },
     onComplete: [{ type: 'completeCall', id: 'call-detran-jaguar' }],
     repeat: [{ who: 'other', text: 'O levantamento de Jaguar verde já foi registrado no protocolo.' }],
     notYet: [{ who: 'other', text: 'Preciso dos filtros e da data formalizados na solicitação.' }],
   },
   {
     id: 'call-pericia-device',
-    speaker: 'Perícia — dispositivos móveis',
+    speaker: 'Perícia, dispositivos móveis',
     ext: '212',
     available: (s) =>
       (flag(s, 'block04_forensics_unlocked') ||
@@ -304,7 +304,7 @@ export const callScripts: CallScript[] = [
     result: {
       label: 'Documento recebido',
       detail:
-        'Laudo pericial — aparelho de Mariana. Consulte o módulo Perícia; o pacote recuperado fica no aparelho apreendido.',
+        'Laudo pericial, aparelho de Mariana. Consulte o módulo Perícia. o pacote recuperado fica no aparelho apreendido.',
     },
     onComplete: [
       { type: 'completeCall', id: 'call-pericia-device' },
@@ -313,7 +313,7 @@ export const callScripts: CallScript[] = [
         type: 'notifyInvestigationUpdate',
         id: 'doc-received-laudo',
         kind: 'document',
-        title: 'Laudo pericial — aparelho de Mariana',
+        title: 'Laudo pericial, aparelho de Mariana',
         subtitle: 'Encaminhado pela Perícia',
       },
     ],
@@ -331,7 +331,7 @@ export const callScripts: CallScript[] = [
   },
   {
     id: 'call-hospital',
-    speaker: 'Hospital Municipal — recepção',
+    speaker: 'Hospital Municipal, recepção',
     ext: 'HOSP',
     available: (s) =>
       !flag(s, 'block07_hospital_archive_unlocked') || flag(s, 'block07_ricardo_found'),
@@ -351,9 +351,9 @@ export const callScripts: CallScript[] = [
     lines: [
       { who: 'other', text: 'Alô?' },
       { who: 'augusto', text: 'Júlia, escuta uma coisa pra mim. Depois eu explico de onde veio.' },
-      { who: 'other', text: '…Ricardo…? Espera. Volta um pouco — não no nome. Essa voz. Acho que é a Renata.' },
+      { who: 'other', text: '…Ricardo…? Espera. Volta um pouco, não no nome. Essa voz. Acho que é a Renata.' },
       { who: 'augusto', text: 'Renata Farias?' },
-      { who: 'other', text: 'Sim. Eu conheço a voz dela. Posso te passar o contato — se alguém lembra daquele plantão, é ela.' },
+      { who: 'other', text: 'Sim. Eu conheço a voz dela. Posso te passar o contato, se alguém lembra daquele plantão, é ela.' },
       { who: 'augusto', text: 'Me passa.' },
     ],
     result: { label: 'Áudio conferido', detail: 'Júlia reconhece a voz feminina como Renata Farias.' },
@@ -367,35 +367,35 @@ export const callScripts: CallScript[] = [
     available: (s) => flag(s, 'block07_renata_call_unlocked') && !flag(s, 'block07_renata_call_done'),
     lines: [
       { who: 'other', text: 'Alô?' },
-      { who: 'augusto', text: 'Delegado Augusto Nogueira. Júlia me passou seu contato. Ouvi um trecho com o nome Ricardo — ambiente que parece hospitalar.' },
+      { who: 'augusto', text: 'Delegado Augusto Nogueira. Júlia me passou seu contato. Ouvi um trecho com o nome Ricardo, ambiente que parece hospitalar.' },
       { who: 'other', text: 'Ricardo… Sim. Paciente antigo, observação. Identidade frágil. Mariana estava naquele plantão. Depois daquele cara ela ficou dias muito mal.' },
       { who: 'augusto', text: 'O que você lembra dele?' },
       { who: 'other', text: 'Inquieto, olhava pra porta. Insistia no nome. Janela: madrugada daquele período. Se for o mesmo, o arquivo do hospital deve ter alguma ficha.' },
     ],
     result: {
       label: 'Depoimento',
-      detail: 'Paciente Ricardo; plantão da Mariana; janela temporal aproximada.',
+      detail: 'Paciente Ricardo. plantão da Mariana. janela temporal aproximada.',
     },
     onComplete: [{ type: 'completeCall', id: 'call-renata-farias' }],
     repeat: [{ who: 'other', text: 'Já contei o que lembro daquele plantão, delegado. Procure o arquivo.' }],
   },
   {
     id: 'call-hospital-ricardo',
-    speaker: 'Hospital Municipal — arquivo médico',
+    speaker: 'Hospital Municipal, arquivo médico',
     ext: 'HOSP',
     available: (s) => flag(s, 'block07_hospital_archive_unlocked') && !flag(s, 'block07_ricardo_found'),
     lines: [
       { who: 'other', text: 'Arquivo médico, boa tarde.' },
       {
         who: 'augusto',
-        text: 'Delegado Augusto Nogueira. Prontuário antigo — primeiro nome Ricardo, setor de observação. Tenho janela de plantão e funcionária do setor.',
+        text: 'Delegado Augusto Nogueira. Prontuário antigo, primeiro nome Ricardo, setor de observação. Tenho janela de plantão e funcionária do setor.',
       },
       { who: 'other', text: 'Um momento… Tenho um Ricardo Freitas. Documento não apresentado. Alta: óbito na madrugada.' },
       { who: 'augusto', text: 'Encaminha o que puder disponibilizar formalmente.' },
     ],
     result: {
       label: 'Prontuário separado',
-      detail: 'Ricardo Freitas — identidade declarada, óbito no plantão.',
+      detail: 'Ricardo Freitas, identidade declarada, óbito no plantão.',
     },
     onComplete: [
       { type: 'completeCall', id: 'call-hospital-ricardo' },
@@ -407,7 +407,7 @@ export const callScripts: CallScript[] = [
         kind: 'evidence',
         presentation: 'card',
         label: 'DOCUMENTO',
-        title: 'Hospital Municipal — registro de atendimento',
+        title: 'Hospital Municipal, registro de atendimento',
         summary:
           'O arquivo encaminhou o resumo de Ricardo Freitas. Abra no terminal da delegacia, em Consultas.',
         refId: 'doc-hospital-ricardo-freitas',
@@ -423,7 +423,7 @@ export const callScripts: CallScript[] = [
   },
   {
     id: 'call-aster-early',
-    speaker: 'Aster Sistemas — administrativo',
+    speaker: 'Aster Sistemas, administrativo',
     ext: 'ASTER',
     available: (s) =>
       flag(s, 'block07_aster_early_call_unlocked') &&
@@ -433,7 +433,7 @@ export const callScripts: CallScript[] = [
       { who: 'other', text: 'Aster Sistemas, administrativo.' },
       {
         who: 'augusto',
-        text: 'Delegado Augusto Nogueira. Tenho um nickname técnico — hvalenca — e uma menção à Aster em fórum antigo. Preciso identificar o usuário.',
+        text: 'Delegado Augusto Nogueira. Tenho um nickname técnico, hvalenca. e uma menção à Aster em fórum antigo. Preciso identificar o usuário.',
       },
       {
         who: 'other',
@@ -463,7 +463,7 @@ export const callScripts: CallScript[] = [
   },
   {
     id: 'call-aster-henrique',
-    speaker: 'Aster Sistemas — administrativo',
+    speaker: 'Aster Sistemas, administrativo',
     ext: 'ASTER',
     available: (s) =>
       flag(s, 'block07_aster_call_unlocked') && !flag(s, 'block07_henrique_named'),
@@ -471,7 +471,7 @@ export const callScripts: CallScript[] = [
       { who: 'other', text: 'Aster Sistemas, administrativo.' },
       {
         who: 'augusto',
-        text: 'Delegado Augusto Nogueira. Procuro alguém da equipe técnica por volta de 2021 — identificador hvalenca, iniciais H.V.',
+        text: 'Delegado Augusto Nogueira. Procuro alguém da equipe técnica por volta de 2021, identificador hvalenca, iniciais H.V.',
       },
       { who: 'other', text: 'Espera… Tem um nome que pode ser. Henrique Valença. Não trabalha mais aqui.' },
       {
@@ -485,7 +485,7 @@ export const callScripts: CallScript[] = [
     ],
     result: {
       label: 'Nome recuperado',
-      detail: 'Henrique Valença — ex-Aster Sistemas; indicação Cecília Prado.',
+      detail: 'Henrique Valença, ex-Aster Sistemas. indicação Cecília Prado.',
     },
     onComplete: [{ type: 'completeCall', id: 'call-aster-henrique' }],
     repeat: [{ who: 'other', text: 'Já passamos o que tínhamos sobre Henrique, delegado.' }],
@@ -501,7 +501,7 @@ export const callScripts: CallScript[] = [
       { who: 'other', text: 'Alô?' },
       {
         who: 'augusto',
-        text: 'Fernanda? Delegado Augusto Nogueira. Sobre a festa — Mariana tinha confirmado que ia?',
+        text: 'Fernanda? Delegado Augusto Nogueira. Sobre a festa. Mariana tinha confirmado que ia?',
       },
       {
         who: 'other',
@@ -547,7 +547,7 @@ export const callScripts: CallScript[] = [
     ],
     result: {
       label: 'Linha encerrada',
-      detail: 'Marcelo Viana: saída banal; sem vínculo com Mariana.',
+      detail: 'Marcelo Viana: saída banal. sem vínculo com Mariana.',
     },
     onComplete: [
       { type: 'completeCall', id: 'call-marcelo-close' },
@@ -568,7 +568,7 @@ export const callScripts: CallScript[] = [
       { who: 'other', text: 'Augusto?' },
       {
         who: 'augusto',
-        text: 'Júlia. Preciso que você me diga, com horário, o que Mariana pediu que você corrigisse — e o que ela esquecia sozinha.',
+        text: 'Júlia. Preciso que você me diga, com horário, o que Mariana pediu que você corrigisse, e o que ela esquecia sozinha.',
       },
       {
         who: 'other',
@@ -586,7 +586,7 @@ export const callScripts: CallScript[] = [
     ],
     result: {
       label: 'Pressão registrada',
-      detail: 'Júlia irritada; lapso da festa ocorreu sem a participação dela.',
+      detail: 'Júlia irritada. lapso da festa ocorreu sem a participação dela.',
     },
     onComplete: [
       { type: 'completeCall', id: 'call-julia-pressure' },
@@ -670,6 +670,6 @@ export const landlineDirectory: { key: string; name: string; scriptId?: string }
   { key: '204', name: 'Cartório', scriptId: 'call-cartorio-elisa' },
   { key: '212', name: 'Perícia', scriptId: 'call-pericia-device' },
   { key: '220', name: 'Arquivo', scriptId: 'call-arquivo' },
-  { key: 'HOSP', name: 'Hospital Municipal — recepção', scriptId: 'call-hospital' },
+  { key: 'HOSP', name: 'Hospital Municipal, recepção', scriptId: 'call-hospital' },
   { key: 'CENT', name: 'Central de atendimento', scriptId: 'call-central' },
 ]

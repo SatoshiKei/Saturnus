@@ -66,7 +66,7 @@ export const block08EntryActions: StoryActionRef[] = [
       },
       {
         id: 'task_rings_puzzle',
-        label: 'Reconstruir a timeline dos protestos (bancada) — fontes dessincronizadas',
+        label: 'Reconstruir a timeline dos protestos (bancada), fontes dessincronizadas',
         completed: false,
       },
     ],
@@ -76,12 +76,12 @@ export const block08EntryActions: StoryActionRef[] = [
 export const block08DevCheckpoints: { id: string; label: string; actions: StoryActionRef[] }[] = [
   {
     id: 'b08-start',
-    label: 'Bloco 8 — início (fim Bloco 7)',
+    label: 'Bloco 8, início (fim Bloco 7)',
     actions: block08EntryActions,
   },
   {
     id: 'b08-rings-timeline',
-    label: 'Puzzle 10 — timeline correta (continuidade pendente)',
+    label: 'Puzzle 10, timeline correta (continuidade pendente)',
     actions: [
       { type: 'setFlag', id: 'block08_rings_timeline_solved', value: true },
       { type: 'addEvidence', id: 'protest_timeline_reconstructed' },
@@ -131,7 +131,7 @@ export const block08DevCheckpoints: { id: string; label: string; actions: StoryA
       {
         type: 'addTask',
         id: 'task_press_miro_third',
-        label: 'Pressionar Miro — André tinha álibi; o que aconteceu na queda?',
+        label: 'Pressionar Miro. André tinha álibi. o que aconteceu na queda?',
       },
     ],
   },

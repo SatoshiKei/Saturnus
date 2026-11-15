@@ -35,7 +35,7 @@ export const CASSINI_SESSION_A_SUMMARY =
 
 /** @deprecated */
 export const CASSINI_SESSION_B_SUMMARY =
-  'Stream B: sessão VoIP anômala — interlocutor com contexto excessivo.'
+  'Stream B: sessão VoIP anômala, interlocutor com contexto excessivo.'
 
 /** @deprecated */
 export function isCassiniSeparated(_assigned: Record<string, CassiniSsrc | ''>): boolean {

@@ -12,15 +12,15 @@ export const seedDocuments: Document[] = [
   // ───────────────────────── Bloco 1 ─────────────────────────
   {
     id: 'doc-bo-inicial',
-    title: 'Boletim de ocorrência — desaparecimento de Mariana Silva',
+    title: 'Boletim de ocorrência, desaparecimento de Mariana Silva',
     category: 'BO',
-    issuer: 'Delegacia — plantão',
+    issuer: 'Delegacia, plantão',
     dateLabel: '03/11/2026',
     system: 'ocorrencias',
     blocks: [
       {
         id: 'b1',
-        text: '03/11/2026 — Plantão\n\nMariana Silva, 26 anos, enfermeira, não compareceu ao plantão previsto para as 07:00.',
+        text: '03/11/2026. Plantão\n\nMariana Silva, 26 anos, enfermeira, não compareceu ao plantão previsto para as 07:00.',
       },
       {
         id: 'b2',
@@ -28,7 +28,7 @@ export const seedDocuments: Document[] = [
       },
       {
         id: 'b3',
-        text: 'Às 08:03, a central de emergência recebeu uma chamada identificada pelo sistema como proveniente do número de Mariana. O áudio chegou com forte degradação; o atendente relatou ter compreendido um pedido de ajuda antes da interrupção da chamada.\n\nUma viatura foi enviada ao endereço.',
+        text: 'Às 08:03, a central de emergência recebeu uma chamada identificada pelo sistema como proveniente do número de Mariana. O áudio chegou com forte degradação. o atendente relatou ter compreendido um pedido de ajuda antes da interrupção da chamada.\n\nUma viatura foi enviada ao endereço.',
       },
       {
         id: 'b4',
@@ -38,7 +38,7 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-central-chamada',
-    title: 'Registro da central — chamada das 08:03',
+    title: 'Registro da central, chamada das 08:03',
     category: 'Central de emergência',
     issuer: 'Central de atendimento',
     dateLabel: '03/11/2026',
@@ -46,21 +46,21 @@ export const seedDocuments: Document[] = [
     blocks: [
       {
         id: 'b1',
-        text: '08:03:12 — chamada recebida pela linha 3.\nOrigem informada pelo sistema: número cadastrado em nome de Mariana Silva.\nDuração: 22 segundos.\nQualidade: degradada.',
+        text: '08:03:12, chamada recebida pela linha 3.\nOrigem informada pelo sistema: número cadastrado em nome de Mariana Silva.\nDuração: 22 segundos.\nQualidade: degradada.',
       },
       {
         id: 'b2',
-        text: 'Observação do atendente: voz feminina parcialmente compreensível; aparente pedido de ajuda; ruído intenso ao fundo; interrupção abrupta.',
+        text: 'Observação do atendente: voz feminina parcialmente compreensível. aparente pedido de ajuda. ruído intenso ao fundo. interrupção abrupta.',
       },
       {
         id: 'b3',
-        text: '08:04 — despacho de viatura.',
+        text: '08:04, despacho de viatura.',
       },
     ],
   },
   {
     id: 'doc-entrada-apartamento',
-    title: 'Relatório de entrada — apartamento',
+    title: 'Relatório de entrada, apartamento',
     category: 'Relatório de ocorrência',
     issuer: 'Equipe de viatura',
     dateLabel: '03/11/2026',
@@ -68,11 +68,11 @@ export const seedDocuments: Document[] = [
     blocks: [
       {
         id: 'b1',
-        text: '08:21 — equipe no endereço. Chamados e campainha sem resposta. Diego Azevedo, vizinho, presente no corredor.',
+        text: '08:21, equipe no endereço. Chamados e campainha sem resposta. Diego Azevedo, vizinho, presente no corredor.',
       },
       {
         id: 'b2',
-        text: '08:26 — entrada pela porta principal.\n\nLuz da sala acesa. Bolsa sobre a mesa. Chaves no gancho próximo à entrada. Nenhum sinal evidente de luta.',
+        text: '08:26, entrada pela porta principal.\n\nLuz da sala acesa. Bolsa sobre a mesa. Chaves no gancho próximo à entrada. Nenhum sinal evidente de luta.',
       },
       {
         id: 'b3',
@@ -82,7 +82,7 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-apreensao-celular',
-    title: 'Termo de apreensão — aparelho celular',
+    title: 'Termo de apreensão, aparelho celular',
     category: 'Termo',
     issuer: 'Delegacia',
     dateLabel: '03/11/2026',
@@ -96,15 +96,15 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-extracao-inicial',
-    title: 'Extração inicial — aparelho de Mariana',
+    title: 'Extração inicial, aparelho de Mariana',
     category: 'Relatório',
-    issuer: 'Delegacia — extração superficial',
+    issuer: 'Delegacia, extração superficial',
     dateLabel: '03/11/2026',
     system: 'documentos',
     blocks: [
       {
         id: 'b1',
-        text: 'Extração superficial realizada na delegacia.\n\nConteúdo acessível:\n- mensagens;\n- notas;\n- calendário;\n- fotografias;\n- arquivos locais;\n- registro de chamadas.',
+        text: 'Extração superficial realizada na delegacia.\n\nConteúdo acessível:\n- mensagens. \n- notas. \n- calendário. \n- fotografias. \n- arquivos locais. \n- registro de chamadas.',
       },
       {
         id: 'b2',
@@ -116,7 +116,7 @@ export const seedDocuments: Document[] = [
   // ───────────────────────── Bloco 2 ─────────────────────────
   {
     id: 'doc-lucas-cadastro',
-    title: 'Consulta — Lucas Moreira',
+    title: 'Consulta. Lucas Moreira',
     category: 'Cadastro (pessoas)',
     issuer: 'Sistema de consulta policial',
     system: 'consultas',
@@ -127,14 +127,14 @@ export const seedDocuments: Document[] = [
       },
       {
         id: 'b2',
-        text: 'Vínculo atual com a Universidade — Campus Central.\n\nLucas constava como aluno da instituição no período em que Elisa Duarte frequentava atividades e visitava o campus.',
+        text: 'Vínculo atual com a Universidade. Campus Central.\n\nLucas constava como aluno da instituição no período em que Elisa Duarte frequentava atividades e visitava o campus.',
       },
     ],
     leads: [
       {
         type: 'address',
         label: 'Local de trabalho',
-        value: 'Campus Central — Bloco B, secretaria acadêmica',
+        value: 'Campus Central. Bloco B, secretaria acadêmica',
       },
     ],
     onOpen: [
@@ -144,9 +144,9 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-elisa-resumo',
-    title: 'Processo — Elisa Duarte',
+    title: 'Processo. Elisa Duarte',
     category: 'Autos',
-    issuer: 'Vara Criminal — consulta processual',
+    issuer: 'Vara Criminal, consulta processual',
     dateLabel: 'Proc. 2020',
     system: 'autos',
     blocks: [
@@ -156,10 +156,10 @@ export const seedDocuments: Document[] = [
       },
       {
         id: 'b2',
-        text: 'Principais peças disponíveis:\n- boletim inicial;\n- depoimentos;\n- cronologia da noite;\n- registros do Vértice.',
+        text: 'Principais peças disponíveis:\n- boletim inicial. \n- depoimentos. \n- cronologia da noite. \n- registros do Vértice.',
       },
     ],
-    leads: [{ type: 'institution', label: 'Cópias autenticadas', value: 'Cartório — ramal 204' }],
+    leads: [{ type: 'institution', label: 'Cópias autenticadas', value: 'Cartório, ramal 204' }],
     onOpen: [
       { type: 'addEvidence', id: 'elisa_case_summary' },
       { type: 'discoverPerson', id: 'elisa', status: 'identified' },
@@ -168,9 +168,9 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-elisa-testemunhas',
-    title: 'Testemunhas arquivadas — processo Elisa Duarte',
+    title: 'Testemunhas arquivadas, processo Elisa Duarte',
     category: 'Autos',
-    issuer: 'Vara Criminal — volume II (resumo)',
+    issuer: 'Vara Criminal, volume II (resumo)',
     dateLabel: 'Proc. 2020',
     system: 'autos',
     blocks: [
@@ -180,7 +180,7 @@ export const seedDocuments: Document[] = [
       },
       {
         id: 'b2',
-        text: 'Nicolas Prado Reis — registro sumário: esteve na cabine durante a noite. Confirma ter visto o casal no salão.',
+        text: 'Nicolas Prado Reis, registro sumário: esteve na cabine durante a noite. Confirma ter visto o casal no salão.',
       },
       {
         id: 'b3',
@@ -191,7 +191,7 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-elisa-cronologia',
-    title: 'Cronologia da noite — cópia autenticada (fls. 41)',
+    title: 'Cronologia da noite, cópia autenticada (fls. 41)',
     category: 'Autos',
     issuer: 'Cartório da vara',
     dateLabel: 'Proc. 2020',
@@ -207,30 +207,30 @@ export const seedDocuments: Document[] = [
       },
       {
         id: 'b3',
-        text: 'Amiga da vítima recorda que Elisa adiou a saída para ouvir “Avicii — Levels”. O set log da casa situa a transição/encerramento desse trecho aproximadamente às 01:16 (relógio do Vértice). A polícia usou esse marco como horário aproximado de saída de Elisa.',
+        text: 'Amiga da vítima recorda que Elisa adiou a saída para ouvir “Avicii. Levels”. O set log da casa situa a transição/encerramento desse trecho aproximadamente às 01:16 (relógio do Vértice). A polícia usou esse marco como horário aproximado de saída de Elisa.',
       },
       {
         id: 'b4',
-        text: 'Sandra Almeida relata ter visto, aproximadamente nesse intervalo, uma mulher de jaqueta clara e bolsa sendo seguida por um homem que ela acreditou reconhecer como André Silva. Posteriormente, ao retornar da busca por ajuda, vê apenas uma silhueta masculina deixando a região escura próxima ao guardrail — sem identificação facial.',
+        text: 'Sandra Almeida relata ter visto, aproximadamente nesse intervalo, uma mulher de jaqueta clara e bolsa sendo seguida por um homem que ela acreditou reconhecer como André Silva. Posteriormente, ao retornar da busca por ajuda, vê apenas uma silhueta masculina deixando a região escura próxima ao guardrail, sem identificação facial.',
       },
     ],
     onOpen: [{ type: 'addEvidence', id: 'elisa_original_chronology' }],
   },
   {
     id: 'doc-elisa-amiga-levels',
-    title: 'Depoimento — amiga de Elisa (saída / Levels)',
+    title: 'Depoimento, amiga de Elisa (saída / Levels)',
     category: 'Autos',
-    issuer: 'Vara Criminal — volume II',
+    issuer: 'Vara Criminal, volume II',
     dateLabel: 'Proc. 2020',
     system: 'autos',
     blocks: [
       {
         id: 'b1',
-        text: 'Testemunha — amiga de Elisa: declara que Elisa já havia se despedido e estava prestes a ir embora.',
+        text: 'Testemunha, amiga de Elisa: declara que Elisa já havia se despedido e estava prestes a ir embora.',
       },
       {
         id: 'b2',
-        text: 'Quando começou a tocar “Avicii — Levels”, Elisa comentou que ficaria só mais um pouco para ouvir aquele trecho — gostava muito da música. A testemunha lembra porque achou engraçado ela já ter se despedido e voltar por causa da música.',
+        text: 'Quando começou a tocar “Avicii. Levels”, Elisa comentou que ficaria só mais um pouco para ouvir aquele trecho, gostava muito da música. A testemunha lembra porque achou engraçado ela já ter se despedido e voltar por causa da música.',
       },
       {
         id: 'b3',
@@ -240,13 +240,13 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-vertice-set-log-levels',
-    title: 'Set log — Avicii / Levels (arquivo histórico)',
+    title: 'Set log. Avicii / Levels (arquivo histórico)',
     category: 'Arquivo privado',
-    issuer: 'Boate Vértice — programação',
+    issuer: 'Boate Vértice, programação',
     system: 'documentos',
     blocks: [
-      { id: 'b1', text: '01:14:xx — Avicii — Levels' },
-      { id: 'b2', text: '01:16:00 — transição / encerramento' },
+      { id: 'b1', text: '01:14:xx. Avicii. Levels' },
+      { id: 'b2', text: '01:16:00, transição / encerramento' },
       {
         id: 'b3',
         text: 'Horários conforme o sistema local de programação da casa. Não indica sincronização com relógio externo.',
@@ -255,9 +255,9 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-vertice-clock-infra',
-    title: 'Nota técnica — referência de tempo da cabine',
+    title: 'Nota técnica, referência de tempo da cabine',
     category: 'Arquivo privado',
-    issuer: 'Boate Vértice — infraestrutura',
+    issuer: 'Boate Vértice, infraestrutura',
     system: 'documentos',
     blocks: [
       {
@@ -274,7 +274,7 @@ export const seedDocuments: Document[] = [
     id: 'doc-vertice-escala',
     title: 'Arquivo histórico',
     category: 'Arquivo privado',
-    issuer: 'Boate Vértice — administração',
+    issuer: 'Boate Vértice, administração',
     system: 'documentos',
     blocks: [
       {
@@ -287,7 +287,7 @@ export const seedDocuments: Document[] = [
   // ───────────────────────── Bloco 3 ─────────────────────────
   {
     id: 'doc-nico-cadastro',
-    title: 'Consulta cadastral — Nicolas Prado Reis',
+    title: 'Consulta cadastral. Nicolas Prado Reis',
     category: 'Cadastro (pessoas)',
     issuer: 'Sistema de consulta policial',
     system: 'consultas',
@@ -295,7 +295,7 @@ export const seedDocuments: Document[] = [
       { id: 'b1', text: 'Nome: Nicolas Prado Reis (“Nico”). Idade: 31 anos. Sem antecedentes.' },
       {
         id: 'b2',
-        text: 'Vínculo profissional atual: casa noturna Titã Club — técnico de som e DJ residente.',
+        text: 'Vínculo profissional atual: casa noturna Titã Club, técnico de som e DJ residente.',
       },
       {
         id: 'b3',
@@ -319,14 +319,14 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-maralto-cadastro',
-    title: 'Consulta cadastral — Maralto Granéis',
+    title: 'Consulta cadastral. Maralto Granéis',
     category: 'Cadastro (empresas)',
     issuer: 'Sistema de consulta policial',
     system: 'consultas',
     blocks: [
       {
         id: 'b1',
-        text: 'Maralto Granéis S.A. — operação portuária de granéis sólidos, consolidada na região há cerca de dez anos.',
+        text: 'Maralto Granéis S.A., operação portuária de granéis sólidos, consolidada na região há cerca de dez anos.',
       },
       {
         id: 'b2',
@@ -334,7 +334,7 @@ export const seedDocuments: Document[] = [
       },
       {
         id: 'b3',
-        text: 'Entre fornecedores da época: Marcelo Viana — manutenção terceirizada do terminal. Saiu da função pouco depois dos protestos.',
+        text: 'Entre fornecedores da época: Marcelo Viana, manutenção terceirizada do terminal. Saiu da função pouco depois dos protestos.',
       },
     ],
     onOpen: [
@@ -348,28 +348,28 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-maralto-clipping',
-    title: 'Reportagem — “Porto em conflito” (arquivo de imprensa)',
+    title: 'Reportagem, “Porto em conflito” (arquivo de imprensa)',
     category: 'Recorte de imprensa',
-    issuer: 'Rádio Costeira FM — arquivo digital',
+    issuer: 'Rádio Costeira FM, arquivo digital',
     dateLabel: 'Reprodução',
     system: 'documentos',
     imageSrc: 'sprite:masked-man',
-    imageCaption: 'Frame de arquivo — manifestante mascarado (núcleo)',
+    imageCaption: 'Frame de arquivo, manifestante mascarado (núcleo)',
     blocks: [
       {
         id: 'b1',
-        text: 'Moradores e manifestantes se reúnem diante do canteiro do terminal; a empresa nega irregularidades. Reportagem: Lívia Serrano.',
+        text: 'Moradores e manifestantes se reúnem diante do canteiro do terminal. a empresa nega irregularidades. Reportagem: Lívia Serrano.',
       },
       {
         id: 'b2',
-        text: 'Segundo a reportagem, a mobilização reuniu famílias, estudantes e grupos organizados; houve confronto com a polícia ao fim da tarde.',
+        text: 'Segundo a reportagem, a mobilização reuniu famílias, estudantes e grupos organizados. houve confronto com a polícia ao fim da tarde.',
       },
       {
         id: 'b3',
-        text: 'Rodapé do arquivo: “Redação — Rádio Costeira FM. Atendimento ao ouvinte e à imprensa.” Frame anexo: figura mascarada recorrente nas imagens da cobertura.',
+        text: 'Rodapé do arquivo: “Redação. Rádio Costeira FM. Atendimento ao ouvinte e à imprensa.” Frame anexo: figura mascarada recorrente nas imagens da cobertura.',
       },
     ],
-    leads: [{ type: 'phone', label: 'Redação — Rádio Costeira FM', value: '21 3xxx-4410' }],
+    leads: [{ type: 'phone', label: 'Redação. Rádio Costeira FM', value: '21 3xxx-4410' }],
     onOpen: [
       { type: 'addEvidence', id: 'livia_sought_by_mariana' },
       { type: 'discoverPerson', id: 'livia', status: 'identified' },
@@ -378,9 +378,9 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-marcelo-historico',
-    title: 'Consulta histórica — Marcelo Viana',
+    title: 'Consulta histórica. Marcelo Viana',
     category: 'Cadastro (pessoas)',
-    issuer: 'Sistema de consulta policial — arquivo',
+    issuer: 'Sistema de consulta policial, arquivo',
     system: 'consultas',
     blocks: [
       {
@@ -405,7 +405,7 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-cruzamento-maralto-elisa',
-    title: 'Pesquisa cruzada — autos Elisa / Maralto Granéis',
+    title: 'Pesquisa cruzada, autos Elisa / Maralto Granéis',
     category: 'Consulta',
     issuer: 'Sistema de consulta policial',
     system: 'consultas',
@@ -434,17 +434,17 @@ export const seedDocuments: Document[] = [
   // ───────────────────────── Bloco 4 ─────────────────────────
   {
     id: 'doc-protesto-ocorrencia',
-    title: 'Ocorrência — confronto durante manifestação (terminal Maralto)',
+    title: 'Ocorrência, confronto durante manifestação (terminal Maralto)',
     category: 'Ocorrência',
-    issuer: 'Delegacia regional — arquivo morto',
+    issuer: 'Delegacia regional, arquivo morto',
     dateLabel: 'Registro antigo',
     system: 'ocorrencias',
     imageSrc: 'sprite:masked-man',
-    imageCaption: 'Registro policial — figura mascarada no canteiro (sem identificação)',
+    imageCaption: 'Registro policial, figura mascarada no canteiro (sem identificação)',
     blocks: [
       {
         id: 'b1',
-        text: 'Manifestação contra a implantação do terminal. Intervenção da tropa de choque ao fim da tarde; confronto na entrada do canteiro.',
+        text: 'Manifestação contra a implantação do terminal. Intervenção da tropa de choque ao fim da tarde. confronto na entrada do canteiro.',
       },
       {
         id: 'b2',
@@ -459,9 +459,9 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-protesto-detidos',
-    title: 'Relação de detidos — ocorrência do terminal Maralto',
+    title: 'Relação de detidos, ocorrência do terminal Maralto',
     category: 'Ocorrência',
-    issuer: 'Delegacia regional — anexo',
+    issuer: 'Delegacia regional, anexo',
     dateLabel: 'Registro antigo',
     system: 'ocorrencias',
     blocks: [
@@ -471,7 +471,7 @@ export const seedDocuments: Document[] = [
       },
       {
         id: 'b2',
-        text: 'Item 9 — Samuel Teixeira, 24 anos: resistência à ação policial. Liberado após quatro dias.',
+        text: 'Item 9. Samuel Teixeira, 24 anos: resistência à ação policial. Liberado após quatro dias.',
       },
       {
         id: 'b3',
@@ -486,16 +486,16 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-samuel-ficha',
-    title: 'Ficha — Samuel Teixeira',
+    title: 'Ficha. Samuel Teixeira',
     category: 'Cadastro (pessoas)',
     issuer: 'Sistema de consulta policial',
     system: 'consultas',
     blocks: [
       { id: 'b1', text: 'Nome: Samuel Teixeira. Idade: 30 anos. Registro único: detenção por resistência (ocorrência do terminal Maralto).' },
-      { id: 'b2', text: 'Situação: liberado; sem condenação. Sem outros antecedentes.' },
+      { id: 'b2', text: 'Situação: liberado. sem condenação. Sem outros antecedentes.' },
       { id: 'b3', text: 'Endereço atualizado na última renovação de documentos.' },
     ],
-    leads: [{ type: 'address', label: 'Endereço residencial', value: 'Rua das Acácias, 118 — ap. 21' }],
+    leads: [{ type: 'address', label: 'Endereço residencial', value: 'Rua das Acácias, 118, ap. 21' }],
     onOpen: [
       { type: 'addEvidence', id: 'samuel_current_record' },
       { type: 'discoverPerson', id: 'samuel', status: 'located' },
@@ -504,9 +504,9 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-andre-ficha',
-    title: 'Ficha de execução penal — André Silva',
+    title: 'Ficha de execução penal. André Silva',
     category: 'Execução penal',
-    issuer: 'Vara de Execuções — consulta',
+    issuer: 'Vara de Execuções, consulta',
     system: 'autos',
     blocks: [
       { id: 'b1', text: 'André Silva, regime fechado. Unidade prisional estadual. Condenação em 1ª instância (homicídio doloso).' },
@@ -515,14 +515,14 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-andre-visitas',
-    title: 'Registro de visitas — André Silva',
+    title: 'Registro de visitas. André Silva',
     category: 'Execução penal',
-    issuer: 'Unidade prisional — setor de visitas',
+    issuer: 'Unidade prisional, setor de visitas',
     system: 'autos',
     blocks: [
       {
         id: 'b1',
-        text: 'Visitantes cadastrados: advogado; Mariana Silva (irmã). Sem registro de visita de Mariana por vários anos.',
+        text: 'Visitantes cadastrados: advogado. Mariana Silva (irmã). Sem registro de visita de Mariana por vários anos.',
       },
       {
         id: 'b2',
@@ -536,7 +536,7 @@ export const seedDocuments: Document[] = [
     leads: [
       {
         type: 'institution',
-        label: 'Setor de visitas — Unidade prisional',
+        label: 'Setor de visitas. Unidade prisional',
         value: '21 3xxx-9100 (telefone fixo da delegacia)',
       },
     ],
@@ -548,9 +548,9 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-andre-ligacoes',
-    title: 'Registro de ligações autorizadas — André Silva',
+    title: 'Registro de ligações autorizadas. André Silva',
     category: 'Execução penal',
-    issuer: 'Unidade prisional — central de ligações',
+    issuer: 'Unidade prisional, central de ligações',
     system: 'autos',
     blocks: [
       {
@@ -566,7 +566,7 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-numero-sem-nome',
-    title: 'Log de interações — número sem nome (aparelho de Mariana)',
+    title: 'Log de interações, número sem nome (aparelho de Mariana)',
     category: 'Relatório',
     issuer: 'Extração do aparelho de Mariana',
     system: 'documentos',
@@ -584,9 +584,9 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-laudo-forense',
-    title: 'Laudo pericial — aparelho de Mariana (análise de pacotes)',
+    title: 'Laudo pericial, aparelho de Mariana (análise de pacotes)',
     category: 'Perícia',
-    issuer: 'Perícia — setor de dispositivos móveis',
+    issuer: 'Perícia, setor de dispositivos móveis',
     dateLabel: 'Solicitação do delegado',
     system: 'pericia',
     blocks: [
@@ -596,7 +596,7 @@ export const seedDocuments: Document[] = [
       },
       {
         id: 'b2',
-        text: 'Pacote não apresentado pelo launcher: local.priv.journal — base SQLite local própria, protegida por código numérico de 6 dígitos. Último acesso: recente.',
+        text: 'Pacote não apresentado pelo launcher: local.priv.journal, base SQLite local própria, protegida por código numérico de 6 dígitos. Último acesso: recente.',
       },
       {
         id: 'b3',
@@ -620,7 +620,7 @@ export const seedDocuments: Document[] = [
   // ───────────────────────── Bloco 5 ─────────────────────────
   {
     id: 'doc-jana-cadastro',
-    title: 'Cadastro — Jana Ribeiro',
+    title: 'Cadastro. Jana Ribeiro',
     category: 'Cadastro (pessoas)',
     issuer: 'Sistema de consulta policial',
     system: 'consultas',
@@ -636,9 +636,9 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-elisa-jana',
-    title: 'Depoimento arquivado — Jana Ribeiro',
+    title: 'Depoimento arquivado. Jana Ribeiro',
     category: 'Autos',
-    issuer: 'Vara Criminal — volume II (resumo)',
+    issuer: 'Vara Criminal, volume II (resumo)',
     dateLabel: 'Proc. 2020',
     system: 'autos',
     blocks: [
@@ -670,9 +670,9 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-elisa-argumento',
-    title: 'Autos — Caso Elisa Duarte',
+    title: 'Autos. Caso Elisa Duarte',
     category: 'Autos',
-    issuer: 'Vara Criminal — cópia integral (consulta)',
+    issuer: 'Vara Criminal, cópia integral (consulta)',
     dateLabel: 'Proc. 2020',
     system: 'autos',
     /** Sem onOpen de evidência: cada peça só entra no caderno ao ser registrada. */
@@ -691,28 +691,28 @@ export const seedDocuments: Document[] = [
       {
         id: 'sec-alibi',
         heading: 'Álibi e cronologia',
-        text: 'Elisa estava no Vértice. Amiga lembra que ela adiou a saída para ouvir “Avicii — Levels”; o set log da casa situa a transição por volta das 01:16 do relógio interno. Sandra relata ter visto mulher semelhante à vítima sendo seguida aproximadamente nesse intervalo e, depois, uma figura masculina deixando a região escura. André não apresentou álibi considerado confiável para a madrugada. A condenação não depende de registro de entrada/saída de André no interior da balada.',
+        text: 'Elisa estava no Vértice. Amiga lembra que ela adiou a saída para ouvir “Avicii. Levels”. o set log da casa situa a transição por volta das 01:16 do relógio interno. Sandra relata ter visto mulher semelhante à vítima sendo seguida aproximadamente nesse intervalo e, depois, uma figura masculina deixando a região escura. André não apresentou álibi considerado confiável para a madrugada. A condenação não depende de registro de entrada/saída de André no interior da balada.',
         extractableEvidenceId: 'elisa_weak_alibi',
       },
       {
         id: 'sec-testemunhas',
         heading: 'Testemunhas',
-        text: 'Ouvidos na fase policial: amigos da vítima, funcionários da Boate Vértice e o DJ Nicolas Prado Reis. Sandra Almeida: no primeiro avistamento, viu mulher de jaqueta clara e bolsa sendo seguida e acreditou reconhecer o homem como André Silva; não conhecia suficientemente outras frequentadoras para identificar a mulher. No retorno, viu apenas silhueta masculina na região do guardrail — sem rosto. A investigação original tratou os dois avistamentos como o mesmo homem.',
+        text: 'Ouvidos na fase policial: amigos da vítima, funcionários da Boate Vértice e o DJ Nicolas Prado Reis. Sandra Almeida: no primeiro avistamento, viu mulher de jaqueta clara e bolsa sendo seguida e acreditou reconhecer o homem como André Silva. não conhecia suficientemente outras frequentadoras para identificar a mulher. No retorno, viu apenas silhueta masculina na região do guardrail, sem rosto. A investigação original tratou os dois avistamentos como o mesmo homem.',
         extractableEvidenceId: 'elisa_lookalike_near_fall',
       },
       {
         id: 'sec-sentenca',
         heading: 'Sentença',
-        text: 'O conjunto — discussão, estado do relacionamento, álibi fraco e testemunha próxima à queda — sustentou a condenação em primeira instância.',
+        text: 'O conjunto, discussão, estado do relacionamento, álibi fraco e testemunha próxima à queda, sustentou a condenação em primeira instância.',
       },
     ],
   },
   {
     /** Legado — conteúdo absorvido em `doc-elisa-argumento`. */
     id: 'doc-elisa-alibi',
-    title: 'Autos — Caso Elisa Duarte (álibi)',
+    title: 'Autos. Caso Elisa Duarte (álibi)',
     category: 'Autos',
-    issuer: 'Vara Criminal — resumo',
+    issuer: 'Vara Criminal, resumo',
     dateLabel: 'Proc. 2020',
     system: 'autos',
     playerFacing: false,
@@ -727,9 +727,9 @@ export const seedDocuments: Document[] = [
   {
     /** Legado — conteúdo absorvido em `doc-elisa-argumento`. */
     id: 'doc-elisa-testemunha-queda',
-    title: 'Autos — Caso Elisa Duarte (testemunha)',
+    title: 'Autos. Caso Elisa Duarte (testemunha)',
     category: 'Autos',
-    issuer: 'Vara Criminal — resumo',
+    issuer: 'Vara Criminal, resumo',
     dateLabel: 'Proc. 2020',
     system: 'autos',
     playerFacing: false,
@@ -743,19 +743,19 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-elisa-geraldo-depoimento',
-    title: 'Depoimento arquivado — Geraldo Mota (resumo)',
+    title: 'Depoimento arquivado. Geraldo Mota (resumo)',
     category: 'Autos',
-    issuer: 'Vara Criminal — volume II',
+    issuer: 'Vara Criminal, volume II',
     dateLabel: 'Proc. 2020',
     system: 'autos',
     blocks: [
       {
         id: 'b1',
-        text: 'Geraldo Mota — barman do Vértice na noite dos fatos. Ouvido sobre o estado de Elisa Duarte e o ambiente do salão.',
+        text: 'Geraldo Mota, barman do Vértice na noite dos fatos. Ouvido sobre o estado de Elisa Duarte e o ambiente do salão.',
       },
       {
         id: 'b2',
-        text: 'Declaração resumida: serviu “quase nada” de álcool a Elisa; descreveu discussão com André e a saída dela. Sem menção a menoridade.',
+        text: 'Declaração resumida: serviu “quase nada” de álcool a Elisa. descreveu discussão com André e a saída dela. Sem menção a menoridade.',
       },
       {
         id: 'b3',
@@ -771,7 +771,7 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-geraldo-cadastro',
-    title: 'Cadastro — Geraldo Mota',
+    title: 'Cadastro. Geraldo Mota',
     category: 'Cadastro (pessoas)',
     issuer: 'Sistema de consulta policial',
     system: 'consultas',
@@ -787,7 +787,7 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-geraldo-ficha',
-    title: 'Ficha — Geraldo Mota',
+    title: 'Ficha. Geraldo Mota',
     category: 'Cadastro (pessoas)',
     issuer: 'Sistema de consulta policial',
     system: 'consultas',
@@ -809,9 +809,9 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-vertice-comanda-noitex',
-    title: 'Comanda e fechamento de caixa — Vértice (Noite X)',
+    title: 'Comanda e fechamento de caixa. Vértice (Noite X)',
     category: 'Arquivo privado',
-    issuer: 'Boate Vértice — administração (cópia nos autos)',
+    issuer: 'Boate Vértice, administração (cópia nos autos)',
     dateLabel: 'Noite X',
     system: 'documentos',
     blocks: [
@@ -832,7 +832,7 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-valter-ocorrencias',
-    title: 'Válter — ocorrências e vínculos',
+    title: 'Válter, ocorrências e vínculos',
     category: 'Consultas',
     issuer: 'Sistema policial',
     system: 'consultas',
@@ -853,9 +853,9 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-valter-associados',
-    title: 'Relação de associados — núcleo Válter (atual)',
+    title: 'Relação de associados, núcleo Válter (atual)',
     category: 'Consultas',
-    issuer: 'Delegacia especializada — resumo',
+    issuer: 'Delegacia especializada, resumo',
     system: 'consultas',
     blocks: [
       {
@@ -874,7 +874,7 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-valter-interceptacao',
-    title: 'Interceptação de rádio — operação contemporânea',
+    title: 'Interceptação de rádio, operação contemporânea',
     category: 'Perícia / interceptação',
     issuer: 'Setor de interceptações',
     dateLabel: '05/11/2026',
@@ -899,12 +899,12 @@ export const seedDocuments: Document[] = [
     id: 'doc-tabela-logistica-g17n',
     title: 'Tabela logística apreendida (parcial)',
     category: 'Documento apreendido',
-    issuer: 'Operação — núcleo Válter',
+    issuer: 'Operação, núcleo Válter',
     system: 'documentos',
     blocks: [
-      { id: 'b1', text: 'K02S — Cais 02 — Sul' },
-      { id: 'b2', text: 'G17N — Galpão 17 — Pátio Norte' },
-      { id: 'b3', text: 'B08L — Box 08 — Leste' },
+      { id: 'b1', text: 'K02S. Cais 02. Sul' },
+      { id: 'b2', text: 'G17N. Galpão 17. Pátio Norte' },
+      { id: 'b3', text: 'B08L. Box 08. Leste' },
     ],
     // Cruzamento com G17N: ver onDocumentConsulted → onPastorLogisticsCrossRef.
     onOpen: [],
@@ -913,9 +913,9 @@ export const seedDocuments: Document[] = [
   // Saves antigos podem ainda tê-las em documentsOwned; evidências/flags vêm dos novos gatilhos.
   {
     id: 'doc-mariana-contact-chronology',
-    title: 'Cronologia — contatos recentes de Mariana (montagem)',
+    title: 'Cronologia, contatos recentes de Mariana (montagem)',
     category: 'Anotação de caso (legado)',
-    issuer: 'Delegacia — Augusto Nogueira',
+    issuer: 'Delegacia. Augusto Nogueira',
     dateLabel: '05/11/2026',
     system: 'documentos',
     playerFacing: false,
@@ -929,9 +929,9 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-phone-file-dependencies',
-    title: 'Comparação — arquivos do celular × ordem de compreensão',
+    title: 'Comparação, arquivos do celular × ordem de compreensão',
     category: 'Anotação de caso (legado)',
-    issuer: 'Delegacia — Augusto Nogueira',
+    issuer: 'Delegacia. Augusto Nogueira',
     dateLabel: '05/11/2026',
     system: 'documentos',
     playerFacing: false,
@@ -945,9 +945,9 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-emergency-reassessment',
-    title: 'Releitura — chamada, entrada e apreensão do celular',
+    title: 'Releitura, chamada, entrada e apreensão do celular',
     category: 'Anotação de caso (legado)',
-    issuer: 'Delegacia — Augusto Nogueira',
+    issuer: 'Delegacia. Augusto Nogueira',
     dateLabel: '05/11/2026',
     system: 'documentos',
     playerFacing: false,
@@ -961,9 +961,9 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-sandra-depoimento',
-    title: 'Depoimento — Sandra Almeida (região da queda)',
+    title: 'Depoimento. Sandra Almeida (região da queda)',
     category: 'Autos',
-    issuer: 'Vara Criminal — volume III',
+    issuer: 'Vara Criminal, volume III',
     dateLabel: 'Proc. 2020',
     system: 'autos',
     blocks: [
@@ -973,11 +973,11 @@ export const seedDocuments: Document[] = [
       },
       {
         id: 'b2',
-        text: 'Preocupada, saiu para procurar um telefone. Não possuía relógio utilizável. O horário aproximado do primeiro evento foi reconstruído depois a partir do registro da ligação (~01:27), do percurso e da duração relatada — ordem de cerca de onze minutos entre o avistamento e o pedido de ajuda.',
+        text: 'Preocupada, saiu para procurar um telefone. Não possuía relógio utilizável. O horário aproximado do primeiro evento foi reconstruído depois a partir do registro da ligação (~01:27), do percurso e da duração relatada, ordem de cerca de onze minutos entre o avistamento e o pedido de ajuda.',
       },
       {
         id: 'b3',
-        text: 'Segundo avistamento: ao retornar, viu uma figura masculina saindo da área escura próxima ao guardrail. Não viu o rosto nem as roupas com clareza suficiente para identificação individual. Nunca afirmou tecnicamente ter reconhecido André nesse segundo momento; a investigação original assumiu que era o mesmo homem.',
+        text: 'Segundo avistamento: ao retornar, viu uma figura masculina saindo da área escura próxima ao guardrail. Não viu o rosto nem as roupas com clareza suficiente para identificação individual. Nunca afirmou tecnicamente ter reconhecido André nesse segundo momento. a investigação original assumiu que era o mesmo homem.',
       },
       {
         id: 'b4',
@@ -988,7 +988,7 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-sandra-ficha',
-    title: 'Ficha — Sandra Almeida',
+    title: 'Ficha. Sandra Almeida',
     category: 'Cadastro (pessoas)',
     issuer: 'Sistema de consulta policial',
     system: 'consultas',
@@ -1004,16 +1004,16 @@ export const seedDocuments: Document[] = [
       {
         type: 'addTask',
         id: 'task_talk_sandra',
-        label: 'Ouvir Sandra Almeida — testemunha da região da queda',
+        label: 'Ouvir Sandra Almeida, testemunha da região da queda',
       },
     ],
   },
   // ── Legado C1: raciocínio absorvido em evidências + Timeline.
   {
     id: 'doc-morsa-duration-note',
-    title: 'Nota — duração da atividade de Morsa (reconstrução)',
+    title: 'Nota, duração da atividade de Morsa (reconstrução)',
     category: 'Anotação de caso (legado)',
-    issuer: 'Delegacia — Augusto Nogueira',
+    issuer: 'Delegacia. Augusto Nogueira',
     dateLabel: '06/11/2026',
     system: 'documentos',
     playerFacing: false,
@@ -1027,9 +1027,9 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-memory-onset-chronology',
-    title: 'Cronologia — primeiros registros anormais de memória',
+    title: 'Cronologia, primeiros registros anormais de memória',
     category: 'Anotação de caso (legado)',
-    issuer: 'Delegacia — Augusto Nogueira',
+    issuer: 'Delegacia. Augusto Nogueira',
     dateLabel: '06/11/2026',
     system: 'documentos',
     playerFacing: false,
@@ -1043,19 +1043,19 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-hospital-ricardo-freitas',
-    title: 'Hospital Municipal — registro de atendimento',
+    title: 'Hospital Municipal, registro de atendimento',
     category: 'Institucional',
-    issuer: 'Hospital Municipal — arquivo médico',
+    issuer: 'Hospital Municipal, arquivo médico',
     dateLabel: 'Plantão correspondente',
     system: 'consultas',
     blocks: [
       {
         id: 'b1',
-        text: 'Paciente: Ricardo Freitas. Identidade declarada verbalmente; documento não apresentado. Contato familiar: não informado. Endereço: incompleto / não confirmado.',
+        text: 'Paciente: Ricardo Freitas. Identidade declarada verbalmente. documento não apresentado. Contato familiar: não informado. Endereço: incompleto / não confirmado.',
       },
       {
         id: 'b2',
-        text: 'Entrada em agitação, ansiedade intensa, desorientação episódica e sinais físicos que justificaram observação. Permaneceu internado; óbito na madrugada. Resistência a procedimentos; dificuldade de obtenção de dados pessoais.',
+        text: 'Entrada em agitação, ansiedade intensa, desorientação episódica e sinais físicos que justificaram observação. Permaneceu internado. óbito na madrugada. Resistência a procedimentos. dificuldade de obtenção de dados pessoais.',
       },
       {
         id: 'b3',
@@ -1066,7 +1066,7 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-forum-hvalenca',
-    title: 'Arquivo de fórum técnico — tópico de 2021',
+    title: 'Arquivo de fórum técnico, tópico de 2021',
     category: 'Consultas (rede)',
     issuer: 'Espelho arquivado / busca aberta',
     dateLabel: '2021',
@@ -1089,14 +1089,14 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-aster-admin',
-    title: 'Aster Sistemas — contato administrativo',
+    title: 'Aster Sistemas, contato administrativo',
     category: 'Consultas',
     issuer: 'Junta comercial / arquivo empresarial',
     system: 'consultas',
     blocks: [
       {
         id: 'b1',
-        text: 'Aster Sistemas Ltda. — empresa reestruturada após 2022. Contato administrativo remanescente para arquivo de pessoal e incidentes internos da época.',
+        text: 'Aster Sistemas Ltda., empresa reestruturada após 2022. Contato administrativo remanescente para arquivo de pessoal e incidentes internos da época.',
       },
       {
         id: 'b2',
@@ -1111,9 +1111,9 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-ricardo-consulta-negativa',
-    title: 'Consulta civil — Ricardo Freitas (dados incompletos)',
+    title: 'Consulta civil. Ricardo Freitas (dados incompletos)',
     category: 'Consultas',
-    issuer: 'Sistema policial — cadastros',
+    issuer: 'Sistema policial, cadastros',
     system: 'consultas',
     blocks: [
       {
@@ -1143,7 +1143,7 @@ export const seedDocuments: Document[] = [
      * confirmação = `doc-henrique-cadastro`).
      */
     id: 'doc-mariana-ricardo-note',
-    title: 'Extração — anotação privada de Mariana (Ricardo)',
+    title: 'Extração, anotação privada de Mariana (Ricardo)',
     category: 'Extração forense',
     issuer: 'Perícia / celular de Mariana',
     system: 'pericia',
@@ -1157,7 +1157,7 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-henrique-cadastro',
-    title: 'Consulta cadastral — identificador hvalenca',
+    title: 'Consulta cadastral, identificador hvalenca',
     category: 'Cadastro (pessoas)',
     issuer: 'Sistema policial / juntas e registros profissionais',
     system: 'consultas',
@@ -1168,11 +1168,11 @@ export const seedDocuments: Document[] = [
       },
       {
         id: 'b2',
-        text: 'Nome completo recuperado: Henrique Valença. Cadastro civil existente; histórico profissional em empresa de tecnologia (registro encerrado / reestruturado).',
+        text: 'Nome completo recuperado: Henrique Valença. Cadastro civil existente. histórico profissional em empresa de tecnologia (registro encerrado / reestruturado).',
       },
       {
         id: 'b3',
-        text: 'Nenhuma menção a “Ricardo Freitas” neste cadastro. A correspondência é técnica — conta e vínculos — não hospitalar.',
+        text: 'Nenhuma menção a “Ricardo Freitas” neste cadastro. A correspondência é técnica, conta e vínculos. não hospitalar.',
       },
     ],
     onOpen: [
@@ -1185,7 +1185,7 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-henrique-empresa',
-    title: 'Henrique Valença — vínculo empresarial',
+    title: 'Henrique Valença, vínculo empresarial',
     category: 'Consultas',
     issuer: 'Sistema policial / juntas',
     system: 'consultas',
@@ -1206,7 +1206,7 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-henrique-incidente',
-    title: 'INCIDENTE / SEGURANÇA — sessões não reconhecidas (H. Valença)',
+    title: 'INCIDENTE / SEGURANÇA, sessões não reconhecidas (H. Valença)',
     category: 'Consultas',
     issuer: 'TI / Segurança da informação',
     system: 'consultas',
@@ -1217,7 +1217,7 @@ export const seedDocuments: Document[] = [
       },
       {
         id: 'b2',
-        text: 'Ação: captura temporária de tráfego da estação/rede (~minutos) anexada ao ticket (hv_session_capture.pcap). Análise preliminar inconclusiva — possível comprometimento de credencial ou erro de sessão.',
+        text: 'Ação: captura temporária de tráfego da estação/rede (~minutos) anexada ao ticket (hv_session_capture.pcap). Análise preliminar inconclusiva, possível comprometimento de credencial ou erro de sessão.',
       },
       {
         id: 'b3',
@@ -1228,7 +1228,7 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-cecilia-contato',
-    title: 'Contato profissional — Cecília Prado',
+    title: 'Contato profissional. Cecília Prado',
     category: 'Consultas',
     issuer: 'Lista de colegas / depoentes',
     system: 'consultas',
@@ -1242,7 +1242,7 @@ export const seedDocuments: Document[] = [
         text: 'Indicada como quem melhor descreveu a deterioração comportamental de Henrique sem endossar as alegações técnicas.',
       },
     ],
-    leads: [{ type: 'address', label: 'Endereço', value: 'Alameda Nova, 88 — ap. 14' }],
+    leads: [{ type: 'address', label: 'Endereço', value: 'Alameda Nova, 88, ap. 14' }],
     onOpen: [
       { type: 'addEvidence', id: 'cecilia_prado_contact' },
       { type: 'discoverPerson', id: 'cecilia', status: 'located' },
@@ -1250,9 +1250,9 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-henrique-pcap-note',
-    title: 'Anexo de ticket — hv_session_capture.pcap',
+    title: 'Anexo de ticket, hv_session_capture.pcap',
     category: 'Perícia / forense',
-    issuer: 'Backup setorial — ticket de segurança H. Valença',
+    issuer: 'Backup setorial, ticket de segurança H. Valença',
     system: 'pericia',
     blocks: [
       {
@@ -1261,14 +1261,14 @@ export const seedDocuments: Document[] = [
       },
       {
         id: 'b2',
-        text: 'Conteúdo: pacotes RTP (voz). Dois identificadores SSRC recorrentes; sequence numbers e timestamps exigem inspeção na bancada. Análise corporativa original: inconclusiva.',
+        text: 'Conteúdo: pacotes RTP (voz). Dois identificadores SSRC recorrentes. sequence numbers e timestamps exigem inspeção na bancada. Análise corporativa original: inconclusiva.',
       },
     ],
     onOpen: [],
   },
   {
     id: 'doc-guardrail-reanalise',
-    title: 'Laudo complementar — Guardrail / proteção da via',
+    title: 'Laudo complementar. Guardrail / proteção da via',
     category: 'Perícia / forense',
     issuer: 'Perícia Criminal',
     dateLabel: '07/11/2026',
@@ -1292,7 +1292,7 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-camera-veiculo-madrugada',
-    title: 'Câmera viária — veículo com dano lateral (madrugada)',
+    title: 'Câmera viária, veículo com dano lateral (madrugada)',
     category: 'Consultas',
     issuer: 'Registro municipal / imagem policial',
     dateLabel: 'Noite X',
@@ -1313,7 +1313,7 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-mauro-transferencia',
-    title: 'Comprovante de transferência — reparo veicular',
+    title: 'Comprovante de transferência, reparo veicular',
     category: 'Documento particular',
     issuer: 'Mauro (arquivo pessoal)',
     system: 'documentos',
@@ -1321,19 +1321,19 @@ export const seedDocuments: Document[] = [
     blocks: [
       {
         id: 'b1',
-        text: 'Transferência bancária antiga para oficina/prestador identificado como Dênis — valor compatível com reparo de lateral.',
+        text: 'Transferência bancária antiga para oficina/prestador identificado como Dênis, valor compatível com reparo de lateral.',
       },
       {
         id: 'b2',
         text: 'Endereço da oficina anotado no comprovante.',
       },
     ],
-    leads: [{ type: 'address', label: 'Oficina', value: 'Oficina Dênis — pátio' }],
+    leads: [{ type: 'address', label: 'Oficina', value: 'Oficina Dênis, pátio' }],
     onOpen: [{ type: 'addEvidence', id: 'mauro_repair_transfer_denis' }],
   },
   {
     id: 'doc-bia-ficha',
-    title: 'Ficha — Bia (vínculo familiar)',
+    title: 'Ficha. Bia (vínculo familiar)',
     category: 'Cadastro (pessoas)',
     issuer: 'Sistema de consulta policial',
     system: 'consultas',
@@ -1347,7 +1347,7 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-rui-ficha',
-    title: 'Ficha — Rui',
+    title: 'Ficha. Rui',
     category: 'Cadastro (pessoas)',
     issuer: 'Sistema de consulta policial',
     system: 'consultas',
@@ -1361,9 +1361,9 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-escala-vtr14',
-    title: 'Escala de equipe — VTR-14',
+    title: 'Escala de equipe. VTR-14',
     category: 'Arquivo institucional',
-    issuer: 'Corporação — escala de equipes',
+    issuer: 'Corporação, escala de equipes',
     dateLabel: 'Madrugada do incidente',
     system: 'consultas',
     blocks: [
@@ -1373,7 +1373,7 @@ export const seedDocuments: Document[] = [
       },
       {
         id: 'b2',
-        text: 'Responsável / condutor: Augusto Nogueira\nEquipe: Augusto Nogueira (condutor); apoio de turno conforme escala.',
+        text: 'Responsável / condutor: Augusto Nogueira\nEquipe: Augusto Nogueira (condutor). apoio de turno conforme escala.',
       },
       {
         id: 'b3',
@@ -1394,14 +1394,14 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-omitido-interface',
-    title: 'Log de sessão — identificador O Omitido',
+    title: 'Log de sessão, identificador O Omitido',
     category: 'Extração forense',
     issuer: 'Material digital recuperado (Henrique / Mariana)',
     system: 'pericia',
     blocks: [
       {
         id: 'b1',
-        text: 'Nos registros de interface reconstruídos, o interlocutor aparece sob o identificador “O Omitido” — rótulo exibido pelo próprio sistema, não atribuído pela investigação.',
+        text: 'Nos registros de interface reconstruídos, o interlocutor aparece sob o identificador “O Omitido”, rótulo exibido pelo próprio sistema, não atribuído pela investigação.',
       },
       {
         id: 'b2',
@@ -1413,15 +1413,15 @@ export const seedDocuments: Document[] = [
   {
     /** Legado — saves antigos; não entra mais no fluxo novo (Reflection no diário). */
     id: 'doc-diario-releitura-omitido',
-    title: 'Releitura — diário à luz de O Omitido',
+    title: 'Releitura, diário à luz de O Omitido',
     category: 'Anotação de caso',
-    issuer: 'Delegacia — Augusto Nogueira',
+    issuer: 'Delegacia. Augusto Nogueira',
     system: 'documentos',
     playerFacing: false,
     blocks: [
       {
         id: 'b1',
-        text: 'Parte do comportamento estranho registrado no diário parece preparada para o percurso. Outra parte permanece ilegível: lapsos reais, encenação, influência — sem fronteira segura.',
+        text: 'Parte do comportamento estranho registrado no diário parece preparada para o percurso. Outra parte permanece ilegível: lapsos reais, encenação, influência, sem fronteira segura.',
       },
       {
         id: 'b2',
@@ -1433,9 +1433,9 @@ export const seedDocuments: Document[] = [
   {
     /** Legado — saves antigos; não entra mais no fluxo novo (Reflection). */
     id: 'doc-omitido-assistencia',
-    title: 'Nota — assistência técnica no desaparecimento',
+    title: 'Nota, assistência técnica no desaparecimento',
     category: 'Anotação de caso',
-    issuer: 'Delegacia — Augusto Nogueira',
+    issuer: 'Delegacia. Augusto Nogueira',
     system: 'documentos',
     playerFacing: false,
     blocks: [
@@ -1452,7 +1452,7 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-roberto-denuncia',
-    title: 'Roberto Siqueira — afastamento e denúncia anônima',
+    title: 'Roberto Siqueira, afastamento e denúncia anônima',
     category: 'Consultas',
     issuer: 'Corregedoria / arquivo interno',
     system: 'consultas',
@@ -1463,7 +1463,7 @@ export const seedDocuments: Document[] = [
       },
       {
         id: 'b2',
-        text: 'O problema está na hora: dias antes do desaparecimento de Mariana Silva. Tempo suficiente para abrir uma cadeira — a do delegado que assumiu o caso.',
+        text: 'O problema está na hora: dias antes do desaparecimento de Mariana Silva. Tempo suficiente para abrir uma cadeira, a do delegado que assumiu o caso.',
       },
     ],
     /** Efeitos de Roberto + mensagens: `onRobertoExposed` (DocumentSheet). */
@@ -1472,9 +1472,9 @@ export const seedDocuments: Document[] = [
   {
     /** Legado — saves antigos; conclusão agora vem da leitura no WhatsApp. */
     id: 'doc-mensagens-impossiveis',
-    title: 'Nota — o que as mensagens sabem demais',
+    title: 'Nota, o que as mensagens sabem demais',
     category: 'Anotação de caso',
-    issuer: 'Delegacia — Augusto Nogueira',
+    issuer: 'Delegacia. Augusto Nogueira',
     system: 'documentos',
     playerFacing: false,
     blocks: [
@@ -1484,16 +1484,16 @@ export const seedDocuments: Document[] = [
       },
       {
         id: 'b2',
-        text: 'A pergunta deixa de ser “onde está Mariana?” e passa a ser “quem está falando — e desde quando?”.',
+        text: 'A pergunta deixa de ser “onde está Mariana?” e passa a ser “quem está falando, e desde quando?”.',
       },
     ],
     onOpen: [],
   },
   {
     id: 'doc-trilha-camera-mariana',
-    title: 'Consulta — câmeras viárias (últimos deslocamentos)',
+    title: 'Consulta, câmeras viárias (últimos deslocamentos)',
     category: 'Consultas',
-    issuer: 'Sistema policial — imagens',
+    issuer: 'Sistema policial, imagens',
     system: 'consultas',
     blocks: [
       {
@@ -1509,9 +1509,9 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-trilha-transporte-mariana',
-    title: 'Consulta — registro de transporte / passagem',
+    title: 'Consulta, registro de transporte / passagem',
     category: 'Consultas',
-    issuer: 'Sistema policial — mobilidade',
+    issuer: 'Sistema policial, mobilidade',
     system: 'consultas',
     blocks: [
       {
@@ -1527,28 +1527,28 @@ export const seedDocuments: Document[] = [
   },
   {
     id: 'doc-trilha-fisica-mariana',
-    title: 'Relatório institucional — últimos deslocamentos (Mariana Silva)',
+    title: 'Relatório institucional, últimos deslocamentos (Mariana Silva)',
     category: 'Consultas',
-    issuer: 'Sistema policial — consolidação de consultas',
+    issuer: 'Sistema policial, consolidação de consultas',
     system: 'consultas',
     blocks: [
       {
         id: 'b1',
-        text: 'Consolidação de câmera, transporte e registros correlatos: percurso até um galpão desativado no setor norte. Sem endereço ditado por terceiros — só a cadeia documental.',
+        text: 'Consolidação de câmera, transporte e registros correlatos: percurso até um galpão desativado no setor norte. Sem endereço ditado por terceiros. só a cadeia documental.',
       },
       {
         id: 'b2',
-        text: 'Há motivo suficiente para deslocamento imediato ao local. Ainda há chance — ou havia — de encontrá-la viva.',
+        text: 'Há motivo suficiente para deslocamento imediato ao local. Ainda há chance, ou havia, de encontrá-la viva.',
       },
     ],
-    leads: [{ type: 'address', label: 'Local', value: 'Galpão desativado — setor norte' }],
+    leads: [{ type: 'address', label: 'Local', value: 'Galpão desativado, setor norte' }],
     onOpen: [],
   },
   {
     id: 'doc-outros-desaparecimentos',
-    title: 'Resultado de busca — outros desaparecimentos semelhantes',
+    title: 'Resultado de busca, outros desaparecimentos semelhantes',
     category: 'Consultas',
-    issuer: 'Sistema policial — resumo institucional',
+    issuer: 'Sistema policial, resumo institucional',
     system: 'consultas',
     blocks: [
       {
@@ -1565,15 +1565,15 @@ export const seedDocuments: Document[] = [
   {
     /** Legado — saves antigos; anomalias agora são eventos + Reflection. */
     id: 'doc-anomalias-augusto',
-    title: 'Nota — anomalias envolvendo Augusto',
+    title: 'Nota, anomalias envolvendo Augusto',
     category: 'Anotação de caso',
-    issuer: 'Delegacia — Augusto Nogueira',
+    issuer: 'Delegacia. Augusto Nogueira',
     system: 'documentos',
     playerFacing: false,
     blocks: [
       {
         id: 'b1',
-        text: 'Frase enviada no tom exato de uma reflexão anterior. Resposta a algo que não lembra de ter dito. Poucos sinais — suficientes.',
+        text: 'Frase enviada no tom exato de uma reflexão anterior. Resposta a algo que não lembra de ter dito. Poucos sinais, suficientes.',
       },
       {
         id: 'b2',

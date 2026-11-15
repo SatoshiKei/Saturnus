@@ -131,7 +131,7 @@ export function onAndreWronglyReflectionDone() {
     {
       type: 'addTask',
       id: 'task_press_miro_third',
-      label: 'Pressionar Miro — André tinha álibi; o que aconteceu na queda?',
+      label: 'Pressionar Miro. André tinha álibi. o que aconteceu na queda?',
     },
   ])
 }
@@ -214,7 +214,7 @@ export function onPartsShopDenisLead() {
     {
       type: 'addTask',
       id: 'task_talk_denis',
-      label: 'Ir à oficina de Dênis — memória do Jaguar verde',
+      label: 'Ir à oficina de Dênis, memória do Jaguar verde',
     },
   ])
 }
@@ -427,7 +427,7 @@ const OMITIDO_BRIDGE_NOTIFY = {
   label: 'CADERNO',
   title: 'O Omitido',
   summary:
-    'Rótulo operacional — hipótese ainda sem forma, sem identidade e sem prova de intenção.',
+    'Rótulo operacional, hipótese ainda sem forma, sem identidade e sem prova de intenção.',
   refId: 'omitido_named_in_records',
 }
 

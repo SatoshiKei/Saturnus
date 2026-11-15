@@ -75,7 +75,7 @@ export const MEMORY_SCORES = meta.scores as Record<string, number>
 export const CASE_MEDIA_CORPUS: CaseMediaEntry[] = [
   {
     id: 'media-apartment',
-    label: 'Referência acústica — apartamento de Mariana',
+    label: 'Referência acústica, apartamento de Mariana',
     kind: 'reference',
     source: 'apartment',
     audioSrc: meta.audio.apartment,
@@ -83,7 +83,7 @@ export const CASE_MEDIA_CORPUS: CaseMediaEntry[] = [
   },
   {
     id: 'media-emergency',
-    label: 'Chamada de emergência 08:03 — fingerprint vocal',
+    label: 'Chamada de emergência 08:03, fingerprint vocal',
     kind: 'original',
     source: 'emergency',
     audioSrc: meta.audio.emergency,
@@ -91,7 +91,7 @@ export const CASE_MEDIA_CORPUS: CaseMediaEntry[] = [
   },
   {
     id: 'media-emergency-base',
-    label: 'Base corrompida — emergência (arquivo do caso)',
+    label: 'Base corrompida, emergência (arquivo do caso)',
     kind: 'original',
     source: 'emergency',
     audioSrc: '/assets/audio/forensic/puzzle01/p01_corrupted_base.wav',
@@ -99,7 +99,7 @@ export const CASE_MEDIA_CORPUS: CaseMediaEntry[] = [
   },
   {
     id: 'media-enceladus',
-    label: 'Enceladus — padrão periódico recuperado',
+    label: 'Enceladus, padrão periódico recuperado',
     kind: 'derived',
     source: 'enceladus',
     audioSrc: meta.audio.enceladus,
@@ -108,7 +108,7 @@ export const CASE_MEDIA_CORPUS: CaseMediaEntry[] = [
   },
   {
     id: 'media-cassini-derived',
-    label: 'Cassini-Huygens — stream B reconstruído (output derivado)',
+    label: 'Cassini-Huygens, stream B reconstruído (output derivado)',
     kind: 'derived',
     source: 'cassini_derived',
     audioSrc: meta.audio.cassiniDerived,
@@ -119,20 +119,20 @@ export const CASE_MEDIA_CORPUS: CaseMediaEntry[] = [
   },
   {
     id: 'media-cassini-capture',
-    label: 'Cassini-Huygens — stream B em ordem de captura (não reconstruído)',
+    label: 'Cassini-Huygens, stream B em ordem de captura (não reconstruído)',
     kind: 'original',
     source: 'other',
     audioSrc: meta.audio.cassiniCaptureOrder,
     parentLabel: 'hv_session_capture.pcap',
-    evidenceHint: 'Mesmo PCAP; sem artefato de reconstrução',
+    evidenceHint: 'Mesmo PCAP. sem artefato de reconstrução',
   },
   {
     id: 'media-cassini-pcap',
-    label: 'PCAP original — hv_session_capture.pcap',
+    label: 'PCAP original, hv_session_capture.pcap',
     kind: 'original',
     source: 'other',
     audioSrc: meta.audio.cassiniCaptureOrder,
-    evidenceHint: 'Pacotes brutos — sem o output derivado da bancada',
+    evidenceHint: 'Pacotes brutos, sem o output derivado da bancada',
   },
 ]
 
@@ -236,7 +236,7 @@ export function searchCaseMedia(
         source: m.source,
         kind: m.kind,
         reason: wide
-          ? 'Seleção ampla demais — assinatura diluída no acervo.'
+          ? 'Seleção ampla demais, assinatura diluída no acervo.'
           : 'Sobreposição fraca com qualquer janela característica.',
         regionHint: null,
       })
@@ -270,17 +270,17 @@ export function searchCaseMedia(
       if (region.source === 'cassini_derived' && !hasRuntimeDerived) {
         score *= 0.35
         strong = false
-        reason = 'Sem output derivado persistido da bancada — reconstrua o stream B primeiro.'
+        reason = 'Sem output derivado persistido da bancada, reconstrua o stream B primeiro.'
       } else {
         strong = m.id === canonicalId && score >= MEMORY_FP_THRESHOLD && best.ratio >= 0.55
         reason = strong
           ? 'Assinatura compatível com a janela selecionada.'
-          : 'Possível afinidade — confirme abrindo a fonte.'
+          : 'Possível afinidade, confirme abrindo a fonte.'
       }
     } else if (region.source === 'cassini_derived' && m.id === 'media-cassini-capture') {
       score = (MEMORY_SCORES.D_vs_capture_order ?? 0.3) * 0.7
       strong = false
-      reason = 'Sobreposição parcial com stream em ordem de captura — não é o artefato reconstruído.'
+      reason = 'Sobreposição parcial com stream em ordem de captura, não é o artefato reconstruído.'
     } else if (region.source === 'cassini_derived' && m.id === 'media-cassini-pcap') {
       score = 0.18
       strong = false

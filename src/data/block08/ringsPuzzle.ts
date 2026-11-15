@@ -11,30 +11,30 @@ export const P10_ASSETS = '/assets/block08/rings/p10'
 export const RING_MEDIA = {
   livia: {
     id: 'livia',
-    label: 'Cobertura Lívia — trecho Maralto',
+    label: 'Cobertura Lívia, trecho Maralto',
     kind: 'audio' as const,
     audioSrc: '/assets/audio/forensic/puzzle10/livia_protest_clip.wav',
     durationSec: 12,
-    note: 'Protesto; sirene policial distintiva.',
+    note: 'Protesto. sirene policial distintiva.',
   },
   samuel: {
     id: 'samuel',
-    label: 'Vídeo de celular — material Samuel',
+    label: 'Vídeo de celular, material Samuel',
     kind: 'video' as const,
     audioSrc: '/assets/audio/forensic/puzzle10/samuel_phone_clip.wav',
     posterSrc: `${P10_ASSETS}/BG-01 — rua de aproximação.png`,
     spriteSrc: `${P10_ASSETS}/SP-01 — masked-walk-away-2.png`,
     durationSec: 10,
-    note: 'Morsa noutro ponto; relógio do aparelho pouco confiável.',
+    note: 'Morsa noutro ponto. relógio do aparelho pouco confiável.',
   },
   secondary: {
     id: 'secondary',
-    label: 'Arquivo secundário — percurso noturno',
+    label: 'Arquivo secundário, percurso noturno',
     kind: 'video' as const,
     posterSrc: `${P10_ASSETS}/BG-02 — curva I transição.png`,
     spriteSrc: `${P10_ASSETS}/SP-01 — masked-walk-away-3.png`,
     durationSec: 8,
-    note: 'Iluminação industrial; flicker/rolling shutter.',
+    note: 'Iluminação industrial. flicker/rolling shutter.',
   },
 } as const
 
@@ -72,7 +72,7 @@ export const RING_ROUTES: RingRoute[] = [
   {
     id: 'west',
     label: 'Rota externa oeste',
-    detail: 'Contorno longo do complexo — incompatível com a janela temporal.',
+    detail: 'Contorno longo do complexo, incompatível com a janela temporal.',
     compatible: false,
     backgrounds: [`${P10_ASSETS}/BG-01 — rua de aproximação.png`],
   },
@@ -266,7 +266,7 @@ export function inspectCam11Structure(): {
     gapSec: 60,
     expectedSegment: MISSING_SEGMENT_ID,
     message:
-      'CAM11_SEG_1278 encerra 21:15:00; CAM11_SEG_1280 inicia 21:16:00 — ~60 s ausentes do índice.',
+      'CAM11_SEG_1278 encerra 21:15:00. CAM11_SEG_1280 inicia 21:16:00, ~60 s ausentes do índice.',
   }
 }
 
@@ -334,7 +334,7 @@ export const RING_CONTINUITY_FRAMES: RingContinuityFrame[] = [
     id: 'cam03',
     timeLabel: '21:14:08',
     cameraId: 'CAM 03',
-    caption: 'Entra na passagem — mascarado.',
+    caption: 'Entra na passagem, mascarado.',
     bgSrc: `${P10_ASSETS}/BG-02 — curva I transição.png`,
     sprites: [
       `${P10_ASSETS}/SP-01 — masked-walk-away-1.png`,
@@ -352,7 +352,7 @@ export const RING_CONTINUITY_FRAMES: RingContinuityFrame[] = [
     id: 'cam07',
     timeLabel: '21:14:31',
     cameraId: 'CAM 07',
-    caption: 'Corredor intermediário — ainda mascarado.',
+    caption: 'Corredor intermediário, ainda mascarado.',
     bgSrc: `${P10_ASSETS}/BG-04 — corredor intermediário.png`,
     sprites: [
       `${P10_ASSETS}/SP-01 — masked-walk-away-1.png`,

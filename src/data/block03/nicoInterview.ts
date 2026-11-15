@@ -89,7 +89,7 @@ export const nicoBeats: Record<NicoTopicId, NicoBeat[]> = {
     { speaker: 'Augusto', text: 'Existem registros daquela noite?' },
     {
       speaker: 'Nico',
-      text: 'Tem.\nA casa gravava o feed da mesa automaticamente.\nSet, controle técnico, arquivo de DJ.\nNão é câmera — é o áudio direto da cabine.',
+      text: 'Tem.\nA casa gravava o feed da mesa automaticamente.\nSet, controle técnico, arquivo de DJ.\nNão é câmera, é o áudio direto da cabine.',
       portrait: 'nico',
     },
     { speaker: 'Augusto', text: 'Você ainda guarda isso?' },

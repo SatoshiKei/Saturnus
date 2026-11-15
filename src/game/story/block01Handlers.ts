@@ -31,7 +31,7 @@ export function registerInitialPoliceReport() {
       kind: 'evidence',
       presentation: 'card',
       label: 'EVIDÊNCIA REGISTRADA',
-      title: 'BO — desaparecimento de Mariana Silva',
+      title: 'BO, desaparecimento de Mariana Silva',
       summary: 'A ocorrência inicial foi incorporada ao caderno de investigação.',
       refId: 'initial_police_report',
     },

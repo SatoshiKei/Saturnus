@@ -402,7 +402,7 @@ export function onSaturnusFinalReflectionDone() {
       tasks: [
         {
           id: 'task_saturnus_memory',
-          label: `Saturnus — ${MEMORY_WORD}`,
+          label: `Saturnus, ${MEMORY_WORD}`,
           completed: true,
         },
       ],

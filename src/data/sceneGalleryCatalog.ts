@@ -32,24 +32,24 @@ const VN_SCENE: Record<CanonicalInterviewId, SceneId> = {
 }
 
 const VN_TITLES: Record<CanonicalInterviewId, string> = {
-  hospital: 'Hospital — entrevistas iniciais',
-  lucas: 'Universidade — Lucas',
-  nico: 'Titã Club — Nico',
-  livia: 'Rádio Costeira — Lívia',
-  samuel: 'Residência — Samuel Teixeira',
-  andre: 'Penitenciária — André Silva',
-  nicoFollowup: 'Titã Club — Nico (retorno)',
+  hospital: 'Hospital, entrevistas iniciais',
+  lucas: 'Universidade. Lucas',
+  nico: 'Titã Club. Nico',
+  livia: 'Rádio Costeira. Lívia',
+  samuel: 'Residência. Samuel Teixeira',
+  andre: 'Penitenciária. André Silva',
+  nicoFollowup: 'Titã Club. Nico (retorno)',
   jana: 'Casa de Jana Ribeiro',
-  janaFollowup: 'Jana — segundo contato',
-  geraldo: 'Geraldo — primeira conversa',
-  miro: 'Detenção — Miro',
-  miroFollowup: 'Miro — segundo interrogatório',
-  sandra: 'Residência — Sandra',
-  cecilia: 'Residência — Cecília',
-  andreFollowup: 'André — confronto',
-  miroThird: 'Miro — última conversa',
-  denis: 'Oficina — Dênis',
-  mauro: 'Residência — Mauro',
+  janaFollowup: 'Jana, segundo contato',
+  geraldo: 'Geraldo, primeira conversa',
+  miro: 'Detenção. Miro',
+  miroFollowup: 'Miro, segundo interrogatório',
+  sandra: 'Residência. Sandra',
+  cecilia: 'Residência. Cecília',
+  andreFollowup: 'André, confronto',
+  miroThird: 'Miro, última conversa',
+  denis: 'Oficina. Dênis',
+  mauro: 'Residência. Mauro',
   bia: 'Bia',
   rui: 'Rui',
 }
@@ -98,7 +98,7 @@ export function buildSceneGalleryEntries(): SceneGalleryEntry[] {
         const second = step.vertice.includes('set_crossref')
         pushEntry(list, {
           id: second ? 'vertice-2' : 'vertice-1',
-          title: second ? 'Boate Vértice — cruzamento' : 'Boate Vértice — primeira visita',
+          title: second ? 'Boate Vértice, cruzamento' : 'Boate Vértice, primeira visita',
           kind: 'vertice',
           prepBeforeCheckpoint: cp.id,
           sceneId: 'vertice',
@@ -133,7 +133,7 @@ export function buildSceneGalleryEntries(): SceneGalleryEntry[] {
       if ('h' in step && step.h === 'finishTrailDiscovery') {
         pushEntry(list, {
           id: 'trail',
-          title: 'Galpão — achado final',
+          title: 'Galpão, achado final',
           kind: 'scene-runner',
           prepBeforeCheckpoint: cp.id,
           sceneId: 'trail',
@@ -145,7 +145,7 @@ export function buildSceneGalleryEntries(): SceneGalleryEntry[] {
     if (cp.id === 'b03-nico-located') {
       pushEntry(list, {
         id: 'early-nico',
-        title: 'Titã Club — Nico (visita antecipada)',
+        title: 'Titã Club. Nico (visita antecipada)',
         kind: 'early',
         prepBeforeCheckpoint: 'b03-after-nico',
         sceneId: 'nico',
@@ -223,7 +223,7 @@ export function buildSceneGalleryEntries(): SceneGalleryEntry[] {
     if (cp.id === 'b07-ricardo-henrique') {
       pushEntry(list, {
         id: 'hospital-deposit',
-        title: 'Hospital — depósito de pertences',
+        title: 'Hospital, depósito de pertences',
         kind: 'hospital-deposit',
         prepBeforeCheckpoint: cp.id,
         sceneId: 'hospital',
@@ -242,7 +242,7 @@ export function buildSceneGalleryEntries(): SceneGalleryEntry[] {
     if (cp.id === 'b08-rings-done') {
       pushEntry(list, {
         id: 'morsa-cctv',
-        title: 'Revelação — imagem CAM11',
+        title: 'Revelação, imagem CAM11',
         kind: 'morsa-cctv',
         prepBeforeCheckpoint: cp.id,
       })

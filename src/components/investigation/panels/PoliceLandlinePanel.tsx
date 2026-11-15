@@ -61,7 +61,7 @@ export function PoliceLandline({ onClose }: { onClose: () => void }) {
     if (inv.flags.block07_aster_call_unlocked && !inv.flags.block07_henrique_named) {
       extra.push({
         key: 'ASTER',
-        name: 'Aster Sistemas — administrativo',
+        name: 'Aster Sistemas, administrativo',
         scriptId: 'call-aster-henrique',
       })
     } else if (
@@ -70,7 +70,7 @@ export function PoliceLandline({ onClose }: { onClose: () => void }) {
     ) {
       extra.push({
         key: 'ASTER',
-        name: 'Aster Sistemas — administrativo',
+        name: 'Aster Sistemas, administrativo',
         scriptId: 'call-aster-early',
       })
     }
@@ -78,7 +78,7 @@ export function PoliceLandline({ onClose }: { onClose: () => void }) {
       extra.push({ key: 'PECA', name: 'Peças / importados', scriptId: 'call-parts-jaguar-lead' })
     }
     if (inv.flags.block08_detran_call_unlocked && !inv.flags.block08_detran_done) {
-      extra.push({ key: 'DETRAN', name: 'DETRAN — frota histórica', scriptId: 'call-detran-jaguar' })
+      extra.push({ key: 'DETRAN', name: 'DETRAN, frota histórica', scriptId: 'call-detran-jaguar' })
     }
     if (
       inv.flags.marcelo_address_found &&
@@ -124,7 +124,7 @@ export function PoliceLandline({ onClose }: { onClose: () => void }) {
         {
           type: 'addTask',
           id: 'task_call_renata',
-          label: 'Falar com Renata Farias — ramal que Júlia indicou',
+          label: 'Falar com Renata Farias, ramal que Júlia indicou',
         },
       ])
     }
@@ -192,7 +192,7 @@ export function PoliceLandline({ onClose }: { onClose: () => void }) {
             kind: 'evidence',
             presentation: 'card',
             label: 'DOCUMENTO',
-            title: 'Hospital Municipal — registro de atendimento',
+            title: 'Hospital Municipal, registro de atendimento',
             summary:
               'O arquivo encaminhou o resumo de Ricardo Freitas. Abra no terminal da delegacia, em Consultas.',
             refId: 'doc-hospital-ricardo-freitas',

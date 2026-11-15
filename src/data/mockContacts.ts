@@ -7,7 +7,7 @@ export const mockContacts: Contact[] = [
   { id: 'diego', name: 'Diego', avatarHue: 200, initials: 'DI' },
   { id: 'paula', name: 'Paula', avatarHue: 330, initials: 'PA' },
   { id: 'fernanda', name: 'Fernanda', avatarHue: 18, initials: 'FE' },
-  { id: 'hospital', name: 'Hospital — Enfermagem', avatarHue: 160, initials: 'HM' },
+  { id: 'hospital', name: 'Hospital. Enfermagem', avatarHue: 160, initials: 'HM' },
   { id: 'lucas', name: 'Lucas', avatarHue: 42, initials: 'LU' },
   {
     id: 'radio_costeira',

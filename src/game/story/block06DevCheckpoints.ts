@@ -34,7 +34,7 @@ export const block06EntryActions: StoryActionRef[] = [
     tasks: [
       {
         id: 'task_reexamine_elisa_from_scratch',
-        label: 'Reconstruir o caso Elisa do zero — começar por Geraldo',
+        label: 'Reconstruir o caso Elisa do zero, começar por Geraldo',
         completed: false,
       },
     ],
@@ -44,7 +44,7 @@ export const block06EntryActions: StoryActionRef[] = [
 export const block06DevCheckpoints: { id: string; label: string; actions: StoryActionRef[] }[] = [
   {
     id: 'b06-start',
-    label: 'Bloco 6 — início (fim Bloco 5)',
+    label: 'Bloco 6, início (fim Bloco 5)',
     actions: block06EntryActions,
   },
   {
@@ -80,7 +80,7 @@ export const block06DevCheckpoints: { id: string; label: string; actions: StoryA
       {
         type: 'addTask',
         id: 'task_press_jana_again',
-        label: 'Voltar a falar com Jana — jaqueta e condição de Elisa',
+        label: 'Voltar a falar com Jana, jaqueta e condição de Elisa',
       },
     ],
   },
@@ -122,7 +122,7 @@ export const block06DevCheckpoints: { id: string; label: string; actions: StoryA
       {
         type: 'addTask',
         id: 'task_pastor_moons',
-        label: 'Analisar as interceptações de rádio (bancada) — localizar a entrega',
+        label: 'Analisar as interceptações de rádio (bancada), localizar a entrega',
       },
     ],
   },
@@ -142,7 +142,7 @@ export const block06DevCheckpoints: { id: string; label: string; actions: StoryA
       {
         type: 'addTask',
         id: 'task_valter_operation',
-        label: 'Deflagrar operação no Galpão 17 — Pátio Norte',
+        label: 'Deflagrar operação no Galpão 17. Pátio Norte',
       },
     ],
   },
@@ -158,7 +158,7 @@ export const block06DevCheckpoints: { id: string; label: string; actions: StoryA
       {
         type: 'addTask',
         id: 'task_interview_miro',
-        label: 'Interrogar Miro na detenção — Noite X',
+        label: 'Interrogar Miro na detenção. Noite X',
       },
     ],
   },

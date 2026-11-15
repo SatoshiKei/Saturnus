@@ -70,7 +70,7 @@ export const ruiBeats: Record<RuiTopicId, RuiBeat[]> = {
     },
     {
       speaker: 'Rui',
-      text: 'Mudou na hora.\n\nMandaram eu seguir.\n\nA viatura saiu no sentido contrário ao meu — eu olhei no retrovisor porque achei que iam voltar atrás.',
+      text: 'Mudou na hora.\n\nMandaram eu seguir.\n\nA viatura saiu no sentido contrário ao meu, eu olhei no retrovisor porque achei que iam voltar atrás.',
     },
     { speaker: 'Augusto', text: 'E você continuou.' },
     {

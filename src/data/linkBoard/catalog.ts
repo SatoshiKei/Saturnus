@@ -19,7 +19,7 @@ export const LINK_BOARD_NODES: LinkBoardNodeDef[] = [
     showWhen: [f('block01_started')],
     detail: {
       blurb: 'Desaparecida. O quadro começa por ela.',
-      relations: ['Júlia — amiga no hospital', 'Ligação das 08:03 — último contato conhecido'],
+      relations: ['Júlia, amiga no hospital', 'Ligação das 08:03, último contato conhecido'],
       evidenceRefs: ['mariana_phone', 'emergency_call_raw'],
     },
   },
@@ -33,7 +33,7 @@ export const LINK_BOARD_NODES: LinkBoardNodeDef[] = [
     refId: 'julia',
     showWhen: [f('block01_hospital_done')],
     detail: {
-      blurb: 'Colega de Mariana no hospital; viu comportamento estranho antes do sumiço.',
+      blurb: 'Colega de Mariana no hospital. viu comportamento estranho antes do sumiço.',
     },
   },
   {
@@ -45,7 +45,7 @@ export const LINK_BOARD_NODES: LinkBoardNodeDef[] = [
     refTab: 'evidence',
     refId: 'mariana_phone',
     showWhen: [ev('mariana_phone')],
-    detail: { blurb: 'Aparelho encontrado ligado no apartamento — sem registro da chamada das 08:03.' },
+    detail: { blurb: 'Aparelho encontrado ligado no apartamento, sem registro da chamada das 08:03.' },
   },
   {
     id: 'lb-call-0803',
@@ -89,8 +89,8 @@ export const LINK_BOARD_NODES: LinkBoardNodeDef[] = [
     refId: 'elisa',
     showWhen: [f('block02_started')],
     detail: {
-      blurb: 'Morta na madrugada após sair do Vértice — caso que Mariana revisitava.',
-      relations: ['André — condenado', 'Jana — amiga', 'Miro — seguiu naquela noite'],
+      blurb: 'Morta na madrugada após sair do Vértice, caso que Mariana revisitava.',
+      relations: ['André, condenado', 'Jana, amiga', 'Miro, seguiu naquela noite'],
     },
   },
   {
@@ -103,7 +103,7 @@ export const LINK_BOARD_NODES: LinkBoardNodeDef[] = [
     refId: 'andre',
     showWhen: [f('block02_started')],
     detail: {
-      blurb: 'Irmão de Mariana; condenado pela morte de Elisa.',
+      blurb: 'Irmão de Mariana. condenado pela morte de Elisa.',
     },
   },
   {
@@ -149,7 +149,7 @@ export const LINK_BOARD_NODES: LinkBoardNodeDef[] = [
     refTab: 'people',
     refId: 'jana',
     showWhen: [f('block05_jana_interview_done')],
-    detail: { blurb: 'Amiga de Elisa; jaqueta e bolsa.' },
+    detail: { blurb: 'Amiga de Elisa. jaqueta e bolsa.' },
   },
   {
     id: 'lb-jacket',
@@ -209,7 +209,7 @@ export const LINK_BOARD_NODES: LinkBoardNodeDef[] = [
     refId: 'morsa',
     showWhen: [f('block03_saturnalia_done')],
     hideWhen: [ev('morsa_was_andre')],
-    detail: { blurb: 'Apelido nos protestos — identidade ainda incerta.' },
+    detail: { blurb: 'Apelido nos protestos, identidade ainda incerta.' },
   },
   {
     id: 'lb-morsa-revealed',
@@ -220,7 +220,7 @@ export const LINK_BOARD_NODES: LinkBoardNodeDef[] = [
     refTab: 'evidence',
     refId: 'morsa_was_andre',
     showWhen: [ev('morsa_was_andre')],
-    detail: { blurb: 'Continuidade nas câmeras dos protestos — mesma pessoa que André.' },
+    detail: { blurb: 'Continuidade nas câmeras dos protestos, mesma pessoa que André.' },
   },
   {
     id: 'lb-protests',
@@ -252,7 +252,7 @@ export const LINK_BOARD_NODES: LinkBoardNodeDef[] = [
     refTab: 'evidence',
     refId: 'hidden_diary_recovered',
     showWhen: [ev('hidden_diary_recovered')],
-    detail: { blurb: 'Fonte excepcional — merece pin próprio no quadro.' },
+    detail: { blurb: 'Fonte excepcional, merece pin próprio no quadro.' },
   },
   {
     id: 'lb-unknown-caller',
@@ -292,7 +292,7 @@ export const LINK_BOARD_NODES: LinkBoardNodeDef[] = [
     title: 'Queda de Elisa',
     cluster: 'guardrail',
     showWhen: [f('block08_started')],
-    detail: { blurb: 'Acidente no guardrail — eixo da reconstrução física.' },
+    detail: { blurb: 'Acidente no guardrail, eixo da reconstrução física.' },
   },
   {
     id: 'lb-bia',
@@ -325,7 +325,7 @@ export const LINK_BOARD_NODES: LinkBoardNodeDef[] = [
     tier: 'secondary',
     revealFocus: 'guardrail',
     showWhen: [ev('jaguar_x300_paint_fragment')],
-    detail: { blurb: 'Família X300 — perícia ao proprietário.' },
+    detail: { blurb: 'Família X300, perícia ao proprietário.' },
   },
   // —— Henrique / O Omitido (B7) ——
   {
@@ -368,7 +368,7 @@ export const LINK_BOARD_NODES: LinkBoardNodeDef[] = [
     refTab: 'evidence',
     refId: 'omitido_named_in_records',
     showWhen: [ev('omitido_named_in_records')],
-    detail: { blurb: 'Identificador do sistema — interlocutor anômalo.' },
+    detail: { blurb: 'Identificador do sistema, interlocutor anômalo.' },
   },
   {
     id: 'lb-henrique-sessions',
@@ -392,7 +392,7 @@ export const LINK_BOARD_NODES: LinkBoardNodeDef[] = [
     refId: 'augusto',
     showWhen: [f('block01_started')],
     detail: {
-      blurb: 'Delegado titular — por que Mariana escolheu falar com ele?',
+      blurb: 'Delegado titular, por que Mariana escolheu falar com ele?',
     },
   },
   // —— Hipóteses (poucas) ——
@@ -404,7 +404,7 @@ export const LINK_BOARD_NODES: LinkBoardNodeDef[] = [
     refTab: 'hypotheses',
     refId: 'hyp_voluntary_disappearance',
     showWhen: [f('block09_started')],
-    detail: { blurb: 'Hipótese provisória — desaparecimento voluntário parcial.' },
+    detail: { blurb: 'Hipótese provisória, desaparecimento voluntário parcial.' },
   },
   {
     id: 'lb-hyp-unjust',

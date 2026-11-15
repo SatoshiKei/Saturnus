@@ -23,7 +23,7 @@ export const reflections: ReflectionDef[] = [
     background: HUB_REFLECTION_BACKGROUND,
     blocks: [
       'Mariana esquecia. Júlia corrigia. Camila confirmava horários. Fernanda dizia que ela tinha aceitado ir a uma festa e depois agia como se nunca tivesse concordado.',
-      'Era fácil imaginar Júlia preenchendo as lacunas — mesmo sem intenção criminosa. Mariana cognitiva e emocionalmente vulnerável; alguém próximo moldando a versão estável do que ela “tinha feito”.',
+      'Era fácil imaginar Júlia preenchendo as lacunas, mesmo sem intenção criminosa. Mariana cognitiva e emocionalmente vulnerável. alguém próximo moldando a versão estável do que ela “tinha feito”.',
       'Não dava para concluir isso como verdade. Só como hipótese que eu precisava testar.',
     ],
   },
@@ -32,7 +32,7 @@ export const reflections: ReflectionDef[] = [
     background: HUB_REFLECTION_BACKGROUND,
     blocks: [
       'André tinha motivo. Relação ruim. Sem álibi. Sandra o identificou. Anos depois, Mariana reapareceu tentando desmontar a condenação.',
-      'Talvez ela tivesse desenvolvido uma obsessão tardia pela inocência do irmão — e ele, consciente ou não, a empurrasse para reabrir o processo.',
+      'Talvez ela tivesse desenvolvido uma obsessão tardia pela inocência do irmão, e ele, consciente ou não, a empurrasse para reabrir o processo.',
       'A conta fechava demais para eu descartar. E demais para eu aceitar sem confrontar André.',
     ],
   },
@@ -41,7 +41,7 @@ export const reflections: ReflectionDef[] = [
     background: HUB_REFLECTION_BACKGROUND,
     blocks: [
       'Mariana investigava uma empresa grande. Arquivos incompletos. Pessoas ligadas aos protestos não queriam falar. O endereço antigo de um encarregado me levou a um morador evasivo.',
-      'Talvez o desaparecimento tivesse relação com retaliação empresarial — ou com crimes antigos dos protestos que ninguém queria reabrir.',
+      'Talvez o desaparecimento tivesse relação com retaliação empresarial, ou com crimes antigos dos protestos que ninguém queria reabrir.',
       'Não era teoria absurda. Era uma hipótese que o material histórico sustentava o suficiente para eu continuar testando.',
     ],
   },
@@ -50,7 +50,7 @@ export const reflections: ReflectionDef[] = [
     background: HUB_REFLECTION_BACKGROUND,
     blocks: [
       'O diário, CHK_UNK, o número sem nome, as correções feitas a Mariana: alguém conhecia a rotina dela com profundidade demais.',
-      'Hacker, stalker, manipulador — uma hipótese humana dominante antes de qualquer outra explicação.',
+      'Hacker, stalker, manipulador, uma hipótese humana dominante antes de qualquer outra explicação.',
       'Ainda não era Henrique. Ainda não era O Omitido. Era a forma mais sóbria de ler o que eu tinha.',
     ],
   },
@@ -60,14 +60,14 @@ export const reflections: ReflectionDef[] = [
     blocks: [
       'Miro admitiu seguir Elisa. Chegou perto da região da queda. Retirou a bolsa.',
       'A leitura mais direta era simples: Miro matou Elisa.',
-      'Eu precisava levar isso a sério — e testar com Sandra — sem transformar a hipótese em sentença.',
+      'Eu precisava levar isso a sério, e testar com Sandra. sem transformar a hipótese em sentença.',
     ],
   },
   {
     id: 'refl-samuel-recontextualized',
     background: HUB_REFLECTION_BACKGROUND,
     blocks: [
-      'Rua das Acácias, 118. Eu já tinha estado ali — procurando Marcelo Viana.',
+      'Rua das Acácias, 118. Eu já tinha estado ali, procurando Marcelo Viana.',
       'O homem que atendeu era Samuel Teixeira. Agora o nome voltava pelos protestos e pela linha Morsa.',
       'Não era coincidência de endereço. Era a mesma pessoa, vista pela primeira vez sem o contexto certo.',
     ],
@@ -126,7 +126,7 @@ export const reflections: ReflectionDef[] = [
     whenFlag: 'block04_samuel_interview_done',
     background: sceneBackgrounds.samuel,
     blocks: [
-      'Samuel esteve lá e voltou para casa. O que ele carrega não é culpa; é o que viu os outros fazerem.',
+      'Samuel esteve lá e voltou para casa. O que ele carrega não é culpa. é o que viu os outros fazerem.',
       'Ele não vai entregar ninguém, e eu não tenho o que oferecer em troca.',
       'Mariana também pediu horários a ele. De novo: não o rosto, a sequência.',
     ],
@@ -171,7 +171,7 @@ export const reflections: ReflectionDef[] = [
     blocks: [
       'A jaqueta era dela. Empréstimo na saída. Versão simples.',
       'Ela quer encerrar o assunto. O desconforto não vira prova.',
-      'Preciso voltar ao que condenou André — não ao que me incomoda nela.',
+      'Preciso voltar ao que condenou André, não ao que me incomoda nela.',
     ],
   },
   {
@@ -464,7 +464,7 @@ export const reflections: ReflectionDef[] = [
       'O acidente já não era mais uma abstração.',
       'Rui dirigiu bêbado um carro que não deveria estar nas mãos dele, acertou o guardrail e foi embora. Horas depois Elisa encostou naquela mesma estrutura e ela cedeu.',
       'Mas havia uma etapa anterior.',
-      'Ele ficou preso atrás de um trem. Saiu acelerando. Foi parado. O policial percebeu a bebida — e mesmo assim o liberou quando o rádio pediu uma emergência.',
+      'Ele ficou preso atrás de um trem. Saiu acelerando. Foi parado. O policial percebeu a bebida, e mesmo assim o liberou quando o rádio pediu uma emergência.',
       'Rui não lembrava o nome. Nem o número da viatura. Depois de seis anos, eu não confiaria nem se lembrasse.',
       'Os registros da corporação eram outra coisa.',
       'Passagem, ocorrência, trajetos, o som de fundo num canal de rádio. Se eu cruzasse isso direito, saberia qual equipe teve a chance de interromper aquela cadeia antes de ela começar.',
@@ -478,7 +478,7 @@ export const reflections: ReflectionDef[] = [
       'Eu parei o Rui e não lembro.',
       'Não lembro como ele conta. Lembro vagamente o vidro baixado, o cheiro, a pressa de me livrar da situação.',
       'Mariana também encontrava rastros de coisas que não lembrava ter feito.',
-      'Trechos do celular dela, conversas, escolhas — como se outra versão dela mesma tivesse deixado pistas sem que ela soubesse de onde vinham.',
+      'Trechos do celular dela, conversas, escolhas, como se outra versão dela mesma tivesse deixado pistas sem que ela soubesse de onde vinham.',
       'Henrique deixou o mesmo tipo de silêncio nos arquivos.',
       'Algo acontecia no meio do caminho entre o fato e o registro da pessoa que o vivia.',
       'Talvez eu tenha passado esse tempo inteiro procurando relações entre nomes, quando o fio comum era outro.',
@@ -567,7 +567,7 @@ export const reflections: ReflectionDef[] = [
       'O momento em que cada pista aparecia.',
       'Mariana podia planejar.',
       'Não podia estar em todos os lugares ao mesmo tempo.',
-      'Alguém — alguma coisa — tinha sustentado a outra metade do percurso.',
+      'Alguém, alguma coisa, tinha sustentado a outra metade do percurso.',
       'O Omitido não entregava respostas.',
       'Era isso que mais me incomodava.',
       'Ele perguntava.',

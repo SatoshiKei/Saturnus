@@ -301,7 +301,7 @@ function LinkBoardFull({ onOpen }: { onOpen: (tab: string, id: string) => void }
             onPick={pickNode}
           />
           {layout.nodes.length === 0 ? (
-            <p className="lb-empty">Nada no quadro ainda — continue a investigação.</p>
+            <p className="lb-empty">Nada no quadro ainda. Continue a investigação.</p>
           ) : null}
         </div>
 

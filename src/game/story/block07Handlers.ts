@@ -288,7 +288,7 @@ export function onJuliaRicardoAudioDone() {
     {
       type: 'addTask',
       id: 'task_call_renata',
-      label: 'Falar com Renata Farias — ramal que Júlia indicou',
+      label: 'Falar com Renata Farias, ramal que Júlia indicou',
     },
     {
       type: 'notifyInvestigationUpdate',
@@ -345,7 +345,7 @@ export function onRicardoDeadReflectionDone() {
     {
       type: 'addTask',
       id: 'task_hospital_deposit',
-      label: 'Voltar ao hospital — depósito de pertences de Ricardo',
+      label: 'Voltar ao hospital, depósito de pertences de Ricardo',
     },
   ])
 }
@@ -517,7 +517,7 @@ export function onHenriqueRevealReflectionDone() {
       presentation: 'card',
       label: 'IDENTIDADE CONFIRMADA',
       title: 'Henrique Valença',
-      summary: 'Henrique Valença — nome completo pela Aster Sistemas, não pelo cadastro de Ricardo.',
+      summary: 'Henrique Valença, nome completo pela Aster Sistemas, não pelo cadastro de Ricardo.',
       refId: 'henrique_named_by_aster',
     },
   ]

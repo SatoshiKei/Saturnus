@@ -18,7 +18,7 @@ export function onMarianaRadioCallLogEntryOpened(entryId: string) {
       type: 'notifyInvestigationUpdate',
       id: 'radio-costeira-landline',
       kind: 'contact',
-      title: 'Rádio Costeira — Redação',
+      title: 'Rádio Costeira. Redação',
       subtitle: 'Número disponível no telefone fixo da delegacia',
     },
   ])

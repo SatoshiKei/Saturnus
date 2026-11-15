@@ -96,7 +96,7 @@ export const hypothesisCatalog: Hypothesis[] = [
   },
   {
     id: 'hyp_elisa_maralto_open',
-    title: 'Elisa e Maralto fazem parte da mesma investigação — pergunta em aberto',
+    title: 'Elisa e Maralto fazem parte da mesma investigação, pergunta em aberto',
     supportingEvidenceIds: [],
     contradictingEvidenceIds: [],
     state: 'active',
@@ -305,7 +305,7 @@ export const contradictionDefs: ContradictionDef[] = [
     evidenceAId: 'mariana_memory_lapses',
     evidenceBId: 'rafael_call_memory',
     summary:
-      'Memória irregular — os relatos não combinam com um esquecimento uniforme: Mariana perdia alguns fatos específicos enquanto preservava outros com precisão.',
+      'Memória irregular, os relatos não combinam com um esquecimento uniforme: Mariana perdia alguns fatos específicos enquanto preservava outros com precisão.',
     actions: [
       { type: 'updateHypothesis', id: 'hyp_memory', state: 'weakened' },
       { type: 'addHypothesis', id: 'hyp_manipulation' },
@@ -363,7 +363,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['lucas'],
     results: [
       {
-        title: 'Cadastro — Lucas Moreira',
+        title: 'Cadastro. Lucas Moreira',
         snippet: 'Consulta cadastral. Vínculo institucional atual registrado.',
         documentId: 'doc-lucas-cadastro',
       },
@@ -376,12 +376,12 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['elisa'],
     results: [
       {
-        title: 'Processo criminal — Elisa Duarte',
+        title: 'Processo criminal. Elisa Duarte',
         snippet: 'Autos de 1ª instância. Resumo processual disponível.',
         documentId: 'doc-elisa-resumo',
       },
       {
-        title: 'Testemunhas arquivadas — processo Elisa Duarte',
+        title: 'Testemunhas arquivadas, processo Elisa Duarte',
         snippet: 'Volume II (resumo): pessoas ouvidas na fase policial.',
         documentId: 'doc-elisa-testemunhas',
       },
@@ -394,7 +394,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['nico'],
     results: [
       {
-        title: 'Cadastro — Nicolas Prado Reis',
+        title: 'Cadastro. Nicolas Prado Reis',
         snippet: 'Consulta cadastral. Registro atual encontrado.',
         documentId: 'doc-nico-cadastro',
       },
@@ -407,12 +407,12 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['maralto'],
     results: [
       {
-        title: 'Maralto Granéis S.A. — cadastro empresarial',
+        title: 'Maralto Granéis S.A., cadastro empresarial',
         snippet: 'Consulta cadastral de pessoa jurídica.',
         documentId: 'doc-maralto-cadastro',
       },
       {
-        title: 'Reportagem — “Porto em conflito”',
+        title: 'Reportagem, “Porto em conflito”',
         snippet: 'Recorte de imprensa nos arquivos públicos.',
         documentId: 'doc-maralto-clipping',
       },
@@ -425,7 +425,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['maralto', 'elisa'],
     results: [
       {
-        title: 'Pesquisa cruzada — autos Elisa / Maralto Granéis',
+        title: 'Pesquisa cruzada, autos Elisa / Maralto Granéis',
         snippet: 'Resultado da pesquisa conjunta nas bases disponíveis.',
         documentId: 'doc-cruzamento-maralto-elisa',
       },
@@ -438,12 +438,12 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['maralto'],
     results: [
       {
-        title: 'Ocorrência — confronto durante manifestação',
+        title: 'Ocorrência, confronto durante manifestação',
         snippet: 'Registro antigo da delegacia regional.',
         documentId: 'doc-protesto-ocorrencia',
       },
       {
-        title: 'Relação de detidos — ocorrência do terminal Maralto',
+        title: 'Relação de detidos, ocorrência do terminal Maralto',
         snippet: 'Anexo nominal da ocorrência.',
         documentId: 'doc-protesto-detidos',
       },
@@ -457,12 +457,12 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['protesto'],
     results: [
       {
-        title: 'Ocorrência — confronto durante manifestação',
+        title: 'Ocorrência, confronto durante manifestação',
         snippet: 'Registro antigo da delegacia regional.',
         documentId: 'doc-protesto-ocorrencia',
       },
       {
-        title: 'Relação de detidos — ocorrência do terminal Maralto',
+        title: 'Relação de detidos, ocorrência do terminal Maralto',
         snippet: 'Anexo nominal da ocorrência.',
         documentId: 'doc-protesto-detidos',
       },
@@ -475,7 +475,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['samuel'],
     results: [
       {
-        title: 'Ficha — Samuel Teixeira',
+        title: 'Ficha. Samuel Teixeira',
         snippet: 'Consulta cadastral. Registro único em ocorrência antiga.',
         documentId: 'doc-samuel-ficha',
       },
@@ -488,7 +488,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['marcelo'],
     results: [
       {
-        title: 'Consulta histórica — Marcelo Viana',
+        title: 'Consulta histórica. Marcelo Viana',
         snippet: 'Registro antigo vinculado a operação no terminal Maralto.',
         documentId: 'doc-marcelo-historico',
       },
@@ -501,12 +501,12 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['andre'],
     results: [
       {
-        title: 'Ficha de execução penal — André Silva',
+        title: 'Ficha de execução penal. André Silva',
         snippet: 'Vara de Execuções. Dados da custódia.',
         documentId: 'doc-andre-ficha',
       },
       {
-        title: 'Registro de visitas — André Silva',
+        title: 'Registro de visitas. André Silva',
         snippet: 'Setor de visitas da unidade prisional.',
         documentId: 'doc-andre-visitas',
       },
@@ -519,7 +519,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['andre'],
     results: [
       {
-        title: 'Registro de ligações autorizadas — André Silva',
+        title: 'Registro de ligações autorizadas. André Silva',
         snippet: 'Central de ligações da unidade prisional.',
         documentId: 'doc-andre-ligacoes',
       },
@@ -532,7 +532,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['99184'],
     results: [
       {
-        title: 'Log de interações — +55 47 99184-2207',
+        title: 'Log de interações, +55 47 99184-2207',
         snippet: 'Extração do aparelho de Mariana (interações noturnas).',
         documentId: 'doc-numero-sem-nome',
       },
@@ -545,7 +545,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['47991842207'],
     results: [
       {
-        title: 'Log de interações — +55 47 99184-2207',
+        title: 'Log de interações, +55 47 99184-2207',
         snippet: 'Extração do aparelho de Mariana (interações noturnas).',
         documentId: 'doc-numero-sem-nome',
       },
@@ -558,7 +558,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['jana'],
     results: [
       {
-        title: 'Cadastro — Jana Ribeiro',
+        title: 'Cadastro. Jana Ribeiro',
         snippet: 'Consulta cadastral. Endereço residencial atual.',
         documentId: 'doc-jana-cadastro',
       },
@@ -572,7 +572,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['jana'],
     results: [
       {
-        title: 'Depoimento arquivado — Jana Ribeiro',
+        title: 'Depoimento arquivado. Jana Ribeiro',
         snippet: 'Volume II do processo Elisa Duarte. Amiga da vítima.',
         documentId: 'doc-elisa-jana',
       },
@@ -585,7 +585,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['elisa'],
     results: [
       {
-        title: 'Autos — Caso Elisa Duarte',
+        title: 'Autos. Caso Elisa Duarte',
         snippet: 'Cópia integral: resumo, relação e discussão, álibi e cronologia, testemunhas, sentença.',
         documentId: 'doc-elisa-argumento',
       },
@@ -598,7 +598,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['geraldo'],
     results: [
       {
-        title: 'Cadastro — Geraldo Mota',
+        title: 'Cadastro. Geraldo Mota',
         snippet: 'Consulta cadastral. Endereço residencial atual.',
         documentId: 'doc-geraldo-cadastro',
       },
@@ -612,17 +612,17 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['geraldo'],
     results: [
       {
-        title: 'Depoimento arquivado — Geraldo Mota',
+        title: 'Depoimento arquivado. Geraldo Mota',
         snippet: 'Volume II do processo Elisa Duarte.',
         documentId: 'doc-elisa-geraldo-depoimento',
       },
       {
-        title: 'Ficha — Geraldo Mota',
+        title: 'Ficha. Geraldo Mota',
         snippet: 'Consulta cadastral. Endereço atual. Vínculo antigo no Vértice.',
         documentId: 'doc-geraldo-ficha',
       },
       {
-        title: 'Comanda e fechamento — Vértice (Noite X)',
+        title: 'Comanda e fechamento. Vértice (Noite X)',
         snippet: 'Cópia nos autos. Volume no horário da saída.',
         documentId: 'doc-vertice-comanda-noitex',
       },
@@ -635,17 +635,17 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['valter'],
     results: [
       {
-        title: 'Válter — ocorrências e vínculos',
+        title: 'Válter, ocorrências e vínculos',
         snippet: 'Consulta policial. Estrutura e associados.',
         documentId: 'doc-valter-ocorrencias',
       },
       {
-        title: 'Relação de associados — núcleo Válter',
+        title: 'Relação de associados, núcleo Válter',
         snippet: 'Monitoramento atual. Inclui Miro.',
         documentId: 'doc-valter-associados',
       },
       {
-        title: 'Interceptação de rádio — operação contemporânea',
+        title: 'Interceptação de rádio, operação contemporânea',
         snippet: 'Captura multi-canal encaminhada à bancada.',
         documentId: 'doc-valter-interceptacao',
       },
@@ -658,7 +658,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['miro'],
     results: [
       {
-        title: 'Relação de associados — núcleo Válter',
+        title: 'Relação de associados, núcleo Válter',
         snippet: 'Miro listado como associado atual.',
         documentId: 'doc-valter-associados',
       },
@@ -671,12 +671,12 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['sandra'],
     results: [
       {
-        title: 'Depoimento — Sandra Almeida (região da queda)',
+        title: 'Depoimento. Sandra Almeida (região da queda)',
         snippet: 'Autos do processo Elisa Duarte.',
         documentId: 'doc-sandra-depoimento',
       },
       {
-        title: 'Ficha — Sandra Almeida',
+        title: 'Ficha. Sandra Almeida',
         snippet: 'Cadastro. Endereço atual.',
         documentId: 'doc-sandra-ficha',
       },
@@ -689,7 +689,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['ricardo'],
     results: [
       {
-        title: 'Hospital Municipal — atendimento / óbito (plantão)',
+        title: 'Hospital Municipal, atendimento / óbito (plantão)',
         snippet: 'Cruzamento nominal com plantão no período indicado.',
         documentId: 'doc-hospital-ricardo-freitas',
       },
@@ -702,7 +702,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['freitas'],
     results: [
       {
-        title: 'Consulta civil — Ricardo Freitas (dados incompletos)',
+        title: 'Consulta civil. Ricardo Freitas (dados incompletos)',
         snippet: 'Sem cadastro civil compatível com o paciente do plantão.',
         documentId: 'doc-ricardo-consulta-negativa',
       },
@@ -715,7 +715,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['ricardo'],
     results: [
       {
-        title: 'Consulta civil — Ricardo Freitas (dados incompletos)',
+        title: 'Consulta civil. Ricardo Freitas (dados incompletos)',
         snippet: 'Sem cadastro civil compatível com o paciente do plantão.',
         documentId: 'doc-ricardo-consulta-negativa',
       },
@@ -729,7 +729,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['ricardo'],
     results: [
       {
-        title: 'Consulta civil — Ricardo Freitas (dados incompletos)',
+        title: 'Consulta civil. Ricardo Freitas (dados incompletos)',
         snippet: 'Sem cadastro civil compatível com o paciente do plantão.',
         documentId: 'doc-ricardo-consulta-negativa',
       },
@@ -742,8 +742,8 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['hvalenca'],
     results: [
       {
-        title: 'Arquivo de fórum técnico — usuário hvalenca (2021)',
-        snippet: 'Tópico arquivado sobre sessão e autenticação; menção a empregador.',
+        title: 'Arquivo de fórum técnico, usuário hvalenca (2021)',
+        snippet: 'Tópico arquivado sobre sessão e autenticação. menção a empregador.',
         documentId: 'doc-forum-hvalenca',
       },
     ],
@@ -755,8 +755,8 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['aster'],
     results: [
       {
-        title: 'Aster Sistemas — contato administrativo',
-        snippet: 'Empresa reestruturada; arquivo de pessoal da época.',
+        title: 'Aster Sistemas, contato administrativo',
+        snippet: 'Empresa reestruturada. arquivo de pessoal da época.',
         documentId: 'doc-aster-admin',
       },
     ],
@@ -769,7 +769,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['hvalenca'],
     results: [
       {
-        title: 'Consulta cadastral — identificador hvalenca',
+        title: 'Consulta cadastral, identificador hvalenca',
         snippet: 'Correlação com registro profissional / empresarial.',
         documentId: 'doc-henrique-cadastro',
       },
@@ -782,7 +782,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['valenca'],
     results: [
       {
-        title: 'Consulta cadastral — identificador hvalenca',
+        title: 'Consulta cadastral, identificador hvalenca',
         snippet: 'Correlação com registro profissional / empresarial.',
         documentId: 'doc-henrique-cadastro',
       },
@@ -795,17 +795,17 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['henrique'],
     results: [
       {
-        title: 'Henrique Valença — vínculo empresarial',
+        title: 'Henrique Valença, vínculo empresarial',
         snippet: 'Consulta cadastral / empresas.',
         documentId: 'doc-henrique-empresa',
       },
       {
-        title: 'Incidente de segurança — relatório resumido',
+        title: 'Incidente de segurança, relatório resumido',
         snippet: 'Arquivo setorial. Alegações não comprovadas.',
         documentId: 'doc-henrique-incidente',
       },
       {
-        title: 'Contato profissional — Cecília Prado',
+        title: 'Contato profissional. Cecília Prado',
         snippet: 'Lista de colegas / depoentes da época.',
         documentId: 'doc-cecilia-contato',
       },
@@ -818,7 +818,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['valença', 'valenca'],
     results: [
       {
-        title: 'Henrique Valença — vínculo empresarial',
+        title: 'Henrique Valença, vínculo empresarial',
         snippet: 'Consulta cadastral / empresas.',
         documentId: 'doc-henrique-empresa',
       },
@@ -831,7 +831,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['captura'],
     results: [
       {
-        title: 'Material digital antigo — captura de rede (Henrique)',
+        title: 'Material digital antigo, captura de rede (Henrique)',
         snippet: 'Backup / cache recuperado do incidente de segurança. Encaminhado à bancada.',
         documentId: 'doc-henrique-pcap-note',
       },
@@ -844,7 +844,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['pcap'],
     results: [
       {
-        title: 'Material digital antigo — captura de rede (Henrique)',
+        title: 'Material digital antigo, captura de rede (Henrique)',
         snippet: 'Backup / cache recuperado do incidente de segurança. Encaminhado à bancada.',
         documentId: 'doc-henrique-pcap-note',
       },
@@ -857,7 +857,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['dump'],
     results: [
       {
-        title: 'Material digital antigo — captura de rede (Henrique)',
+        title: 'Material digital antigo, captura de rede (Henrique)',
         snippet: 'Backup / cache recuperado do incidente de segurança. Encaminhado à bancada.',
         documentId: 'doc-henrique-pcap-note',
       },
@@ -871,7 +871,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['guardrail'],
     results: [
       {
-        title: 'Câmera viária — veículo com dano lateral (madrugada)',
+        title: 'Câmera viária, veículo com dano lateral (madrugada)',
         snippet: '[Arquivo removido do fluxo atual]',
         documentId: 'doc-camera-veiculo-madrugada',
       },
@@ -884,7 +884,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['bia'],
     results: [
       {
-        title: 'Ficha — Bia (vínculo familiar)',
+        title: 'Ficha. Bia (vínculo familiar)',
         snippet: 'Cadastro. Endereço atual.',
         documentId: 'doc-bia-ficha',
       },
@@ -897,7 +897,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['rui'],
     results: [
       {
-        title: 'Ficha — Rui',
+        title: 'Ficha. Rui',
         snippet: 'Cadastro a partir de indicação documental.',
         documentId: 'doc-rui-ficha',
       },
@@ -910,7 +910,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['vtr-14'],
     results: [
       {
-        title: 'Escala antiga — indicativo VTR-14',
+        title: 'Escala antiga, indicativo VTR-14',
         snippet: 'Arquivo institucional de equipes.',
         documentId: 'doc-escala-vtr14',
       },
@@ -923,7 +923,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['escala'],
     results: [
       {
-        title: 'Escala antiga — indicativo VTR-14',
+        title: 'Escala antiga, indicativo VTR-14',
         snippet: 'Arquivo institucional de equipes.',
         documentId: 'doc-escala-vtr14',
       },
@@ -936,7 +936,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['indicativo'],
     results: [
       {
-        title: 'Escala antiga — indicativo VTR-14',
+        title: 'Escala antiga, indicativo VTR-14',
         snippet: 'Arquivo institucional de equipes.',
         documentId: 'doc-escala-vtr14',
       },
@@ -949,7 +949,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['roberto'],
     results: [
       {
-        title: 'Roberto Siqueira — afastamento e denúncia anônima',
+        title: 'Roberto Siqueira, afastamento e denúncia anônima',
         snippet: 'Timing, metadata e material correlato.',
         documentId: 'doc-roberto-denuncia',
       },
@@ -962,7 +962,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['siqueira'],
     results: [
       {
-        title: 'Roberto Siqueira — afastamento e denúncia anônima',
+        title: 'Roberto Siqueira, afastamento e denúncia anônima',
         snippet: 'Timing, metadata e material correlato.',
         documentId: 'doc-roberto-denuncia',
       },
@@ -975,7 +975,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['omitido'],
     results: [
       {
-        title: 'Log de sessão — identificador O Omitido',
+        title: 'Log de sessão, identificador O Omitido',
         snippet: 'Registro presente no material digital recuperado.',
         documentId: 'doc-omitido-interface',
       },
@@ -988,7 +988,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['camera'],
     results: [
       {
-        title: 'Consulta — câmeras viárias (últimos deslocamentos)',
+        title: 'Consulta, câmeras viárias (últimos deslocamentos)',
         snippet: 'Imagens do deslocamento noturno de Mariana.',
         documentId: 'doc-trilha-camera-mariana',
       },
@@ -1001,7 +1001,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['cameras'],
     results: [
       {
-        title: 'Consulta — câmeras viárias (últimos deslocamentos)',
+        title: 'Consulta, câmeras viárias (últimos deslocamentos)',
         snippet: 'Imagens do deslocamento noturno de Mariana.',
         documentId: 'doc-trilha-camera-mariana',
       },
@@ -1014,7 +1014,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['deslocamento'],
     results: [
       {
-        title: 'Consulta — câmeras viárias (últimos deslocamentos)',
+        title: 'Consulta, câmeras viárias (últimos deslocamentos)',
         snippet: 'Imagens do deslocamento noturno de Mariana.',
         documentId: 'doc-trilha-camera-mariana',
       },
@@ -1027,7 +1027,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['transporte'],
     results: [
       {
-        title: 'Consulta — registro de transporte / passagem',
+        title: 'Consulta, registro de transporte / passagem',
         snippet: 'Passagem compatível com a rota das câmeras.',
         documentId: 'doc-trilha-transporte-mariana',
       },
@@ -1040,7 +1040,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['desaparecimento'],
     results: [
       {
-        title: 'Resultado de busca — outros desaparecimentos semelhantes',
+        title: 'Resultado de busca, outros desaparecimentos semelhantes',
         snippet: 'Padrão comportamental em casos esparsos.',
         documentId: 'doc-outros-desaparecimentos',
       },
@@ -1053,7 +1053,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['desaparecimentos'],
     results: [
       {
-        title: 'Resultado de busca — outros desaparecimentos semelhantes',
+        title: 'Resultado de busca, outros desaparecimentos semelhantes',
         snippet: 'Padrão comportamental em casos esparsos.',
         documentId: 'doc-outros-desaparecimentos',
       },
@@ -1066,7 +1066,7 @@ export const seedSearchRules: SearchRule[] = [
     requiredTerms: ['omitido'],
     results: [
       {
-        title: 'Resultado de busca — outros desaparecimentos semelhantes',
+        title: 'Resultado de busca, outros desaparecimentos semelhantes',
         snippet: 'Ocorrências com assinatura compatível.',
         documentId: 'doc-outros-desaparecimentos',
       },
@@ -1229,7 +1229,7 @@ export const seedStoryTriggers: StoryTrigger[] = [
       {
         type: 'addTask',
         id: 'task_pastor_moons',
-        label: 'Analisar as interceptações de rádio (bancada) — localizar a entrega',
+        label: 'Analisar as interceptações de rádio (bancada), localizar a entrega',
       },
       { type: 'addDocument', id: 'doc-tabela-logistica-g17n' },
     ],
@@ -1275,7 +1275,7 @@ export const seedStoryTriggers: StoryTrigger[] = [
       {
         type: 'addTask',
         id: 'task_rings_puzzle',
-        label: 'Reconstruir a timeline dos protestos (bancada) — fontes dessincronizadas',
+        label: 'Reconstruir a timeline dos protestos (bancada), fontes dessincronizadas',
       },
     ],
   },
@@ -1291,7 +1291,7 @@ export const seedStoryTriggers: StoryTrigger[] = [
 
 export const extraTimelineOnContradiction: TimelineEvent = {
   id: 'evt_memory_conflict',
-  label: 'Contradição — lapsos de memória',
+  label: 'Contradição, lapsos de memória',
   start: '—',
   precision: 'contested',
   sourceIds: ['mariana_memory_lapses', 'rafael_call_memory'],

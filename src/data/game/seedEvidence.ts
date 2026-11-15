@@ -4,7 +4,7 @@ import type { Evidence } from '../../game/types'
 export const seedEvidenceCatalog: Evidence[] = [
   {
     id: 'initial_police_report',
-    title: 'BO — desaparecimento de Mariana Silva',
+    title: 'BO, desaparecimento de Mariana Silva',
     type: 'document',
     sourceType: 'case-file',
     originalOrDerived: 'original',
@@ -29,7 +29,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'emergency_call_raw',
-    title: 'EMG_0803 — chamada das 08:03',
+    title: 'EMG_0803, chamada das 08:03',
     type: 'audio',
     sourceType: 'case-file',
     originalOrDerived: 'original',
@@ -107,7 +107,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'rafael_audio_reply',
-    title: 'Mensagem de voz — Rafael',
+    title: 'Mensagem de voz. Rafael',
     type: 'audio',
     sourceType: 'mariana-whatsapp',
     originalOrDerived: 'original',
@@ -136,7 +136,7 @@ export const seedEvidenceCatalog: Evidence[] = [
     originalOrDerived: 'original',
     integrity: 'unverified',
     description:
-      'LEGACY / OUTDATED — subtrama da pasta removida. Não é evidência ativa do caso atual.',
+      'LEGACY / OUTDATED, subtrama da pasta removida. Não é evidência ativa do caso atual.',
     relatedPersonIds: ['julia', 'mariana'],
     relatedLocationIds: ['hospital'],
     relatedEventIds: [],
@@ -160,7 +160,7 @@ export const seedEvidenceCatalog: Evidence[] = [
      * Mantido para saves/registry; não deve ser “reenviado” por Rafael.
      */
     id: 'rafael_voice_to_augusto',
-    title: 'Mensagem de voz de Rafael — análise prévia (legado)',
+    title: 'Mensagem de voz de Rafael, análise prévia (legado)',
     type: 'audio',
     sourceType: 'mariana-whatsapp',
     originalOrDerived: 'original',
@@ -182,7 +182,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'rafael_recording_vertice_tag',
-    title: 'Mensagem de Rafael — Vértice',
+    title: 'Mensagem de Rafael. Vértice',
     type: 'derived',
     sourceType: 'audio-lab',
     originalOrDerived: 'derived',
@@ -244,7 +244,7 @@ export const seedEvidenceCatalog: Evidence[] = [
     originalOrDerived: 'original',
     integrity: 'unverified',
     description:
-      'Cópia do arquivo que Mariana havia enviado a Rafael para análise. O arquivo não estava mais disponível no celular apreendido, mas Rafael preservou a própria cópia. Cadeia: Mariana → Rafael → Augusto. Gravação de ambiente da casa noturna — em certo trecho dá para ouvir uma fala masculina misturada à música, sem indicar de quem é.',
+      'Cópia do arquivo que Mariana havia enviado a Rafael para análise. O arquivo não estava mais disponível no celular apreendido, mas Rafael preservou a própria cópia. Cadeia: Mariana → Rafael → Augusto. Gravação de ambiente da casa noturna, em certo trecho dá para ouvir uma fala masculina misturada à música, sem indicar de quem é.',
     relatedPersonIds: ['mariana', 'rafael'],
     relatedLocationIds: ['vertice'],
     relatedEventIds: [],
@@ -260,14 +260,14 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'club_voice_isolated',
-    title: 'Trecho — voz masculina isolada (balada)',
+    title: 'Trecho, voz masculina isolada (balada)',
     type: 'derived',
     sourceType: 'audio-lab',
     originalOrDerived: 'derived',
     sourceId: 'rec_vtx_old_01',
     integrity: 'unverified',
     description:
-      'Voz masculina recuperada por análise forense a partir da gravação de ambiente. Ainda imperfeita — suficiente para alguém do local reconhecer o timbre.',
+      'Voz masculina recuperada por análise forense a partir da gravação de ambiente. Ainda imperfeita, suficiente para alguém do local reconhecer o timbre.',
     relatedPersonIds: ['mariana', 'rafael'],
     relatedLocationIds: ['vertice'],
     relatedEventIds: [],
@@ -284,7 +284,7 @@ export const seedEvidenceCatalog: Evidence[] = [
     originalOrDerived: 'derived',
     sourceId: 'rec_vtx_old_01',
     integrity: 'unverified',
-    description: 'Legado — substituído por club_voice_isolated.',
+    description: 'Legado, substituído por club_voice_isolated.',
     relatedPersonIds: ['rafael', 'mariana'],
     relatedLocationIds: ['vertice'],
     relatedEventIds: [],
@@ -370,13 +370,13 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'elisa_case_summary',
-    title: 'Processo — Elisa Duarte',
+    title: 'Processo. Elisa Duarte',
     type: 'document',
     sourceType: 'police-computer',
     originalOrDerived: 'original',
     integrity: 'verified',
     description:
-      'Vítima: Elisa Duarte, 17 anos. Réu: André Silva. Imputação: homicídio doloso. Resultado em primeira instância: condenado. Principais peças disponíveis: boletim inicial; depoimentos; cronologia da noite; registros do Vértice.',
+      'Vítima: Elisa Duarte, 17 anos. Réu: André Silva. Imputação: homicídio doloso. Resultado em primeira instância: condenado. Principais peças disponíveis: boletim inicial. depoimentos. cronologia da noite. registros do Vértice.',
     relatedPersonIds: ['elisa', 'andre'],
     relatedLocationIds: [],
     relatedEventIds: [],
@@ -406,7 +406,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   // —— Bloco 3 ——
   {
     id: 'nico_current_record',
-    title: 'Cadastro — Nicolas Prado Reis',
+    title: 'Cadastro. Nicolas Prado Reis',
     description: 'Vínculo profissional atual: casa noturna Titã Club. Telefone de contato registrado.',
     type: 'document',
     sourceType: 'police-computer',
@@ -435,21 +435,21 @@ export const seedEvidenceCatalog: Evidence[] = [
     originalOrDerived: 'original',
     integrity: 'unverified',
     description:
-      'Segundo Nico, Mariana perguntava detalhes de quando cada coisa aconteceu — mais do que “quem matou Elisa”.',
+      'Segundo Nico, Mariana perguntava detalhes de quando cada coisa aconteceu, mais do que “quem matou Elisa”.',
     relatedPersonIds: ['mariana', 'nico', 'elisa'],
     relatedLocationIds: ['vertice'],
     relatedEventIds: [],
   },
   {
     id: 'nico_recording_booth',
-    title: 'Gravação — feed da mesa do Vértice (Noite X)',
+    title: 'Gravação, feed da mesa do Vértice (Noite X)',
     type: 'audio',
     sourceType: 'witness',
     originalOrDerived: 'original',
     integrity: 'questionable',
-    obtainedFrom: 'Fornecido por Nico — arquivo automático da cabine',
+    obtainedFrom: 'Fornecido por Nico, arquivo automático da cabine',
     description:
-      'Fonte B — feed direto da mesa (Mechanical Groove + intervenção do DJ). Relógio local da casa. Sessão: Janus / Epimetheus.',
+      'Fonte B, feed direto da mesa (Mechanical Groove + intervenção do DJ). Relógio local da casa. Sessão: Janus / Epimetheus.',
     audioSrc: '/assets/audio/forensic/puzzle04/puzzle04_desk_source.mp3',
     durationSec: 180,
     displayFileName: 'VTX_DESK_FEED_NX.wav',
@@ -465,7 +465,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   {
     /** Legado — sessão Janus usa a captura ambiente (Puzzle 03) + feed da mesa. */
     id: 'nico_recording_portable',
-    title: 'Gravação — portátil (legado)',
+    title: 'Gravação, portátil (legado)',
     type: 'audio',
     sourceType: 'witness',
     originalOrDerived: 'original',
@@ -496,7 +496,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'vertice_timeline_inconsistent',
-    title: 'Cronologia do Vértice — saída de Elisa recalculada',
+    title: 'Cronologia do Vértice, saída de Elisa recalculada',
     type: 'derived',
     sourceType: 'audio-lab',
     originalOrDerived: 'derived',
@@ -511,7 +511,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   {
     /** Liberada só depois que Sandra é pessoa identificada na investigação (não vem do P04). */
     id: 'sandra_first_sighting_not_elisa',
-    title: 'Cronologia — primeiro avistamento vs saída de Elisa',
+    title: 'Cronologia, primeiro avistamento vs saída de Elisa',
     type: 'derived',
     sourceType: 'case-file',
     originalOrDerived: 'derived',
@@ -536,20 +536,20 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'maralto_public_record',
-    title: 'Maralto Granéis — registro público/histórico',
+    title: 'Maralto Granéis, registro público/histórico',
     type: 'document',
     sourceType: 'police-computer',
     originalOrDerived: 'original',
     integrity: 'verified',
     description:
-      'Operação portuária relevante na região; protestos e confrontos na consolidação; cobertura jornalística da época; arquivos oficiais incompletos.',
+      'Operação portuária relevante na região. protestos e confrontos na consolidação. cobertura jornalística da época. arquivos oficiais incompletos.',
     relatedPersonIds: [],
     relatedLocationIds: [],
     relatedEventIds: [],
   },
   {
     id: 'maralto_no_elisa_link',
-    title: 'Pesquisa cruzada — autos Elisa / Maralto Granéis',
+    title: 'Pesquisa cruzada, autos Elisa / Maralto Granéis',
     description: 'Nenhum nome, endereço ou número de processo em comum entre os dois conjuntos de registros consultados.',
     type: 'document',
     sourceType: 'police-computer',
@@ -561,7 +561,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'livia_sought_by_mariana',
-    title: 'Cobertura histórica dos protestos — Lívia Serrano',
+    title: 'Cobertura histórica dos protestos. Lívia Serrano',
     description: 'Reportagem sobre a mobilização contra o terminal Maralto, assinada por Lívia Serrano (Rádio Costeira FM).',
     type: 'document',
     sourceType: 'police-computer',
@@ -573,7 +573,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'livia_radio_archive_raw',
-    title: 'Material bruto — cobertura radiofônica dos protestos',
+    title: 'Material bruto, cobertura radiofônica dos protestos',
     type: 'audio',
     sourceType: 'witness',
     originalOrDerived: 'original',
@@ -606,14 +606,14 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'protest_masked_core',
-    title: 'Cobertura dos protestos — núcleo mascarado',
+    title: 'Cobertura dos protestos, núcleo mascarado',
     type: 'derived',
     sourceType: 'audio-lab',
     originalOrDerived: 'derived',
     integrity: 'verified',
     sourceId: 'livia_radio_archive_raw',
     description:
-      'Reportagem reconstruída: núcleo radical/mascarado nos protestos Maralto; bloqueios, sabotagem e comunicações com apelidos.',
+      'Reportagem reconstruída: núcleo radical/mascarado nos protestos Maralto. bloqueios, sabotagem e comunicações com apelidos.',
     audioSrc: '/assets/audio/forensic/puzzle05/livia_maralto_master.mp3',
     durationSec: 324,
     displayFileName: 'RC_ASSEMBLED_SEQUENCE.mp3',
@@ -623,7 +623,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'morsa_unidentified',
-    title: '“Morsa” — apelido recorrente na transmissão',
+    title: '“Morsa”, apelido recorrente na transmissão',
     description: 'Apelido repetido no material reconstruído, sem nome associado.',
     type: 'document',
     sourceType: 'audio-lab',
@@ -636,7 +636,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   {
     /** Legado — Samuel entra via ocorrência/detidos, não pela reportagem. */
     id: 'samuel_protest_lead',
-    title: 'Samuel — pista dos protestos (legado)',
+    title: 'Samuel, pista dos protestos (legado)',
     description: 'Substituído pela cadeia ocorrência → relação de detidos → ficha.',
     type: 'document',
     sourceType: 'case-file',
@@ -649,8 +649,8 @@ export const seedEvidenceCatalog: Evidence[] = [
   // —— Bloco 4 ——
   {
     id: 'samuel_current_record',
-    title: 'Ficha — Samuel Teixeira',
-    description: 'Registro único em ocorrência antiga; endereço residencial atualizado.',
+    title: 'Ficha. Samuel Teixeira',
+    description: 'Registro único em ocorrência antiga. endereço residencial atualizado.',
     type: 'document',
     sourceType: 'police-computer',
     originalOrDerived: 'original',
@@ -688,14 +688,14 @@ export const seedEvidenceCatalog: Evidence[] = [
     sourceType: 'witness',
     originalOrDerived: 'original',
     integrity: 'unverified',
-    description: 'Perguntas sobre presença, aparição e desaparecimento durante a noite dos protestos — não só o nome.',
+    description: 'Perguntas sobre presença, aparição e desaparecimento durante a noite dos protestos, não só o nome.',
     relatedPersonIds: ['mariana', 'morsa', 'samuel'],
     relatedLocationIds: [],
     relatedEventIds: [],
   },
   {
     id: 'mariana_andre_visit_record',
-    title: 'Registro de visitas — André Silva',
+    title: 'Registro de visitas. André Silva',
     description: 'Mariana solicitou, nas últimas semanas, a reativação do cadastro de visitante.',
     type: 'document',
     sourceType: 'police-computer',
@@ -729,7 +729,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'andre_no_maralto_link',
-    title: 'Declaração de André — Maralto Granéis',
+    title: 'Declaração de André. Maralto Granéis',
     description: 'André não reconheceu o nome Maralto Granéis nem os protestos.',
     type: 'document',
     sourceType: 'witness',
@@ -742,7 +742,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   {
     id: 'andre_contact_chronology_mismatch',
     title: 'Horários do número sem nome × ligações autorizadas a André',
-    description: 'As interações do número sem nome ocorrem de madrugada e à noite; as ligações autorizadas a André ocorrem entre 14h e 17h.',
+    description: 'As interações do número sem nome ocorrem de madrugada e à noite. as ligações autorizadas a André ocorrem entre 14h e 17h.',
     type: 'document',
     sourceType: 'police-computer',
     originalOrDerived: 'derived',
@@ -753,14 +753,14 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'hex_pericia_delivery',
-    title: 'Entrega pericial — canal anônimo',
+    title: 'Entrega pericial, canal anônimo',
     description:
       'Pacote único encaminhado pela perícia com seis fragmentos de áudio extraídos do canal desconhecido.',
     type: 'audio',
     sourceType: 'unknown-channel',
     originalOrDerived: 'original',
     integrity: 'questionable',
-    obtainedFrom: 'Perícia digital — extração unificada',
+    obtainedFrom: 'Perícia digital, extração unificada',
     durationSec: 42.3,
     displayFileName: 'entrega_pericia_UNK.sav',
     relatedPersonIds: [],
@@ -787,7 +787,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'hidden_app_detected',
-    title: 'Laudo pericial — pacote não listado no launcher',
+    title: 'Laudo pericial, pacote não listado no launcher',
     description: 'O aparelho contém um pacote instalado que o launcher não apresenta. Base local protegida por código numérico.',
     type: 'digital',
     sourceType: 'phone-forensics',
@@ -811,7 +811,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'diary_memory_fear',
-    title: 'Diário — registros de falhas de memória',
+    title: 'Diário, registros de falhas de memória',
     type: 'document',
     sourceType: 'hidden-diary',
     originalOrDerived: 'original',
@@ -822,7 +822,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'diary_julia_contradiction',
-    title: 'Diário — anotações divergentes sobre Júlia',
+    title: 'Diário, anotações divergentes sobre Júlia',
     type: 'document',
     sourceType: 'hidden-diary',
     originalOrDerived: 'original',
@@ -839,7 +839,7 @@ export const seedEvidenceCatalog: Evidence[] = [
     sourceType: 'mariana-phone',
     originalOrDerived: 'original',
     integrity: 'unverified',
-    obtainedFrom: 'Downloads — CHK_UNK (indicado no diário)',
+    obtainedFrom: 'Downloads. CHK_UNK (indicado no diário)',
     audioSrc: '/assets/audio/mariana/chk-unk-secret-call.mp3',
     exportable: false,
     deviceLocked: true,
@@ -865,7 +865,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   // —— Revisão transversal: novos fatos documentais ——
   {
     id: 'elisa_original_chronology',
-    title: 'Cronologia da noite — autos (fls. 41)',
+    title: 'Cronologia da noite, autos (fls. 41)',
     type: 'document',
     sourceType: 'case-file',
     originalOrDerived: 'original',
@@ -879,12 +879,12 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'protest_incident_report',
-    title: 'Ocorrência — confronto no terminal Maralto',
+    title: 'Ocorrência, confronto no terminal Maralto',
     type: 'document',
     sourceType: 'police-computer',
     originalOrDerived: 'original',
     integrity: 'verified',
-    description: 'Veículo da obra incendiado por pequeno grupo encapuzado; catorze detidos no local.',
+    description: 'Veículo da obra incendiado por pequeno grupo encapuzado. catorze detidos no local.',
     relatedPersonIds: [],
     relatedLocationIds: [],
     relatedEventIds: [],
@@ -896,14 +896,14 @@ export const seedEvidenceCatalog: Evidence[] = [
     sourceType: 'police-computer',
     originalOrDerived: 'original',
     integrity: 'verified',
-    description: 'Item 9: resistência à ação policial; liberado após quatro dias. Sem indiciamento pelo incêndio.',
+    description: 'Item 9: resistência à ação policial. liberado após quatro dias. Sem indiciamento pelo incêndio.',
     relatedPersonIds: ['samuel'],
     relatedLocationIds: [],
     relatedEventIds: [],
   },
   {
     id: 'andre_authorized_calls',
-    title: 'Registro de ligações autorizadas — André Silva',
+    title: 'Registro de ligações autorizadas. André Silva',
     type: 'document',
     sourceType: 'police-computer',
     originalOrDerived: 'original',
@@ -915,12 +915,12 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'unknown_number_log',
-    title: 'Log de interações — número sem nome',
+    title: 'Log de interações, número sem nome',
     type: 'digital',
     sourceType: 'mariana-phone',
     originalOrDerived: 'original',
     integrity: 'verified',
-    description: 'Nove mensagens de voz e quatro chamadas em dois meses; horários de madrugada e fim de noite.',
+    description: 'Nove mensagens de voz e quatro chamadas em dois meses. horários de madrugada e fim de noite.',
     relatedPersonIds: ['mariana'],
     relatedLocationIds: [],
     relatedEventIds: [],
@@ -951,7 +951,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'jana_current_record',
-    title: 'Cadastro atual — Jana Ribeiro',
+    title: 'Cadastro atual. Jana Ribeiro',
     type: 'document',
     sourceType: 'case-file',
     originalOrDerived: 'original',
@@ -1083,7 +1083,7 @@ export const seedEvidenceCatalog: Evidence[] = [
     sourceType: 'witness',
     originalOrDerived: 'derived',
     integrity: 'unverified',
-    description: 'Grau de intoxicação reavaliado; sem quantidade clínica exata.',
+    description: 'Grau de intoxicação reavaliado. sem quantidade clínica exata.',
     relatedPersonIds: ['elisa', 'geraldo'],
     relatedLocationIds: [],
     relatedEventIds: [],
@@ -1101,7 +1101,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'vertice_comanda_night_x',
-    title: 'Comanda / fechamento de caixa — bar do Vértice (Noite X)',
+    title: 'Comanda / fechamento de caixa, bar do Vértice (Noite X)',
     type: 'document',
     sourceType: 'case-file',
     originalOrDerived: 'original',
@@ -1156,13 +1156,13 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'valter_group_active_intercepts',
-    title: 'Interceptações de rádio — operação contemporânea do grupo',
+    title: 'Interceptações de rádio, operação contemporânea do grupo',
     type: 'audio',
     sourceType: 'case-file',
     originalOrDerived: 'original',
     integrity: 'unverified',
     description:
-      'Captura ampla INTERCEPT_0511_RF_CAPTURE — faixa 462 MHz, canais catalogados e atividade residual. Análise na bancada.',
+      'Captura ampla INTERCEPT_0511_RF_CAPTURE, faixa 462 MHz, canais catalogados e atividade residual. Análise na bancada.',
     relatedPersonIds: ['valter', 'miro'],
     relatedLocationIds: [],
     relatedEventIds: [],
@@ -1178,7 +1178,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'pastor_token_g17n',
-    title: 'Comunicação oculta — token G17N',
+    title: 'Comunicação oculta, token G17N',
     description: 'Do canal intermediário: G · 1-7 · Norte. Horário operacional 23:40.',
     type: 'derived',
     sourceType: 'audio-lab',
@@ -1191,7 +1191,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'pastor_delivery_time_2340',
-    title: 'Horário operacional da entrega — 23:40',
+    title: 'Horário operacional da entrega, 23:40',
     description: 'Recuperado da transmissão oculta entre os canais monitorados.',
     type: 'derived',
     sourceType: 'audio-lab',
@@ -1204,8 +1204,8 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'pastor_delivery_finding',
-    title: 'Entrega do núcleo do chefe — G17N — 23:40',
-    description: 'G17N = Galpão 17 — Pátio Norte.',
+    title: 'Entrega do núcleo do chefe. G17N, 23:40',
+    description: 'G17N = Galpão 17. Pátio Norte.',
     type: 'derived',
     sourceType: 'case-file',
     originalOrDerived: 'derived',
@@ -1217,7 +1217,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'galpao17_operational_site',
-    title: 'G17N = Galpão 17 — Pátio Norte',
+    title: 'G17N = Galpão 17. Pátio Norte',
     description: 'Cruzamento do token recuperado com a tabela logística apreendida.',
     type: 'document',
     sourceType: 'case-file',
@@ -1253,7 +1253,7 @@ export const seedEvidenceCatalog: Evidence[] = [
     id: 'miro_followed_elisa_by_mistake',
     title: 'Miro estava na trajetória de Elisa após confundi-la com Jana',
     description:
-      'Procurava Jana; viu jaqueta e bolsa; seguiu Elisa por engano. Nega assassinato. Admite ter descido depois e recuperado a bolsa.',
+      'Procurava Jana. viu jaqueta e bolsa. seguiu Elisa por engano. Nega assassinato. Admite ter descido depois e recuperado a bolsa.',
     type: 'document',
     sourceType: 'witness',
     originalOrDerived: 'original',
@@ -1341,7 +1341,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'memory_anomalies_months_before',
-    title: 'Primeiros registros anormais de memória — meses antes do desaparecimento',
+    title: 'Primeiros registros anormais de memória, meses antes do desaparecimento',
     type: 'document',
     sourceType: 'case-file',
     originalOrDerived: 'derived',
@@ -1376,14 +1376,14 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'anon_hospital_burst_audio',
-    title: 'Áudio anônimo — AUD_0008',
+    title: 'Áudio anônimo. AUD_0008',
     type: 'audio',
     sourceType: 'unknown-channel',
     originalOrDerived: 'original',
     integrity: 'questionable',
     description:
       'Arquivo recebido por mensagem de número desconhecido no WhatsApp de Augusto. Sem texto. Origem não identificada.',
-    obtainedFrom: 'WhatsApp — número desconhecido',
+    obtainedFrom: 'WhatsApp, número desconhecido',
     relatedPersonIds: ['mariana'],
     relatedLocationIds: [],
     relatedEventIds: [],
@@ -1399,7 +1399,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'anon_audio_hospital_environment',
-    title: 'Áudio anônimo — ambiente técnico monótono',
+    title: 'Áudio anônimo, ambiente técnico monótono',
     type: 'derived',
     sourceType: 'audio-lab',
     originalOrDerived: 'derived',
@@ -1411,7 +1411,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'anon_audio_ricardo_name',
-    title: 'Fragmento de voz isolado — “Ricardo”',
+    title: 'Fragmento de voz isolado, “Ricardo”',
     description: 'Nome recuperado por diferença entre o ciclo anômalo e o padrão comum. Frase completa não confirmada.',
     type: 'derived',
     sourceType: 'audio-lab',
@@ -1424,7 +1424,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'anon_audio_shift_window',
-    title: 'Áudio anônimo — contexto temporal ainda incerto',
+    title: 'Áudio anônimo, contexto temporal ainda incerto',
     type: 'derived',
     sourceType: 'audio-lab',
     originalOrDerived: 'derived',
@@ -1436,7 +1436,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'ricardo_freitas_died_that_shift',
-    title: 'Ricardo Freitas — óbito no plantão correspondente',
+    title: 'Ricardo Freitas, óbito no plantão correspondente',
     type: 'document',
     sourceType: 'case-file',
     originalOrDerived: 'original',
@@ -1447,7 +1447,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'ricardo_record_poor_id',
-    title: 'Registro hospitalar pobre — paciente desorientado, identificação frágil',
+    title: 'Registro hospitalar pobre, paciente desorientado, identificação frágil',
     type: 'document',
     sourceType: 'case-file',
     originalOrDerived: 'original',
@@ -1469,7 +1469,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'ricardo_old_patient_mariana_shift',
-    title: 'Renata: Ricardo era paciente antigo — Mariana teve contato relevante na época',
+    title: 'Renata: Ricardo era paciente antigo. Mariana teve contato relevante na época',
     type: 'other',
     sourceType: 'witness',
     originalOrDerived: 'derived',
@@ -1513,7 +1513,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'hvalenca_forum_aster_mention',
-    title: 'Fórum técnico — usuário hvalenca cita Aster Sistemas',
+    title: 'Fórum técnico, usuário hvalenca cita Aster Sistemas',
     type: 'digital',
     sourceType: 'case-file',
     originalOrDerived: 'original',
@@ -1535,7 +1535,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'ricardo_civil_unconfirmed',
-    title: 'Consulta civil — identidade de Ricardo Freitas não confirmável',
+    title: 'Consulta civil, identidade de Ricardo Freitas não confirmável',
     type: 'document',
     sourceType: 'case-file',
     originalOrDerived: 'original',
@@ -1546,7 +1546,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'mariana_partial_account_hvalenca',
-    title: 'Nota de Mariana — fragmento de conta hvalenca@ (truncado)',
+    title: 'Nota de Mariana, fragmento de conta hvalenca@ (truncado)',
     type: 'document',
     sourceType: 'mariana-phone',
     originalOrDerived: 'original',
@@ -1557,7 +1557,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'henrique_registry_match',
-    title: 'Cadastro — Henrique Valença correlacionado ao identificador hvalenca',
+    title: 'Cadastro. Henrique Valença correlacionado ao identificador hvalenca',
     type: 'document',
     sourceType: 'case-file',
     originalOrDerived: 'original',
@@ -1590,7 +1590,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'henrique_tech_company',
-    title: 'Henrique Valença — vínculo com antiga empresa de tecnologia',
+    title: 'Henrique Valença, vínculo com antiga empresa de tecnologia',
     type: 'document',
     sourceType: 'case-file',
     originalOrDerived: 'original',
@@ -1601,7 +1601,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'henrique_security_incident',
-    title: 'Henrique — relato de incidente de segurança anterior',
+    title: 'Henrique, relato de incidente de segurança anterior',
     type: 'document',
     sourceType: 'case-file',
     originalOrDerived: 'original',
@@ -1612,7 +1612,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'cecilia_prado_contact',
-    title: 'Cecília Prado — contato profissional relevante de Henrique',
+    title: 'Cecília Prado, contato profissional relevante de Henrique',
     type: 'document',
     sourceType: 'case-file',
     originalOrDerived: 'original',
@@ -1645,7 +1645,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'henrique_rtp_capture',
-    title: 'Captura de rede — hv_session_capture.pcap',
+    title: 'Captura de rede, hv_session_capture.pcap',
     type: 'digital',
     sourceType: 'phone-forensics',
     originalOrDerived: 'original',
@@ -1690,7 +1690,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'system_similar_to_mariana_unknown',
-    title: 'Padrão de interlocução com contexto excessivo — paralelo com o caso Mariana',
+    title: 'Padrão de interlocução com contexto excessivo, paralelo com o caso Mariana',
     type: 'derived',
     sourceType: 'audio-lab',
     originalOrDerived: 'derived',
@@ -1702,7 +1702,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'protest_heterogeneous_sources',
-    title: 'Materiais dos protestos — Lívia, celular, percurso, CFTV',
+    title: 'Materiais dos protestos. Lívia, celular, percurso, CFTV',
     type: 'audio',
     sourceType: 'case-file',
     originalOrDerived: 'original',
@@ -1724,7 +1724,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'protest_timeline_reconstructed',
-    title: 'Percurso de Morsa — passagem de serviço compatível com as aparições',
+    title: 'Percurso de Morsa, passagem de serviço compatível com as aparições',
     type: 'derived',
     sourceType: 'audio-lab',
     originalOrDerived: 'derived',
@@ -1804,7 +1804,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'guardrail_impact_signs',
-    title: 'Guardrail danificado antes da queda — impacto automotivo anterior',
+    title: 'Guardrail danificado antes da queda, impacto automotivo anterior',
     type: 'document',
     sourceType: 'case-file',
     originalOrDerived: 'derived',
@@ -1870,7 +1870,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'mauro_vehicle_compatible_damage',
-    title: 'Veículo de Mauro — dano compatível na região e no período',
+    title: 'Veículo de Mauro, dano compatível na região e no período',
     type: 'document',
     sourceType: 'case-file',
     originalOrDerived: 'original',
@@ -1903,7 +1903,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'denis_workshop_damage_photos',
-    title: 'Oficina de Dênis — fotos preservadas do dano do veículo',
+    title: 'Oficina de Dênis, fotos preservadas do dano do veículo',
     type: 'document',
     sourceType: 'witness',
     originalOrDerived: 'original',
@@ -1980,7 +1980,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'rui_police_approach_records',
-    title: 'Pacote institucional — ferroviário, CAD, AVL e rádio (madrugada da abordagem)',
+    title: 'Pacote institucional, ferroviário, CAD, AVL e rádio (madrugada da abordagem)',
     type: 'digital',
     sourceType: 'case-file',
     originalOrDerived: 'original',
@@ -2023,7 +2023,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'omitido_named_in_records',
-    title: 'Rótulo operacional no caderno — “O Omitido” (hipótese, sem identidade confirmada)',
+    title: 'Rótulo operacional no caderno, “O Omitido” (hipótese, sem identidade confirmada)',
     type: 'document',
     sourceType: 'phone-forensics',
     originalOrDerived: 'original',
@@ -2045,7 +2045,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'omitido_guided_not_answered',
-    title: 'O Omitido guiava por perguntas e fragmentos — não entregava respostas prontas',
+    title: 'O Omitido guiava por perguntas e fragmentos, não entregava respostas prontas',
     type: 'document',
     sourceType: 'phone-forensics',
     originalOrDerived: 'derived',
@@ -2056,7 +2056,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'diary_partly_staged_ambiguity',
-    title: 'Diário: parte do comportamento estranho pode ter sido preparado — ambiguidade permanece',
+    title: 'Diário: parte do comportamento estranho pode ter sido preparado, ambiguidade permanece',
     type: 'document',
     sourceType: 'hidden-diary',
     originalOrDerived: 'derived',
@@ -2100,7 +2100,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'messages_as_mariana_convincing',
-    title: 'Mensagens em nome de Mariana — vocabulário e contexto convincentes',
+    title: 'Mensagens em nome de Mariana, vocabulário e contexto convincentes',
     type: 'message',
     sourceType: 'augusto-whatsapp',
     originalOrDerived: 'original',
@@ -2133,7 +2133,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'mariana_confirmed_dead',
-    title: 'Mariana Silva — morte confirmada no fim da trilha',
+    title: 'Mariana Silva, morte confirmada no fim da trilha',
     type: 'document',
     sourceType: 'case-file',
     originalOrDerived: 'original',
@@ -2155,7 +2155,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'other_disappearances_pattern',
-    title: 'Outros desaparecimentos — padrão comportamental semelhante',
+    title: 'Outros desaparecimentos, padrão comportamental semelhante',
     type: 'document',
     sourceType: 'case-file',
     originalOrDerived: 'derived',
@@ -2177,7 +2177,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'mariana_recent_recording_claim',
-    title: 'Gravação atribuída a Mariana — alegadamente recente',
+    title: 'Gravação atribuída a Mariana, alegadamente recente',
     type: 'audio',
     sourceType: 'unknown-channel',
     originalOrDerived: 'unknown',
@@ -2200,7 +2200,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   {
     id: 'final_audio_impossible_provenance',
     title:
-      'Mensagem final composta de proveniências incompatíveis — inclui output derivado da bancada',
+      'Mensagem final composta de proveniências incompatíveis, inclui output derivado da bancada',
     type: 'derived',
     sourceType: 'audio-lab',
     originalOrDerived: 'derived',

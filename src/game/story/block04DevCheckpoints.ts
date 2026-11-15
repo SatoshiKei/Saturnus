@@ -67,7 +67,7 @@ export const block04EntryActions: StoryActionRef[] = [
 export const block04DevCheckpoints: { id: string; label: string; actions: StoryActionRef[] }[] = [
   {
     id: 'b04-start',
-    label: 'Bloco 4 — início (fim Bloco 3)',
+    label: 'Bloco 4, início (fim Bloco 3)',
     actions: block04EntryActions,
   },
   {
@@ -105,7 +105,7 @@ export const block04DevCheckpoints: { id: string; label: string; actions: StoryA
   },
   {
     id: 'b04-andre-ready',
-    label: 'André — visita agendada (ligação à unidade)',
+    label: 'André, visita agendada (ligação à unidade)',
     actions: [
       { type: 'addDocument', id: 'doc-andre-ficha' },
       { type: 'addDocument', id: 'doc-andre-visitas' },

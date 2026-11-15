@@ -242,7 +242,7 @@ export function onPathReflectionDone() {
       tasks: [
         {
           id: 'task_reexamine_elisa_from_scratch',
-          label: 'Reconstruir o caso Elisa do zero — começar por Geraldo',
+          label: 'Reconstruir o caso Elisa do zero, começar por Geraldo',
           completed: false,
         },
       ],

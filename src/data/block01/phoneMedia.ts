@@ -42,25 +42,25 @@ export type PhonePhotoItem = PhoneMediaItem & {
 }
 
 export const marianaPhotosLibrary: PhonePhotoItem[] = [
-  { id: 'mp-1', label: 'Plantão — corredor', spriteId: 'mariana', folder: 'Câmera', device: 'mariana' },
+  { id: 'mp-1', label: 'Plantão, corredor', spriteId: 'mariana', folder: 'Câmera', device: 'mariana' },
   { id: 'mp-2', label: 'Júlia', spriteId: 'julia', folder: 'Câmera', device: 'mariana' },
   { id: 'mp-3', label: 'Camila', spriteId: 'camila', folder: 'Câmera', device: 'mariana' },
-  { id: 'mp-4', label: 'Equipe — PA', spriteId: 'paula', folder: 'Câmera', device: 'mariana' },
+  { id: 'mp-4', label: 'Equipe. PA', spriteId: 'paula', folder: 'Câmera', device: 'mariana' },
 ]
 
 export const marianaFilesLibrary: PhoneMediaItem[] = [
-  { id: 'mf-wa-1', label: 'Foto — documento turno', spriteId: 'julia', folder: 'WhatsApp' },
-  { id: 'mf-wa-2', label: 'Contato — Rafael', spriteId: 'rafael', folder: 'WhatsApp' },
+  { id: 'mf-wa-1', label: 'Foto, documento turno', spriteId: 'julia', folder: 'WhatsApp' },
+  { id: 'mf-wa-2', label: 'Contato. Rafael', spriteId: 'rafael', folder: 'WhatsApp' },
   { id: 'mf-dl-1', label: 'Escala outubro.pdf', folder: 'Downloads' },
 ]
 
 export const augustoPhotosLibrary: PhonePhotoItem[] = [
   { id: 'ap-1', label: 'Identificação', spriteId: 'augusto', folder: 'Câmera', device: 'augusto' },
-  { id: 'ap-2', label: 'Camila — plantão', spriteId: 'camila', folder: 'Câmera', device: 'augusto' },
+  { id: 'ap-2', label: 'Camila, plantão', spriteId: 'camila', folder: 'Câmera', device: 'augusto' },
 ]
 
 export const augustoFilesLibrary: PhoneMediaItem[] = [
-  { id: 'af-wa-1', label: 'Prontuário — trecho', spriteId: 'camila', folder: 'WhatsApp' },
+  { id: 'af-wa-1', label: 'Prontuário, trecho', spriteId: 'camila', folder: 'WhatsApp' },
 ]
 
 /** Única porta de entrada para o app Fotos: só devolve o acervo do aparelho pedido. */

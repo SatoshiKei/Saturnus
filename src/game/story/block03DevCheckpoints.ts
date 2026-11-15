@@ -88,7 +88,7 @@ export const block03EntryActions: StoryActionRef[] = [
 export const block03DevCheckpoints: { id: string; label: string; actions: StoryActionRef[] }[] = [
   {
     id: 'b03-start',
-    label: 'Bloco 3 — início (fim Bloco 2)',
+    label: 'Bloco 3, início (fim Bloco 2)',
     actions: block03EntryActions,
   },
   {
@@ -170,7 +170,7 @@ export const block03DevCheckpoints: { id: string; label: string; actions: StoryA
         type: 'notifyInvestigationUpdate',
         id: 'radio-costeira-landline',
         kind: 'contact',
-        title: 'Rádio Costeira — Redação',
+        title: 'Rádio Costeira. Redação',
         subtitle: 'Número disponível no telefone fixo da delegacia',
       },
     ],

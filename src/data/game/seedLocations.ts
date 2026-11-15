@@ -29,7 +29,7 @@ export const seedLocations: Location[] = [
   {
     id: 'vertice',
     name: 'Boate Vértice',
-    description: 'Casa noturna — fechada ao público durante o dia.',
+    description: 'Casa noturna, fechada ao público durante o dia.',
     status: 'unknown',
     relatedPersonIds: ['iara', 'sandro', 'caio'],
     relatedEvidenceIds: [],
@@ -39,7 +39,7 @@ export const seedLocations: Location[] = [
   },
   {
     id: 'universidade',
-    name: 'Universidade — Campus Central',
+    name: 'Universidade. Campus Central',
     description: 'Faculdade de Comunicação, Bloco B.',
     status: 'unknown',
     relatedPersonIds: ['lucas'],
@@ -83,7 +83,7 @@ export const seedLocations: Location[] = [
   },
   {
     id: 'presidio',
-    name: 'Unidade prisional — visita',
+    name: 'Unidade prisional, visita',
     description: 'Sala de visita monitorada. André Silva cumpre pena.',
     status: 'unknown',
     relatedPersonIds: ['andre'],
@@ -116,7 +116,7 @@ export const seedLocations: Location[] = [
   },
   {
     id: 'galpao-17',
-    name: 'Galpão 17 — Pátio Norte',
+    name: 'Galpão 17. Pátio Norte',
     description: 'Ponto operacional indicado pelas interceptações (G17N).',
     status: 'unknown',
     relatedPersonIds: ['miro', 'valter'],
@@ -127,7 +127,7 @@ export const seedLocations: Location[] = [
   },
   {
     id: 'detencao-miro',
-    name: 'Detenção — sala de entrevista',
+    name: 'Detenção, sala de entrevista',
     description: 'Miro custodiado por crimes atuais.',
     status: 'unknown',
     relatedPersonIds: ['miro'],
@@ -149,7 +149,7 @@ export const seedLocations: Location[] = [
   },
   {
     id: 'cecilia-casa',
-    name: 'Alameda Nova, 88 — ap. 14',
+    name: 'Alameda Nova, 88, ap. 14',
     description: 'Residência de Cecília Prado.',
     status: 'unknown',
     relatedPersonIds: ['cecilia'],
@@ -171,7 +171,7 @@ export const seedLocations: Location[] = [
   },
   {
     id: 'oficina-denis',
-    name: 'Oficina Dênis — pátio',
+    name: 'Oficina Dênis, pátio',
     description: 'Oficina que reparou o veículo de Mauro.',
     status: 'unknown',
     relatedPersonIds: ['denis'],
@@ -204,7 +204,7 @@ export const seedLocations: Location[] = [
   },
   {
     id: 'trilha-final',
-    name: 'Galpão desativado — setor norte',
+    name: 'Galpão desativado, setor norte',
     description: 'Local indicado pela cadeia de registros dos últimos deslocamentos.',
     status: 'unknown',
     relatedPersonIds: ['mariana'],

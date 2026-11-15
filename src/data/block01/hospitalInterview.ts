@@ -35,7 +35,7 @@ export const hospitalBeats: Record<HospitalTopicId, HospitalBeat[]> = {
   last_seen: [
     // Aparição ambiental de Renata (sem pista) — jogador ouve o nome antes de Enceladus.
     {
-      text: 'Quando cheguei ao hospital, Júlia e Camila estavam no corredor, conversando com outra mulher. Parei a alguns passos. Não parecia conversa de plantão com estranho — as três claramente já se conheciam.',
+      text: 'Quando cheguei ao hospital, Júlia e Camila estavam no corredor, conversando com outra mulher. Parei a alguns passos. Não parecia conversa de plantão com estranho, as três claramente já se conheciam.',
       narration: true,
     },
     {

@@ -45,7 +45,7 @@ export function onGeraldoReflectionDone() {
     {
       type: 'addTask',
       id: 'task_press_jana_again',
-      label: 'Voltar a falar com Jana — jaqueta e condição de Elisa',
+      label: 'Voltar a falar com Jana, jaqueta e condição de Elisa',
     },
   ])
 }
@@ -91,7 +91,7 @@ export function onValterTrailComplete() {
     {
       type: 'addTask',
       id: 'task_pastor_moons',
-      label: 'Analisar as interceptações de rádio (bancada) — localizar a entrega',
+      label: 'Analisar as interceptações de rádio (bancada), localizar a entrega',
     },
   ])
 }
@@ -138,7 +138,7 @@ export function onPastorLogisticsCrossRef() {
     {
       type: 'addTask',
       id: 'task_valter_operation',
-      label: `Deflagrar operação no ponto ${PASTOR_TOKEN} — Galpão 17 — Pátio Norte`,
+      label: `Deflagrar operação no ponto ${PASTOR_TOKEN}, Galpão 17, Pátio Norte`,
     },
     { type: 'setFlag', id: 'block06_operation_ready', value: true },
     {
@@ -178,7 +178,7 @@ export function finishPoliceOperation() {
     {
       type: 'addTask',
       id: 'task_interview_miro',
-      label: 'Interrogar Miro na detenção — Noite X',
+      label: 'Interrogar Miro na detenção. Noite X',
     },
   ])
 }

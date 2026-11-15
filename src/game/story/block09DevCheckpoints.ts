@@ -61,7 +61,7 @@ export const block09EntryActions: StoryActionRef[] = [
 export const block09DevCheckpoints: { id: string; label: string; actions: StoryActionRef[] }[] = [
   {
     id: 'b09-start',
-    label: 'Bloco 9 — início (fim Bloco 8)',
+    label: 'Bloco 9, início (fim Bloco 8)',
     actions: block09EntryActions,
   },
   {
@@ -161,7 +161,7 @@ export const block09DevCheckpoints: { id: string; label: string; actions: StoryA
   },
   {
     id: 'b09-end',
-    label: 'Fim — MEMÓRIA',
+    label: 'Fim. MEMÓRIA',
     actions: [
       { type: 'setFlag', id: 'block09_memory_done', value: true },
       { type: 'addEvidence', id: 'final_audio_impossible_provenance' },

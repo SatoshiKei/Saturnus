@@ -42,7 +42,7 @@ export const block04DiaryEntries: DiaryEntryDef[] = [
     id: 'diary-record',
     title: 'Gravar pra conferir',
     dateLabel: '28/10',
-    body: 'Gravei a conversa com o número sem nome. Se eu esquecer o que foi dito, pelo menos o arquivo não esquece. Pasta Downloads — CHK_UNK. Preciso ouvir de novo quando a cabeça estiver firme.',
+    body: 'Gravei a conversa com o número sem nome. Se eu esquecer o que foi dito, pelo menos o arquivo não esquece. Pasta Downloads. CHK_UNK. Preciso ouvir de novo quando a cabeça estiver firme.',
     readFlag: 'block04_diary_read_record',
     unlocksUnknownRecording: true,
   },

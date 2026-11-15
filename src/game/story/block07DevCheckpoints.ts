@@ -70,7 +70,7 @@ export const block07EntryActions: StoryActionRef[] = [
 export const block07DevCheckpoints: { id: string; label: string; actions: StoryActionRef[] }[] = [
   {
     id: 'b07-start',
-    label: 'Bloco 7 — início (fim Bloco 6)',
+    label: 'Bloco 7, início (fim Bloco 6)',
     actions: block07EntryActions,
   },
   {
@@ -103,7 +103,7 @@ export const block07DevCheckpoints: { id: string; label: string; actions: StoryA
       {
         type: 'addTask',
         id: 'task_talk_sandra',
-        label: 'Ouvir Sandra Almeida — testemunha da região da queda',
+        label: 'Ouvir Sandra Almeida, testemunha da região da queda',
       },
     ],
   },
@@ -212,7 +212,7 @@ export const block07DevCheckpoints: { id: string; label: string; actions: StoryA
   },
   {
     id: 'b07-ricardo-dead',
-    label: 'Ricardo — identidade não confirmada + depósito',
+    label: 'Ricardo, identidade não confirmada + depósito',
     actions: [
       { type: 'setFlag', id: 'block07_ricardo_dead_end', value: true },
       { type: 'addEvidence', id: 'ricardo_civil_unconfirmed' },
@@ -225,7 +225,7 @@ export const block07DevCheckpoints: { id: string; label: string; actions: StoryA
       {
         type: 'addTask',
         id: 'task_hospital_deposit',
-        label: 'Voltar ao hospital — depósito de pertences de Ricardo',
+        label: 'Voltar ao hospital, depósito de pertences de Ricardo',
       },
     ],
   },

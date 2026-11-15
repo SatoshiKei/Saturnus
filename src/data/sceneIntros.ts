@@ -15,31 +15,31 @@ export interface SceneIntro {
  */
 export const sceneIntros: Record<SceneId, SceneIntro> = {
   hospital: {
-    lines: ['03 NOV 2026', '16:12', 'HOSPITAL MUNICIPAL — POSTO DE ENFERMAGEM'],
+    lines: ['03 NOV 2026', '16:12', 'HOSPITAL MUNICIPAL. POSTO DE ENFERMAGEM'],
     ambience: 'ambience-hush',
   },
   vertice: {
-    lines: ['04 NOV 2026', '09:40', 'BOATE VÉRTICE — SALÃO PRINCIPAL'],
+    lines: ['04 NOV 2026', '09:40', 'BOATE VÉRTICE. SALÃO PRINCIPAL'],
     ambience: 'ambience-hush',
   },
   lucas: {
-    lines: ['04 NOV 2026', '11:20', 'UNIVERSIDADE — CAMPUS CENTRAL, BLOCO B'],
+    lines: ['04 NOV 2026', '11:20', 'UNIVERSIDADE. CAMPUS CENTRAL, BLOCO B'],
     ambience: 'scene-in',
   },
   livia: {
-    lines: ['04 NOV 2026', '14:05', 'RÁDIO COSTEIRA FM — REDAÇÃO'],
+    lines: ['04 NOV 2026', '14:05', 'RÁDIO COSTEIRA FM. REDAÇÃO'],
     ambience: 'scene-in',
   },
   nico: {
-    lines: ['04 NOV 2026', '16:30', 'TITÃ CLUB — ANTES DA ABERTURA'],
+    lines: ['04 NOV 2026', '16:30', 'TITÃ CLUB. ANTES DA ABERTURA'],
     ambience: 'ambience-hush',
   },
   samuel: {
-    lines: ['04 NOV 2026', '18:50', 'RUA DAS ACÁCIAS, 118 — AP. 21'],
+    lines: ['04 NOV 2026', '18:50', 'RUA DAS ACÁCIAS, 118. AP. 21'],
     ambience: 'scene-in',
   },
   andre: {
-    lines: ['04 NOV 2026', '21:37', 'PENITENCIÁRIA ESTADUAL — SALA DE VISITAS'],
+    lines: ['04 NOV 2026', '21:37', 'PENITENCIÁRIA ESTADUAL. SALA DE VISITAS'],
     ambience: 'ambience-hush',
   },
   jana: {
@@ -51,11 +51,11 @@ export const sceneIntros: Record<SceneId, SceneIntro> = {
     ambience: 'scene-in',
   },
   operation: {
-    lines: ['06 NOV 2026', '03:12', 'GALPÃO 17 — PÁTIO NORTE'],
+    lines: ['06 NOV 2026', '03:12', 'GALPÃO 17. PÁTIO NORTE'],
     ambience: 'ambience-hush',
   },
   miro: {
-    lines: ['06 NOV 2026', '11:05', 'DETENÇÃO — SALA DE ENTREVISTA'],
+    lines: ['06 NOV 2026', '11:05', 'DETENÇÃO. SALA DE ENTREVISTA'],
     ambience: 'ambience-hush',
   },
   sandra: {
@@ -63,7 +63,7 @@ export const sceneIntros: Record<SceneId, SceneIntro> = {
     ambience: 'scene-in',
   },
   cecilia: {
-    lines: ['07 NOV 2026', '10:45', 'ALAMEDA NOVA, 88 — AP. 14'],
+    lines: ['07 NOV 2026', '10:45', 'ALAMEDA NOVA, 88. AP. 14'],
     ambience: 'scene-in',
   },
   mauro: {
@@ -71,7 +71,7 @@ export const sceneIntros: Record<SceneId, SceneIntro> = {
     ambience: 'scene-in',
   },
   denis: {
-    lines: ['07 NOV 2026', '16:40', 'OFICINA DÊNIS — PÁTIO'],
+    lines: ['07 NOV 2026', '16:40', 'OFICINA DÊNIS. PÁTIO'],
     ambience: 'ambience-hush',
   },
   bia: {
@@ -83,7 +83,7 @@ export const sceneIntros: Record<SceneId, SceneIntro> = {
     ambience: 'ambience-hush',
   },
   trail: {
-    lines: ['08 NOV 2026', '02:17', 'GALPÃO DESATIVADO — SETOR NORTE'],
+    lines: ['08 NOV 2026', '02:17', 'GALPÃO DESATIVADO. SETOR NORTE'],
     ambience: 'ambience-hush',
   },
 }

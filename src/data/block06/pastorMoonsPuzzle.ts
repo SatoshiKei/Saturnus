@@ -7,14 +7,14 @@
  */
 
 export const PASTOR_TOKEN = 'G17N'
-export const PASTOR_LOCATION_LABEL = 'Galpão 17 — Pátio Norte'
+export const PASTOR_LOCATION_LABEL = 'Galpão 17. Pátio Norte'
 export const PASTOR_LOCATION_ID = 'galpao-17'
 export const PASTOR_DELIVERY_TIME = '23:40'
 
 export const PASTOR_CODE_TABLE: { token: string; place: string }[] = [
-  { token: 'K02S', place: 'Cais 02 — Sul' },
+  { token: 'K02S', place: 'Cais 02. Sul' },
   { token: 'G17N', place: PASTOR_LOCATION_LABEL },
-  { token: 'B08L', place: 'Box 08 — Leste' },
+  { token: 'B08L', place: 'Box 08. Leste' },
 ]
 
 export const PASTOR_FREQUENCIES_MHZ = {

@@ -3,7 +3,7 @@ import { block01EndTasks } from '../../data/game/seedStory'
 
 /** Atalhos DEV — Bloco 1 (não expor em produção). */
 export const block01DevCheckpoints: { id: string; label: string; actions: StoryActionRef[] }[] = [
-  { id: 'b01-start', label: 'Bloco 1 — início', actions: [] },
+  { id: 'b01-start', label: 'Bloco 1, início', actions: [] },
   {
     id: 'b01-after-bo',
     label: 'Após BO',

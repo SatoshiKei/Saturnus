@@ -289,14 +289,14 @@ export const CANONICAL_STORY_MANIFEST: CanonicalCheckpointDef[] = [
   {
     id: 'b01-end',
     steps: [],
-    note: 'block01_end_block dispara com block01_hospital_done — fim do bloco coincide com o fim das entrevistas.',
+    note: 'block01_end_block dispara com block01_hospital_done, fim do bloco coincide com o fim das entrevistas.',
   },
   // ── Bloco 2 ──
   { id: 'b02-start', steps: [] },
   {
     id: 'b02-vertice-unlocked',
     steps: [{ puzzle: 'P02' }],
-    note: 'Canon P2→P4: P02 = áudio de Rafael já no celular de Mariana (rafael_audio_reply); libera o Vértice + mídia da balada ausente. NÃO entrega rec_vtx_old_01.',
+    note: 'Canon P2→P4: P02 = áudio de Rafael já no celular de Mariana (rafael_audio_reply). libera o Vértice + mídia da balada ausente. NÃO entrega rec_vtx_old_01.',
   },
   {
     id: 'b02-archive-ready',
@@ -306,12 +306,12 @@ export const CANONICAL_STORY_MANIFEST: CanonicalCheckpointDef[] = [
   {
     id: 'b02-after-rafael-audio',
     steps: [{ chat: 'chat-rafael-augusto' }, { h: 'onRafaelClubAudioPlayed' }],
-    note: 'Chat com Rafael só abre após block02_vertice_archive; ele envia a gravação da balada (rec_vtx_old_01) — insumo do P03.',
+    note: 'Chat com Rafael só abre após block02_vertice_archive. ele envia a gravação da balada (rec_vtx_old_01), insumo do P03.',
   },
   {
     id: 'b02-rings-provisional',
     steps: [{ puzzle: 'P03' }],
-    note: 'P03 ANÉIS = isolar voz masculina (club_voice_isolated). Reabre o Vértice; Nico só na 2ª visita.',
+    note: 'P03 ANÉIS = isolar voz masculina (club_voice_isolated). Reabre o Vértice. Nico só na 2ª visita.',
   },
   {
     id: 'b02-nico-identified',
@@ -336,11 +336,11 @@ export const CANONICAL_STORY_MANIFEST: CanonicalCheckpointDef[] = [
   {
     id: 'b03-maralto-researched',
     steps: [
-      { act: [{ type: 'discoverSearchTerm', term: 'maralto' }], why: 'DEV replay — termo Maralto' },
+      { act: [{ type: 'discoverSearchTerm', term: 'maralto' }], why: 'DEV replay, termo Maralto' },
       { doc: 'doc-maralto-cadastro' },
       { doc: 'doc-maralto-clipping' },
     ],
-    note: 'Replay/DEV — atalho antigo via busca Maralto (paralelo ao histórico de chamadas).',
+    note: 'Replay/DEV, atalho antigo via busca Maralto (paralelo ao histórico de chamadas).',
   },
   { id: 'b03-livia-ready', steps: [{ call: 'call-livia' }] },
   { id: 'b03-after-livia', steps: [{ vn: 'livia' }] },
@@ -368,7 +368,7 @@ export const CANONICAL_STORY_MANIFEST: CanonicalCheckpointDef[] = [
   {
     id: 'b04-hex-done',
     steps: [{ puzzle: 'P06', through: 'survey' }],
-    note: 'Canon: o survey de espectrogramas NÃO resolve o Hexágono; o PIN só fecha no diário (b04-diary-open).',
+    note: 'Canon: o survey de espectrogramas NÃO resolve o Hexágono. o PIN só fecha no diário (b04-diary-open).',
   },
   { id: 'b04-hidden-app', steps: [{ call: 'call-pericia-device' }, { doc: 'doc-laudo-forense' }] },
   { id: 'b04-diary-open', steps: [{ diary: 'open' }, { puzzle: 'P06' }, { diary: 'all' }] },
@@ -409,7 +409,7 @@ export const CANONICAL_STORY_MANIFEST: CanonicalCheckpointDef[] = [
   {
     id: 'b07-after-miro2',
     steps: [{ vn: 'miroFollowup' }],
-    note: 'finishMiroInterview (B6) já registra a 2ª conversa com Miro; o passo é idempotente.',
+    note: 'finishMiroInterview (B6) já registra a 2ª conversa com Miro. o passo é idempotente.',
   },
   { id: 'b07-sandra-ready', steps: [{ doc: 'doc-sandra-ficha' }] },
   { id: 'b07-after-sandra', steps: [{ vn: 'sandra' }, { refl: 'refl-b07-sandra' }] },
@@ -457,7 +457,7 @@ export const CANONICAL_STORY_MANIFEST: CanonicalCheckpointDef[] = [
   {
     id: 'b08-rings-timeline',
     steps: [{ puzzle: 'P10', through: 'route' }],
-    note: 'Só a etapa técnica; a revelação CAM11 fica para b08-rings-done.',
+    note: 'Só a etapa técnica. a revelação CAM11 fica para b08-rings-done.',
   },
   {
     id: 'b08-rings-done',

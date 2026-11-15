@@ -72,7 +72,7 @@ export const block05EntryActions: StoryActionRef[] = [
 export const block05DevCheckpoints: { id: string; label: string; actions: StoryActionRef[] }[] = [
   {
     id: 'b05-start',
-    label: 'Bloco 5 — início (fim Bloco 4)',
+    label: 'Bloco 5, início (fim Bloco 4)',
     actions: block05EntryActions,
   },
   {
@@ -148,7 +148,7 @@ export const block05DevCheckpoints: { id: string; label: string; actions: StoryA
       {
         type: 'addTask',
         id: 'task_weigh_maralto_line',
-        label: 'Reavaliar o que a linha Maralto explica — e o que não explica',
+        label: 'Reavaliar o que a linha Maralto explica, e o que não explica',
       },
     ],
   },
@@ -226,7 +226,7 @@ export const block05DevCheckpoints: { id: string; label: string; actions: StoryA
         tasks: [
           {
             id: 'task_reexamine_elisa_from_scratch',
-            label: 'Reconstruir o caso Elisa do zero — começar por Geraldo',
+            label: 'Reconstruir o caso Elisa do zero, começar por Geraldo',
             completed: false,
           },
         ],

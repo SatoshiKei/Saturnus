@@ -40,7 +40,7 @@ export const denisBeats: Record<DenisTopicId, DenisBeat[]> = {
     },
     {
       speaker: 'Dênis',
-      text: 'XJ6 antigo, verde-escuro, interior bege.\n\nCanto dianteiro direito destruído — friso, para-lama, pintura raspada.\n\nO carro ainda rodava.',
+      text: 'XJ6 antigo, verde-escuro, interior bege.\n\nCanto dianteiro direito destruído, friso, para-lama, pintura raspada.\n\nO carro ainda rodava.',
     },
     { speaker: 'Augusto', text: 'Placa?' },
     { speaker: 'Dênis', text: 'Depois de seis anos? Nem ideia.' },
@@ -48,7 +48,7 @@ export const denisBeats: Record<DenisTopicId, DenisBeat[]> = {
     { speaker: 'Dênis', text: 'Não.\n\nDinheiro.' },
     {
       speaker: 'Dênis',
-      text: 'Chegou pouco depois daquela madrugada.\n\nGeração X300 — uns noventa e cinco, noventa e seis.',
+      text: 'Chegou pouco depois daquela madrugada.\n\nGeração X300, uns noventa e cinco, noventa e seis.',
     },
   ],
   people: [

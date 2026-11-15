@@ -41,7 +41,7 @@ export function WhatsAppShell({ initialTab = 'chats', onBackToPhone }: WhatsAppS
       return
     }
     if (next === 'settings') {
-      showToast('Ajustes do WhatsApp — em breve.')
+      showToast('Ajustes do WhatsApp em breve.')
       return
     }
     setTab(next)

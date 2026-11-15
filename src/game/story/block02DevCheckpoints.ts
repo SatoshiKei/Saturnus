@@ -14,7 +14,7 @@ import { block01EndTasks } from '../../data/game/seedStory'
 export const block02DevCheckpoints: { id: string; label: string; actions: StoryActionRef[] }[] = [
   {
     id: 'b02-start',
-    label: 'Bloco 2 — início (fim Bloco 1)',
+    label: 'Bloco 2, início (fim Bloco 1)',
     actions: [
       { type: 'setFlag', id: 'block01_hospital_done', value: true },
       { type: 'setFlag', id: 'block01_complete', value: true },
@@ -27,7 +27,7 @@ export const block02DevCheckpoints: { id: string; label: string; actions: StoryA
   },
   {
     id: 'b02-vertice-unlocked',
-    label: 'P2 — Vértice desbloqueado (áudio de Rafael no celular de Mariana)',
+    label: 'P2. Vértice desbloqueado (áudio de Rafael no celular de Mariana)',
     actions: [
       { type: 'setFlag', id: 'block02_rafael_forward_provisional', value: true },
       { type: 'addEvidence', id: 'rafael_recording_vertice_tag' },
@@ -43,7 +43,7 @@ export const block02DevCheckpoints: { id: string; label: string; actions: StoryA
   },
   {
     id: 'b02-archive-ready',
-    label: '1ª visita ao Vértice — arquivos existem',
+    label: '1ª visita ao Vértice, arquivos existem',
     actions: [
       { type: 'setFlag', id: 'block02_vertice_iara', value: true },
       { type: 'setFlag', id: 'block02_vertice_sandro', value: true },
@@ -75,7 +75,7 @@ export const block02DevCheckpoints: { id: string; label: string; actions: StoryA
   },
   {
     id: 'b02-rings-provisional',
-    label: 'P3 — ANÉIS técnico (A→B), Vértice reaberto',
+    label: 'P3. ANÉIS técnico (A→B), Vértice reaberto',
     actions: [
       { type: 'setFlag', id: 'block02_rings_provisional', value: true },
       { type: 'addEvidence', id: 'club_voice_isolated' },
@@ -90,7 +90,7 @@ export const block02DevCheckpoints: { id: string; label: string; actions: StoryA
   },
   {
     id: 'b02-nico-identified',
-    label: '2ª visita ao Vértice — Nico identificado',
+    label: '2ª visita ao Vértice. Nico identificado',
     actions: [
       { type: 'setFlag', id: 'block02_vertice_set_crossref', value: true },
       { type: 'addEvidence', id: 'nico_dj_identified' },

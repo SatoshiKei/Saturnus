@@ -27,14 +27,14 @@ export const seedContacts: Contact[] = [
   {
     id: 'contact-livia',
     personId: 'livia',
-    displayName: 'Rádio Costeira — Redação',
+    displayName: 'Rádio Costeira. Redação',
     phone: '21 3xxx-4410',
     institution: true,
     unlocked: false,
   },
   {
     id: 'contact-presidio',
-    displayName: 'Unidade prisional — setor de visitas',
+    displayName: 'Unidade prisional, setor de visitas',
     phone: '21 3xxx-9100',
     institution: true,
     unlocked: false,
