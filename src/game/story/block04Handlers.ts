@@ -198,7 +198,7 @@ export function onUnknownRecordingFound() {
     {
       type: 'addTask',
       id: 'task_analyze_unknown',
-      label: 'Analisar a gravação do contato desconhecido',
+      label: 'Ouvir a gravação que Mariana guardou em Downloads',
     },
   ])
 }

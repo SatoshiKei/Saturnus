@@ -149,6 +149,7 @@
 /* Fotos / Arquivos (iOS claro) */
 .ios-photos,
 .ios-files {
+  position: relative;
   height: 100%;
   min-height: 0;
   display: flex;
@@ -565,6 +566,185 @@
   max-width: 88px;
   width: 100%;
   justify-self: center;
+}
+
+.ios-audio-viewer {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  background: linear-gradient(180deg, #f8f8fc 0%, #ececf2 45%, #e8e8ee 100%);
+  color: #111;
+}
+
+.ios-audio-viewer__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.ios-audio-viewer__dock {
+  flex: 0 0 auto;
+  min-height: 148px;
+  padding: 8px 0 max(16px, env(safe-area-inset-bottom, 12px));
+  background: rgba(248, 248, 252, 0.96);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.ios-audio-viewer__head {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-end;
+  padding: calc(var(--phone-inset-top, 47px) + 6px) 16px 8px;
+}
+
+.ios-audio-viewer__done {
+  border: 0;
+  background: transparent;
+  color: #0a84ff;
+  font: inherit;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.ios-audio-viewer__hero {
+  flex-shrink: 0;
+  text-align: center;
+  padding: 8px 20px 16px;
+}
+
+.ios-audio-viewer__art {
+  width: 112px;
+  height: 112px;
+  margin: 0 auto 14px;
+  border-radius: 22px;
+  background: linear-gradient(145deg, #ff6b4a 0%, #ff375f 55%, #af52de 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 28px rgba(255, 55, 95, 0.25);
+}
+
+.ios-audio-viewer__glyph {
+  font-size: 42px;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.ios-audio-viewer__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.ios-audio-viewer__sub {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: #8e8e93;
+}
+
+.ios-audio-viewer__file {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: #aeaeb2;
+}
+
+.ios-audio-viewer__wave {
+  flex: 0 0 auto;
+  height: 72px;
+  margin: 4px 18px 12px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.ios-audio-viewer__wave span {
+  flex: 1;
+  min-width: 2px;
+  max-width: 4px;
+  border-radius: 2px;
+  background: #c7c7cc;
+  align-self: center;
+}
+
+.ios-audio-viewer__wave span[data-filled],
+.ios-audio-viewer__wave span[data-played] {
+  background: #ff375f;
+}
+
+.ios-audio-viewer__scrub {
+  flex-shrink: 0;
+  padding: 0 22px 8px;
+}
+
+.ios-audio-viewer__scrub input[type='range'] {
+  width: 100%;
+  accent-color: #ff375f;
+}
+
+.ios-audio-viewer__times {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #8e8e93;
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ios-audio-viewer__transport {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding: 4px 20px 8px;
+}
+
+.ios-audio-viewer__skip {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  border: 0;
+  border-radius: 50%;
+  background: #e5e5ea;
+  color: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.ios-audio-viewer__skip-label {
+  position: absolute;
+  font-size: 9px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.ios-audio-viewer__play {
+  width: 68px;
+  height: 68px;
+  border: 0;
+  border-radius: 50%;
+  background: #111;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+  flex-shrink: 0;
+}
+
+.ios-audio-viewer__note {
+  text-align: center;
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: #8e8e93;
 }
 
 .ios-photos-viewer {

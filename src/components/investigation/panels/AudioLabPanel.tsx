@@ -22,10 +22,7 @@ import {
   runJanusEpimetheusAnalysis,
   runSaturnaliaReconstruct,
 } from '../../../game/story/block03Handlers'
-import {
-  onUnknownRecordingAnalyzed,
-  runHexagonSpectrogramSurvey,
-} from '../../../game/story/block04Handlers'
+import { runHexagonSpectrogramSurvey } from '../../../game/story/block04Handlers'
 import { runShepherdMoonsExtract } from '../../../game/story/block06Handlers'
 import { onCassiniSolved, onEnceladusSolved } from '../../../game/story/block07Handlers'
 import { markAudioSeen } from '../../../game/state/investigationStore'
@@ -111,7 +108,6 @@ function analysisState(id: string, flags: Record<string, boolean>): AnalysisStat
   if (id === 'nico_recording_booth') return flags.block03_janus_done ? 'done' : 'pending'
   if (id === 'livia_radio_archive_raw') return flags.block03_saturnalia_done ? 'done' : 'pending'
   if (id === HEX_DELIVERY_EVIDENCE_ID) return flags.block04_hexagon_done ? 'done' : 'pending'
-  if (id === 'unknown_contact_recording') return flags.block04_unknown_analyzed ? 'done' : 'pending'
   if (id === 'valter_group_active_intercepts') return flags.block06_pastor_done ? 'done' : 'pending'
   if (id === 'anon_hospital_burst_audio') return flags.block07_enceladus_done ? 'done' : 'pending'
   if (id === 'henrique_rtp_capture') return flags.block07_cassini_done ? 'done' : 'pending'
@@ -147,7 +143,8 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
         (e.type === 'audio' || Boolean(e.puzzleMeta)) &&
         // Mesmo áudio IAPETUS: uma entrada só (preferir `rafael_audio_reply`; alias legado some se ambos existirem).
         !(e.id === 'rafael_voice_to_augusto' && hasRafaelAudioReply) &&
-        !HEX_LEGACY_FRAGMENT_EVIDENCE_IDS.includes(e.id),
+        !HEX_LEGACY_FRAGMENT_EVIDENCE_IDS.includes(e.id) &&
+        !e.devicePlaybackOnly,
     )
   const [filter, setFilter] = useState<Filter>('all')
   const isNew = (id: string) => !inv.audioSeen.includes(id)
@@ -177,7 +174,6 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
     Boolean(inv.flags.block08_rotation_available) && current?.id === 'rui_police_approach_records'
   const showMemory =
     Boolean(inv.flags.block09_memory_available) && current?.id === 'mariana_recent_recording_claim'
-  const showUnknownAnalyze = current?.id === 'unknown_contact_recording'
   const blocked = Boolean(current && (current.exportable === false || current.deviceLocked))
   const playable = Boolean(current?.audioSrc) && !blocked
 
@@ -524,26 +520,6 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                 </div>
               ) : null}
 
-              {!getForensicSessionForEvidence(current.id) && showUnknownAnalyze ? (
-                <div className="aw-orbit" data-testid="unknown-recording-panel">
-                  <p className="aw-orbit__title">Contato sem nome</p>
-                  <p className="aw-provisional__note">
-                    Gravação tratada. A voz usa referências da rotina de Mariana; não há identificação de
-                    falante.
-                  </p>
-                  <button
-                    type="button"
-                    className="aw-provisional__go"
-                    data-testid="unknown-recording-analyze"
-                    disabled={Boolean(inv.flags.block04_unknown_analyzed)}
-                    onClick={() => onUnknownRecordingAnalyzed()}
-                  >
-                    {inv.flags.block04_unknown_analyzed
-                      ? 'Análise registrada'
-                      : 'Registrar leitura forense'}
-                  </button>
-                </div>
-              ) : null}
 
               {!getForensicSessionForEvidence(current.id) ? (
                 <>

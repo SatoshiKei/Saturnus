@@ -112,6 +112,14 @@
   z-index: 200;
   background: #0b0e11 center / cover no-repeat;
 }
+.tr-refl .vn-nvl__column {
+  min-height: 0;
+  max-height: calc(100% - 2 * var(--vn-nvl-margin-y));
+}
+.tr-refl .vn-nvl__page {
+  min-height: 0;
+  overflow: hidden;
+}
 .tr-refl .vn-nvl__text {
   font-style: italic;
 }

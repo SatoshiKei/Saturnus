@@ -70,6 +70,8 @@ export interface Evidence {
   relatedEventIds: string[]
   exportable?: boolean
   deviceLocked?: boolean
+  /** Só reproduz no celular; não listar na bancada. */
+  devicePlaybackOnly?: boolean
   requiredAppId?: string
   contentRef?: string
   audioSrc?: string

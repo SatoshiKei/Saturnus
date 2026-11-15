@@ -10,7 +10,9 @@ import { contactAvatarSrc } from '../../lib/characterSprites'
 import { UiGlyph } from '../../components/UiGlyph'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { comparePhoneFilesSequence } from '../../game/story/block05Handlers'
+import { CHK_UNK_PHONE_FILE_ID } from '../../data/block04/chkUnkRecording'
 import { onUnknownRecordingFound } from '../../game/story/block04Handlers'
+import { ChkUnkAudioViewer } from './ChkUnkAudioViewer'
 
 interface FilesAppProps {
   onBack: () => void
@@ -71,6 +73,7 @@ export function FilesApp({ onBack }: FilesAppProps) {
     return [...set]
   }, [items])
   const [folder, setFolder] = useState(folders[0] ?? 'WhatsApp')
+  const [chkPlayerOpen, setChkPlayerOpen] = useState(false)
   const q = query.trim().toLowerCase()
   const visible = items.filter((i) => {
     if ((i.folder ?? 'Outros') !== folder) return false
@@ -114,9 +117,17 @@ export function FilesApp({ onBack }: FilesAppProps) {
       </nav>
       <ul className="ios-files__list">
         {visible.map((item) => (
-          <FileRow key={item.id} item={item} />
+          <FileRow
+            key={item.id}
+            item={item}
+            onOpenChkUnk={() => {
+              if (!inv.flags.block04_unknown_recording_found) onUnknownRecordingFound()
+              setChkPlayerOpen(true)
+            }}
+          />
         ))}
       </ul>
+      {chkPlayerOpen ? <ChkUnkAudioViewer onClose={() => setChkPlayerOpen(false)} /> : null}
     </div>
   )
 }
@@ -128,15 +139,15 @@ function provenanceHint(item: PhoneMediaItem, exported: boolean): string | null 
   return null
 }
 
-function FileRow({ item }: { item: PhoneMediaItem }) {
+function FileRow({ item, onOpenChkUnk }: { item: PhoneMediaItem; onOpenChkUnk: () => void }) {
   const inv = useInvestigation()
   const src = item.spriteId ? contactAvatarSrc(item.spriteId) : undefined
-  const unkAction =
-    item.id === 'mf-chk-unk' &&
-    inv.flags.block04_unknown_recording_unlocked &&
-    !inv.flags.block04_unknown_recording_found
-  const exported = item.id === 'mf-chk-unk' && inv.flags.block04_unknown_recording_found
-  const hint = provenanceHint(item, exported)
+  const isChk = item.id === CHK_UNK_PHONE_FILE_ID
+  const chkOpenable = isChk && inv.flags.block04_unknown_recording_unlocked
+  const hint = provenanceHint(
+    item,
+    isChk && inv.flags.block04_unknown_recording_found,
+  )
 
   return (
     <li className="ios-files__row">
@@ -147,16 +158,15 @@ function FileRow({ item }: { item: PhoneMediaItem }) {
           <UiGlyph name="doc" />
         </span>
       )}
-      {unkAction ? (
+      {chkOpenable ? (
         <button
           type="button"
           className="ios-files__action"
           data-testid="mariana-unknown-file"
-          onClick={() => onUnknownRecordingFound()}
+          onClick={onOpenChkUnk}
         >
           {item.label}
           {hint ? <span className="ios-files__hint">{hint}</span> : null}
-          <span className="ios-files__hint ios-files__hint--action">Exportar para bancada</span>
         </button>
       ) : (
         <span className="ios-files__name">

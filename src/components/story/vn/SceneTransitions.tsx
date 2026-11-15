@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode, type WheelEvent } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode, type WheelEvent } from 'react'
+import { paginateStringBlocks } from './nvlPages'
 import { assetPath } from '../../../lib/assetPath'
 import { getInvestigationState, setFlag } from '../../../game/state/investigationStore'
 import { afterReflectionComplete } from '../../../game/story/reflectionAftermath'
@@ -109,12 +110,21 @@ export function ReflectionView({
   background?: string
   onDone: () => void
 }) {
-  const [shown, setShown] = useState(1)
-  const atEnd = shown >= blocks.length
+  const pages = useMemo(() => paginateStringBlocks(blocks), [blocks])
+  const [pageIndex, setPageIndex] = useState(0)
+  const [shownOnPage, setShownOnPage] = useState(1)
+  const currentPage = pages[pageIndex] ?? []
+  const atEnd = pageIndex >= pages.length - 1 && shownOnPage >= currentPage.length
   const [endPrimed, setEndPrimed] = useState(false)
   const [fading, setFading] = useState(false)
   const wheelLock = useRef(0)
   const doneRef = useRef(false)
+
+  useEffect(() => {
+    setPageIndex(0)
+    setShownOnPage(1)
+    setEndPrimed(false)
+  }, [blocks])
 
   const finish = useCallback(() => {
     if (doneRef.current) return
@@ -126,9 +136,17 @@ export function ReflectionView({
 
   const advance = useCallback(() => {
     if (doneRef.current) return
-    if (shown < blocks.length) {
+    const page = pages[pageIndex] ?? []
+    if (shownOnPage < page.length) {
       playSfx('ui')
-      setShown((n) => n + 1)
+      setShownOnPage((n) => n + 1)
+      setEndPrimed(false)
+      return
+    }
+    if (pageIndex < pages.length - 1) {
+      playSfx('ui')
+      setPageIndex((p) => p + 1)
+      setShownOnPage(1)
       setEndPrimed(false)
       return
     }
@@ -137,12 +155,22 @@ export function ReflectionView({
       return
     }
     finish()
-  }, [shown, blocks.length, endPrimed, finish])
+  }, [endPrimed, finish, pageIndex, pages, shownOnPage])
 
   const rewind = useCallback(() => {
     if (doneRef.current) return
-    if (shown > 1) setShown((n) => Math.max(1, n - 1))
-  }, [shown])
+    if (shownOnPage > 1) {
+      setShownOnPage((n) => n - 1)
+      setEndPrimed(false)
+      return
+    }
+    if (pageIndex > 0) {
+      const prev = pages[pageIndex - 1] ?? []
+      setPageIndex((p) => p - 1)
+      setShownOnPage(prev.length || 1)
+      setEndPrimed(false)
+    }
+  }, [pageIndex, pages, shownOnPage])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -201,10 +229,10 @@ export function ReflectionView({
         Pular
       </button>
       <div className="vn-nvl__column">
-        <div className="vn-nvl__page">
-          {blocks.slice(0, shown).map((b, i) => (
-            <div key={i} className="vn-nvl__block tr-refl__block">
-              {i === 0 ? <p className="vn-nvl__speaker">AUGUSTO</p> : null}
+        <div className="vn-nvl__page" key={pageIndex}>
+          {currentPage.slice(0, shownOnPage).map((b, i) => (
+            <div key={`${pageIndex}-${i}`} className="vn-nvl__block tr-refl__block">
+              {pageIndex === 0 && i === 0 ? <p className="vn-nvl__speaker">AUGUSTO</p> : null}
               <p className="vn-nvl__text">{b}</p>
             </div>
           ))}
