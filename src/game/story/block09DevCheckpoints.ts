@@ -31,7 +31,11 @@ export const block09EntryActions: StoryActionRef[] = [
   { type: 'setFlag', id: 'block08_complete', value: true },
   { type: 'setFlag', id: 'block09_entry_ready', value: true },
   { type: 'setFlag', id: 'block09_started', value: true },
-  { type: 'setFlag', id: 'block09_compare_unlocked', value: true },
+  { type: 'setFlag', id: 'block08_omitido_bridge_done', value: true },
+  { type: 'setFlag', id: 'block09_omitido_named', value: true },
+  { type: 'discoverPerson', id: 'omitido', status: 'identified' },
+  { type: 'addEvidence', id: 'omitido_named_in_records' },
+  { type: 'setFlag', id: 'block09_diary_reread_unlocked', value: true },
   { type: 'addEvidence', id: 'morsa_was_andre' },
   { type: 'addEvidence', id: 'elisa_death_accident_reconstruction' },
   { type: 'addEvidence', id: 'scale_links_callsign_to_augusto' },
@@ -46,8 +50,8 @@ export const block09EntryActions: StoryActionRef[] = [
     type: 'replaceTasks',
     tasks: [
       {
-        id: 'task_compare_omitido_system',
-        label: 'Comparar os registros de Henrique com o material encontrado no caso Mariana',
+        id: 'task_reread_diary_omitido',
+        label: 'Reler o diário com o contexto de O Omitido',
         completed: false,
       },
     ],

@@ -396,7 +396,16 @@ export function onRotationSolved() {
 
 export function onScaleLinksAugusto() {
   const s = getInvestigationState()
-  if (s.flags.block08_augusto_linked) return
+  if (s.flags.block08_augusto_linked) {
+    if (
+      !s.flags.block08_omitido_bridge_done &&
+      !s.flags.block08_refl_omitido_bridge_pending &&
+      !s.flags.block08_refl_final_pending
+    ) {
+      dispatchActions([{ type: 'setFlag', id: 'block08_refl_omitido_bridge_pending', value: true }])
+    }
+    return
+  }
   dispatchActions([
     { type: 'setFlag', id: 'block08_augusto_linked', value: true },
     { type: 'setFlag', id: 'block08_augusto_revealed', value: true },
@@ -406,7 +415,43 @@ export function onScaleLinksAugusto() {
     { type: 'updateHypothesis', id: 'hyp_augusto_causal_in_chain', state: 'confirmed' },
     { type: 'addHypothesis', id: 'hyp_mariana_chose_augusto' },
     { type: 'updateHypothesis', id: 'hyp_mariana_chose_augusto', state: 'confirmed' },
+    { type: 'setFlag', id: 'block08_refl_omitido_bridge_pending', value: true },
+  ])
+}
+
+const OMITIDO_BRIDGE_NOTIFY = {
+  type: 'notifyInvestigationUpdate' as const,
+  id: 'omitido-bridge',
+  kind: 'evidence' as const,
+  presentation: 'card' as const,
+  label: 'CADERNO',
+  title: 'O Omitido',
+  summary:
+    'Rótulo operacional — hipótese ainda sem forma, sem identidade e sem prova de intenção.',
+  refId: 'omitido_named_in_records',
+}
+
+/**
+ * Após a escala VTR-14: Augusto liga lapsos de memória (Mariana, Henrique, ele) e nomeia O Omitido.
+ * Não vem de metadata nem de cruzamento técnico.
+ */
+export function onOmitidoBridgeReflectionDone() {
+  const s = getInvestigationState()
+  if (s.flags.block08_omitido_bridge_done) return
+  dispatchActions([
+    { type: 'setFlag', id: 'block08_omitido_bridge_done', value: true },
+    { type: 'setFlag', id: 'block08_refl_omitido_bridge_pending', value: false },
+    { type: 'setFlag', id: 'block09_omitido_named', value: true },
+    { type: 'discoverPerson', id: 'omitido', status: 'identified' },
+    { type: 'addEvidence', id: 'omitido_named_in_records' },
+    { type: 'setFlag', id: 'block09_diary_reread_unlocked', value: true },
+    {
+      type: 'addTask',
+      id: 'task_reread_diary_omitido',
+      label: 'Reler o diário com o contexto de O Omitido',
+    },
     { type: 'setFlag', id: 'block08_refl_final_pending', value: true },
+    OMITIDO_BRIDGE_NOTIFY,
   ])
 }
 
@@ -418,17 +463,14 @@ export function onFinalReflectionDone() {
     { type: 'setFlag', id: 'block08_refl_final_pending', value: false },
     { type: 'setFlag', id: 'block08_complete', value: true },
     { type: 'setFlag', id: 'block09_entry_ready', value: true },
-    { type: 'setFlag', id: 'block09_compare_unlocked', value: true },
-    {
-      type: 'replaceTasks',
-      tasks: [
-        {
-          id: 'task_compare_omitido_system',
-          label: 'Comparar os registros de Henrique com o material encontrado no caso Mariana',
-          completed: false,
-        },
-      ],
-    },
+    { type: 'setFlag', id: 'block09_started', value: true },
   ]
+  if (!s.tasks.some((t) => t.id === 'task_reread_diary_omitido')) {
+    actions.push({
+      type: 'addTask',
+      id: 'task_reread_diary_omitido',
+      label: 'Reler o diário com o contexto de O Omitido',
+    })
+  }
   dispatchActions(actions)
 }

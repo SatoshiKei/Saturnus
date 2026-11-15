@@ -266,7 +266,7 @@ export const seedPeople: Person[] = [
     id: 'omitido',
     name: 'O Omitido',
     status: 'mentioned',
-    notes: ['Identificador presente nos registros do sistema'],
+    notes: ['Rótulo adotado por Augusto — presença ainda não identificada'],
     relatedEvidenceIds: [],
     relatedPersonIds: ['mariana', 'henrique'],
   },

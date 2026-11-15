@@ -15,8 +15,8 @@ import {
   resetGame,
 } from '../../src/game/state/investigationStore'
 import { block09EntryActions } from '../../src/game/story/block09DevCheckpoints'
+import { onOmitidoBridgeReflectionDone } from '../../src/game/story/block08Handlers'
 import {
-  compareHenriqueMarianaSystem,
   findOtherDisappearances,
   finishTrailDiscovery,
   mapOmitidoAssistance,
@@ -45,33 +45,19 @@ describe('Bloco 9 — progressão', () => {
     resetGame()
     let s = applyStoryActions(createInitialState(), [
       { type: 'setFlag', id: 'block08_complete', value: true },
-      {
-        type: 'replaceTasks',
-        tasks: [
-          {
-            id: 'task_compare_omitido_system',
-            label: 'Comparar os registros de Henrique com o material encontrado no caso Mariana',
-            completed: false,
-          },
-        ],
-      },
+      { type: 'setFlag', id: 'block09_entry_ready', value: true },
     ])
     s = runStoryEngine(s)
     expect(s.flags.block09_started).toBe(true)
-    expect(s.flags.block09_compare_unlocked).toBe(true)
-    expect(s.tasks.some((t) => t.id === 'task_compare_omitido_system')).toBe(true)
   })
 
   it('O Omitido → diário → assistência → Roberto → mensagens', () => {
     seed()
-    compareHenriqueMarianaSystem()
+    onOmitidoBridgeReflectionDone()
     let s = getInvestigationState()
     expect(s.flags.block09_omitido_named).toBe(true)
     expect(s.evidenceOwned).toContain('omitido_named_in_records')
-    expect(s.evidenceOwned).toContain('mariana_used_same_system_months')
-    expect(s.evidenceOwned).toContain('omitido_guided_not_answered')
     expect(s.people.omitido?.status).toBe('identified')
-    expect(s.hypotheses.hyp_omitido_guided_mariana?.state).toBe('confirmed')
 
     rereadDiaryOmitido()
     mapOmitidoAssistance()
@@ -103,7 +89,7 @@ describe('Bloco 9 — progressão', () => {
 
   it('impossibilidades → trilha → morte → pós-morte → outros → Augusto → Puzzle 12 → MEMÓRIA', () => {
     seed()
-    compareHenriqueMarianaSystem()
+    onOmitidoBridgeReflectionDone()
     rereadDiaryOmitido()
     mapOmitidoAssistance()
     onOmitidoAssistanceReflectionDone()

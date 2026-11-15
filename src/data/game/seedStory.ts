@@ -1285,12 +1285,6 @@ export const seedStoryTriggers: StoryTrigger[] = [
     conditions: [{ type: 'flag', id: 'block08_complete', value: true }],
     actions: [
       { type: 'setFlag', id: 'block09_started', value: true },
-      { type: 'setFlag', id: 'block09_compare_unlocked', value: true },
-      {
-        type: 'addTask',
-        id: 'task_compare_omitido_system',
-        label: 'Comparar os registros de Henrique com o material encontrado no caso Mariana',
-      },
     ],
   },
 ]

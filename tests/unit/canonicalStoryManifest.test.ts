@@ -45,7 +45,7 @@ describe('manifesto canônico DEV STORY', () => {
     expect(v.orderMismatch).toEqual([])
     expect(v.issues).toEqual([])
     expect(v.checkpointCount).toBe(DEV_CHECKPOINTS.length)
-    expect(v.checkpointCount).toBe(89)
+    expect(v.checkpointCount).toBe(90)
   })
 
   it('cada checkpoint é monotônico em relação ao anterior (nada some ao avançar)', () => {

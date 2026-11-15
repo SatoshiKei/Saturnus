@@ -15,7 +15,6 @@ import { requestGuardrailReexam } from './block08Handlers'
 import {
   findOtherDisappearances,
   mapOmitidoAssistance,
-  noteOmitidoCompareSource,
   noteTrailConsult,
 } from './block09Handlers'
 import { dispatchActions, getInvestigationState } from '../state/investigationStore'
@@ -38,18 +37,6 @@ const EMERGENCY_SOURCES = new Set([
   'doc-central-chamada',
   'doc-entrada-apartamento',
   'doc-apreensao-celular',
-])
-
-const HENRIQUE_COMPARE_SOURCES = new Set([
-  'doc-henrique-pcap-note',
-  'doc-henrique-incidente',
-  'doc-henrique-empresa',
-])
-
-const MARIANA_COMPARE_SOURCES = new Set([
-  'doc-numero-sem-nome',
-  'doc-extracao-inicial',
-  'doc-laudo-forense',
 ])
 
 const OMITIDO_ASSIST_SOURCES = new Set([
@@ -162,12 +149,6 @@ export function onDocumentConsulted(docId: string) {
   // B8: laudo complementar do guardrail (após ligação à Perícia).
   if (docId === 'doc-guardrail-reanalise') {
     requestGuardrailReexam()
-  }
-
-  // B9: comparar Henrique × Mariana (duas consultas reais).
-  if (s.flags.block09_compare_unlocked && !s.flags.block09_omitido_named) {
-    if (HENRIQUE_COMPARE_SOURCES.has(docId)) noteOmitidoCompareSource('henrique')
-    if (MARIANA_COMPARE_SOURCES.has(docId)) noteOmitidoCompareSource('mariana')
   }
 
   // B9: assistência de O Omitido — reabrir uma fonte técnica original.

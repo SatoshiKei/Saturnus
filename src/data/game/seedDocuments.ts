@@ -1389,7 +1389,7 @@ export const seedDocuments: Document[] = [
       { type: 'updateHypothesis', id: 'hyp_augusto_causal_in_chain', state: 'confirmed' },
       { type: 'addHypothesis', id: 'hyp_mariana_chose_augusto' },
       { type: 'updateHypothesis', id: 'hyp_mariana_chose_augusto', state: 'confirmed' },
-      { type: 'setFlag', id: 'block08_refl_final_pending', value: true },
+      { type: 'setFlag', id: 'block08_refl_omitido_bridge_pending', value: true },
     ],
   },
   {

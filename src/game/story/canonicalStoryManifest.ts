@@ -476,18 +476,20 @@ export const CANONICAL_STORY_MANIFEST: CanonicalCheckpointDef[] = [
   { id: 'b08-mauro-bia', steps: [{ vn: 'mauro' }] },
   { id: 'b08-bia-rui', steps: [{ vn: 'bia' }, { vn: 'rui' }, { refl: 'refl-b08-accident' }] },
   { id: 'b08-rotation-done', steps: [{ puzzle: 'P11', through: 'vtr14' }] },
-  { id: 'b08-end', steps: [{ puzzle: 'P11' }, { refl: 'refl-b08-final' }] },
+  {
+    id: 'b08-end',
+    steps: [
+      { puzzle: 'P11' },
+      { doc: 'doc-escala-vtr14' },
+      { refl: 'refl-b08-omitido-bridge' },
+      { refl: 'refl-b08-final' },
+    ],
+  },
   // ── Bloco 9 ──
   { id: 'b09-start', steps: [] },
   {
     id: 'b09-omitido',
-    steps: [
-      { doc: 'doc-henrique-pcap-note' },
-      { doc: 'doc-numero-sem-nome' },
-      { h: 'rereadDiaryOmitido' },
-      { doc: 'doc-central-chamada' },
-      { refl: 'refl-b09-omitido' },
-    ],
+    steps: [{ h: 'rereadDiaryOmitido' }, { doc: 'doc-central-chamada' }, { refl: 'refl-b09-omitido' }],
   },
   {
     id: 'b09-roberto-messages',

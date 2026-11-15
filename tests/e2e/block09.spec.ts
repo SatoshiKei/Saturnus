@@ -21,28 +21,11 @@ test('Bloco 9 — O Omitido, morte, Puzzle 12 MEMÓRIA, estado final', async ({ 
 
   let save = await readSave(page)
   expect(save.flags.block09_started).toBe(true)
-  expect(save.flags.block09_compare_unlocked).toBe(true)
-
-  await openHubObject(page, 'monitor')
-  await page.getByTestId('pc-nav-caso').click()
-  await page.getByTestId('b09-compare-system').click()
-  await expect(page.getByTestId('case-document-view')).toBeVisible({ timeout: 10_000 })
-  await closeHub(page)
-
-  save = await readSave(page)
   expect(save.flags.block09_omitido_named).toBe(true)
   expect(save.evidenceOwned).toContain('omitido_named_in_records')
-  expect(save.evidenceOwned).toContain('mariana_used_same_system_months')
+  expect(save.tasks.some((t: { id: string }) => t.id === 'task_reread_diary_omitido')).toBe(true)
 
-  await openHubObject(page, 'monitor')
-  await page.getByTestId('pc-nav-caso').click()
-  await page.getByTestId('b09-diary-reread').click()
-  await closeHub(page)
-  await openHubObject(page, 'monitor')
-  await page.getByTestId('pc-nav-caso').click()
-  await page.getByTestId('b09-omitido-assist').click()
-  await closeHub(page)
-
+  await dev(page, 'b09-omitido')
   save = await readSave(page)
   expect(save.flags.block09_roberto_search_unlocked).toBe(true)
 

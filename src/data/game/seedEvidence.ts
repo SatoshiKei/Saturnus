@@ -2006,7 +2006,7 @@ export const seedEvidenceCatalog: Evidence[] = [
   },
   {
     id: 'omitido_named_in_records',
-    title: 'Identificador “O Omitido” presente nos registros do sistema',
+    title: 'Rótulo operacional no caderno — “O Omitido” (hipótese, sem identidade confirmada)',
     type: 'document',
     sourceType: 'phone-forensics',
     originalOrDerived: 'original',

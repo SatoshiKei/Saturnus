@@ -13,62 +13,17 @@ export function startBlock09() {
   const s = getInvestigationState()
   if (s.flags.block09_started) return
   if (!s.flags.block08_complete && !s.flags.block09_entry_ready) return
-  dispatchActions([
-    { type: 'setFlag', id: 'block09_started', value: true },
-    { type: 'setFlag', id: 'block09_compare_unlocked', value: true },
-    {
-      type: 'addTask',
-      id: 'task_compare_omitido_system',
-      label: 'Comparar os registros de Henrique com o material encontrado no caso Mariana',
-    },
-  ])
+  dispatchActions([{ type: 'setFlag', id: 'block09_started', value: true }])
 }
 
-/** Marca consulta real de um dos lados do cruzamento Henrique × Mariana. */
-export function noteOmitidoCompareSource(side: 'henrique' | 'mariana') {
-  const s = getInvestigationState()
-  if (!s.flags.block09_compare_unlocked || s.flags.block09_omitido_named) return
-  const flagId =
-    side === 'henrique' ? 'block09_compare_henrique_seen' : 'block09_compare_mariana_seen'
-  if (!s.flags[flagId]) {
-    dispatchActions([{ type: 'setFlag', id: flagId, value: true }])
-  }
-  const s2 = getInvestigationState()
-  if (s2.flags.block09_compare_henrique_seen && s2.flags.block09_compare_mariana_seen) {
-    compareHenriqueMarianaSystem()
-  }
+/** @deprecated Naming O Omitido moved to refl-b08-omitido-bridge (sem cruzamento técnico). */
+export function noteOmitidoCompareSource(_side: 'henrique' | 'mariana') {
+  return
 }
 
+/** @deprecated */
 export function compareHenriqueMarianaSystem() {
-  const s = getInvestigationState()
-  if (s.flags.block09_omitido_named) return
-  dispatchActions([
-    { type: 'setFlag', id: 'block09_omitido_named', value: true },
-    { type: 'addDocument', id: 'doc-omitido-interface' },
-    { type: 'addEvidence', id: 'omitido_named_in_records' },
-    { type: 'addEvidence', id: 'mariana_used_same_system_months' },
-    { type: 'addEvidence', id: 'omitido_guided_not_answered' },
-    { type: 'discoverPerson', id: 'omitido', status: 'identified' },
-    { type: 'completeTask', id: 'task_compare_omitido_system' },
-    { type: 'addHypothesis', id: 'hyp_omitido_guided_mariana' },
-    { type: 'updateHypothesis', id: 'hyp_omitido_guided_mariana', state: 'confirmed' },
-    { type: 'setFlag', id: 'block09_diary_reread_unlocked', value: true },
-    {
-      type: 'addTask',
-      id: 'task_reread_diary_omitido',
-      label: 'Reler o diário com o contexto de O Omitido',
-    },
-    {
-      type: 'notifyInvestigationUpdate',
-      id: 'omitido-named',
-      kind: 'evidence',
-      presentation: 'card',
-      label: 'IDENTIFICADOR RECUPERADO',
-      title: 'O Omitido',
-      summary: 'O identificador foi formalizado nos registros do caso.',
-      refId: 'omitido_named_in_records',
-    },
-  ])
+  return
 }
 
 /** Disparado ao reler uma entrada pertinente no iPhone (mesmo conteúdo; novo significado). */

@@ -32,6 +32,7 @@ import {
   onAndreWronglyReflectionDone,
   onDetranMauroCallDone,
   onFinalReflectionDone,
+  onOmitidoBridgeReflectionDone,
   onJaguarLeadReflectionDone,
   onMiroGuardrailReflectionDone,
   onMorsaContinuityConfirmed,
@@ -193,13 +194,20 @@ describe('Bloco 8 — progressão', () => {
     onScaleLinksAugusto()
     s = getInvestigationState()
     expect(s.evidenceOwned).toContain('scale_links_callsign_to_augusto')
+    expect(s.flags.block08_refl_omitido_bridge_pending).toBe(true)
+
+    onOmitidoBridgeReflectionDone()
+    s = getInvestigationState()
+    expect(s.flags.block09_omitido_named).toBe(true)
+    expect(s.evidenceOwned).toContain('omitido_named_in_records')
+    expect(s.tasks.some((t) => t.id === 'task_reread_diary_omitido' && !t.completed)).toBe(true)
     expect(s.flags.block08_refl_final_pending).toBe(true)
 
     onFinalReflectionDone()
     s = getInvestigationState()
     expect(s.flags.block08_complete).toBe(true)
     expect(s.flags.block09_entry_ready).toBe(true)
-    expect(s.tasks.some((t) => t.id === 'task_compare_omitido_system' && !t.completed)).toBe(true)
+    expect(s.flags.block09_started).toBe(true)
     expect(s.hypotheses.hyp_augusto_causal_in_chain?.state).toBe('confirmed')
     expect(s.hypotheses.hyp_mariana_chose_augusto?.state).toBe('confirmed')
   })

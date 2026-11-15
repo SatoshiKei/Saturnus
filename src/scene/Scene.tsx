@@ -88,6 +88,9 @@ function pendingSoloReflection(flags: Record<string, boolean>): string | null {
     return 'refl-b08-jaguar-lead'
   }
   if (flags.block08_refl_accident_pending && !flags['refl-b08-accident_seen']) return 'refl-b08-accident'
+  if (flags.block08_refl_omitido_bridge_pending && !flags['refl-b08-omitido-bridge_seen']) {
+    return 'refl-b08-omitido-bridge'
+  }
   if (flags.block08_refl_final_pending && !flags['refl-b08-final_seen']) return 'refl-b08-final'
   if (flags.block09_refl_omitido_pending && !flags['refl-b09-omitido_seen']) return 'refl-b09-omitido'
   if (flags.block09_refl_messages_pending && !flags['refl-b09-messages_seen']) {

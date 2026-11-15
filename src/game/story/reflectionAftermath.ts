@@ -7,6 +7,7 @@ import {
   onAndreWronglyReflectionDone,
   onFinalReflectionDone,
   onJaguarLeadReflectionDone,
+  onOmitidoBridgeReflectionDone,
   onMiroGuardrailReflectionDone,
   onMorsaReflectionDone,
 } from './block08Handlers'
@@ -85,6 +86,9 @@ export function afterReflectionComplete(reflectionId: string): void {
       break
     case 'refl-b08-accident':
       onAccidentReflectionDone()
+      break
+    case 'refl-b08-omitido-bridge':
+      onOmitidoBridgeReflectionDone()
       break
     case 'refl-b08-final':
       onFinalReflectionDone()

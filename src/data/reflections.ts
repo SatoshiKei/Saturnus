@@ -471,7 +471,28 @@ export const reflections: ReflectionDef[] = [
     ],
   },
   {
-    /** VTR-14 / escala — descoberta na delegacia. */
+    /** VTR-14 / escala — Augusto nomeia O Omitido (hipótese de memória, não conclusão). */
+    id: 'refl-b08-omitido-bridge',
+    background: HUB_REFLECTION_BACKGROUND,
+    blocks: [
+      'Eu parei o Rui e não lembro.',
+      'Não lembro como ele conta. Lembro vagamente o vidro baixado, o cheiro, a pressa de me livrar da situação.',
+      'Mariana também encontrava rastros de coisas que não lembrava ter feito.',
+      'Trechos do celular dela, conversas, escolhas — como se outra versão dela mesma tivesse deixado pistas sem que ela soubesse de onde vinham.',
+      'Henrique deixou o mesmo tipo de silêncio nos arquivos.',
+      'Algo acontecia no meio do caminho entre o fato e o registro da pessoa que o vivia.',
+      'Talvez eu tenha passado esse tempo inteiro procurando relações entre nomes, quando o fio comum era outro.',
+      'A lembrança.',
+      'O que falta. O que volta torto. O que ninguém consegue assinar com certeza.',
+      'Se isso chegou até mim também, então eu não entrei nessa história por acaso.',
+      'Ainda não sei o que está por trás disso.',
+      'Não sei se é uma pessoa, um sistema, uma coincidência cruel.',
+      'Mas preciso chamar de alguma coisa enquanto trabalho.',
+      'O Omitido.',
+    ],
+  },
+  {
+    /** VTR-14 / escala — culpa na cadeia e Mariana. */
     id: 'refl-b08-final',
     background: HUB_REFLECTION_BACKGROUND,
     blocks: [
@@ -520,18 +541,14 @@ export const reflections: ReflectionDef[] = [
     ],
   },
   {
-    /** Após comparar Henrique×Mariana, reler o diário e rever a fonte técnica. */
+    /** Após reler o diário e rever fonte técnica (assistência). */
     id: 'refl-b09-omitido',
     background: HUB_REFLECTION_BACKGROUND,
     blocks: [
-      'O nome apareceu nos dois conjuntos.',
+      'Eu tinha escolhido o nome antes de ter prova.',
       'O Omitido.',
-      'Não era apelido meu.',
-      'Não era rótulo inventado pela perícia.',
-      'Estava lá.',
-      'Henrique tinha falado com aquela interface.',
-      'Mariana também.',
-      'Durante meses.',
+      'Operacional.',
+      'Provisório.',
       'Voltei ao diário.',
       'As frases que antes pareciam apenas medo começaram a dividir espaço com outra possibilidade.',
       'Algumas anotações eram genuinamente desorientadas.',
