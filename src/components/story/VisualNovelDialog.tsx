@@ -31,6 +31,8 @@ interface VisualNovelDialogProps {
   continueLabel?: string
   /** Última fala da cena: primeiro input confirma leitura, segundo encerra. */
   terminalBeat?: boolean
+  /** Narração interna (sem rótulo de personagem). */
+  narration?: boolean
   extra?: ReactNode
 }
 
@@ -46,6 +48,7 @@ export function VisualNovelDialog({
   onRewind,
   continueLabel,
   terminalBeat,
+  narration,
   extra,
 }: VisualNovelDialogProps) {
   const sceneHistory = useVnSceneHistory()
@@ -193,6 +196,7 @@ export function VisualNovelDialog({
         <ADVDialogue
           speaker={speaker}
           text={text}
+          narration={narration}
           canAdvance={canAdvance}
           onAdvance={advance}
           continueLabel={

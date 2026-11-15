@@ -4,6 +4,8 @@ export type HospitalBeat = {
   speaker?: string
   text: string
   portrait?: 'julia' | 'camila' | 'augusto'
+  /** Narração interna — sem nome na caixa de diálogo. */
+  narration?: boolean
 }
 
 export const HOSPITAL_TOPIC_IDS = [
@@ -33,16 +35,42 @@ export const hospitalBeats: Record<HospitalTopicId, HospitalBeat[]> = {
   last_seen: [
     // Aparição ambiental de Renata (sem pista) — jogador ouve o nome antes de Enceladus.
     {
+      text: 'Quando cheguei ao hospital, Júlia e Camila estavam no corredor, conversando com outra mulher. Parei a alguns passos. Não parecia conversa de plantão com estranho — as três claramente já se conheciam.',
+      narration: true,
+    },
+    {
       speaker: 'Camila',
       text: 'Renata, o kit do posto B já foi conferido?',
       portrait: 'camila',
     },
     {
       speaker: 'Júlia',
-      // [TEXTO PENDENTE] — banalidade de plantão.
       text: 'Renata leva agora.',
       portrait: 'julia',
     },
+    {
+      speaker: 'Renata',
+      text: 'Kit fechado. Passo no posto B antes de voltar.',
+    },
+    {
+      speaker: 'Augusto',
+      text: 'Desculpem a intromissão. Sou Augusto Nogueira, delegado da Polícia Civil. Gostaria de trocar uma palavra com vocês sobre a Mariana.',
+    },
+    {
+      speaker: 'Júlia',
+      text: 'Ah, claro. Só um momento.',
+      portrait: 'julia',
+    },
+    {
+      speaker: 'Camila',
+      text: 'Renata, depois eu te procuro.',
+      portrait: 'camila',
+    },
+    {
+      speaker: 'Renata',
+      text: 'Tudo bem. A gente se fala depois.',
+    },
+    { text: '[Renata se afasta pelo corredor.]' },
     { speaker: 'Augusto', text: 'Quero começar pelo básico. Quando vocês viram Mariana pela última vez?' },
     { speaker: 'Júlia', text: 'Ontem. Eu falei com ela no fim da tarde.', portrait: 'julia' },
     { speaker: 'Camila', text: 'Eu vi quando ela terminou o plantão. Ela saiu normalmente.', portrait: 'camila' },

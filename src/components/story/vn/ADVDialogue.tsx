@@ -4,6 +4,7 @@ import { formatAdvDialogueText } from './advText'
 export function ADVDialogue({
   speaker,
   text,
+  narration,
   canAdvance,
   onAdvance,
   continueLabel,
@@ -12,6 +13,7 @@ export function ADVDialogue({
 }: {
   speaker?: string
   text: string
+  narration?: boolean
   canAdvance: boolean
   onAdvance: () => void
   continueLabel?: string
@@ -37,7 +39,7 @@ export function ADVDialogue({
         tabIndex={canAdvance ? 0 : -1}
         aria-label={continueLabel ?? (canAdvance ? 'Avançar diálogo' : undefined)}
       >
-        <div className="vn-adv__panel">
+        <div className="vn-adv__panel" data-narration={narration || undefined}>
           {speaker ? <p className="vn-adv__speaker">{speaker.toUpperCase()}</p> : null}
           <p className="vn-adv__text">{formatAdvDialogueText(text)}</p>
           {extra}

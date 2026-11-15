@@ -96,8 +96,9 @@ export function HospitalInterviewScene({ onClose }: { onClose: () => void }) {
 
       {mode === 'play' && currentBeat ? (
         <VisualNovelDialog
-          speaker={currentBeat.speaker}
+          speaker={currentBeat.narration ? undefined : currentBeat.speaker}
           text={currentBeat.text}
+          narration={currentBeat.narration}
           portraitSrc={currentBeat.portrait ? portraits[currentBeat.portrait] : undefined}
           onRewind={() => setBeatIndex((i) => Math.max(0, i - 1))}
           onContinue={() => {
