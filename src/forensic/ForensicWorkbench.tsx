@@ -82,6 +82,14 @@ import { opaqueSegmentLabel } from './opaqueSegmentId'
 import { buildCassiniStreamBArtifact } from './derivedArtifact'
 import { ensureRotationApproachDiscovery } from '../game/story/block08Handlers'
 import { getInvestigationState, markForensicDerivedArtifact } from '../game/state/investigationStore'
+import {
+  caseMediaCorpusForState,
+  FINAL_MESSAGE_META,
+  MEMORY_WORD,
+  searchCaseMedia,
+  type ProvenanceConfirmId,
+} from '../data/block09/memoryPuzzle'
+import { memoryProvenanceComplete } from './puzzles/puzzle12Memory'
 
 export function ForensicWorkbench({
   session,
@@ -192,6 +200,11 @@ export function ForensicWorkbench({
   const source = getActiveSource(liveSession, ui)
   const isClockSync = session.completion?.kind === 'clock-sync'
   const isApproach = session.completion?.kind === 'approach-reconstruction'
+  const isMemory = session.completion?.kind === 'memory-provenance'
+  const derivedBag = useMemo(
+    () => getInvestigationState().forensicDerivedArtifacts ?? {},
+    [ui.memoryConfirmedSources.length, ui.memorySearchHits.length],
+  )
   /** Só o arquivo ativo com stems — sem fallback para outro áudio. */
   const playbackSource = source?.audio ? source : null
   const audioSources = liveSession.sources.filter((s) => s.audio)
@@ -202,6 +215,25 @@ export function ForensicWorkbench({
     ? liveSession.sources.find((s) => s.id === ui.compareSourceB)
     : null
   const compareDual = Boolean(compareA?.audio && compareB?.audio)
+
+  useEffect(() => {
+    if (!isMemory) return
+    setUi((u) => {
+      if (u.inspectorTab === 'analysis') return u
+      return { ...u, inspectorTab: 'analysis' }
+    })
+  }, [isMemory, session.id])
+
+  useEffect(() => {
+    if (!isMemory || !completed) return
+    setUi((u) => {
+      if (u.memoryConfirmedSources.length >= 4) return u
+      return {
+        ...u,
+        memoryConfirmedSources: ['apartment', 'emergency', 'enceladus', 'cassini_derived'],
+      }
+    })
+  }, [isMemory, completed])
 
   useEffect(() => {
     if (!isApproach) return
@@ -1807,6 +1839,115 @@ export function ForensicWorkbench({
             }
             setStatus(status)
           }}
+          memoryProvenance={
+            isMemory
+              ? {
+                  solved: Boolean(completed),
+                  corpus: caseMediaCorpusForState(derivedBag),
+                  runtimeCassini: derivedBag['cassini-stream-b'],
+                  finalMessageCreatedAt: FINAL_MESSAGE_META.createdAt,
+                  word: MEMORY_WORD,
+                  onSearch: () => {
+                    if (completed) return
+                    if (!ui.selection) {
+                      setStatus('Selecione um intervalo curto na waveform antes de buscar.')
+                      patchUi({
+                        memorySearchStatus: 'Intervalo não selecionado.',
+                        memorySearchHits: [],
+                      })
+                      return
+                    }
+                    const hits = searchCaseMedia(
+                      ui.selection.startSec,
+                      ui.selection.endSec,
+                      derivedBag,
+                    )
+                    patchUi({
+                      memorySearchHits: hits.map((h) => ({
+                        mediaId: h.mediaId,
+                        label: h.label,
+                        score: h.score,
+                        strong: h.strong,
+                        source: h.source,
+                        kind: h.kind,
+                        reason: h.reason,
+                      })),
+                      memorySearchStatus: hits[0]?.strong
+                        ? 'Correspondência forte no acervo.'
+                        : 'Resultados fracos ou genéricos — refine a janela.',
+                      memoryCompareMediaId: null,
+                    })
+                    setStatus('Search Case Media — resultados atualizados.')
+                  },
+                  onOpenHit: (mediaId) => {
+                    patchUi({ memoryCompareMediaId: mediaId })
+                    setStatus('Comparação aberta — examine o material do acervo.')
+                  },
+                  onConfirm: () => {
+                    if (completed) return
+                    const compareId = ui.memoryCompareMediaId
+                    if (!compareId) {
+                      patchUi({
+                        memoryNote:
+                          'Abra a comparação com um resultado do acervo antes de confirmar.',
+                      })
+                      return
+                    }
+                    const hit = ui.memorySearchHits.find((h) => h.mediaId === compareId)
+                    if (!hit?.strong || hit.source === 'other') {
+                      patchUi({
+                        memoryNote: 'Só é possível confirmar uma correspondência forte.',
+                      })
+                      return
+                    }
+                    if (hit.source === 'cassini_derived' && !derivedBag['cassini-stream-b']) {
+                      patchUi({
+                        memoryNote:
+                          'O acervo não traz o output reconstruído desta investigação — só existirá após o decode do stream B na bancada.',
+                      })
+                      return
+                    }
+                    const src = hit.source as ProvenanceConfirmId
+                    setUi((u) => {
+                      if (u.memoryConfirmedSources.includes(src)) {
+                        return { ...u, memoryNote: 'Esta proveniência já estava registrada.' }
+                      }
+                      const next = [...u.memoryConfirmedSources, src]
+                      let augustoLine = u.memoryAugustoLine
+                      if (next.length === 1 || next.length === 2) {
+                        augustoLine = 'Isso já estava nos arquivos.'
+                      }
+                      if (src === 'cassini_derived') {
+                        augustoLine =
+                          'Isto não estava no PCAP. É o output que eu mesmo reconstruí na bancada.'
+                      }
+                      return {
+                        ...u,
+                        memoryConfirmedSources: next,
+                        memoryAugustoLine: augustoLine,
+                        memoryNote: 'Proveniência registrada no grafo.',
+                      }
+                    })
+                    setStatus('Proveniência confirmada.')
+                  },
+                  onFormalize: () => {
+                    if (completed) return
+                    if (!memoryProvenanceComplete(ui, derivedBag)) {
+                      patchUi({
+                        memoryNote:
+                          !derivedBag['cassini-stream-b']
+                            ? 'Falta o artefato derivado do stream B reconstruído nesta investigação.'
+                            : 'Ainda há trechos sem proveniência confirmada no acervo.',
+                      })
+                      return
+                    }
+                    if (!onPuzzleComplete) return
+                    onPuzzleComplete()
+                    setStatus(`Conclusão formalizada — ${MEMORY_WORD}.`)
+                  },
+                }
+              : undefined
+          }
         />
       </div>
       {showDebug ? (

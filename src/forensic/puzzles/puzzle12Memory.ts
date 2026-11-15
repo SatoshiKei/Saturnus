@@ -1,9 +1,9 @@
 /**
  * Puzzle 12 — MEMÓRIA (dataset forense).
- * Proveniência da mensagem final; UI especializada: MemorySession no ForensicWorkbench.
+ * Proveniência da mensagem final na bancada forense (timeline + Search Case Media).
  */
 
-import type { ForensicSession, ForensicSource } from '../forensicTypes'
+import type { ForensicSession, ForensicSource, ForensicUiState } from '../forensicTypes'
 import meta from './puzzle12Meta.json'
 import {
   CASE_MEDIA_CORPUS,
@@ -16,6 +16,7 @@ import {
   isMemoryProvenanceComplete,
   isTemporalImpossibility,
   searchCaseMedia,
+  type ProvenanceConfirmId,
 } from '../../data/block09/memoryPuzzle'
 
 export const puzzle12Meta = meta
@@ -55,18 +56,18 @@ const noteSource: ForensicSource = {
     {
       key: 'note',
       label: 'Note',
-      value: 'Specialized provenance workspace active. Use center panel tools.',
+      value: 'Single continuous capture — correlate windows with case media.',
     },
   ],
   structure: {
     kind: 'wav',
-    emptyMessage: 'Provenance analysis runs in the specialized workspace.',
+    emptyMessage: 'Waveform timeline — select a short interval for case media search.',
   },
   audio: {
     sampleRate: (meta.sampleRate as number) ?? 22050,
     channels: 1,
     seed: meta.seed as number,
-    waveform: Array.from({ length: 128 }, (_, i) => Math.sin(i / 9) * 0.08),
+    waveform: (meta.env?.final as number[]) ?? Array.from({ length: 128 }, () => 0.05),
     stems: [
       {
         id: 'FILE',
@@ -83,4 +84,17 @@ export const puzzle12MemorySession: ForensicSession = {
   title: 'FORENSIC AUDIO / DIGITAL WORKSTATION',
   evidenceId: 'mariana_recent_recording_claim',
   sources: [noteSource],
+  completion: {
+    kind: 'memory-provenance',
+    onCompleteAction: 'onMemoryPuzzleSolved',
+  },
+}
+
+export function memoryProvenanceComplete(
+  ui: ForensicUiState,
+  derived?: Record<string, { contentHash: string; createdAtMs: number; audioSrc: string }> | null,
+): boolean {
+  const confirmed = new Set(ui.memoryConfirmedSources as ProvenanceConfirmId[])
+  if (!isMemoryProvenanceComplete(confirmed)) return false
+  return Boolean(derived?.['cassini-stream-b'])
 }

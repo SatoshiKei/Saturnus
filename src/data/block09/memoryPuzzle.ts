@@ -336,7 +336,7 @@ export type MemorySegment = {
 /** Compat: mapeia cassini → cassini_derived para saves/e2e legados. */
 export const MEMORY_SEGMENTS: MemorySegment[] = MEMORY_REGIONS.map((r) => ({
   id: `seg-${r.id.toLowerCase()}`,
-  label: `Trecho ${r.id}`,
+  label: `window-${r.id.toLowerCase()}`,
   tStart: r.start,
   tEnd: r.end,
   trueSource: r.source === 'cassini_derived' ? 'cassini' : r.source,

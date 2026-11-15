@@ -9,7 +9,24 @@ import {
   openHubObject,
   readSave,
 } from './helpers'
-import { MEMORY_SEGMENTS } from '../../src/data/block09/memoryPuzzle'
+import { MEMORY_DURATION_SEC, MEMORY_SEGMENTS } from '../../src/data/block09/memoryPuzzle'
+import type { Page } from '@playwright/test'
+
+async function selectWaveformRange(page: Page, startSec: number, endSec: number) {
+  const stage = page.getByTestId('fw-wave-stage').first()
+  await expect(stage).toBeVisible({ timeout: 10_000 })
+  const box = await stage.boundingBox()
+  if (!box) throw new Error('waveform stage sem bounding box')
+  const x0 = box.x + (startSec / MEMORY_DURATION_SEC) * box.width
+  const x1 = box.x + (endSec / MEMORY_DURATION_SEC) * box.width
+  const y = box.y + box.height / 2
+  await page.keyboard.down('Shift')
+  await page.mouse.move(x0, y)
+  await page.mouse.down()
+  await page.mouse.move(x1, y)
+  await page.mouse.up()
+  await page.keyboard.up('Shift')
+}
 
 test.use({ viewport: { width: 1920, height: 1080 } })
 
@@ -79,16 +96,24 @@ test('Bloco 9 — O Omitido, morte, Puzzle 12 MEMÓRIA, estado final', async ({ 
   await openHubObject(page, 'audio-station')
   await page.getByTestId('audio-file-mariana_recent_recording_claim').click()
   await expect(page.getByTestId('memory-panel')).toBeVisible({ timeout: 10_000 })
-  // Search Case Media nas quatro janelas canônicas + confirmar proveniência
+  await page.getByRole('tab', { name: /analysis/i }).click()
+  const hitBySource: Record<string, string> = {
+    apartment: 'memory-hit-media-apartment',
+    emergency: 'memory-hit-media-emergency',
+    enceladus: 'memory-hit-media-enceladus',
+    cassini_derived: 'memory-hit-media-cassini-derived',
+  }
   for (const seg of MEMORY_SEGMENTS) {
-    await page.getByTestId('memory-sel-start').fill(String(seg.tStart))
-    await page.getByTestId('memory-sel-end').fill(String(seg.tEnd))
+    await selectWaveformRange(page, seg.tStart, seg.tEnd)
     await page.getByTestId('memory-search').click()
     const source =
       seg.trueSource === 'cassini' ? 'cassini_derived' : seg.trueSource
+    await page.getByTestId(hitBySource[source]!).click()
     await page.getByTestId(`memory-confirm-${source}`).click()
   }
   await page.getByTestId('memory-solve').click()
+  await expect(page.getByTestId('evidence-card')).toBeVisible({ timeout: 8_000 })
+  await dismissEvidenceCards(page)
   await expect(page.getByTestId('memory-solved')).toBeVisible()
   await expect(page.getByTestId('memory-word')).toHaveText('MEMÓRIA')
   await closeHub(page)

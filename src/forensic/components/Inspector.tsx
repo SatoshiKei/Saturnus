@@ -24,6 +24,19 @@ import {
   avlUnitFromSourceId,
 } from '../puzzles/puzzle11ApproachReconstruction'
 import { CAD_FLAME_ID } from '../../data/block08/rotationPuzzle'
+import {
+  isTemporalImpossibility,
+  type CaseMediaEntry,
+  type ProvenanceConfirmId,
+} from '../../data/block09/memoryPuzzle'
+import { resolveChatMediaSrc } from '../../lib/characterSprites'
+
+const PROVENANCE_GRAPH_LABEL: Record<ProvenanceConfirmId, string> = {
+  apartment: 'Apartamento',
+  emergency: 'Emergência',
+  enceladus: 'Enceladus',
+  cassini_derived: 'Cassini-Huygens / derived output',
+}
 
 const HELP: Record<string, string> = {
   Gain: 'Ajusta amplitude linear da seleção ou da faixa ativa (dB).',
@@ -191,6 +204,7 @@ export function Inspector({
   onSelectDerivedStream,
   onReconstructAudio,
   approachTools,
+  memoryProvenance,
 }: {
   tab: ForensicInspectorTab
   onTab: (t: ForensicInspectorTab) => void
@@ -270,6 +284,17 @@ export function Inspector({
   onCreateStreamFromSelection?: () => void
   onSelectDerivedStream?: (id: string) => void
   onReconstructAudio?: () => void
+  memoryProvenance?: {
+    solved: boolean
+    corpus: CaseMediaEntry[]
+    runtimeCassini?: { contentHash: string; createdAtMs: number; audioSrc: string }
+    finalMessageCreatedAt: string
+    word: string
+    onSearch: () => void
+    onOpenHit: (mediaId: string) => void
+    onConfirm: () => void
+    onFormalize: () => void
+  }
   approachTools?: {
     onConsult: (consultTag: string) => void
     onRejectUnit: (sourceId: string) => void
@@ -643,6 +668,193 @@ export function Inspector({
                 <p className="fw-muted">Requires a sufficiently long selection on a stable region.</p>
               )}
             </Section>
+            {memoryProvenance ? (
+              <Section title="Case media" tip="Search Case Media">
+                <div data-testid="memory-panel">
+                  <p className="fw-muted">
+                    Gravação contínua atribuída a Mariana. Selecione uma janela curta na waveform e
+                    busque correspondências no acervo do caso.
+                  </p>
+                  {ui.selection ? (
+                    <p className="fw-muted" data-testid="memory-selection-readout">
+                      Janela: {ui.selection.startSec.toFixed(2)}s – {ui.selection.endSec.toFixed(2)}s
+                    </p>
+                  ) : (
+                    <p className="fw-muted">Nenhuma janela selecionada (Shift + arrastar na waveform).</p>
+                  )}
+                  {!memoryProvenance.solved ? (
+                    <button
+                      type="button"
+                      className="fw-btn"
+                      data-testid="memory-search"
+                      onClick={() => memoryProvenance.onSearch()}
+                    >
+                      Search Case Media
+                    </button>
+                  ) : null}
+                  {ui.memorySearchStatus ? (
+                    <p className="fw-muted" data-testid="memory-search-status" role="status">
+                      {ui.memorySearchStatus}
+                    </p>
+                  ) : null}
+                  {ui.memorySearchHits.length > 0 && !memoryProvenance.solved ? (
+                    <ul className="fw-recovered" data-testid="memory-hits">
+                      {ui.memorySearchHits.slice(0, 8).map((h) => (
+                        <li key={h.mediaId} className="fw-recovered__item">
+                          <button
+                            type="button"
+                            className="fw-btn fw-btn--ghost"
+                            data-testid={`memory-hit-${h.mediaId}`}
+                            onClick={() => memoryProvenance.onOpenHit(h.mediaId)}
+                          >
+                            {h.label}
+                          </button>
+                          <span className="fw-muted">
+                            {' '}
+                            · {h.strong ? 'forte' : 'fraca'} · {h.reason}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                  {ui.memoryCompareMediaId ? (
+                    <div data-testid="memory-compare">
+                      {(() => {
+                        const open = memoryProvenance.corpus.find(
+                          (m) => m.id === ui.memoryCompareMediaId,
+                        )
+                        if (!open) return null
+                        const hit = ui.memorySearchHits.find((h) => h.mediaId === open.id)
+                        return (
+                          <>
+                            <h4 className="fw-pane-h">Comparação — {open.label}</h4>
+                            <p className="fw-muted">
+                              {open.kind === 'derived' ? 'output derivado' : open.kind}
+                              {open.parentLabel ? ` · ${open.parentLabel}` : ''}
+                              {open.createdAt ? ` · ${open.createdAt.slice(0, 19)}` : ''}
+                              {open.sha256 ? ` · sha256: ${open.sha256.slice(0, 16)}…` : ''}
+                            </p>
+                            {open.evidenceHint ? <p className="fw-muted">{open.evidenceHint}</p> : null}
+                            <audio
+                              controls
+                              src={resolveChatMediaSrc(open.audioSrc)}
+                              preload="metadata"
+                              style={{ maxWidth: '100%' }}
+                            />
+                            {!memoryProvenance.solved && hit?.strong && hit.source !== 'other' ? (
+                              <button
+                                type="button"
+                                className="fw-btn"
+                                data-testid={`memory-confirm-${hit.source}`}
+                                onClick={() => memoryProvenance.onConfirm()}
+                              >
+                                Confirmar proveniência
+                              </button>
+                            ) : null}
+                          </>
+                        )
+                      })()}
+                    </div>
+                  ) : null}
+                  {ui.memoryAugustoLine ? (
+                    <p className="fw-muted" data-testid="memory-augusto-line" style={{ fontStyle: 'italic' }}>
+                      {ui.memoryAugustoLine}
+                    </p>
+                  ) : null}
+                  <h4 className="fw-pane-h">Provenance graph</h4>
+                  <div data-testid="memory-provenance-graph">
+                    <div className="fw-mono" style={{ fontWeight: 600 }}>
+                      FINAL MESSAGE
+                    </div>
+                    <ul className="fw-recovered">
+                      {ui.memoryConfirmedSources.length === 0 ? (
+                        <li className="fw-muted">Nenhuma ligação confirmada.</li>
+                      ) : (
+                        ui.memoryConfirmedSources.map((s) => (
+                          <li key={s} data-testid={`memory-edge-${s}`}>
+                            → {PROVENANCE_GRAPH_LABEL[s as ProvenanceConfirmId] ?? s}
+                            {s === 'cassini_derived' && memoryProvenance.runtimeCassini ? (
+                              <span className="fw-muted">
+                                {' '}
+                                (created{' '}
+                                {new Date(memoryProvenance.runtimeCassini.createdAtMs)
+                                  .toISOString()
+                                  .slice(0, 19)}{' '}
+                                · hash {memoryProvenance.runtimeCassini.contentHash.slice(0, 12)}…)
+                              </span>
+                            ) : null}
+                          </li>
+                        ))
+                      )}
+                    </ul>
+                    {isTemporalImpossibility(new Set(ui.memoryConfirmedSources as ProvenanceConfirmId[])) ? (
+                      <p className="fw-muted" data-testid="memory-temporal">
+                        A mensagem incorpora material que só existiu depois da reconstrução feita nesta
+                        bancada (
+                        {memoryProvenance.finalMessageCreatedAt.slice(0, 19)}
+                        {memoryProvenance.runtimeCassini
+                          ? ` vs derived ${new Date(memoryProvenance.runtimeCassini.createdAtMs).toISOString().slice(0, 19)}`
+                          : ''}
+                        ).
+                      </p>
+                    ) : null}
+                  </div>
+                  {ui.memoryNote ? (
+                    <p className="fw-muted" data-testid="memory-note" role="status">
+                      {ui.memoryNote}
+                    </p>
+                  ) : null}
+                  {!memoryProvenance.solved ? (
+                    <button
+                      type="button"
+                      className="fw-btn"
+                      data-testid="memory-solve"
+                      onClick={() => memoryProvenance.onFormalize()}
+                    >
+                      Formalizar conclusão — {memoryProvenance.word}
+                    </button>
+                  ) : (
+                    <div data-testid="memory-solved">
+                      <p className="fw-muted">
+                        A última mensagem não é uma gravação orgânica. É uma composição de material do
+                        caso — incluindo um resultado que só passou a existir porque a bancada o
+                        reconstruiu.
+                      </p>
+                      <p className="fw-mono" data-testid="memory-word">
+                        {memoryProvenance.word}
+                      </p>
+                    </div>
+                  )}
+                  {import.meta.env.DEV ? (
+                    <details style={{ marginTop: 12 }}>
+                      <summary className="fw-muted">DEV — memory flags</summary>
+                      <pre data-testid="memory-dev" style={{ fontSize: 11, whiteSpace: 'pre-wrap' }}>
+                        {JSON.stringify(
+                          {
+                            regionA_source: 'apartment',
+                            regionB_source: 'emergency',
+                            regionC_source: 'enceladus',
+                            regionD_source: 'cassini_derived',
+                            fingerprintMatches: ui.memorySearchHits,
+                            confirmedProvenance: ui.memoryConfirmedSources,
+                            cassiniDerivedCreatedAt: memoryProvenance.runtimeCassini
+                              ? new Date(memoryProvenance.runtimeCassini.createdAtMs).toISOString()
+                              : null,
+                            finalMessageCreatedAt: memoryProvenance.finalMessageCreatedAt,
+                            impossibleTemporalDependency: isTemporalImpossibility(
+                              new Set(ui.memoryConfirmedSources as ProvenanceConfirmId[]),
+                            ),
+                            memoryComplete: memoryProvenance.solved,
+                          },
+                          null,
+                          2,
+                        )}
+                      </pre>
+                    </details>
+                  ) : null}
+                </div>
+              </Section>
+            ) : null}
             {onFingerprintSearch ? (
               <Section title="Fingerprint Search" tip="Fingerprint Search">
                 <p className="fw-muted">

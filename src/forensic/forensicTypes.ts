@@ -501,6 +501,7 @@ export interface ForensicSession {
       | 'cycle-difference'
       | 'rtp-stream-separation'
       | 'approach-reconstruction'
+      | 'memory-provenance'
     /** Chama handler externo quando completo. */
     onCompleteAction?:
       | 'runProvisionalEmergencyAnalysis'
@@ -513,6 +514,7 @@ export interface ForensicSession {
       | 'runEnceladusAnalysis'
       | 'runCassiniHuygensAnalysis'
       | 'onRotationSolved'
+      | 'onMemoryPuzzleSolved'
     /** Segmentos obrigatórios além do rebuild (se houver). */
     requireSpeechSegmentIds?: string[]
     /** source id do registro correto (source-link). */
@@ -711,6 +713,21 @@ export interface ForensicUiState {
   rotationAvlFeedback: string | null
   rotationFingerprintVehicle: string | null
   rotationCompareStatus: string | null
+  /** Puzzle 12 — Search Case Media / proveniência. */
+  memorySearchHits: Array<{
+    mediaId: string
+    label: string
+    score: number
+    strong: boolean
+    source: string
+    kind: string
+    reason: string
+  }>
+  memorySearchStatus: string | null
+  memoryCompareMediaId: string | null
+  memoryConfirmedSources: string[]
+  memoryAugustoLine: string | null
+  memoryNote: string | null
 }
 
 export const DEFAULT_PROCESS: ProcessParams = {

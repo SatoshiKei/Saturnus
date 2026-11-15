@@ -126,6 +126,12 @@ export function createInitialUiState(
     rotationAvlFeedback: null,
     rotationFingerprintVehicle: null,
     rotationCompareStatus: null,
+    memorySearchHits: [],
+    memorySearchStatus: null,
+    memoryCompareMediaId: null,
+    memoryConfirmedSources: [],
+    memoryAugustoLine: null,
+    memoryNote: null,
   }
 }
 

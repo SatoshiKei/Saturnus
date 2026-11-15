@@ -334,6 +334,7 @@ export function Timeline({
       ) : (
         <div
           className="fw-wave-stage"
+          data-testid="fw-wave-stage"
           data-mode={viewMode}
           role="slider"
           aria-valuemin={0}

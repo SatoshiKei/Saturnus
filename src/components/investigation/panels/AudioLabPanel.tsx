@@ -26,6 +26,7 @@ import { runHexagonSpectrogramSurvey } from '../../../game/story/block04Handlers
 import { runShepherdMoonsExtract } from '../../../game/story/block06Handlers'
 import { onCassiniSolved, onEnceladusSolved } from '../../../game/story/block07Handlers'
 import { onRotationSolved } from '../../../game/story/block08Handlers'
+import { onMemoryPuzzleSolved } from '../../../game/story/block09Handlers'
 import { markAudioSeen } from '../../../game/state/investigationStore'
 import {
   HEX_DELIVERY_EVIDENCE_ID,
@@ -34,7 +35,6 @@ import {
 } from '../../../data/block04/hexagonPuzzle'
 import { GamePanel } from '../../ui/GamePanel'
 import { RingsSession } from './RingsSession'
-import { MemorySession } from './MemorySession'
 
 /** PRNG determinístico a partir do id — a forma de onda é estável entre sessões. */
 function seeded(id: string) {
@@ -170,8 +170,6 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
   const hexFile = current ? hexFileByEvidence(current.id) : undefined
   const showRings =
     Boolean(inv.flags.block08_rings_available) && current?.id === 'protest_heterogeneous_sources'
-  const showMemory =
-    Boolean(inv.flags.block09_memory_available) && current?.id === 'mariana_recent_recording_claim'
   const blocked = Boolean(current && (current.exportable === false || current.deviceLocked))
   const playable = Boolean(current?.audioSrc) && !blocked
 
@@ -358,8 +356,6 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                   const specialized =
                     puzzleId === 'P10' ? (
                       showRings ? <RingsSession revealRequest={ringsRevealRequest} /> : null
-                    ) : puzzleId === 'P12' ? (
-                      showMemory ? <MemorySession /> : null
                     ) : null
                   const done =
                     puzzleId === 'P10' || puzzleId === 'P12'
@@ -439,6 +435,8 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                           onCassiniSolved()
                         } else if (action === 'onRotationSolved') {
                           onRotationSolved()
+                        } else if (action === 'onMemoryPuzzleSolved') {
+                          onMemoryPuzzleSolved()
                         } else {
                           runProvisionalEmergencyAnalysis()
                         }

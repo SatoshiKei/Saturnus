@@ -656,7 +656,7 @@ const P12: CanonicalPuzzleDef = {
   stages: [
     {
       id: 'provenance',
-      label: 'Search Case Media nas 4 regiões → proveniência A/B/C/D confirmada',
+      label: 'Search Case Media → proveniência confirmada no acervo',
       kind: 'technical',
       run: () => {
         const derived = inv().forensicDerivedArtifacts ?? {}

@@ -107,7 +107,6 @@ function bootstrapForWave(wave: 1 | 2 | 3): ChatMessage[] {
 }
 
 function injectMarianaBootstrap(wave: 1 | 2 | 3) {
-  const s = getInvestigationState()
   const actions: StoryActionRef[] = [
     { type: 'unlockContact', contactId: 'contact-mariana-augusto' },
     { type: 'unlockChat', device: 'augusto', chatId: MARIANA_CHAT_ID },
@@ -377,6 +376,16 @@ export function onMemoryPuzzleSolved() {
     { type: 'completeTask', id: 'task_memory_puzzle' },
     { type: 'setFlag', id: 'block09_memory_word_shown', value: true },
     { type: 'setFlag', id: 'block09_refl_final_pending', value: true },
+    {
+      type: 'notifyInvestigationUpdate',
+      id: 'ach-memoria',
+      kind: 'evidence',
+      presentation: 'card',
+      label: 'CONQUISTA',
+      title: MEMORY_WORD,
+      summary: 'Determinou a proveniência impossível da última gravação.',
+      refId: 'final_audio_impossible_provenance',
+    },
   ])
 }
 
