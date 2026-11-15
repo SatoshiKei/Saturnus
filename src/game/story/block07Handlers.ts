@@ -258,6 +258,16 @@ export function onEnceladusSolved() {
       id: 'task_julia_ricardo_audio',
       label: 'Mostrar o fragmento recuperado a Júlia',
     },
+    {
+      type: 'notifyInvestigationUpdate',
+      id: 'ach-enceladus',
+      kind: 'evidence',
+      presentation: 'card',
+      label: 'CONQUISTA',
+      title: 'ENCELADUS',
+      summary: 'No trecho corrigido, o nome Ricardo ficou audível.',
+      refId: 'anon_audio_ricardo_name',
+    },
   ])
 }
 
@@ -275,6 +285,21 @@ export function onJuliaRicardoAudioDone() {
     { type: 'addEvidence', id: 'renata_voice_on_burst' },
     { type: 'completeTask', id: 'task_julia_ricardo_audio' },
     { type: 'setFlag', id: 'block07_renata_call_unlocked', value: true },
+    {
+      type: 'addTask',
+      id: 'task_call_renata',
+      label: 'Falar com Renata Farias — ramal que Júlia indicou',
+    },
+    {
+      type: 'notifyInvestigationUpdate',
+      id: 'julia-renata-lead',
+      kind: 'evidence',
+      presentation: 'card',
+      label: 'CONTATO',
+      title: 'Renata Farias',
+      summary: 'Júlia reconheceu a voz no trecho. O número dela está no telefone da delegacia.',
+      refId: 'renata_voice_on_burst',
+    },
   ])
 }
 
@@ -331,6 +356,7 @@ export function onRenataCallDone() {
   if (s.flags.block07_renata_call_done) return
   dispatchActions([
     { type: 'setFlag', id: 'block07_renata_call_done', value: true },
+    { type: 'completeTask', id: 'task_call_renata' },
     { type: 'addEvidence', id: 'ricardo_old_patient_mariana_shift' },
     { type: 'addEvidence', id: 'anon_audio_shift_window' },
     { type: 'setFlag', id: 'block07_hospital_archive_unlocked', value: true },
@@ -338,6 +364,16 @@ export function onRenataCallDone() {
       type: 'addTask',
       id: 'task_hospital_ricardo_chart',
       label: 'Solicitar o prontuário de Ricardo no arquivo do hospital',
+    },
+    {
+      type: 'notifyInvestigationUpdate',
+      id: 'renata-ricardo-shift',
+      kind: 'evidence',
+      presentation: 'card',
+      label: 'DEPOIMENTO',
+      title: 'Plantão da Mariana',
+      summary: 'Renata lembra o paciente Ricardo naquela madrugada. O arquivo do hospital deve ter o registro.',
+      refId: 'ricardo_old_patient_mariana_shift',
     },
   ])
 }

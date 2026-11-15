@@ -135,6 +135,7 @@ describe('Bloco 7 — progressão', () => {
     expect(s.flags.block07_renata_call_unlocked).toBe(true)
     expect(s.flags.block07_hospital_archive_unlocked).toBeFalsy()
     expect(s.evidenceOwned).toContain('renata_voice_on_burst')
+    expect(s.tasks.some((t) => t.id === 'task_call_renata' && !t.completed)).toBe(true)
 
     onRenataCallDone()
     s = getInvestigationState()

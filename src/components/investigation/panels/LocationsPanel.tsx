@@ -65,9 +65,23 @@ export function LocationsMap({ onClose }: { onClose: () => void }) {
 
   useEffect(() => {
     const fixes: StoryActionRef[] = []
+    if (
+      inv.flags.block07_hospital_deposit_unlocked &&
+      !inv.flags.block07_hospital_deposit_done &&
+      inv.locations.hospital?.status !== 'visitAvailable'
+    ) {
+      fixes.push({ type: 'unlockLocation', id: 'hospital', status: 'visitAvailable' })
+    }
     for (const row of SCENE_DONE_LOCATION) {
       if (!inv.flags[row.flag]) continue
       if (inv.locations[row.locationId]?.status !== 'visitAvailable') continue
+      if (
+        row.locationId === 'hospital' &&
+        inv.flags.block07_hospital_deposit_unlocked &&
+        !inv.flags.block07_hospital_deposit_done
+      ) {
+        continue
+      }
       // 2ª visita ao Vértice após P3 técnico (cruzamento A→B → Nico).
       if (
         row.locationId === 'vertice' &&

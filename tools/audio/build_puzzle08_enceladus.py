@@ -47,6 +47,10 @@ ANOMALY = 5  # 0-based → ciclo 6
 DURATION = N_CYCLES * CYCLE_SEC  # 48 s
 # “Ricardo” ~ início da frase (ajuste fino no envelope)
 RICARDO_END_SEC = 0.85
+# Master: fala enterrada; residual jogável = voz limpa (preview pós-diferença)
+VOICE_BED_DB = -32
+RECOVERED_VOICE_DB = -7
+RECOVERED_BED_SCALE = 0.14
 
 
 def load_mono(path: Path) -> np.ndarray:
@@ -127,6 +131,40 @@ def place(buf: np.ndarray, frag: np.ndarray, at: float) -> None:
         buf[i0:i1] += frag[: i1 - i0]
 
 
+def prepare_voice_recovered_clear(voice: np.ndarray) -> np.ndarray:
+    """Trecho isolado audível — só no WAV derivado (p08_residual_preview)."""
+    v = voice.astype(np.float64)
+    v = v / (float(np.max(np.abs(v))) + 1e-9) * db(RECOVERED_VOICE_DB)
+    n = len(v)
+    v *= fade(n, int(0.02 * SR), int(0.14 * SR))
+    return v
+
+
+def build_recovered_residual_preview(
+    residual_math: np.ndarray,
+    voice_raw: np.ndarray,
+    voice_at: float,
+) -> np.ndarray:
+    """Ciclo derivado: textura fraca da diferença + fala original legível."""
+    out = residual_math.astype(np.float64) * RECOVERED_BED_SCALE
+    place(out, prepare_voice_recovered_clear(voice_raw), voice_at)
+    peak = float(np.max(np.abs(out))) + 1e-9
+    if peak > 0.95:
+        out *= 0.95 / peak
+    return out
+
+
+def prepare_voice_for_hospital_bed(voice: np.ndarray) -> np.ndarray:
+    """Distante / abafada — no master não deve soar como diálogo limpo."""
+    v = voice.astype(np.float64)
+    for _ in range(14):
+        v = np.convolve(v, np.ones(45) / 45, mode="same")
+    n = len(v)
+    v *= fade(n, int(0.06 * SR), int(0.12 * SR))
+    peak = float(np.max(np.abs(v))) + 1e-9
+    return v / peak * db(VOICE_BED_DB)
+
+
 def main() -> None:
     if not VOICE.exists():
         raise SystemExit(f"Asset da Renata ausente: {VOICE}")
@@ -136,9 +174,8 @@ def main() -> None:
     DEBUG.mkdir(parents=True, exist_ok=True)
     rng = np.random.default_rng(SEED)
 
-    voice = load_mono(VOICE)
-    # Normalizar voz — “Ricardo” audível no residual; não destruir correlação dos eventos
-    voice = voice / (np.max(np.abs(voice)) + 1e-9) * db(-11)
+    voice_raw = load_mono(VOICE)
+    voice = prepare_voice_for_hospital_bed(voice_raw)
 
     cycles = [make_cycle(rng, i) for i in range(N_CYCLES)]
     # Ciclo anômalo: fala + máscara não-recorrente sobre o restante
@@ -174,17 +211,16 @@ def main() -> None:
     common = np.median(stack, axis=0)
     # Residual ideal
     residual = cycles[ANOMALY][:L] - common
-    # Soft gate residual fora da janela da voz (opcional limpeza DEBUG)
-    residual_out = residual.copy()
-    peak_r = np.max(np.abs(residual_out)) + 1e-9
-    residual_out = residual_out / peak_r * 0.7
+    residual_math = residual.astype(np.float64)
+    residual_ideal = residual_math / (float(np.max(np.abs(residual_math))) + 1e-9) * 0.7
+    residual_out = build_recovered_residual_preview(residual_math, voice_raw, voice_at)
 
     sf.write(str(PUBLIC / "p08_enceladus_final.wav"), master.astype(np.float32), SR)
     sf.write(str(PUBLIC / "AUD_0008.wav"), master.astype(np.float32), SR)
     sf.write(str(OUT / "puzzle08_final.wav"), master.astype(np.float32), SR)
     sf.write(str(DEBUG / "common_pattern.wav"), common.astype(np.float32), SR)
     sf.write(str(DEBUG / "cycle_anomaly.wav"), cycles[ANOMALY].astype(np.float32), SR)
-    sf.write(str(DEBUG / "residual_ideal.wav"), residual_out.astype(np.float32), SR)
+    sf.write(str(DEBUG / "residual_ideal.wav"), residual_ideal.astype(np.float32), SR)
     for i, c in enumerate(cycles):
         sf.write(str(DEBUG / f"cycle_{i+1:02d}.wav"), c.astype(np.float32), SR)
 

@@ -151,7 +151,7 @@ export function PhoneCallsHome({ onBack }: PhoneCallsHomeProps) {
                   data-new={fresh.includes(c.id)}
                   data-testid={`phone-call-${c.id}`}
                   aria-label={`Abrir ${c.displayName} — ligar`}
-                  onClick={() => setSession(scriptByContact(c.id) ?? noAnswer(c.displayName))}
+                  onClick={() => setSession(scriptByContact(c.id, inv) ?? noAnswer(c.displayName))}
                 >
                   <span className="phone-contacts__avatar" aria-hidden>
                     {contactInitials(c.displayName)}

@@ -8,6 +8,7 @@ import {
   type CallScript,
 } from '../../../data/calls'
 import { useInvestigation } from '../../../game/hooks/useInvestigation'
+import { dispatchActions, getInvestigationState } from '../../../game/state/investigationStore'
 import { onHexCallsPreserved } from '../../../game/story/block04Handlers'
 import { onAsterHenriqueNamed, onRenataCallDone } from '../../../game/story/block07Handlers'
 import { onDetranMauroCallDone, onPartsShopDenisLead } from '../../../game/story/block08Handlers'
@@ -47,8 +48,8 @@ export function PoliceLandline({ onClose }: { onClose: () => void }) {
   const agenda = useMemo(
     () =>
       Object.values(inv.contacts)
-        .filter((c) => c.unlocked && c.institution && scriptByContact(c.id))
-        .map((c) => ({ contact: c, script: scriptByContact(c.id)! })),
+        .filter((c) => c.unlocked && c.institution && scriptByContact(c.id, inv))
+        .map((c) => ({ contact: c, script: scriptByContact(c.id, inv)! })),
     [inv.contacts],
   )
 
@@ -112,6 +113,53 @@ export function PoliceLandline({ onClose }: { onClose: () => void }) {
     }
   }, [inv.flags.block04_hex_call_answered, inv.flags.block04_hex_received, hexScene])
 
+  // Save antigo: Júlia concluída antes de existir task_call_renata.
+  useEffect(() => {
+    if (
+      inv.flags.block07_renata_call_unlocked &&
+      !inv.flags.block07_renata_call_done &&
+      !inv.tasks.some((t) => t.id === 'task_call_renata')
+    ) {
+      dispatchActions([
+        {
+          type: 'addTask',
+          id: 'task_call_renata',
+          label: 'Falar com Renata Farias — ramal que Júlia indicou',
+        },
+      ])
+    }
+    if (
+      inv.flags.block07_hospital_archive_unlocked &&
+      !inv.flags.block07_ricardo_found &&
+      !inv.tasks.some((t) => t.id === 'task_hospital_ricardo_chart')
+    ) {
+      dispatchActions([
+        {
+          type: 'addTask',
+          id: 'task_hospital_ricardo_chart',
+          label: 'Solicitar o prontuário de Ricardo no arquivo do hospital',
+        },
+      ])
+    }
+    if (
+      inv.callsDone.includes('call-hospital-ricardo') &&
+      !inv.documentsOwned.includes('doc-hospital-ricardo-freitas')
+    ) {
+      dispatchActions([
+        { type: 'addDocument', id: 'doc-hospital-ricardo-freitas' },
+        { type: 'completeTask', id: 'task_hospital_ricardo_chart' },
+      ])
+    }
+  }, [
+    inv.flags.block07_renata_call_unlocked,
+    inv.flags.block07_renata_call_done,
+    inv.flags.block07_hospital_archive_unlocked,
+    inv.flags.block07_ricardo_found,
+    inv.tasks,
+    inv.callsDone,
+    inv.documentsOwned,
+  ])
+
   const received = mockCallLog.filter((c) => c.direction !== 'outgoing').slice(0, 5)
 
   const startCall = (script: CallScript) => {
@@ -132,6 +180,26 @@ export function PoliceLandline({ onClose }: { onClose: () => void }) {
     if (id === 'call-aster-henrique') onAsterHenriqueNamed()
     if (id === 'call-parts-jaguar-lead') onPartsShopDenisLead()
     if (id === 'call-detran-jaguar') onDetranMauroCallDone()
+    if (id === 'call-hospital-ricardo') {
+      const s = getInvestigationState()
+      if (!s.documentsOwned.includes('doc-hospital-ricardo-freitas')) {
+        dispatchActions([
+          { type: 'addDocument', id: 'doc-hospital-ricardo-freitas' },
+          { type: 'completeTask', id: 'task_hospital_ricardo_chart' },
+          {
+            type: 'notifyInvestigationUpdate',
+            id: 'doc-hospital-ricardo-freitas',
+            kind: 'evidence',
+            presentation: 'card',
+            label: 'DOCUMENTO',
+            title: 'Hospital Municipal — registro de atendimento',
+            summary:
+              'O arquivo encaminhou o resumo de Ricardo Freitas. Abra no terminal da delegacia, em Consultas.',
+            refId: 'doc-hospital-ricardo-freitas',
+          },
+        ])
+      }
+    }
   }
 
   const dialNumber = () => {

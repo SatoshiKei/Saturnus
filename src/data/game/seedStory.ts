@@ -685,7 +685,7 @@ export const seedSearchRules: SearchRule[] = [
   {
     id: 'block07_ricardo',
     category: 'police',
-    requiredFlags: ['block07_ricardo_search_unlocked'],
+    requiredFlags: ['block07_hospital_archive_unlocked'],
     requiredTerms: ['ricardo'],
     results: [
       {

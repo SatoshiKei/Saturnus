@@ -400,6 +400,18 @@ export const callScripts: CallScript[] = [
     onComplete: [
       { type: 'completeCall', id: 'call-hospital-ricardo' },
       { type: 'addDocument', id: 'doc-hospital-ricardo-freitas' },
+      { type: 'completeTask', id: 'task_hospital_ricardo_chart' },
+      {
+        type: 'notifyInvestigationUpdate',
+        id: 'doc-hospital-ricardo-freitas',
+        kind: 'evidence',
+        presentation: 'card',
+        label: 'DOCUMENTO',
+        title: 'Hospital Municipal — registro de atendimento',
+        summary:
+          'O arquivo encaminhou o resumo de Ricardo Freitas. Abra no terminal da delegacia, em Consultas.',
+        refId: 'doc-hospital-ricardo-freitas',
+      },
     ],
     repeat: [
       {
@@ -624,8 +636,21 @@ export const callScripts: CallScript[] = [
   },
 ]
 
-export function scriptByContact(contactId: string): CallScript | undefined {
-  return callScripts.find((c) => c.contactId === contactId)
+export function scriptByContact(
+  contactId: string,
+  state?: InvestigationState,
+): CallScript | undefined {
+  const matches = callScripts.filter((c) => c.contactId === contactId)
+  if (!matches.length) return undefined
+  if (!state) return matches[0]
+
+  const pending = matches.filter((c) => c.available(state) && !state.callsDone.includes(c.id))
+  if (pending.length) return pending[pending.length - 1]
+
+  const revisitable = matches.filter((c) => c.available(state) && state.callsDone.includes(c.id))
+  if (revisitable.length) return revisitable[revisitable.length - 1]
+
+  return matches.find((c) => c.available(state)) ?? matches[0]
 }
 
 export function scriptByExt(ext: string, state?: InvestigationState): CallScript | undefined {

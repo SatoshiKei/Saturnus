@@ -209,7 +209,6 @@ export function repairInvestigationState(state: InvestigationState): Investigati
     'task_andre_visits',
     'task_get_club_from_rafael',
     'task_research_maralto',
-    'task_call_renata',
     'task_locate_nico',
     'task_weigh_mariana_messages',
     'task_how_mariana_knew',

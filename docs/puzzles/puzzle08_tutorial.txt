@@ -39,8 +39,10 @@ Ciclo anômalo: 6 (index 5) — contém a fala da Renata
 Ciclos 1–5,7–8: padrão hospitalar recorrente (bip + mecânico + room tone)
 Variações leves de ganho/timing/ruído; semelhantes o bastante para correlação.
 
-Play bruto: ambiente técnico + repetição; “Ricardo” NÃO fica claro.
-Após Difference correta: “Ricardo” inteligível; resto da frase permanece ambíguo.
+Play bruto: ambiente técnico + repetição; voz abafada (~−32 dB LP) — “Ricardo” NÃO fica claro.
+Após Difference: p08_residual_preview.wav = textura fraca + voz original limpa (RECOVERED_VOICE_DB).
+DEBUG residual_ideal.wav mantém só a diferença matemática.
+Notificação: onEnceladusSolved (após ouvir residual e Recovered Speech) → card ach-enceladus.
 
 
 Ferramentas genéricas (Bancada)
