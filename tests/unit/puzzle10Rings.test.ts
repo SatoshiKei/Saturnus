@@ -57,6 +57,7 @@ describe('Puzzle 10 — ORDEM DOS ANÉIS', () => {
   })
 
   it('A: required assets present; no BG-03', () => {
+    expect(existsSync(resolve(P10, 'police-siren.mp3'))).toBe(true)
     for (const name of REQUIRED) {
       expect(existsSync(resolve(P10, name))).toBe(true)
       expect(existsSync(resolve(PUB, name))).toBe(true)

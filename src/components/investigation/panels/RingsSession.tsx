@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import {
   DVR_CATALOG,
   RING_CAMERAS,
@@ -30,6 +30,270 @@ type Phase =
   | 'reveal'
   | 'done'
 
+type StillLightbox = {
+  title: string
+  subtitle?: string
+  posterSrc?: string
+  spriteSrc?: string
+  camLabel?: string
+  timeLabel?: string
+  ambiguous?: boolean
+}
+
+function RingsStillLightbox({
+  state,
+  onClose,
+}: {
+  state: StillLightbox | null
+  onClose: () => void
+}) {
+  useEffect(() => {
+    if (!state) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [state, onClose])
+
+  if (!state) return null
+
+  return (
+    <div className="rings-ws__lightbox" role="dialog" aria-modal="true" aria-label={state.title}>
+      <button
+        type="button"
+        className="rings-ws__lightbox-backdrop"
+        onClick={onClose}
+        aria-label="Fechar"
+      />
+      <div className="rings-ws__lightbox-panel">
+        <header className="rings-ws__lightbox-head">
+          <p className="rings-ws__lightbox-title">{state.title}</p>
+          {state.subtitle ? <p className="fw-muted">{state.subtitle}</p> : null}
+        </header>
+        <figure className="rings-cctv rings-ws__lightbox-feed">
+          {state.ambiguous ? (
+            <div className="rings-ws__ambig" data-testid="seg-1279-thumb-full">
+              <span className="fw-muted">Quadro não indexado — leitura parcial</span>
+            </div>
+          ) : state.posterSrc ? (
+            <>
+              <img
+                src={resolveChatMediaSrc(state.posterSrc)}
+                alt=""
+                className="rings-cctv__img"
+              />
+              {state.spriteSrc ? (
+                <img
+                  src={resolveChatMediaSrc(state.spriteSrc)}
+                  alt=""
+                  className="rings-ws__sprite"
+                />
+              ) : null}
+            </>
+          ) : null}
+          <span className="rings-cctv__fx" aria-hidden />
+          <span className="rings-cctv__noise" aria-hidden />
+          {state.camLabel ? <span className="rings-cctv__cam">{state.camLabel}</span> : null}
+          {state.timeLabel ? <span className="rings-cctv__time">{state.timeLabel}</span> : null}
+        </figure>
+        <div className="rings-ws__lightbox-actions">
+          <button type="button" className="fw-btn fw-btn--ghost" onClick={onClose}>
+            Fechar
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function RingsMediaThumb({
+  posterSrc,
+  spriteSrc,
+  label,
+  onExpand,
+}: {
+  posterSrc: string
+  spriteSrc?: string
+  label: string
+  onExpand: () => void
+}) {
+  return (
+    <button
+      type="button"
+      className="rings-ws__thumb"
+      onClick={onExpand}
+      aria-label={`Ampliar quadro — ${label}`}
+    >
+      <span className="rings-cctv rings-ws__thumb-cctv">
+        <img src={resolveChatMediaSrc(posterSrc)} alt="" className="rings-cctv__img" />
+        {spriteSrc ? (
+          <img src={resolveChatMediaSrc(spriteSrc)} alt="" className="rings-ws__sprite" />
+        ) : null}
+        <span className="rings-cctv__fx" aria-hidden />
+        <span className="rings-cctv__noise" aria-hidden />
+      </span>
+    </button>
+  )
+}
+
+function RingsSection({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section className="rings-ws__block">
+      <h3 className="fw-pane-h">{title}</h3>
+      {children}
+    </section>
+  )
+}
+
+function fmtTrackSec(sec: number): string {
+  const s = Math.max(0, sec)
+  const m = Math.floor(s / 60)
+  const r = Math.floor(s % 60)
+  return `${m}:${String(r).padStart(2, '0')}`
+}
+
+function RingsStripPlayer({ src, label }: { src: string; label: string }) {
+  const audioRef = useRef<HTMLAudioElement>(null)
+  const [playing, setPlaying] = useState(false)
+  const [t, setT] = useState(0)
+  const [dur, setDur] = useState(0)
+  const resolved = resolveChatMediaSrc(src)
+
+  useEffect(() => {
+    const el = audioRef.current
+    if (!el) return
+    const onPlay = () => setPlaying(true)
+    const onPause = () => setPlaying(false)
+    const onTime = () => setT(el.currentTime)
+    const onMeta = () => setDur(Number.isFinite(el.duration) ? el.duration : 0)
+    const onEnded = () => setPlaying(false)
+    el.addEventListener('play', onPlay)
+    el.addEventListener('pause', onPause)
+    el.addEventListener('timeupdate', onTime)
+    el.addEventListener('loadedmetadata', onMeta)
+    el.addEventListener('ended', onEnded)
+    return () => {
+      el.removeEventListener('play', onPlay)
+      el.removeEventListener('pause', onPause)
+      el.removeEventListener('timeupdate', onTime)
+      el.removeEventListener('loadedmetadata', onMeta)
+      el.removeEventListener('ended', onEnded)
+    }
+  }, [resolved])
+
+  const toggle = () => {
+    const el = audioRef.current
+    if (!el) return
+    if (playing) el.pause()
+    else void el.play()
+  }
+
+  const seek = (v: number) => {
+    const el = audioRef.current
+    if (!el) return
+    el.currentTime = v
+    setT(v)
+  }
+
+  return (
+    <div className="rings-ws__player">
+      <audio ref={audioRef} src={resolved} preload="metadata" />
+      <button
+        type="button"
+        className="fw-icon-btn fw-icon-btn--play rings-ws__player-play"
+        onClick={toggle}
+        aria-label={playing ? `Pausar — ${label}` : `Reproduzir — ${label}`}
+      >
+        {playing ? '❚❚' : '▶'}
+      </button>
+      <input
+        type="range"
+        className="rings-ws__player-seek"
+        min={0}
+        max={dur || 1}
+        step={0.05}
+        value={Math.min(t, dur || 1)}
+        onChange={(e) => seek(Number(e.target.value))}
+        aria-label={`Posição — ${label}`}
+      />
+      <span className="rings-ws__player-time fw-mono" aria-hidden>
+        {fmtTrackSec(t)} / {fmtTrackSec(dur)}
+      </span>
+    </div>
+  )
+}
+
+function RingsCompareTool({
+  labelA,
+  labelB,
+  testIdA,
+  testIdB,
+  testIdRun,
+  valueA,
+  valueB,
+  options,
+  onA,
+  onB,
+  onRun,
+  runLabel,
+}: {
+  labelA: string
+  labelB: string
+  testIdA: string
+  testIdB: string
+  testIdRun: string
+  valueA: string
+  valueB: string
+  options: { id: string; label: string }[]
+  onA: (v: string) => void
+  onB: (v: string) => void
+  onRun: () => void
+  runLabel: string
+}) {
+  return (
+    <div className="rings-ws__tool">
+      <div className="rings-ws__tool-row">
+        <label className="rings-ws__tool-field">
+          <span className="rings-ws__tool-label">{labelA}</span>
+          <select
+            className="fw-select"
+            data-testid={testIdA}
+            value={valueA}
+            onChange={(e) => onA(e.target.value)}
+          >
+            <option value="">—</option>
+            {options.map((o) => (
+              <option key={o.id} value={o.id}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="rings-ws__tool-field">
+          <span className="rings-ws__tool-label">{labelB}</span>
+          <select
+            className="fw-select"
+            data-testid={testIdB}
+            value={valueB}
+            onChange={(e) => onB(e.target.value)}
+          >
+            <option value="">—</option>
+            {options.map((o) => (
+              <option key={o.id} value={o.id}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <button type="button" className="fw-btn rings-ws__tool-run" data-testid={testIdRun} onClick={onRun}>
+          {runLabel}
+        </button>
+      </div>
+    </div>
+  )
+}
+
 /**
  * Puzzle 10 — Ordem dos Anéis.
  * Fingerprint → frame pattern → rota → DVR → storage → cutscene CAM11.
@@ -51,6 +315,7 @@ export function RingsSession({ revealRequest = 0 }: { revealRequest?: number } =
   const [frMsg, setFrMsg] = useState<string | null>(null)
   const [frOk, setFrOk] = useState(false)
 
+  const [routePick, setRoutePick] = useState<RingRouteId | null>(routeUnlocked ? 'service' : null)
   const [selectedRoute, setSelectedRoute] = useState<RingRouteId | null>(
     routeUnlocked ? 'service' : null,
   )
@@ -64,11 +329,18 @@ export function RingsSession({ revealRequest = 0 }: { revealRequest?: number } =
   )
   const [showCctv, setShowCctv] = useState(false)
   const [devOpen, setDevOpen] = useState(false)
+  const [lightbox, setLightbox] = useState<StillLightbox | null>(null)
 
-  // DEV QA: “COMPLETE + PLAY REVEAL” pede a mesma cutscene que “Open segment” abre.
   useEffect(() => {
     if (revealRequest > 0 && routeUnlocked && !revealDone) setShowCctv(true)
   }, [revealRequest, routeUnlocked, revealDone])
+
+  useEffect(() => {
+    if (routeUnlocked) {
+      setRoutePick('service')
+      setSelectedRoute('service')
+    }
+  }, [routeUnlocked])
 
   const camerasOpen = routeUnlocked
   const canInspectDvr = camerasOpen
@@ -88,7 +360,7 @@ export function RingsSession({ revealRequest = 0 }: { revealRequest?: number } =
 
   const runFingerprint = () => {
     if (!fpA || !fpB || fpA === fpB) {
-      setFpMsg('Select two different media.')
+      setFpMsg('Escolha duas fontes distintas.')
       return
     }
     playSfx('ui')
@@ -100,7 +372,7 @@ export function RingsSession({ revealRequest = 0 }: { revealRequest?: number } =
 
   const runFrame = () => {
     if (!frA || !frB || frA === frB) {
-      setFrMsg('Select two different videos.')
+      setFrMsg('Escolha dois vídeos distintos.')
       return
     }
     playSfx('ui')
@@ -110,21 +382,23 @@ export function RingsSession({ revealRequest = 0 }: { revealRequest?: number } =
     playSfx(r.match ? 'unlock' : 'error')
   }
 
-  const confirmRoute = (id: RingRouteId) => {
-    if (routeUnlocked || fullyDone) return
+  const confirmRoute = () => {
+    if (routeUnlocked || fullyDone || !routePick) return
     if (!fpOk || !frOk) {
-      setRouteMsg('Temporal links between media are still incomplete.')
+      setRouteMsg('Os vínculos temporais entre as mídias ainda estão incompletos.')
       return
     }
-    setSelectedRoute(id)
-    const route = RING_ROUTES.find((r) => r.id === id)!
+    setSelectedRoute(routePick)
+    const route = RING_ROUTES.find((r) => r.id === routePick)!
     if (!route.compatible) {
       playSfx('error')
-      setRouteMsg('Physically / temporally incompatible with the known appearances.')
+      setRouteMsg('Incompatível com o tempo registrado e com os obstáculos físicos conhecidos.')
       return
     }
     playSfx('unlock')
-    setRouteMsg('Service passage is the only route consistent with time and barriers.')
+    setRouteMsg(
+      'A passagem de serviço é a única trajetória coerente com o tempo e com as barreiras.',
+    )
     onRingsTimelineSolved()
   }
 
@@ -148,261 +422,376 @@ export function RingsSession({ revealRequest = 0 }: { revealRequest?: number } =
   }
 
   const mediaIds = Object.keys(RING_MEDIA) as RingMediaId[]
+  const videoIds = mediaIds.filter((id) => RING_MEDIA[id].kind === 'video')
 
   const knownPositions = useMemo(
-    () => [
-      fpOk ? 'Lívia↔Samuel temporal link' : null,
-      frOk ? 'Samuel↔secondary illumination link' : null,
-      selectedRoute ? `route:${selectedRoute}` : null,
-    ].filter(Boolean),
+    () =>
+      [
+        fpOk ? 'Lívia↔Samuel temporal link' : null,
+        frOk ? 'Samuel↔secondary illumination link' : null,
+        selectedRoute ? `route:${selectedRoute}` : null,
+      ].filter(Boolean),
     [fpOk, frOk, selectedRoute],
   )
 
+  const openStill = (payload: StillLightbox) => {
+    playSfx('ui')
+    setLightbox(payload)
+  }
+
   return (
-    <div className="aw-hex" data-testid="rings-panel">
-      <p className="aw-orbit__title">Percurso de Morsa — materiais heterogêneos</p>
-      <p className="aw-provisional__note">
-        Mariana reconstruía deslocamentos. Cruzar mídias, eliminar rotas impossíveis e inspecionar o
-        arquivo de CFTV da passagem — sem pressupor identidade.
-      </p>
+    <div className="rings-ws" data-testid="rings-panel">
+      <header className="rings-ws__intro">
+        <p className="rings-ws__lede">Percurso de Morsa — materiais heterogêneos</p>
+        <p className="fw-muted">
+          Mariana reconstruía deslocamentos. Cruzar mídias, eliminar rotas impossíveis e inspecionar
+          o arquivo de CFTV da passagem — sem pressupor identidade.
+        </p>
+      </header>
 
-      <h4 className="pc-sub">Materiais</h4>
-      <ul className="pc-ul" data-testid="rings-media-list">
-        {mediaIds.map((id) => {
-          const m = RING_MEDIA[id]
-          return (
-            <li key={id}>
-              <strong>{m.label}</strong>
-              <span className="aw-provisional__note"> — {m.note}</span>
-              {m.kind === 'video' && 'posterSrc' in m ? (
-                <div className="rings-thumb" style={{ marginTop: 6 }}>
-                  <div
-                    style={{
-                      position: 'relative',
-                      width: 160,
-                      height: 90,
-                      overflow: 'hidden',
-                      filter: 'contrast(1.1) saturate(0.7)',
-                      background: '#111',
-                    }}
-                  >
-                    <img
-                      src={resolveChatMediaSrc(m.posterSrc)}
-                      alt=""
-                      style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85 }}
-                    />
-                    {'spriteSrc' in m && m.spriteSrc ? (
-                      <img
-                        src={resolveChatMediaSrc(m.spriteSrc)}
-                        alt=""
-                        style={{
-                          position: 'absolute',
-                          bottom: 0,
-                          left: '35%',
-                          height: '70%',
-                          imageRendering: 'pixelated',
-                          filter: 'blur(0.4px) contrast(1.2)',
-                          opacity: 0.9,
-                        }}
+      <RingsSection title="Manifesto do pacote">
+        <table className="fw-table rings-ws__manifest" data-testid="rings-media-list">
+          <thead>
+            <tr>
+              <th>Ref.</th>
+              <th>Modalidade</th>
+              <th>Registro</th>
+              <th>Duração</th>
+              <th>Quadro</th>
+              <th>Faixa</th>
+            </tr>
+          </thead>
+          <tbody>
+            {mediaIds.map((id) => {
+              const m = RING_MEDIA[id]
+              const poster = m.kind === 'video' && 'posterSrc' in m ? m.posterSrc : null
+              const sprite =
+                m.kind === 'video' && 'spriteSrc' in m ? m.spriteSrc : undefined
+              const audio = 'audioSrc' in m && m.audioSrc ? m.audioSrc : null
+              return (
+                <tr key={id}>
+                  <td className="fw-mono">{id}</td>
+                  <td>{m.kind === 'audio' ? 'Áudio' : 'Vídeo'}</td>
+                  <td className="rings-ws__reg">
+                    <span className="rings-ws__reg-title">{m.label}</span>
+                    <span className="fw-muted">{m.note}</span>
+                  </td>
+                  <td className="fw-mono">{m.durationSec}s</td>
+                  <td className="rings-ws__cell-quadro">
+                    {poster ? (
+                      <RingsMediaThumb
+                        posterSrc={poster}
+                        spriteSrc={sprite}
+                        label={m.label}
+                        onExpand={() =>
+                          openStill({
+                            title: m.label,
+                            subtitle: m.note,
+                            posterSrc: poster,
+                            spriteSrc: sprite,
+                          })
+                        }
                       />
-                    ) : null}
-                  </div>
-                </div>
-              ) : null}
-              {'audioSrc' in m && m.audioSrc ? (
-                <audio controls src={resolveChatMediaSrc(m.audioSrc)} preload="metadata" style={{ display: 'block', marginTop: 4, maxWidth: 280 }} />
-              ) : null}
-            </li>
-          )
-        })}
-      </ul>
+                    ) : (
+                      <span className="fw-muted rings-ws__na">—</span>
+                    )}
+                  </td>
+                  <td className="rings-ws__cell-faixa">
+                    {audio ? <RingsStripPlayer src={audio} label={m.label} /> : (
+                      <span className="fw-muted rings-ws__na">—</span>
+                    )}
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </RingsSection>
 
-      <h4 className="pc-sub">Audio Fingerprint Compare</h4>
-      <div className="fw-eq" style={{ gap: 8, flexWrap: 'wrap' }}>
-        <select data-testid="fp-a" value={fpA} onChange={(e) => setFpA(e.target.value as RingMediaId | '')}>
-          <option value="">Source A</option>
-          {mediaIds.map((id) => (
-            <option key={id} value={id}>
-              {RING_MEDIA[id].label}
-            </option>
-          ))}
-        </select>
-        <select data-testid="fp-b" value={fpB} onChange={(e) => setFpB(e.target.value as RingMediaId | '')}>
-          <option value="">Source B</option>
-          {mediaIds.map((id) => (
-            <option key={id} value={id}>
-              {RING_MEDIA[id].label}
-            </option>
-          ))}
-        </select>
-        <button type="button" className="aw-provisional__go" data-testid="fp-run" onClick={runFingerprint}>
-          Compare fingerprints
-        </button>
-      </div>
-      {fpMsg ? <p data-testid="fp-status">{fpMsg}</p> : null}
+      <RingsSection title="Correlação de impressão digital (áudio)">
+        <RingsCompareTool
+          labelA="Fonte A"
+          labelB="Fonte B"
+          testIdA="fp-a"
+          testIdB="fp-b"
+          testIdRun="fp-run"
+          valueA={fpA}
+          valueB={fpB}
+          options={mediaIds.map((id) => ({ id, label: RING_MEDIA[id].label }))}
+          onA={(v) => setFpA(v as RingMediaId | '')}
+          onB={(v) => setFpB(v as RingMediaId | '')}
+          onRun={runFingerprint}
+          runLabel="Executar correlação"
+        />
+        {fpMsg ? (
+          <p className="rings-ws__report" data-testid="fp-status" role="status">
+            {fpMsg}
+          </p>
+        ) : null}
+      </RingsSection>
 
-      <h4 className="pc-sub">Compare Frame Pattern</h4>
-      <div className="fw-eq" style={{ gap: 8, flexWrap: 'wrap' }}>
-        <select data-testid="fr-a" value={frA} onChange={(e) => setFrA(e.target.value as RingMediaId | '')}>
-          <option value="">Video A</option>
-          {mediaIds.filter((id) => RING_MEDIA[id].kind === 'video').map((id) => (
-            <option key={id} value={id}>
-              {RING_MEDIA[id].label}
-            </option>
-          ))}
-        </select>
-        <select data-testid="fr-b" value={frB} onChange={(e) => setFrB(e.target.value as RingMediaId | '')}>
-          <option value="">Video B</option>
-          {mediaIds.filter((id) => RING_MEDIA[id].kind === 'video').map((id) => (
-            <option key={id} value={id}>
-              {RING_MEDIA[id].label}
-            </option>
-          ))}
-        </select>
-        <button type="button" className="aw-provisional__go" data-testid="fr-run" onClick={runFrame}>
-          Compare frame pattern
-        </button>
-      </div>
-      {frMsg ? <p data-testid="fr-status">{frMsg}</p> : null}
+      <RingsSection title="Padrão de quadro (vídeo)">
+        <RingsCompareTool
+          labelA="Vídeo A"
+          labelB="Vídeo B"
+          testIdA="fr-a"
+          testIdB="fr-b"
+          testIdRun="fr-run"
+          valueA={frA}
+          valueB={frB}
+          options={videoIds.map((id) => ({ id, label: RING_MEDIA[id].label }))}
+          onA={(v) => setFrA(v as RingMediaId | '')}
+          onB={(v) => setFrB(v as RingMediaId | '')}
+          onRun={runFrame}
+          runLabel="Executar comparação de quadros"
+        />
+        {frMsg ? (
+          <p className="rings-ws__report" data-testid="fr-status" role="status">
+            {frMsg}
+          </p>
+        ) : null}
+      </RingsSection>
 
-      <h4 className="pc-sub">Mapa — rotas candidatas</h4>
-      <ul className="pc-ul" data-testid="rings-routes">
-        {RING_ROUTES.map((r) => (
-          <li key={r.id}>
+      <RingsSection title="Mapa — rotas candidatas">
+        <table className="fw-table fw-page-table rings-ws__route-table" data-testid="rings-routes">
+          <thead>
+            <tr>
+              <th>Rota</th>
+              <th>Observação</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            {RING_ROUTES.map((r) => {
+              const confirmed = routeUnlocked && r.id === 'service'
+              const picked = routePick === r.id
+              const status = confirmed
+                ? 'confirmada'
+                : picked
+                  ? 'em análise'
+                  : selectedRoute === r.id
+                    ? 'descartada'
+                    : '—'
+              return (
+                <tr
+                  key={r.id}
+                  data-testid={`route-${r.id}`}
+                  data-active={picked || confirmed ? 'true' : undefined}
+                  className="rings-ws__route-row"
+                  onClick={() => {
+                    if (!routeUnlocked && !fullyDone) setRoutePick(r.id)
+                  }}
+                >
+                  <td>{r.label}</td>
+                  <td className="fw-muted">{r.detail}</td>
+                  <td className="fw-mono">{status}</td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+        {(routePick === 'service' || routeUnlocked) && !fullyDone ? (
+          <div className="rings-ws__route-stills">
+            {RING_ROUTES.find((r) => r.id === 'service')!.backgrounds.map((src) => (
+              <button
+                key={src}
+                type="button"
+                className="rings-ws__route-thumb"
+                onClick={() =>
+                  openStill({
+                    title: 'Passagem de serviço',
+                    subtitle: 'Trecho reconstruído a partir do pacote',
+                    posterSrc: src,
+                  })
+                }
+              >
+                <img src={resolveChatMediaSrc(src)} alt="" />
+              </button>
+            ))}
+          </div>
+        ) : null}
+        {!routeUnlocked ? (
+          <div className="rings-ws__tool-actions">
             <button
               type="button"
-              className="pc-inline"
-              data-testid={`route-${r.id}`}
-              data-selected={selectedRoute === r.id}
-              disabled={routeUnlocked && r.id !== 'service'}
-              onClick={() => confirmRoute(r.id)}
+              className="fw-btn"
+              disabled={!routePick}
+              onClick={confirmRoute}
             >
-              {r.label}
+              Registrar conclusão de rota
             </button>
-            <span className="aw-provisional__note"> — {r.detail}</span>
-            {selectedRoute === r.id || (routeUnlocked && r.id === 'service') ? (
-              <div style={{ display: 'flex', gap: 4, marginTop: 6, flexWrap: 'wrap' }}>
-                {r.backgrounds.map((src) => (
-                  <img
-                    key={src}
-                    src={resolveChatMediaSrc(src)}
-                    alt=""
-                    style={{ width: 72, height: 40, objectFit: 'cover', filter: 'grayscale(0.2) contrast(1.05)' }}
-                  />
-                ))}
-              </div>
-            ) : null}
-          </li>
-        ))}
-      </ul>
-      {routeMsg ? <p data-testid="route-status">{routeMsg}</p> : null}
+          </div>
+        ) : null}
+        {routeMsg ? (
+          <p className="rings-ws__report" data-testid="route-status" role="status">
+            {routeMsg}
+          </p>
+        ) : null}
+      </RingsSection>
 
       {camerasOpen ? (
         <>
-          <h4 className="pc-sub">Cobertura CFTV — passagem de serviço</h4>
-          <p className="aw-provisional__note">Câmeras que cobriam aquele trecho:</p>
-          <ul className="pc-ul" data-testid="rings-cameras">
-            {RING_CAMERAS.map((c) => (
-              <li key={c.id}>
-                {c.id} — {c.covers}
-              </li>
-            ))}
-          </ul>
-
-          <h4 className="pc-sub">DVR catalog</h4>
-          <table className="fw-table" data-testid="dvr-catalog">
-            <thead>
-              <tr>
-                <th>Camera</th>
-                <th>Segment</th>
-                <th>Start</th>
-                <th>Dur</th>
-                <th>Codec</th>
-                <th>Indexed</th>
-              </tr>
-            </thead>
-            <tbody>
-              {DVR_CATALOG.map((s) => (
-                <tr key={s.segmentId}>
-                  <td>{s.camera}</td>
-                  <td className="fw-mono">{s.segmentId}</td>
-                  <td className="fw-mono">{s.startTime}</td>
-                  <td>{s.durationSec}s</td>
-                  <td>{s.codec}</td>
-                  <td>{s.indexed ? 'yes' : 'no'}</td>
+          <RingsSection title="Cobertura CFTV — passagem de serviço">
+            <p className="fw-muted">Câmeras que cobriam aquele trecho:</p>
+            <table className="fw-table" data-testid="rings-cameras">
+              <thead>
+                <tr>
+                  <th>Câmera</th>
+                  <th>Cobertura</th>
+                  <th>Referência</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          <button
-            type="button"
-            className="aw-provisional__go"
-            data-testid="inspect-media-structure"
-            onClick={inspectStructure}
-          >
-            Inspect Media Structure
-          </button>
-          {structMsg ? <p data-testid="struct-status">{structMsg}</p> : null}
+              </thead>
+              <tbody>
+                {RING_CAMERAS.map((c) => (
+                  <tr key={c.id}>
+                    <td className="fw-mono">{c.id}</td>
+                    <td>{c.covers}</td>
+                    <td className="fw-mono">{c.time}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </RingsSection>
 
-          <h4 className="pc-sub">Storage browser (raw export)</h4>
-          <div className="fw-eq" style={{ gap: 8 }}>
-            <input
-              data-testid="storage-query"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="camera / segment / prefix"
-              style={{ minWidth: 180 }}
-            />
-            <button type="button" className="pc-inline" data-testid="storage-search" onClick={runSearch}>
-              Search storage
-            </button>
-          </div>
-          <ul className="pc-ul" data-testid="storage-hits">
-            {rawHits.map((h) => (
-              <li key={h.segmentId}>
-                <span className="fw-mono">{h.segmentId}</span>
-                {!h.indexed ? ' · unindexed' : ''}
-                {h.thumbnailAmbiguous ? (
-                  <div
-                    style={{
-                      width: 96,
-                      height: 54,
-                      marginTop: 4,
-                      background: '#1a1a1a',
-                      border: '1px solid #333',
-                    }}
-                    data-testid="seg-1279-thumb"
-                    title="Ambiguous frame"
+          <RingsSection title="Catálogo DVR">
+            <table className="fw-table" data-testid="dvr-catalog">
+              <thead>
+                <tr>
+                  <th>Câmera</th>
+                  <th>Segmento</th>
+                  <th>Início</th>
+                  <th>Duração</th>
+                  <th>Codec</th>
+                  <th>Indexado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {DVR_CATALOG.map((s) => (
+                  <tr key={s.segmentId}>
+                    <td>{s.camera}</td>
+                    <td className="fw-mono">{s.segmentId}</td>
+                    <td className="fw-mono">{s.startTime}</td>
+                    <td>{s.durationSec}s</td>
+                    <td>{s.codec}</td>
+                    <td>{s.indexed ? 'sim' : 'não'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="rings-ws__tool-actions">
+              <button
+                type="button"
+                className="fw-btn"
+                data-testid="inspect-media-structure"
+                onClick={inspectStructure}
+              >
+                Verificar continuidade do índice
+              </button>
+            </div>
+            {structMsg ? (
+              <p className="rings-ws__report" data-testid="struct-status" role="status">
+                {structMsg}
+              </p>
+            ) : null}
+          </RingsSection>
+
+          <RingsSection title="Navegador de armazenamento (exportação bruta)">
+            <div className="rings-ws__tool">
+              <div className="rings-ws__tool-row">
+                <label className="rings-ws__tool-field rings-ws__tool-field--wide">
+                  <span className="rings-ws__tool-label">Consulta</span>
+                  <input
+                    className="fw-compare-bar__input"
+                    data-testid="storage-query"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="câmera / segmento / prefixo"
                   />
-                ) : null}
-                {h.segmentId === MISSING_SEGMENT_ID ? (
-                  <button
-                    type="button"
-                    className="aw-provisional__go"
-                    data-testid="open-cam11-1279"
-                    style={{ marginLeft: 8 }}
-                    onClick={() => openSegment(h.segmentId)}
-                  >
-                    Open segment
-                  </button>
-                ) : null}
-              </li>
-            ))}
-          </ul>
+                </label>
+                <button
+                  type="button"
+                  className="fw-btn rings-ws__tool-run"
+                  data-testid="storage-search"
+                  onClick={runSearch}
+                >
+                  Consultar armazenamento
+                </button>
+              </div>
+            </div>
+            <table className="fw-table rings-ws__storage" data-testid="storage-hits">
+              <thead>
+                <tr>
+                  <th>Segmento</th>
+                  <th>Índice</th>
+                  <th>Ação</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rawHits.length === 0 ? (
+                  <tr>
+                    <td colSpan={3} className="fw-muted">
+                      Nenhum resultado.
+                    </td>
+                  </tr>
+                ) : (
+                  rawHits.map((h) => (
+                    <tr key={h.segmentId}>
+                      <td className="fw-mono">{h.segmentId}</td>
+                      <td>{h.indexed ? 'indexado' : 'não indexado'}</td>
+                      <td>
+                        {h.thumbnailAmbiguous ? (
+                          <button
+                            type="button"
+                            className="fw-btn fw-btn--ghost rings-ws__ambig-btn"
+                            data-testid="seg-1279-thumb"
+                            onClick={() =>
+                              openStill({
+                                title: h.segmentId,
+                                subtitle: 'Exportação bruta — quadro parcial',
+                                camLabel: 'CAM 11',
+                                timeLabel: '21:15:12',
+                                ambiguous: true,
+                              })
+                            }
+                          >
+                            Ver quadro
+                          </button>
+                        ) : null}
+                        {h.segmentId === MISSING_SEGMENT_ID ? (
+                          <button
+                            type="button"
+                            className="fw-btn"
+                            data-testid="open-cam11-1279"
+                            onClick={() => openSegment(h.segmentId)}
+                          >
+                            Abrir exportação
+                          </button>
+                        ) : (
+                          !h.thumbnailAmbiguous ? (
+                            <span className="fw-muted">—</span>
+                          ) : null
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </RingsSection>
         </>
       ) : (
-        <p className="aw-provisional__note" data-testid="cameras-locked">
+        <p className="fw-muted rings-ws__locked" data-testid="cameras-locked">
           Cobertura de CFTV permanece inacessível até a rota física ser estabelecida.
         </p>
       )}
 
       {import.meta.env.DEV ? (
-        <div style={{ marginTop: 12 }}>
-          <button type="button" className="pc-inline" onClick={() => setDevOpen((v) => !v)}>
+        <div className="rings-ws__dev">
+          <button type="button" className="fw-btn fw-btn--dev" onClick={() => setDevOpen((v) => !v)}>
             DEV
           </button>
           {devOpen ? (
-            <pre data-testid="rings-dev" style={{ fontSize: 11, opacity: 0.8 }}>
+            <pre data-testid="rings-dev" className="rings-ws__dev-pre">
               {JSON.stringify(
                 {
                   liviaSamuelFingerprint: fpOk,
@@ -426,6 +815,8 @@ export function RingsSession({ revealRequest = 0 }: { revealRequest?: number } =
         </div>
       ) : null}
 
+      <RingsStillLightbox state={lightbox} onClose={() => setLightbox(null)} />
+
       {showCctv && !revealDone ? (
         <MorsaCctvReveal
           onComplete={() => {
@@ -436,7 +827,9 @@ export function RingsSession({ revealRequest = 0 }: { revealRequest?: number } =
       ) : null}
 
       {revealDone ? (
-        <p data-testid="rings-solved">Segmento CAM11 inspecionado. O caderno registra a continuação.</p>
+        <p className="rings-ws__report rings-ws__solved" data-testid="rings-solved">
+          Segmento CAM11 inspecionado. O caderno registra a continuação.
+        </p>
       ) : null}
     </div>
   )

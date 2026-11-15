@@ -220,8 +220,8 @@ export function compareAudioFingerprints(
       score,
       deltaSec: match ? delta : null,
       message: match
-        ? `Strong fingerprint match (siren). Δt ≈ ${delta.toFixed(2)} s between media clocks.`
-        : 'Weak fingerprint overlap.',
+        ? `Correlação forte — padrão de sirene. Δt ≈ ${delta.toFixed(2)} s entre relógios das fontes.`
+        : 'Sobreposição de impressão digital insuficiente.',
     }
   }
   const score = pearson(RING_FINGERPRINT.liviaEnv, RING_FINGERPRINT.wrongEnv) * 0.4
@@ -229,7 +229,7 @@ export function compareAudioFingerprints(
     match: false,
     score: Math.max(0, score),
     deltaSec: null,
-    message: 'No strong shared event fingerprint.',
+    message: 'Nenhum evento compartilhado forte entre as fontes escolhidas.',
   }
 }
 
@@ -245,15 +245,15 @@ export function compareFramePatterns(
       match,
       score,
       message: match
-        ? 'Compatible illumination / shutter sequence in both videos.'
-        : 'Frame patterns diverge.',
+        ? 'Sequência de iluminação / obturador compatível nos dois vídeos.'
+        : 'Padrões de quadro divergentes.',
     }
   }
   const score = pearson(RING_FRAME_PATTERN.B, RING_FRAME_PATTERN.noise)
   return {
     match: false,
     score: Math.max(0, score),
-    message: 'No shared illumination sequence detected.',
+    message: 'Nenhuma sequência de iluminação compartilhada.',
   }
 }
 
@@ -266,7 +266,7 @@ export function inspectCam11Structure(): {
     gapSec: 60,
     expectedSegment: MISSING_SEGMENT_ID,
     message:
-      'CAM11_SEG_1278 ends 21:15:00; CAM11_SEG_1280 starts 21:16:00 — ~60 s absent from index.',
+      'CAM11_SEG_1278 encerra 21:15:00; CAM11_SEG_1280 inicia 21:16:00 — ~60 s ausentes do índice.',
   }
 }
 
@@ -299,6 +299,13 @@ export function rawOrderByTimestamp(): RingSourceId[] {
   return ['B', 'A', 'D', 'F', 'C', 'E']
 }
 
+/** Sprite overlay — % of the 16:9 CCTV frame (anchor: bottom-left of sprite box). */
+export interface CctvSpritePose {
+  leftPct: number
+  bottomPct: number
+  heightPct: number
+}
+
 export interface RingContinuityFrame {
   id: string
   timeLabel: string
@@ -307,6 +314,19 @@ export interface RingContinuityFrame {
   bgSrc: string
   sprites: string[]
   masked: boolean
+  /** One pose per sprite index; tuned to each BG vanishing point. */
+  spritePoses: CctvSpritePose[]
+}
+
+export function resolveCctvSpritePose(frame: RingContinuityFrame, spriteIndex: number): CctvSpritePose {
+  const poses = frame.spritePoses
+  const hit = poses[spriteIndex]
+  if (hit) return hit
+  const fallback = poses[poses.length - 1] ?? { leftPct: 52, bottomPct: 4, heightPct: 52 }
+  return {
+    ...fallback,
+    leftPct: fallback.leftPct + Math.max(0, spriteIndex - poses.length + 1) * 2,
+  }
 }
 
 export const RING_CONTINUITY_FRAMES: RingContinuityFrame[] = [
@@ -322,6 +342,11 @@ export const RING_CONTINUITY_FRAMES: RingContinuityFrame[] = [
       `${P10_ASSETS}/SP-04 — masked-enter-passage.png`,
     ],
     masked: true,
+    spritePoses: [
+      { leftPct: 63, bottomPct: 3, heightPct: 50 },
+      { leftPct: 59, bottomPct: 3, heightPct: 51 },
+      { leftPct: 54, bottomPct: 2, heightPct: 54 },
+    ],
   },
   {
     id: 'cam07',
@@ -337,6 +362,13 @@ export const RING_CONTINUITY_FRAMES: RingContinuityFrame[] = [
       `${P10_ASSETS}/SP-03 — masked-turn-look.png`,
     ],
     masked: true,
+    spritePoses: [
+      { leftPct: 42, bottomPct: 2, heightPct: 52 },
+      { leftPct: 46, bottomPct: 2, heightPct: 53 },
+      { leftPct: 50, bottomPct: 2, heightPct: 54 },
+      { leftPct: 54, bottomPct: 2, heightPct: 55 },
+      { leftPct: 48, bottomPct: 2, heightPct: 57 },
+    ],
   },
   {
     id: 'cam11',
@@ -351,5 +383,11 @@ export const RING_CONTINUITY_FRAMES: RingContinuityFrame[] = [
       `${P10_ASSETS}/SP-05 — unmasked-emerge-2.png`,
     ],
     masked: false,
+    spritePoses: [
+      { leftPct: 52, bottomPct: 2, heightPct: 52 },
+      { leftPct: 48, bottomPct: 2, heightPct: 53 },
+      { leftPct: 45, bottomPct: 1, heightPct: 58 },
+      { leftPct: 43, bottomPct: 1, heightPct: 62 },
+    ],
   },
 ]

@@ -8,13 +8,20 @@ from pathlib import Path
 
 import numpy as np
 
+try:
+    from pydub import AudioSegment
+except ImportError:
+    raise SystemExit("pip install pydub")
+
 ROOT = Path(__file__).resolve().parents[2]
 PUBLIC = ROOT / "public" / "assets" / "audio" / "forensic" / "puzzle10"
 P10_SRC = ROOT / "src" / "assets" / "audios" / "p10"
 P10_PUB = ROOT / "public" / "assets" / "block08" / "rings" / "p10"
 TS_META = ROOT / "src" / "forensic" / "puzzles" / "puzzle10Meta.json"
+SIREN_SRC = P10_SRC / "police-siren.mp3"
 SR = 44100
 SEED = 4101010
+SIREN_CLIP_SEC = 2.4
 
 
 def write_wav(path: Path, x: np.ndarray) -> None:
@@ -28,14 +35,20 @@ def write_wav(path: Path, x: np.ndarray) -> None:
         w.writeframes(pcm.tobytes())
 
 
-def tone(f: float, dur: float, amp: float = 0.35) -> np.ndarray:
-    n = int(SR * dur)
-    t = np.arange(n) / SR
-    a = max(1, int(0.02 * SR))
-    env = np.ones(n)
-    env[:a] = np.linspace(0, 1, a)
-    env[-a:] = np.linspace(1, 0, a)
-    return np.sin(2 * np.pi * f * t) * env * amp
+def load_siren_clip() -> np.ndarray:
+    if not SIREN_SRC.exists():
+        raise SystemExit(f"Missing siren asset: {SIREN_SRC}")
+    seg = AudioSegment.from_file(SIREN_SRC)
+    seg = seg.set_channels(1).set_frame_rate(SR).set_sample_width(2)
+    x = np.array(seg.get_array_of_samples(), dtype=np.float64) / 32768.0
+    n = min(len(x), int(SIREN_CLIP_SEC * SR))
+    x = x[:n]
+    peak = float(np.max(np.abs(x))) or 1.0
+    x = x / peak * 0.42
+    fade = max(1, int(0.04 * SR))
+    x[:fade] *= np.linspace(0, 1, fade)
+    x[-fade:] *= np.linspace(1, 0, fade)
+    return x
 
 
 def bed(n: int, rng: np.random.Generator) -> np.ndarray:
@@ -63,12 +76,7 @@ def main() -> None:
         (P10_PUB / f.name).write_bytes(f.read_bytes())
 
     rng = np.random.default_rng(SEED)
-    # long → short → short → long
-    parts = []
-    for d in (0.55, 0.18, 0.18, 0.55):
-        parts.append(tone(780, d))
-        parts.append(np.zeros(int(0.08 * SR)))
-    siren = np.concatenate(parts)
+    siren = load_siren_clip()
 
     L = bed(int(12 * SR), rng)
     s0 = int(4.2 * SR)
@@ -84,7 +92,8 @@ def main() -> None:
 
     meta = {
         "seed": SEED,
-        "sirenPattern": "long-short-short-long",
+        "sirenPattern": "police-siren",
+        "sirenAsset": "src/assets/audios/p10/police-siren.mp3",
         "liviaSirenStartSec": 4.2,
         "samuelSirenStartSec": 2.8,
         "liviaEnv": env(L, 4.0, 2.0),

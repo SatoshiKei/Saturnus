@@ -1559,6 +1559,8 @@ export function ForensicWorkbench({
             const stream = ui.derivedRtpStreams.find((s) => s.id === ui.activeDerivedStreamId)
             if (!cfg || !stream) return
             const result = evaluateRtpReconstruction(cfg, stream, rows, ui.packetSort)
+            const nextA = ui.streamARecovered || (result.isStreamA && result.ok)
+            const nextB = ui.streamBRecovered || (result.isStreamB && result.ok)
             setUi((u) => {
               const derivedRtpStreams = u.derivedRtpStreams.map((s) =>
                 s.id === stream.id
@@ -1635,7 +1637,22 @@ export function ForensicWorkbench({
               })
               patchUi({ activeSourceId: derived.id })
             }
-            setStatus(result.message)
+            let status = result.message
+            if (session.completion?.kind === 'rtp-stream-separation') {
+              if (result.isStreamB && !result.ok) {
+                status =
+                  'Fala ainda fragmentada — na tabela de pacotes, mude a ordenação para Sequence e reconstrua o fluxo anômalo de novo.'
+              } else if (nextA && !nextB) {
+                status =
+                  'Sessão legítima recuperada. Falta filtrar o outro SSRC, criar o segundo fluxo e reconstruir com ordenação por sequência.'
+              } else if (nextB && !nextA) {
+                status =
+                  'Sessão anômala recuperada. Falta filtrar o SSRC legítimo, criar o primeiro fluxo e reconstruir.'
+              } else if (nextA && nextB) {
+                status = 'As duas sessões recuperadas — análise registrada.'
+              }
+            }
+            setStatus(status)
           }}
         />
       </div>

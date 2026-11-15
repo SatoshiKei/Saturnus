@@ -23,6 +23,10 @@ SP-01 walk 1–4, SP-03 turn, SP-04 enter, SP-05 unmasked 1–2
 NÃO usar BG-03.
 
 
+Sirene (build)
+--------------
+src/assets/audios/p10/police-siren.mp3 → misturada em livia_protest_clip + samuel_phone_clip
+
 Build
 -----
 python tools/audio/build_puzzle10_rings.py

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { resolveChatMediaSrc } from '../../lib/characterSprites'
 import { MORSA_CCTV_BEATS, type MorsaCctvBeat } from '../../data/block08/morsaCctvBeats'
-import { RING_CONTINUITY_FRAMES } from '../../data/block08/ringsPuzzle'
+import { RING_CONTINUITY_FRAMES, resolveCctvSpritePose } from '../../data/block08/ringsPuzzle'
 import { playSfx } from '../../lib/sfx'
 import '../../styles/morsa-cctv.css'
 
@@ -89,47 +89,28 @@ function CctvBeatView({
   const spriteIdx = beat.spriteIndex ?? 0
   const sprite = frame.sprites[Math.min(spriteIdx, frame.sprites.length - 1)]!
   const unmasked = !frame.masked && spriteIdx >= 2
+  const pose = resolveCctvSpritePose(frame, spriteIdx)
 
   return (
     <figure className="morsa-cctv__feed" data-testid={`morsa-cctv-${frame.cameraId}`}>
-      <div
-        className="morsa-cctv__screen"
-        style={{
-          position: 'relative',
-          overflow: 'hidden',
-          filter: 'contrast(1.15) saturate(0.55) brightness(0.92)',
-        }}
-      >
+      <div className="morsa-cctv__screen morsa-cctv__screen--graded">
         <img
+          className="morsa-cctv__bg"
           src={resolveChatMediaSrc(frame.bgSrc)}
           alt=""
-          style={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'scale(1.05)' }}
         />
         <img
+          className="morsa-cctv__sprite"
           src={resolveChatMediaSrc(sprite)}
           alt=""
           data-testid={unmasked ? 'morsa-unmasked' : 'morsa-masked'}
           style={{
-            position: 'absolute',
-            bottom: '2%',
-            left: `${28 + (spriteIdx % 4) * 3}%`,
-            height: unmasked ? '78%' : '62%',
-            imageRendering: 'pixelated',
-            filter: 'blur(0.55px) contrast(1.25)',
-            opacity: 0.92,
-            transition: 'left 80ms steps(1)',
+            left: `${pose.leftPct}%`,
+            bottom: `${pose.bottomPct}%`,
+            height: `${pose.heightPct}%`,
           }}
         />
-        <div
-          aria-hidden
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background:
-              'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 3px)',
-            pointerEvents: 'none',
-          }}
-        />
+        <div className="morsa-cctv__scanlines" aria-hidden />
         <span className="morsa-cctv__badge">{frame.cameraId}</span>
         <span className="morsa-cctv__stamp">{frame.timeLabel}</span>
       </div>

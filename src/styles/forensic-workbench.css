@@ -1642,3 +1642,371 @@
   font-family: ui-monospace, monospace;
 }
 
+/* ── P10 Ordem dos Anéis (workspace especializado) ── */
+
+.rings-ws {
+  display: grid;
+  gap: 1.15rem;
+  width: 100%;
+  max-width: 100%;
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+.rings-ws .fw-pane-h {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.rings-ws .fw-table th,
+.rings-ws .fw-table td {
+  font-size: 0.92rem;
+  padding: 0.5rem 0.6rem;
+  vertical-align: middle;
+}
+
+.rings-ws .fw-table th {
+  font-size: 0.76rem;
+}
+
+.rings-ws .fw-muted {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+.rings-ws .fw-btn {
+  font-size: 0.88rem;
+  padding: 0.45em 0.85em;
+}
+
+.rings-ws .fw-select {
+  font-size: 0.9rem;
+  padding: 0.5em 1.85em 0.5em 0.65em;
+  min-height: 2.35rem;
+  line-height: 1.25;
+}
+
+.rings-ws__intro {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.rings-ws__lede {
+  margin: 0;
+  font-size: 1.02rem;
+  letter-spacing: 0.03em;
+  color: var(--text-primary);
+}
+
+.rings-ws__block {
+  display: grid;
+  gap: 0.65rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--fw-line);
+}
+
+.rings-ws__block:last-of-type {
+  border-bottom: none;
+}
+
+.rings-ws__manifest {
+  width: 100%;
+}
+
+.rings-ws__manifest .rings-ws__reg {
+  min-width: 12rem;
+}
+
+.rings-ws__reg {
+  display: grid;
+  gap: 0.12rem;
+}
+
+.rings-ws__reg-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.rings-ws__cell-quadro {
+  width: 6.5rem;
+}
+
+.rings-ws__cell-faixa {
+  min-width: 15rem;
+  width: 28%;
+}
+
+.rings-ws__na {
+  font-size: 0.95rem;
+}
+
+.rings-ws__thumb {
+  display: block;
+  padding: 0;
+  border: 1px solid var(--fw-line);
+  background: #0c0c0c;
+  cursor: pointer;
+  line-height: 0;
+  border-radius: 2px;
+  opacity: 0.9;
+  transition:
+    opacity 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.rings-ws__thumb:hover,
+.rings-ws__thumb:focus-visible {
+  opacity: 1;
+  border-color: rgba(200, 150, 62, 0.45);
+}
+
+.rings-ws__thumb-cctv {
+  display: block;
+  width: 88px;
+}
+
+.rings-ws__thumb-cctv .rings-cctv__img {
+  aspect-ratio: 16 / 9;
+  width: 88px;
+  height: auto;
+}
+
+.rings-ws__player {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.5rem 0.65rem;
+  padding: 0.4rem 0.55rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent), var(--fw-inset);
+  border: 1px solid var(--fw-line);
+  border-radius: 3px;
+}
+
+.rings-ws__player-play {
+  width: 2.35rem !important;
+  height: 2.35rem !important;
+  font-size: 0.82rem !important;
+  flex-shrink: 0;
+}
+
+.rings-ws__player-seek {
+  width: 100%;
+  min-width: 4.5rem;
+  height: 0.28rem;
+  margin: 0;
+  accent-color: var(--fw-accent);
+  cursor: pointer;
+}
+
+.rings-ws__player-time {
+  font-size: 0.82rem;
+  white-space: nowrap;
+  color: var(--text-muted);
+}
+
+.rings-ws__tool {
+  padding: 0.55rem 0.65rem;
+  background: var(--fw-inset);
+  border: 1px solid var(--fw-line);
+  border-radius: 3px;
+}
+
+.rings-ws__tool-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem 1rem;
+}
+
+.rings-ws__tool-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 0 1 16.5rem;
+  min-width: 12rem;
+  max-width: 19rem;
+}
+
+.rings-ws__tool-field--wide {
+  flex: 1 1 14rem;
+  max-width: 22rem;
+}
+
+.rings-ws__tool-field .fw-compare-bar__input {
+  font-size: 0.9rem;
+  padding: 0.5rem 0.6rem;
+  min-height: 2.35rem;
+  box-sizing: border-box;
+}
+
+.rings-ws__tool-label {
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fw-accent);
+}
+
+.rings-ws__tool-run {
+  flex: 0 0 auto;
+  margin-bottom: 1px;
+  white-space: nowrap;
+}
+
+.rings-ws__tool-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.rings-ws__report {
+  margin: 0.15rem 0 0;
+  padding: 0.5rem 0.65rem;
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  background: rgba(0, 0, 0, 0.22);
+  border-left: 2px solid var(--fw-accent);
+}
+
+.rings-ws__solved {
+  border-left-color: rgba(121, 194, 189, 0.55);
+}
+
+.rings-ws__sprite {
+  position: absolute;
+  bottom: 0;
+  left: 40%;
+  height: 66%;
+  max-width: 54%;
+  width: auto;
+  object-fit: contain;
+  object-position: bottom left;
+  filter: contrast(1.06) saturate(0.9);
+  opacity: 0.92;
+  pointer-events: none;
+}
+
+.rings-ws__route-table tbody tr {
+  cursor: pointer;
+}
+
+.rings-ws__route-stills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.rings-ws__route-thumb {
+  padding: 0;
+  border: 1px solid var(--fw-line);
+  background: #0c0c0c;
+  cursor: pointer;
+  line-height: 0;
+  opacity: 0.88;
+  transition: opacity 0.15s ease;
+}
+
+.rings-ws__route-thumb:hover,
+.rings-ws__route-thumb:focus-visible {
+  opacity: 1;
+  border-color: rgba(200, 150, 62, 0.45);
+}
+
+.rings-ws__route-thumb img {
+  width: 72px;
+  height: 40px;
+  object-fit: cover;
+  filter: grayscale(0.15) contrast(1.05);
+}
+
+.rings-ws__locked {
+  padding: 0.35rem 0;
+  font-size: 0.92rem;
+}
+
+.rings-ws__ambig-btn {
+  font-size: 0.88rem;
+}
+
+.rings-ws__ambig {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 255, 255, 0.04),
+    rgba(255, 255, 255, 0.04) 6px,
+    rgba(0, 0, 0, 0.2) 6px,
+    rgba(0, 0, 0, 0.2) 12px
+  );
+}
+
+.rings-ws__lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 2500;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+}
+
+.rings-ws__lightbox-backdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  background: rgba(0, 0, 0, 0.82);
+  cursor: pointer;
+}
+
+.rings-ws__lightbox-panel {
+  position: relative;
+  z-index: 1;
+  width: min(720px, 100%);
+  max-height: min(92vh, 900px);
+  overflow: auto;
+  padding: 0.85rem 1rem 1rem;
+  background: var(--fw-panel);
+  border: 1px solid var(--fw-line);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.55);
+}
+
+.rings-ws__lightbox-head {
+  margin-bottom: 0.55rem;
+}
+
+.rings-ws__lightbox-title {
+  margin: 0 0 0.15rem;
+  font-size: 0.88em;
+  font-weight: 600;
+}
+
+.rings-ws__lightbox-feed {
+  margin: 0;
+}
+
+.rings-ws__lightbox-feed .rings-ws__sprite {
+  height: 65%;
+}
+
+.rings-ws__lightbox-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.65rem;
+}
+
+.rings-ws__dev {
+  margin: 0.5rem 0 0;
+  padding: 0;
+  border: none;
+  font: inherit;
+  font-weight: normal;
+}
+
+.rings-ws__dev-pre {
+  margin: 0.45rem 0 0;
+  font-size: 0.68em;
+  opacity: 0.85;
+  white-space: pre-wrap;
+}
+
