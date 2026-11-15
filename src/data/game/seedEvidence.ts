@@ -244,7 +244,7 @@ export const seedEvidenceCatalog: Evidence[] = [
     originalOrDerived: 'original',
     integrity: 'unverified',
     description:
-      'Cópia do arquivo que Mariana havia enviado a Rafael para análise. O arquivo não estava mais disponível no celular apreendido, mas Rafael preservou a própria cópia. Cadeia: Mariana → Rafael → Augusto. Não é arquivo obtido no Vértice; o conteúdo é uma gravação de ambiente da casa noturna.',
+      'Cópia do arquivo que Mariana havia enviado a Rafael para análise. O arquivo não estava mais disponível no celular apreendido, mas Rafael preservou a própria cópia. Cadeia: Mariana → Rafael → Augusto. Gravação de ambiente da casa noturna — em certo trecho dá para ouvir uma fala masculina misturada à música, sem indicar de quem é.',
     relatedPersonIds: ['mariana', 'rafael'],
     relatedLocationIds: ['vertice'],
     relatedEventIds: [],
@@ -255,8 +255,26 @@ export const seedEvidenceCatalog: Evidence[] = [
     puzzleMeta: {
       puzzleId: 'puzzle-03-anels',
       implementation: 'full',
-      completionEvidenceId: 'rec_vtx_fingerprint_transition',
+      completionEvidenceId: 'club_voice_isolated',
     },
+  },
+  {
+    id: 'club_voice_isolated',
+    title: 'Trecho — voz masculina isolada (balada)',
+    type: 'derived',
+    sourceType: 'audio-lab',
+    originalOrDerived: 'derived',
+    sourceId: 'rec_vtx_old_01',
+    integrity: 'unverified',
+    description:
+      'Voz masculina recuperada por análise forense a partir da gravação de ambiente. Ainda imperfeita — suficiente para alguém do local reconhecer o timbre.',
+    relatedPersonIds: ['mariana', 'rafael'],
+    relatedLocationIds: ['vertice'],
+    relatedEventIds: [],
+    exportable: true,
+    audioSrc: '/assets/audio/forensic/puzzle03/club_voice_isolated.wav',
+    durationSec: 7,
+    displayFileName: 'club_voice_isolated.wav',
   },
   {
     id: 'rec_vtx_fingerprint_transition',
@@ -266,8 +284,7 @@ export const seedEvidenceCatalog: Evidence[] = [
     originalOrDerived: 'derived',
     sourceId: 'rec_vtx_old_01',
     integrity: 'unverified',
-    description:
-      'A gravação contém características suficientes para ser comparada aos registros históricos da cabine do Vértice.',
+    description: 'Legado — substituído por club_voice_isolated.',
     relatedPersonIds: ['rafael', 'mariana'],
     relatedLocationIds: ['vertice'],
     relatedEventIds: [],
@@ -282,7 +299,7 @@ export const seedEvidenceCatalog: Evidence[] = [
     sourceId: 'rec_vtx_old_01',
     integrity: 'unverified',
     description:
-      'A referência obtida na gravação permitiu restringir a busca a uma única sessão preservada no arquivo administrativo. Nico aparece como responsável pela cabine na sessão correspondente à gravação.',
+      'Funcionários do Vértice reconheceram o timbre isolado na gravação. O cruzamento com o arquivo administrativo apontou Nico como DJ da sessão correspondente.',
     relatedPersonIds: ['nico'],
     relatedLocationIds: ['vertice'],
     relatedEventIds: [],
@@ -2224,6 +2241,7 @@ const CATALOG_HIDDEN_IDS = new Set([
   'phone_files_depend_on_order',
   'phone_seized_after_call',
   'nico_believes_jacket_jana',
+  'rec_vtx_fingerprint_transition',
 ])
 
 for (const e of seedEvidenceCatalog) {

@@ -84,7 +84,7 @@ describe('P02/P03/Vértice cadeia canónica', () => {
     runProvisionalRingsAnalysis()
     const s = getInvestigationState()
     expect(s.flags.block02_rings_provisional).toBe(true)
-    expect(s.evidenceOwned).toContain('rec_vtx_fingerprint_transition')
+    expect(s.evidenceOwned).toContain('club_voice_isolated')
     expect(s.evidenceOwned).not.toContain('nico_dj_identified')
     expect(s.locations.vertice?.status).toBe('visitAvailable')
     expect(s.people.nico?.status === 'identified').toBeFalsy()

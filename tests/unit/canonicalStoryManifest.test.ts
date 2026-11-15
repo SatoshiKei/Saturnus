@@ -163,13 +163,13 @@ describe('marcos canônicos por checkpoint', () => {
     {
       id: 'b02-after-rafael-audio',
       has: { flags: ['block02_rafael_club_received'], evidence: ['rec_vtx_old_01'] },
-      lacks: { flags: ['block02_rings_provisional'], evidence: ['rec_vtx_fingerprint_transition', 'nico_dj_identified'] },
+      lacks: { flags: ['block02_rings_provisional'], evidence: ['club_voice_isolated', 'nico_dj_identified'] },
     },
     {
       id: 'b02-rings-provisional',
       has: {
         flags: ['block02_rings_provisional'],
-        evidence: ['rec_vtx_fingerprint_transition'],
+        evidence: ['club_voice_isolated'],
         ach: ['ach-rings'],
       },
       lacks: { flags: ['block02_vertice_set_crossref'], evidence: ['nico_dj_identified', 'rec_vtx_set_nico_match'] },
@@ -323,7 +323,7 @@ describe('bancada: fontes só após aquisição', () => {
   const SOURCES: { evidence: string; acquiredAt: string }[] = [
     // P2 (celular de Mariana): já presente desde o BO/celular; não é reenviado por Rafael.
     { evidence: 'rec_vtx_old_01', acquiredAt: 'b02-after-rafael-audio' },
-    { evidence: 'rec_vtx_fingerprint_transition', acquiredAt: 'b02-rings-provisional' },
+    { evidence: 'club_voice_isolated', acquiredAt: 'b02-rings-provisional' },
     { evidence: 'nico_dj_identified', acquiredAt: 'b02-nico-identified' },
     { evidence: 'nico_recording_booth', acquiredAt: 'b03-after-nico' },
     { evidence: 'livia_radio_archive_raw', acquiredAt: 'b03-after-livia' },

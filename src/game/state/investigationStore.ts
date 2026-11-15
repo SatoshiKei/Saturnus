@@ -183,7 +183,10 @@ export function resetForensicSpeechProgress(evidenceId: string) {
   if (evidenceId === 'rec_vtx_old_01') {
     flags.block02_rings_provisional = false
     evidenceOwned = evidenceOwned.filter(
-      (id) => id !== 'rec_vtx_set_nico_match' && id !== 'nico_dj_identified',
+      (id) =>
+        id !== 'rec_vtx_set_nico_match' &&
+        id !== 'nico_dj_identified' &&
+        id !== 'club_voice_isolated',
     )
     delete achievementUnlocks['ach-rings']
     delete bag['rec_vtx_old_01']
@@ -435,7 +438,14 @@ export function migrateState(raw: InvestigationState): InvestigationState {
     police_clock_drift_logs: 'rui_police_approach_records',
   }
   const remapId = (id: string) => EVIDENCE_ID_ALIASES[id] ?? id
-  const remappedOwned = (raw.evidenceOwned ?? []).map(remapId)
+  let remappedOwned = (raw.evidenceOwned ?? []).map(remapId)
+  if (
+    remappedOwned.includes('rec_vtx_fingerprint_transition') &&
+    !remappedOwned.includes('club_voice_isolated') &&
+    raw.flags?.block02_rings_provisional
+  ) {
+    remappedOwned = [...remappedOwned, 'club_voice_isolated']
+  }
   const remappedBag = { ...(raw.evidence ?? {}) }
   for (const [oldId, newId] of Object.entries(EVIDENCE_ID_ALIASES)) {
     if (remappedBag[oldId] && !remappedBag[newId]) {

@@ -311,7 +311,7 @@ export const CANONICAL_STORY_MANIFEST: CanonicalCheckpointDef[] = [
   {
     id: 'b02-rings-provisional',
     steps: [{ puzzle: 'P03' }],
-    note: 'P03 ANÉIS = só técnico (A→B, rec_vtx_fingerprint_transition). Reabre o Vértice; NÃO identifica Nico.',
+    note: 'P03 ANÉIS = isolar voz masculina (club_voice_isolated). Reabre o Vértice; Nico só na 2ª visita.',
   },
   {
     id: 'b02-nico-identified',

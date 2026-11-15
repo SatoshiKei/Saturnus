@@ -49,7 +49,7 @@ export const block03EntryActions: StoryActionRef[] = [
   { type: 'addEvidence', id: 'rafael_recording_vertice_tag' },
   { type: 'addEvidence', id: 'mariana_club_recording_missing' },
   { type: 'addEvidence', id: 'rec_vtx_old_01' },
-  { type: 'addEvidence', id: 'rec_vtx_fingerprint_transition' },
+  { type: 'addEvidence', id: 'club_voice_isolated' },
   { type: 'addEvidence', id: 'rec_vtx_set_nico_match' },
   { type: 'addEvidence', id: 'nico_dj_identified' },
   { type: 'addEvidence', id: 'paula_leads_lucas' },

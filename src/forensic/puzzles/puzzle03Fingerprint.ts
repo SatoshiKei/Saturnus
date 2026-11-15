@@ -21,7 +21,9 @@ export const PUZZLE03_MUSIC_SOURCES = {
    */
   sourceB: null as string | null,
   master: 'public/assets/audio/forensic/puzzle03/rec_vtx_old_01_final.mp3',
-  djSpeech: 'src/assets/audios/p3/DJ - Vértice.mp3',
+  voicePrimary: 'src/assets/audios/p3/nico_01_bate_com_a_bunda.wav',
+  voiceSecondary: 'src/assets/audios/p3/nico_02_e_ai_maluco.wav',
+  voiceTertiary: 'src/assets/audios/p3/nico_03_vamos_juntar.wav',
   crowd: 'src/assets/audios/p3/club-crowd.mp3',
 } as const
 

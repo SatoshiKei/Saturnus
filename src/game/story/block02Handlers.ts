@@ -140,8 +140,8 @@ export function finishVerticeArchive() {
 }
 
 /**
- * P3 — ANÉIS (técnico): fingerprints A→B / chave de busca.
- * NÃO identifica Nico. Reabre Vértice para cruzamento institucional.
+ * P3 — ANÉIS: isolamento de voz masculina na gravação da balada.
+ * NÃO identifica Nico na bancada. Reabre o Vértice para reconhecimento humano.
  */
 export function runProvisionalRingsAnalysis() {
   const s = getInvestigationState()
@@ -149,13 +149,13 @@ export function runProvisionalRingsAnalysis() {
   if (!s.evidenceOwned.includes('rec_vtx_old_01')) return
   dispatchActions([
     { type: 'setFlag', id: 'block02_rings_provisional', value: true },
-    { type: 'addEvidence', id: 'rec_vtx_fingerprint_transition' },
+    { type: 'addEvidence', id: 'club_voice_isolated' },
     { type: 'completeTask', id: 'task_match_vertice_set' },
     { type: 'unlockLocation', id: 'vertice', status: 'visitAvailable' },
     {
       type: 'addTask',
       id: 'task_vertice_cross_reference',
-      label: 'Voltar ao Vértice com a gravação analisada',
+      label: 'Voltar ao Vértice com o trecho isolado',
     },
     {
       type: 'notifyInvestigationUpdate',
@@ -164,8 +164,8 @@ export function runProvisionalRingsAnalysis() {
       presentation: 'card',
       label: 'CONQUISTA',
       title: 'ANÉIS',
-      summary: 'Extraiu a transição musical A→B da gravação da balada.',
-      refId: 'rec_vtx_fingerprint_transition',
+      summary: 'Isolou a voz masculina na gravação da balada.',
+      refId: 'club_voice_isolated',
     },
   ])
 }

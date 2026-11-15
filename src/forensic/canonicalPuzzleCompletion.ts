@@ -62,24 +62,17 @@ import {
   createInitialUiState,
   cycleDifferenceComplete,
   evaluateRfExtraction,
-  fingerprintArchiveComplete,
+  speechRecoveryComplete,
   rebuildContainer,
   rfChannelExtractComplete,
   rtpStreamSeparationComplete,
   spectrogramSurveyComplete,
-  speechRecoveryComplete,
   structureSequenceValid,
 } from './forensicEngine'
 import type { ForensicSession, ForensicUiState, RecoveredSpeechEntry } from './forensicTypes'
 import { puzzle01CassiniSession } from './puzzles/puzzle01Cassini'
 import { puzzle02IapetusSession } from './puzzles/puzzle02Iapetus'
-import { puzzle03AnelsSession } from './puzzles/puzzle03Anels'
-import {
-  PUZZLE03_MUSIC_SOURCES,
-  PUZZLE03_TRACK_A_ID,
-  PUZZLE03_TRACK_B_ID,
-  puzzle03DesignIsFixed,
-} from './puzzles/puzzle03Fingerprint'
+import { puzzle03AnelsSession, puzzle03SpeechSegments } from './puzzles/puzzle03Anels'
 import { puzzle04JanusSession } from './puzzles/puzzle04Janus'
 import { puzzle05SaturnaliaSession } from './puzzles/puzzle05Saturnalia'
 import { puzzle06HexagonSession } from './puzzles/puzzle06Hexagon'
@@ -299,34 +292,29 @@ const P03: CanonicalPuzzleDef = {
   evidenceIds: ['rec_vtx_old_01'],
   doneFlag: 'block02_rings_provisional',
   requiresAnyEvidence: ['rec_vtx_old_01'],
-  devBypass: () =>
-    puzzle03DesignIsFixed()
-      ? null
-      : {
-          reason: PUZZLE03_MUSIC_SOURCES.requirement,
-          detail:
-            'PENDING_ASSET: Faixa B ausente. Fingerprint A→B e abertura da sessão canônica aplicados pelo manifesto DEV — não representa análise dual-track real.',
-        },
   stages: [
     {
-      id: 'fingerprint-archive',
-      label: 'Fingerprint A→B (técnico)',
+      id: 'voice-isolation',
+      label: 'Isolar voz masculina na balada',
       kind: 'technical',
       run: () => {
-        const ok = fingerprintArchiveComplete(
-          puzzle03AnelsSession,
-          uiFor(puzzle03AnelsSession, {
-            fingerprintAId: PUZZLE03_TRACK_A_ID,
-            fingerprintBId: PUZZLE03_TRACK_B_ID,
-            transitionOrder: 'A→B',
-          }),
-        )
-        return ok ? APPLIED : { status: 'failed', reason: 'Cadeia fingerprint P03 inválida.' }
+        const ui = uiFor(puzzle03AnelsSession, {
+          recoveredSpeech: [
+            {
+              segmentId: puzzle03SpeechSegments[0]!.id,
+              text: puzzle03SpeechSegments[0]!.text,
+              startSec: puzzle03SpeechSegments[0]!.startSec,
+              unlockedAt: Date.now(),
+            },
+          ],
+        })
+        const ok = speechRecoveryComplete(ui.recoveredSpeech, puzzle03SpeechSegments)
+        return ok ? APPLIED : { status: 'failed', reason: 'Recuperação de voz P03 incompleta.' }
       },
     },
     handlerStage(
       'analysis',
-      'ANÉIS técnico — reabre Vértice (sem Nico)',
+      'ANÉIS — trecho isolado; reabre Vértice (sem Nico na bancada)',
       runProvisionalRingsAnalysis,
       'block02_rings_provisional',
     ),

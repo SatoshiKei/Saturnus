@@ -1,0 +1,28 @@
+{
+  "durationSec": 180.0,
+  "voice": {
+    "startSec": 94.0,
+    "endSec": 100.7,
+    "segmentId": "seg_club_male",
+    "recoveredText": "Bate com a bunda! E a\u00ed, maluco! Vamos juntar\u2026"
+  },
+  "noiseProfileWindow": {
+    "startSec": 12.0,
+    "endSec": 58.0
+  },
+  "audio": {
+    "final": "/assets/audio/forensic/puzzle03/rec_vtx_old_01_final.mp3",
+    "isolated": "/assets/audio/forensic/puzzle03/club_voice_isolated.wav",
+    "stemBackground": "/assets/audio/forensic/puzzle03/stem_club_background.wav",
+    "stemVoiceBuried": "/assets/audio/forensic/puzzle03/stem_club_voice_buried.wav"
+  },
+  "carrier": {
+    "noTts": true,
+    "clips": [
+      "src/assets/audios/p3/nico_01_bate_com_a_bunda.wav",
+      "src/assets/audios/p3/nico_02_e_ai_maluco.wav",
+      "src/assets/audios/p3/nico_03_vamos_juntar.wav"
+    ],
+    "excluded": []
+  }
+}

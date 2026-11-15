@@ -61,7 +61,7 @@ const LEGIT: Record<
   P03: {
     // Canon: P3 é só técnico (A→B). Nico só na 2ª visita ao Vértice (set_crossref).
     flags: ['block02_rings_provisional'],
-    evidence: ['rec_vtx_fingerprint_transition'],
+    evidence: ['club_voice_isolated'],
     achievements: ['ach-rings'],
   },
   P04: {

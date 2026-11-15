@@ -78,7 +78,7 @@ export const block02DevCheckpoints: { id: string; label: string; actions: StoryA
     label: 'P3 — ANÉIS técnico (A→B), Vértice reaberto',
     actions: [
       { type: 'setFlag', id: 'block02_rings_provisional', value: true },
-      { type: 'addEvidence', id: 'rec_vtx_fingerprint_transition' },
+      { type: 'addEvidence', id: 'club_voice_isolated' },
       { type: 'completeTask', id: 'task_match_vertice_set' },
       { type: 'unlockLocation', id: 'vertice', status: 'visitAvailable' },
       {
