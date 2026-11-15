@@ -23,7 +23,6 @@ import {
   clockSyncOffsetValid,
   clipSequenceComplete,
   buildDerivedRfSource,
-  resolveRfTargetChannel,
   cycleDifferenceComplete,
   fingerprintArchiveComplete,
   createDerivedRtpStream,

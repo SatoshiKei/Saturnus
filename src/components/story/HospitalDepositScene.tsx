@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useGalleryPlayback } from '../../app/GalleryPlaybackContext'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { assetPath } from '../../lib/assetPath'
 import { VisualNovelDialog, VNSceneShell } from './VisualNovelDialog'
@@ -7,6 +8,7 @@ import { onHospitalDepositDone } from '../../game/story/block07Handlers'
 import '../../styles/visual-novel.css'
 
 export function HospitalDepositScene({ onClose }: { onClose: () => void }) {
+  const gallery = useGalleryPlayback()
   const inv = useInvestigation()
   const done = Boolean(inv.flags.block07_hospital_deposit_done)
   const [i, setI] = useState(0)
@@ -15,7 +17,7 @@ export function HospitalDepositScene({ onClose }: { onClose: () => void }) {
   const step = () => {
     if (i + 1 < HOSPITAL_DEPOSIT_BEATS.length) setI(i + 1)
     else {
-      if (!done) onHospitalDepositDone()
+      if (!done && !gallery) onHospitalDepositDone()
       onClose()
     }
   }

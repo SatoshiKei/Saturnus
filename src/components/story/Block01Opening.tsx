@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useGalleryPlayback } from '../../app/GalleryPlaybackContext'
 import { setFlag } from '../../game/state/investigationStore'
 import '../../styles/visual-novel.css'
 
@@ -8,13 +9,14 @@ const FADE_MS = 480
 
 /** Abertura do Bloco 1 — data/hora breve, depois a sala. */
 export function Block01Opening({ onDone }: { onDone: () => void }) {
+  const gallery = useGalleryPlayback()
   const [phase, setPhase] = useState<'black' | 'title' | 'out'>('black')
 
   useEffect(() => {
     const t1 = window.setTimeout(() => setPhase('title'), SHOW_MS)
     const t2 = window.setTimeout(() => setPhase('out'), SHOW_MS + HOLD_MS)
     const t3 = window.setTimeout(() => {
-      setFlag('block01_opening_seen', true)
+      if (!gallery) setFlag('block01_opening_seen', true)
       onDone()
     }, SHOW_MS + HOLD_MS + FADE_MS)
     return () => {
@@ -22,7 +24,7 @@ export function Block01Opening({ onDone }: { onDone: () => void }) {
       window.clearTimeout(t2)
       window.clearTimeout(t3)
     }
-  }, [onDone])
+  }, [gallery, onDone])
 
   return (
     <div

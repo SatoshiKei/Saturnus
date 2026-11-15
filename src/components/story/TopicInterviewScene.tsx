@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { assetPath } from '../../lib/assetPath'
+import { useGalleryPlayback } from '../../app/GalleryPlaybackContext'
 import { getInvestigationState, setFlag } from '../../game/state/investigationStore'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { VisualNovelDialog, VNSceneShell } from './VisualNovelDialog'
@@ -57,6 +58,7 @@ interface Props<T extends string> {
  * Não existe fala de síntese aqui: conclusões ficam no modo Reflexão (SceneRunner).
  */
 export function TopicInterviewScene<T extends string>({ config, onClose }: Props<T>) {
+  const gallery = useGalleryPlayback()
   const inv = useInvestigation()
   const [activeTopic, setActiveTopic] = useState<T | null>(null)
   const [beatIndex, setBeatIndex] = useState(0)
@@ -98,17 +100,17 @@ export function TopicInterviewScene<T extends string>({ config, onClose }: Props
   )
 
   const tryFinishInterview = useCallback(() => {
+    if (gallery) return
     const state = getInvestigationState()
     const flags = state.flags
     if (flags[config.doneFlag]) return
     if (!interviewShouldFinish(flags, state.interviewTopicsUnlocked)) return
     config.finish()
-  }, [config, interviewShouldFinish])
+  }, [config, gallery, interviewShouldFinish])
 
   const completeTopic = useCallback(
     (topic: T) => {
       setFlag(config.flags[topic], true)
-      // Lê a store na hora — `doneTopics` do render pode estar defasado e impedir o fechamento.
       const state = getInvestigationState()
       const flags = state.flags
       if (interviewShouldFinish(flags, state.interviewTopicsUnlocked)) {

@@ -5,15 +5,19 @@ import { assetPath } from '../../lib/assetPath'
 import { enterGameplay, openTitleMenu, resetHints, resumeGameplay, useUiState } from '../../app/uiStore'
 import { SaveLoadScreen } from './SaveLoadScreen'
 import { AchievementsScreen } from './AchievementsScreen'
+import { SceneGalleryScreen } from './SceneGalleryScreen'
+import { SceneGalleryPlayer } from './SceneGalleryPlayer'
+import type { SceneGalleryEntry } from '../../data/sceneGalleryCatalog'
 import '../../styles/investigation.css'
 
-type View = 'root' | 'saves-load' | 'saves-write' | 'achievements' | 'confirm-new'
+type View = 'root' | 'saves-load' | 'saves-write' | 'achievements' | 'gallery' | 'confirm-new'
 
 export function MainMenuOverlay() {
   const { shell } = useUiState()
   const [view, setView] = useState<View>('root')
   const [hasSave, setHasSave] = useState(() => hasAnySave())
   const [autosave, setAutosave] = useState(() => hasAutosave())
+  const [galleryEntry, setGalleryEntry] = useState<SceneGalleryEntry | null>(null)
 
   useEffect(() => {
     if (shell !== 'playing') {
@@ -28,6 +32,10 @@ export function MainMenuOverlay() {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return
       e.preventDefault()
+      if (galleryEntry) {
+        setGalleryEntry(null)
+        return
+      }
       if (view !== 'root') {
         setView('root')
         return
@@ -36,9 +44,13 @@ export function MainMenuOverlay() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [shell, view])
+  }, [galleryEntry, shell, view])
 
   if (shell === 'playing') return null
+
+  if (galleryEntry) {
+    return <SceneGalleryPlayer entry={galleryEntry} onDone={() => setGalleryEntry(null)} />
+  }
 
   const paused = shell === 'paused'
   const startNew = () => {
@@ -96,6 +108,11 @@ export function MainMenuOverlay() {
           <button type="button" data-testid="main-menu-achievements" onClick={() => setView('achievements')}>
             Conquistas
           </button>
+          {!paused ? (
+            <button type="button" data-testid="main-menu-gallery" onClick={() => setView('gallery')}>
+              Galeria
+            </button>
+          ) : null}
           {paused ? (
             <button type="button" data-testid="main-menu-title" onClick={() => openTitleMenu()}>
               Tela inicial
@@ -122,6 +139,9 @@ export function MainMenuOverlay() {
         <SaveLoadScreen mode="save" onBack={() => setView('root')} />
       ) : null}
       {view === 'achievements' ? <AchievementsScreen onBack={() => setView('root')} /> : null}
+      {view === 'gallery' ? (
+        <SceneGalleryScreen onBack={() => setView('root')} onPlay={(entry) => setGalleryEntry(entry)} />
+      ) : null}
     </div>
   )
 }

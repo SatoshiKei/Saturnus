@@ -1,4 +1,5 @@
 import { PhoneSessionProvider } from './PhoneSessionContext'
+import { GalleryPlaybackProvider } from './GalleryPlaybackContext'
 import { GameHubProvider } from './GameHubContext'
 import { InvestigationBootstrap } from './InvestigationBootstrap'
 import { Scene } from '../scene/Scene'
@@ -11,14 +12,16 @@ import '../styles/investigation.css'
 
 export default function App() {
   return (
-    <GameHubProvider>
-      <PhoneSessionProvider>
-        <InvestigationBootstrap>
-          <main aria-label="SATURNUS — mesa de investigação">
-            <Scene />
-          </main>
-        </InvestigationBootstrap>
-      </PhoneSessionProvider>
-    </GameHubProvider>
+    <GalleryPlaybackProvider active={false}>
+      <GameHubProvider>
+        <PhoneSessionProvider>
+          <InvestigationBootstrap>
+            <main aria-label="SATURNUS — mesa de investigação">
+              <Scene />
+            </main>
+          </InvestigationBootstrap>
+        </PhoneSessionProvider>
+      </GameHubProvider>
+    </GalleryPlaybackProvider>
   )
 }

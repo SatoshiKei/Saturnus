@@ -9,6 +9,7 @@ import {
 import { portraitSrcForStory } from '../../lib/characterSprites'
 import { assetPath } from '../../lib/assetPath'
 import { useInvestigation } from '../../game/hooks/useInvestigation'
+import { useGalleryPlayback } from '../../app/GalleryPlaybackContext'
 import { completeVerticeTopicById, finishVerticeVisit } from '../../game/story/block02Handlers'
 import { VisualNovelDialog, VNSceneShell } from './VisualNovelDialog'
 import '../../styles/visual-novel.css'
@@ -36,11 +37,11 @@ function setCrossrefUnlocked(flags: Record<string, boolean>) {
 }
 
 export function VerticeInterviewScene({ onClose }: { onClose: () => void }) {
+  const gallery = useGalleryPlayback()
   const inv = useInvestigation()
   const [mode, setMode] = useState<Mode>('menu')
   const [activeTopic, setActiveTopic] = useState<VerticeTopicId | null>(null)
   const [beatIndex, setBeatIndex] = useState(0)
-
   const doneTopics = useMemo(() => {
     const s = new Set<VerticeTopicId>()
     for (const id of VERTICE_TOPIC_IDS) {
@@ -52,9 +53,9 @@ export function VerticeInterviewScene({ onClose }: { onClose: () => void }) {
   const bg = assetPath('/assets/backgrounds/processed/nightclub/nightclub-01-lights-haze.jpg')
 
   const finishVisit = useCallback(() => {
-    finishVerticeVisit()
+    if (!gallery) finishVerticeVisit()
     onClose()
-  }, [onClose])
+  }, [gallery, onClose])
 
   const completeTopic = useCallback((topic: VerticeTopicId) => {
     completeVerticeTopicById(topic)

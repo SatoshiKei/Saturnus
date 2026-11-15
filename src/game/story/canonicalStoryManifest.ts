@@ -733,6 +733,15 @@ export function buildCanonicalCheckpointState(checkpointId: string): Investigati
   return structuredClone(st)
 }
 
+/** Estado imediatamente antes de executar os passos do checkpoint (fim do anterior). */
+export function buildCanonicalCheckpointStateBefore(checkpointId: string): InvestigationState {
+  const i = CANONICAL_STORY_MANIFEST.findIndex((c) => c.id === checkpointId)
+  if (i < 0) throw new Error(`Checkpoint canônico desconhecido: ${checkpointId}`)
+  if (i === 0) return structuredClone(replayAll().states.get(CANONICAL_STORY_MANIFEST[0].id)!)
+  const prevId = CANONICAL_STORY_MANIFEST[i - 1].id
+  return buildCanonicalCheckpointState(prevId)
+}
+
 export function getCanonicalCheckpointDef(checkpointId: string): CanonicalCheckpointDef | undefined {
   return CANONICAL_STORY_MANIFEST.find((c) => c.id === checkpointId)
 }

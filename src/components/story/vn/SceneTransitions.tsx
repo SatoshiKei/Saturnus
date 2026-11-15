@@ -8,6 +8,7 @@ import {
   type WheelEvent,
 } from 'react'
 import { assetPath } from '../../../lib/assetPath'
+import { useGalleryPlayback } from '../../../app/GalleryPlaybackContext'
 import { getInvestigationState, setFlag } from '../../../game/state/investigationStore'
 import { afterReflectionComplete } from '../../../game/story/reflectionAftermath'
 import { reflectionForScene, type ReflectionDef } from '../../../data/reflections'
@@ -275,6 +276,7 @@ export function SceneRunner({
   /** Substitui a reflexão padrão da cena (ex.: cena das seis ligações). */
   reflection?: ReflectionDef | null
 }) {
+  const gallery = useGalleryPlayback()
   const intro = sceneIntros[sceneId]
   const [phase, setPhase] = useState<Phase>('intro')
   const [black, setBlack] = useState(false)
@@ -304,12 +306,17 @@ export function SceneRunner({
   const closeScene = useCallback(() => {
     const def = reflection === undefined ? reflectionForScene(sceneId) : reflection
     const s = getInvestigationState()
-    if (def && (!def.whenFlag || s.flags[def.whenFlag]) && !s.flags[`${def.id}_seen`]) {
+    const seenKey = def ? `${def.id}_seen` : ''
+    const showRefl =
+      def &&
+      (!def.whenFlag || s.flags[def.whenFlag]) &&
+      (gallery || !s.flags[seenKey])
+    if (showRefl) {
       setPhase('reflection')
       return
     }
     startOutro()
-  }, [reflection, sceneId, startOutro])
+  }, [gallery, reflection, sceneId, startOutro])
 
   const revealScene = useCallback(() => setSceneReady(true), [])
   const beginScene = useCallback(() => setPhase('scene'), [])
@@ -336,8 +343,10 @@ export function SceneRunner({
             blocks={reflectionDef.blocks}
             background={reflectionDef.background}
             onDone={() => {
-              setFlag(`${reflectionDef.id}_seen`, true)
-              afterReflectionComplete(reflectionDef.id)
+              if (!gallery) {
+                setFlag(`${reflectionDef.id}_seen`, true)
+                afterReflectionComplete(reflectionDef.id)
+              }
               startOutro()
             }}
           />
