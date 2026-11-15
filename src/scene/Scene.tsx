@@ -131,7 +131,23 @@ export function Scene() {
   } = useGameHub()
   const inv = useInvestigation()
   const { menuOpen, shell } = useUiState()
-  const soloReflectionId = pendingSoloReflection(inv.flags)
+  const diaryRereadPending =
+    inv.flags.block09_diary_reread_unlocked && !inv.flags.block09_diary_reread_done
+  const hasDiaryRereadTask = inv.tasks.some(
+    (t) => t.id === 'task_reread_diary_omitido' && !t.completed,
+  )
+  const pendingDiaryOmitidoReflection =
+    inv.flags.block09_refl_omitido_pending && !inv.flags['refl-b09-omitido_seen']
+  const deferSoloForMarianaPhone =
+    phoneOpen &&
+    phoneDevice === 'mariana' &&
+    (diaryRereadPending || hasDiaryRereadTask || pendingDiaryOmitidoReflection)
+  const soloReflectionIdRaw = pendingSoloReflection(inv.flags)
+  const soloReflectionId =
+    deferSoloForMarianaPhone &&
+    (soloReflectionIdRaw === 'refl-b09-omitido' || soloReflectionIdRaw === 'refl-b08-final')
+      ? null
+      : soloReflectionIdRaw
   const soloReflectionDef = soloReflectionId ? reflectionById(soloReflectionId) : undefined
 
   useEffect(() => {
@@ -158,6 +174,7 @@ export function Scene() {
 
   useEffect(() => {
     if (!cinematic) return
+    if (deferSoloForMarianaPhone) return
     closePhone()
     closeHub()
     setCamera(null)
@@ -165,7 +182,7 @@ export function Scene() {
       window.clearTimeout(pending.current)
       pending.current = null
     }
-  }, [cinematic, closePhone, closeHub])
+  }, [cinematic, closePhone, closeHub, deferSoloForMarianaPhone])
 
   useEffect(() => {
     if (inv.flags.block01_opening_seen) setOpeningDone(true)
@@ -372,7 +389,7 @@ export function Scene() {
           <CaseNotepad />
         </div>
 
-        {phoneOpen && !overlaysLocked ? (
+        {phoneOpen && (!overlaysLocked || deferSoloForMarianaPhone) ? (
           <div className="scene-phone-overlay" data-testid="phone-overlay">
             <button
               type="button"

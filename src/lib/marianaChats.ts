@@ -12,4 +12,12 @@ export function augustoVisibleChats(state: InvestigationState) {
   return mockChats
     .filter((c) => !c.archived && unlocked.has(c.id))
     .map((c) => getChatById(c.id, state) ?? c)
+    .sort((a, b) => {
+      const ua = a.unreadCount ?? 0
+      const ub = b.unreadCount ?? 0
+      if (ua !== ub) return ub - ua
+      if (a.pinned && !b.pinned) return -1
+      if (b.pinned && !a.pinned) return 1
+      return 0
+    })
 }

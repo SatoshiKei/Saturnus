@@ -16,8 +16,14 @@ import { appendChatMessages, dispatchActions } from '../../game/state/investigat
 import { onRafaelClubAudioPlayed } from '../../game/story/block02Handlers'
 import { phoneFeatureLocks } from '../../data/phoneFeatures'
 import { onCamilaChatReviewed, onJuliaChatReviewed, onRafaelAudioPlayed } from '../../game/story/block01Handlers'
-import { onMarianaChatOpened } from '../../game/story/block09Handlers'
+import {
+  onMarianaChatClosed,
+  onMarianaChatOpened,
+  onMarianaWave1ScriptComplete,
+  onMarianaWave2ScriptComplete,
+} from '../../game/story/block09Handlers'
 import { MARIANA_CHAT_ID } from '../../data/block09/marianaMessages'
+import { resolveMarianaAugustoScript } from '../../data/block09/marianaAugustoChatScripts'
 import { receiveAnonHospitalAudio } from '../../game/story/block07Handlers'
 import { Avatar } from '../../components/Avatar'
 import { playSfx } from '../../lib/sfx'
@@ -62,7 +68,8 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
   const { phoneDevice } = useGameHub()
   const [profileOpen, setProfileOpen] = useState(false)
   const chat = getChatById(chatId, inv)
-  const script = chatScripts[chatId]
+  const script =
+    chatId === MARIANA_CHAT_ID ? resolveMarianaAugustoScript(inv) : chatScripts[chatId]
   const scriptChat = Boolean(script) && inv.phones.augusto.unlockedChatIds.includes(chatId)
   const progress = inv.chatProgress[chatId] ?? { step: 0, done: false, messages: [] }
   const [lightbox, setLightbox] = useState<{ src: string; alt: string; caption?: string } | null>(
@@ -86,6 +93,7 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
   useEffect(() => {
     if (chatId !== MARIANA_CHAT_ID) return
     onMarianaChatOpened()
+    return () => onMarianaChatClosed()
   }, [chatId])
 
   useEffect(() => {
@@ -116,9 +124,22 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
     if (pendingReplies > 0) return
     if (progress.step >= script.steps.length && !progress.done) {
       appendChatMessages(chatId, [], progress.step, true)
-      dispatchActions(script.onComplete)
+      if (chatId === MARIANA_CHAT_ID) {
+        if (!inv.flags.block09_messages_wave1_read) onMarianaWave1ScriptComplete()
+        else onMarianaWave2ScriptComplete()
+      } else if (script.onComplete.length) {
+        dispatchActions(script.onComplete)
+      }
     }
-  }, [scriptChat, script, pendingReplies, progress.step, progress.done, chatId])
+  }, [
+    scriptChat,
+    script,
+    pendingReplies,
+    progress.step,
+    progress.done,
+    chatId,
+    inv.flags.block09_messages_wave1_read,
+  ])
 
   const visibleMessages = chat
     ? pendingReplies > 0
@@ -132,9 +153,9 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
     el.scrollTop = el.scrollHeight
   }, [chatId, visibleMessages.length, pendingReplies])
 
-  const onRafaelVerticeAudio = useCallback(() => onRafaelAudioPlayed(), [])
-  const onRafaelClubAudio = useCallback(() => onRafaelClubAudioPlayed(), [])
-  const onAnonHospitalBurst = useCallback(() => receiveAnonHospitalAudio(), [])
+  const onRafaelVerticeAudioComplete = useCallback(() => onRafaelAudioPlayed(), [])
+  const onRafaelClubAudioComplete = useCallback(() => onRafaelClubAudioPlayed(), [])
+  const onAnonHospitalBurstComplete = useCallback(() => receiveAnonHospitalAudio(), [])
 
   const choose = useCallback(
     (optionIndex: number) => {
@@ -246,13 +267,13 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
             contact={contact}
             allMessages={chat.messages}
             onImageOpen={(src, alt, caption) => setLightbox({ src, alt, caption })}
-            onAudioPlay={
+            onAudioComplete={
               live.kind === 'audio' && live.id === 'rf-audio-reply'
-                ? onRafaelVerticeAudio
+                ? onRafaelVerticeAudioComplete
                 : live.kind === 'audio' && live.id === 'r2-audio-forward'
-                  ? onRafaelClubAudio
+                  ? onRafaelClubAudioComplete
                   : live.kind === 'audio' && live.id === 'anon-burst-1'
-                    ? onAnonHospitalBurst
+                    ? onAnonHospitalBurstComplete
                     : undefined
             }
           />

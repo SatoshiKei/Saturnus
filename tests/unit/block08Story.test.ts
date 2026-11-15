@@ -200,11 +200,12 @@ describe('Bloco 8 — progressão', () => {
     s = getInvestigationState()
     expect(s.flags.block09_omitido_named).toBe(true)
     expect(s.evidenceOwned).toContain('omitido_named_in_records')
-    expect(s.tasks.some((t) => t.id === 'task_reread_diary_omitido' && !t.completed)).toBe(true)
+    expect(s.tasks.some((t) => t.id === 'task_reread_diary_omitido')).toBe(false)
     expect(s.flags.block08_refl_final_pending).toBe(true)
 
     onFinalReflectionDone()
     s = getInvestigationState()
+    expect(s.tasks.some((t) => t.id === 'task_reread_diary_omitido' && !t.completed)).toBe(true)
     expect(s.flags.block08_complete).toBe(true)
     expect(s.flags.block09_entry_ready).toBe(true)
     expect(s.flags.block09_started).toBe(true)

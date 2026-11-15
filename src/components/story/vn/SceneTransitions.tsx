@@ -141,9 +141,9 @@ export function ReflectionView({
   const finish = useCallback(() => {
     if (doneRef.current) return
     doneRef.current = true
+    onDone()
     setFading(true)
     playSfx('fade')
-    window.setTimeout(() => onDone(), prefersReducedMotion() ? 120 : 520)
   }, [onDone])
 
   const advance = useCallback(() => {
@@ -213,11 +213,19 @@ export function ReflectionView({
       className={`vn-nvl tr-refl${fading ? ' tr-refl--out' : ''}`}
       data-testid="reflection-view"
       data-end-primed={endPrimed || undefined}
-      style={background ? { backgroundImage: `url(${assetPath(background)})` } : undefined}
+      data-inert={fading || undefined}
+      style={{
+        ...(background ? { backgroundImage: `url(${assetPath(background)})` } : undefined),
+        pointerEvents: fading ? 'none' : undefined,
+      }}
       onClick={() => {
+        if (fading) return
         advance()
       }}
-      onWheel={onWheel}
+      onWheel={(e) => {
+        if (fading) return
+        onWheel(e)
+      }}
       role="presentation"
     >
       <div className="vn-nvl__veil" aria-hidden />
@@ -347,6 +355,7 @@ export function SceneRunner({
                 setFlag(`${reflectionDef.id}_seen`, true)
                 afterReflectionComplete(reflectionDef.id)
               }
+              setPhase('outro')
               startOutro()
             }}
           />

@@ -1,11 +1,17 @@
-import { dispatchActions, getInvestigationState, appendChatMessages } from '../state/investigationStore'
+import {
+  appendChatMessages,
+  dispatchActions,
+  getInvestigationState,
+  setChatProgress,
+} from '../state/investigationStore'
 import type { StoryActionRef } from '../types'
+import type { ChatMessage } from '../../types/messaging'
 import {
   MARIANA_CHAT_ID,
   marianaMessagesAnomaly,
-  marianaMessagesWave1,
-  marianaMessagesWave2,
   marianaMessagesWave3,
+  marianaWave1Bootstrap,
+  marianaWave2Bootstrap,
 } from '../../data/block09/marianaMessages'
 import { MEMORY_WORD } from '../../data/block09/memoryPuzzle'
 
@@ -36,11 +42,9 @@ export function rereadDiaryOmitido() {
     { type: 'addEvidence', id: 'diary_partly_staged_ambiguity' },
     { type: 'completeTask', id: 'task_reread_diary_omitido' },
     { type: 'setFlag', id: 'block09_assistance_unlocked', value: true },
-    {
-      type: 'addTask',
-      id: 'task_omitido_assistance',
-      label: 'Reabrir as fontes técnicas ligadas a O Omitido',
-    },
+    { type: 'setFlag', id: 'block09_assistance_done', value: true },
+    { type: 'addEvidence', id: 'disappearance_plan_mariana_with_omitido' },
+    { type: 'setFlag', id: 'block09_refl_omitido_pending', value: true },
   ])
 }
 
@@ -93,22 +97,33 @@ export function onRobertoExposed() {
       label: 'Examinar as novas mensagens atribuídas a Mariana',
     },
   ])
-  injectMarianaWave(1)
+  injectMarianaBootstrap(1)
 }
 
-function injectMarianaWave(wave: 1 | 2 | 3) {
+function bootstrapForWave(wave: 1 | 2 | 3): ChatMessage[] {
+  if (wave === 1) return marianaWave1Bootstrap
+  if (wave === 2) return marianaWave2Bootstrap
+  return marianaMessagesWave3
+}
+
+function injectMarianaBootstrap(wave: 1 | 2 | 3) {
   const s = getInvestigationState()
   const actions: StoryActionRef[] = [
     { type: 'unlockContact', contactId: 'contact-mariana-augusto' },
     { type: 'unlockChat', device: 'augusto', chatId: MARIANA_CHAT_ID },
   ]
   dispatchActions(actions)
-  const msgs =
-    wave === 1 ? marianaMessagesWave1 : wave === 2 ? marianaMessagesWave2 : marianaMessagesWave3
-  const already = s.chatProgress[MARIANA_CHAT_ID]?.messages ?? []
+  const msgs = bootstrapForWave(wave)
+  const already = getInvestigationState().chatProgress[MARIANA_CHAT_ID]?.messages ?? []
   const ids = new Set(already.map((m) => m.id))
   const fresh = msgs.filter((m) => !ids.has(m.id))
-  if (fresh.length) appendChatMessages(MARIANA_CHAT_ID, fresh, wave, false)
+  if (!fresh.length) return
+  const prev = getInvestigationState().chatProgress[MARIANA_CHAT_ID] ?? {
+    step: 0,
+    done: false,
+    messages: [],
+  }
+  appendChatMessages(MARIANA_CHAT_ID, fresh, prev.step, false)
 }
 
 function injectAugustoAnomalyMessages() {
@@ -124,51 +139,55 @@ function injectAugustoAnomalyMessages() {
   if (fresh.length) appendChatMessages(MARIANA_CHAT_ID, fresh, 4, false)
 }
 
-/** Garante ondas injetadas e marca leituras ao abrir o chat. */
+/** Garante mensagens pendentes injetadas (sem auto-concluir ondas). */
 export function onMarianaChatOpened() {
   const s = getInvestigationState()
-  if (s.flags.block09_messages_wave1) injectMarianaWave(1)
-  if (s.flags.block09_messages_wave3) injectMarianaWave(3)
-  if (s.flags.block09_augusto_watched_unlocked && !s.flags.block09_augusto_watched_done) {
-    injectAugustoAnomalyMessages()
-  }
-
   if (s.flags.block09_messages_wave1 && !s.flags.block09_messages_wave1_read) {
-    onMarianaMessagesWave1Read()
-    return
+    injectMarianaBootstrap(1)
   }
   if (
     s.flags.block09_messages_wave2 &&
     s.flags.block09_messages_wave1_read &&
     !s.flags.block09_messages_impossible_done
   ) {
-    weighMarianaMessageImpossibilities()
-    return
-  }
-  if (
-    s.flags.block09_augusto_watched_unlocked &&
-    !s.flags.block09_augusto_watched_done &&
-    s.flags.block09_other_cases_done
-  ) {
-    registerAugustoAnomalies()
-    return
+    injectMarianaBootstrap(2)
   }
   if (s.flags.block09_messages_wave3 && !s.flags.block09_post_death_message_read) {
-    onPostDeathMessageRead()
+    injectMarianaBootstrap(3)
+  }
+  if (s.flags.block09_augusto_watched_unlocked && !s.flags.block09_augusto_watched_done) {
+    injectAugustoAnomalyMessages()
   }
 }
 
-/** Chamado ao abrir/ler o chat de Mariana (onda 1). */
-export function onMarianaMessagesWave1Read() {
+/** Fim do roteiro interativo — onda 1. */
+export function onMarianaWave1ScriptComplete() {
   const s = getInvestigationState()
   if (s.flags.block09_messages_wave1_read) return
   if (!s.flags.block09_messages_wave1) return
+  const prog = s.chatProgress[MARIANA_CHAT_ID] ?? { step: 0, done: false, messages: [] }
   dispatchActions([
     { type: 'setFlag', id: 'block09_messages_wave1_read', value: true },
     { type: 'addEvidence', id: 'messages_as_mariana_convincing' },
     { type: 'setFlag', id: 'block09_messages_wave2', value: true },
+    { type: 'completeTask', id: 'task_read_mariana_messages' },
   ])
-  injectMarianaWave(2)
+  setChatProgress(MARIANA_CHAT_ID, {
+    step: 0,
+    done: false,
+    messages: prog.messages,
+  })
+  injectMarianaBootstrap(2)
+}
+
+/** @deprecated use onMarianaWave1ScriptComplete */
+export function onMarianaMessagesWave1Read() {
+  onMarianaWave1ScriptComplete()
+}
+
+/** Fim do roteiro interativo — onda 2. */
+export function onMarianaWave2ScriptComplete() {
+  weighMarianaMessageImpossibilities()
 }
 
 /** Conclusão a partir da leitura da onda 2 — sem documento de raciocínio. */
@@ -246,12 +265,13 @@ export function finishTrailDiscovery() {
     { type: 'completeTask', id: 'task_follow_trail_location' },
     mark,
     { type: 'setFlag', id: 'block09_messages_wave3', value: true },
-    { type: 'setFlag', id: 'block09_post_death_message_read', value: true },
-    { type: 'addEvidence', id: 'system_speaks_as_mariana_after_death' },
-    { type: 'completeTask', id: 'task_message_after_death' },
-    { type: 'setFlag', id: 'block09_refl_death_pending', value: true },
+    {
+      type: 'addTask',
+      id: 'task_message_after_death',
+      label: 'Ler a nova mensagem atribuída a Mariana',
+    },
   ])
-  injectMarianaWave(3)
+  injectMarianaBootstrap(3)
 }
 
 export function onDeathReflectionDone() {
@@ -269,6 +289,7 @@ export function onDeathReflectionDone() {
   ])
 }
 
+/** Após o jogador ler a onda 3 no WhatsApp (fechar o chat). */
 export function onPostDeathMessageRead() {
   const s = getInvestigationState()
   if (s.flags.block09_post_death_message_read) return
@@ -277,13 +298,24 @@ export function onPostDeathMessageRead() {
     { type: 'setFlag', id: 'block09_post_death_message_read', value: true },
     { type: 'addEvidence', id: 'system_speaks_as_mariana_after_death' },
     { type: 'completeTask', id: 'task_message_after_death' },
-    { type: 'setFlag', id: 'block09_other_cases_unlocked', value: true },
-    {
-      type: 'addTask',
-      id: 'task_other_disappearances',
-      label: 'Pesquisar ocorrências semelhantes ligadas a O Omitido',
-    },
+    { type: 'setFlag', id: 'block09_refl_death_pending', value: true },
   ])
+}
+
+export function onMarianaChatClosed() {
+  const s = getInvestigationState()
+  if (s.flags.block09_messages_wave3 && !s.flags.block09_post_death_message_read) {
+    const msgs = s.chatProgress[MARIANA_CHAT_ID]?.messages ?? []
+    if (msgs.some((m) => m.id === 'mm-w3-1')) onPostDeathMessageRead()
+  }
+  if (
+    s.flags.block09_augusto_watched_unlocked &&
+    !s.flags.block09_augusto_watched_done &&
+    s.flags.block09_other_cases_done
+  ) {
+    const msgs = s.chatProgress[MARIANA_CHAT_ID]?.messages ?? []
+    if (msgs.some((m) => m.id === 'mm-anom-1')) registerAugustoAnomalies()
+  }
 }
 
 /** Resultado de busca institucional — documento real `doc-outros-desaparecimentos`. */

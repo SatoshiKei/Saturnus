@@ -445,11 +445,6 @@ export function onOmitidoBridgeReflectionDone() {
     { type: 'discoverPerson', id: 'omitido', status: 'identified' },
     { type: 'addEvidence', id: 'omitido_named_in_records' },
     { type: 'setFlag', id: 'block09_diary_reread_unlocked', value: true },
-    {
-      type: 'addTask',
-      id: 'task_reread_diary_omitido',
-      label: 'Reler o diário com o contexto de O Omitido',
-    },
     { type: 'setFlag', id: 'block08_refl_final_pending', value: true },
     OMITIDO_BRIDGE_NOTIFY,
   ])

@@ -45,13 +45,18 @@ async function playWhenReady(audio: HTMLAudioElement): Promise<void> {
 export function AudioMessage({
   message,
   onPlayStart,
+  onPlayComplete,
 }: {
   message: AudioMsg
+  /** Dispara no início da reprodução (evidências leves). */
   onPlayStart?: () => void
+  /** Dispara só quando o trecho exigido foi ouvido até o fim. */
+  onPlayComplete?: () => void
 }) {
   const audioRef = useRef<HTMLAudioElement>(null)
   const prevSrcRef = useRef<string | null>(null)
   const narrativeSent = useRef(false)
+  const completeSent = useRef(false)
   const [playing, setPlaying] = useState(false)
   const [progress, setProgress] = useState(0)
   const [speedIdx, setSpeedIdx] = useState(0)
@@ -69,6 +74,7 @@ export function AudioMessage({
 
   useEffect(() => {
     narrativeSent.current = false
+    completeSent.current = false
     const audio = audioRef.current
     if (!audio) return
   }, [src])
@@ -136,6 +142,10 @@ export function AudioMessage({
             a.currentTime = limit
             setPlaying(false)
             setProgress(1)
+            if (onPlayComplete && !completeSent.current) {
+              completeSent.current = true
+              onPlayComplete()
+            }
           }
         }}
         onPause={() => setPlaying(false)}

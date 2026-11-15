@@ -19,13 +19,14 @@ import { onOmitidoBridgeReflectionDone } from '../../src/game/story/block08Handl
 import {
   findOtherDisappearances,
   finishTrailDiscovery,
-  mapOmitidoAssistance,
   onAugustoAnomaliesReflectionDone,
   onDeathReflectionDone,
-  onMarianaChatOpened,
+  onMarianaWave1ScriptComplete,
+  onMarianaWave2ScriptComplete,
   onMemoryPuzzleSolved,
   onMessagesImpossibilityReflectionDone,
   onOmitidoAssistanceReflectionDone,
+  onPostDeathMessageRead,
   onRobertoExposed,
   onSaturnusFinalReflectionDone,
   reconstructPhysicalTrail,
@@ -60,7 +61,6 @@ describe('Bloco 9 — progressão', () => {
     expect(s.people.omitido?.status).toBe('identified')
 
     rereadDiaryOmitido()
-    mapOmitidoAssistance()
     s = getInvestigationState()
     expect(s.evidenceOwned).toContain('diary_partly_staged_ambiguity')
     expect(s.evidenceOwned).toContain('disappearance_plan_mariana_with_omitido')
@@ -79,11 +79,13 @@ describe('Bloco 9 — progressão', () => {
     expect(s.hypotheses.hyp_augusto_was_placed?.state).toBe('confirmed')
     expect(s.phones.augusto.unlockedChatIds).toContain(MARIANA_CHAT_ID)
 
-    onMarianaChatOpened()
+    onMarianaWave1ScriptComplete()
+    onMarianaWave2ScriptComplete()
     s = getInvestigationState()
     expect(s.flags.block09_messages_wave1_read).toBe(true)
     expect(s.flags.block09_messages_wave2).toBe(true)
     expect(s.evidenceOwned).toContain('messages_as_mariana_convincing')
+    expect(s.flags.block09_refl_messages_pending).toBe(true)
     expect((s.chatProgress[MARIANA_CHAT_ID]?.messages ?? []).length).toBeGreaterThan(0)
   })
 
@@ -91,16 +93,14 @@ describe('Bloco 9 — progressão', () => {
     seed()
     onOmitidoBridgeReflectionDone()
     rereadDiaryOmitido()
-    mapOmitidoAssistance()
     onOmitidoAssistanceReflectionDone()
     onRobertoExposed()
-    onMarianaChatOpened()
+    onMarianaWave1ScriptComplete()
+    onMarianaWave2ScriptComplete()
+    onMessagesImpossibilityReflectionDone()
 
-    weighMarianaMessageImpossibilities()
     let s = getInvestigationState()
     expect(s.evidenceOwned).toContain('messages_know_post_disappearance_facts')
-    expect(s.flags.block09_refl_messages_pending).toBe(true)
-    onMessagesImpossibilityReflectionDone()
 
     reconstructPhysicalTrail()
     s = getInvestigationState()
@@ -111,10 +111,12 @@ describe('Bloco 9 — progressão', () => {
     s = getInvestigationState()
     expect(s.flags.block09_mariana_dead).toBe(true)
     expect(s.evidenceOwned).toContain('mariana_confirmed_dead')
-    expect(s.flags.block09_refl_death_pending).toBe(true)
+    expect(s.flags.block09_refl_death_pending).toBeFalsy()
 
+    onPostDeathMessageRead()
+    s = getInvestigationState()
+    expect(s.flags.block09_refl_death_pending).toBe(true)
     onDeathReflectionDone()
-    onMarianaChatOpened()
     s = getInvestigationState()
     expect(s.flags.block09_post_death_message_read).toBe(true)
     expect(s.evidenceOwned).toContain('system_speaks_as_mariana_after_death')
