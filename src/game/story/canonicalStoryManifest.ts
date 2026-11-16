@@ -83,6 +83,7 @@ import {
 import { onUnknownCallerNumberSeen } from './block04PhoneHooks'
 import {
   comparePhoneFilesSequence,
+  grantMarianaOrderInsight,
   finishJanaInterview,
   finishNicoFollowup,
   organizeMarianaContactChronology,
@@ -146,6 +147,7 @@ const HANDLERS = {
   onUnknownRecordingAnalyzed,
   organizeMarianaContactChronology,
   comparePhoneFilesSequence,
+  grantMarianaOrderInsight,
   finishPoliceOperation,
   organizeMemoryOnset,
   finishJuliaOnsetCall,
@@ -388,9 +390,12 @@ export const CANONICAL_STORY_MANIFEST: CanonicalCheckpointDef[] = [
       { refl: 'refl-b05-andre' },
     ],
   },
-  { id: 'b05-maralto-weighed', steps: [{ doc: 'doc-maralto-clipping' }, { refl: 'refl-b05-maralto' }] },
-  { id: 'b05-chronology-done', steps: [{ h: 'organizeMarianaContactChronology' }] },
-  { id: 'b05-compare-done', steps: [{ h: 'comparePhoneFilesSequence' }, { refl: 'refl-b05-coincidence' }] },
+  {
+    id: 'b05-maralto-weighed',
+    steps: [{ doc: 'doc-maralto-clipping' }, { refl: 'refl-b05-maralto' }, { h: 'grantMarianaOrderInsight' }],
+  },
+  { id: 'b05-chronology-done', steps: [{ h: 'grantMarianaOrderInsight' }] },
+  { id: 'b05-compare-done', steps: [{ h: 'grantMarianaOrderInsight' }] },
   { id: 'b05-end', steps: [{ doc: 'doc-central-chamada' }, { refl: 'refl-b05-path' }] },
   // ── Bloco 6 ──
   { id: 'b06-start', steps: [] },

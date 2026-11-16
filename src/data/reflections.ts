@@ -206,13 +206,8 @@ export const reflections: ReflectionDef[] = [
     blocks: [
       'Lívia, a rádio, os protestos, o núcleo mascarado, Morsa, Samuel. Material suspeito. Pessoas que não falam. Crimes reais.',
       'Nada disso explica por que Mariana desapareceu.',
-    ],
-  },
-  {
-    id: 'refl-b05-coincidence',
-    background: HUB_REFLECTION_BACKGROUND,
-    blocks: [
-      'Pode ser coincidência. Estou reconstruindo a mesma investigação que Mariana fez.',
+      'E eu encontrei as mesmas pessoas, na mesma ordem — o caderno, o celular dela, arquivos que só apareciam depois que eu tinha passado pelo contato certo.',
+      'Pode ser coincidência. Estou refazendo a investigação que ela fez. Coincidência é o que eu quero acreditar.',
     ],
   },
   {

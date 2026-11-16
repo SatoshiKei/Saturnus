@@ -163,35 +163,11 @@ export const block05DevCheckpoints: { id: string; label: string; actions: StoryA
       { type: 'setFlag', id: 'block05_maralto_reflection_done', value: true },
       { type: 'setFlag', id: 'refl-b05-maralto_seen', value: true },
       { type: 'setFlag', id: 'block05_chronology_action_unlocked', value: true },
-      {
-        type: 'addTask',
-        id: 'task_mariana_contact_chronology',
-        label: 'Organizar cronologia dos contatos recentes de Mariana',
-      },
-    ],
-  },
-  {
-    id: 'b05-chronology-done',
-    label: 'Cronologia organizada',
-    actions: [
       { type: 'setFlag', id: 'block05_chronology_done', value: true },
       { type: 'addEvidence', id: 'mariana_sought_people_before' },
-      { type: 'completeTask', id: 'task_mariana_contact_chronology' },
       { type: 'setFlag', id: 'block05_compare_unlocked', value: true },
-      {
-        type: 'addTask',
-        id: 'task_compare_phone_files',
-        label: 'Comparar a cronologia com os arquivos deixados no celular',
-      },
-    ],
-  },
-  {
-    id: 'b05-compare-done',
-    label: 'Arquivos comparados (reflexão coincidência)',
-    actions: [
       { type: 'setFlag', id: 'block05_compare_done', value: true },
       { type: 'addEvidence', id: 'phone_files_depend_on_order' },
-      { type: 'completeTask', id: 'task_compare_phone_files' },
       { type: 'setFlag', id: 'block05_coincidence_reflection_done', value: true },
       { type: 'setFlag', id: 'refl-b05-coincidence_seen', value: true },
       { type: 'setFlag', id: 'block05_emergency_revisit_unlocked', value: true },

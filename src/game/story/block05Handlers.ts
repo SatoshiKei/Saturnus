@@ -62,7 +62,7 @@ export function finishJanaInterview() {
     {
       type: 'addTask',
       id: 'task_review_elisa_autos',
-      label: 'Testar a cronologia do caso Elisa',
+      label: 'Reler o que prendeu André nos autos de Elisa',
     },
   ])
 }
@@ -82,7 +82,7 @@ export function onElisaReviewComplete() {
     {
       type: 'addTask',
       id: 'task_weigh_maralto_line',
-      label: 'Entender o que Mariana investigava além de Elisa',
+      label: 'Ver o que Mariana montou além do processo Elisa',
     },
   ])
 }
@@ -120,47 +120,53 @@ export function onMaraltoReflectionDone() {
     { type: 'setFlag', id: 'block05_maralto_reflection_done', value: true },
     { type: 'setFlag', id: 'block05_refl_maralto_pending', value: false },
     { type: 'setFlag', id: 'refl-b05-maralto_seen', value: true },
-    { type: 'setFlag', id: 'block05_chronology_action_unlocked', value: true },
-    {
-      type: 'addTask',
-      id: 'task_mariana_contact_chronology',
-      label: 'Entender a ordem em que Mariana procurou as pessoas',
-    },
   ])
+  grantMarianaOrderInsight()
 }
 
-/** Disparado ao revisar a Timeline do caderno no ponto certo do Bloco 5. */
-export function organizeMarianaContactChronology() {
-  const s = getInvestigationState()
-  if (s.flags.block05_chronology_done) return
-  if (!s.flags.block05_chronology_action_unlocked) return
-  dispatchActions([
-    { type: 'setFlag', id: 'block05_chronology_done', value: true },
-    { type: 'addEvidence', id: 'mariana_sought_people_before' },
-    { type: 'completeTask', id: 'task_mariana_contact_chronology' },
-    {
-      type: 'addTask',
-      id: 'task_compare_phone_files',
-      label: 'Os arquivos do celular seguem a mesma ordem da investigação?',
-    },
-    { type: 'setFlag', id: 'block05_compare_unlocked', value: true },
-  ])
-}
-
-/** Disparado ao abrir Arquivos no celular de Mariana (1 interação representativa). */
-export function comparePhoneFilesSequence() {
+/**
+ * Cronologia × ordem dos arquivos — uma batida só após a reflexão Maralto.
+ * Cronologia no caderno / Arquivos no celular continuam visíveis; não geram pendências extras.
+ */
+export function grantMarianaOrderInsight() {
   const s = getInvestigationState()
   if (s.flags.block05_compare_done) return
-  if (!s.flags.block05_chronology_done || !s.flags.block05_compare_unlocked) return
-  dispatchActions([
+  if (!s.flags.block05_maralto_reflection_done) return
+  const actions: StoryActionRef[] = [
+    { type: 'setFlag', id: 'block05_chronology_action_unlocked', value: true },
+    { type: 'setFlag', id: 'block05_chronology_done', value: true },
+    { type: 'addEvidence', id: 'mariana_sought_people_before' },
+    { type: 'setFlag', id: 'block05_compare_unlocked', value: true },
     { type: 'setFlag', id: 'block05_compare_done', value: true },
     { type: 'addEvidence', id: 'phone_files_depend_on_order' },
-    { type: 'completeTask', id: 'task_compare_phone_files' },
-    { type: 'setFlag', id: 'block05_refl_coincidence_pending', value: true },
-  ])
+    { type: 'setFlag', id: 'block05_coincidence_reflection_done', value: true },
+    { type: 'setFlag', id: 'block05_refl_coincidence_pending', value: false },
+    { type: 'setFlag', id: 'refl-b05-coincidence_seen', value: true },
+    { type: 'removeTask', id: 'task_mariana_contact_chronology' },
+    { type: 'removeTask', id: 'task_compare_phone_files' },
+    { type: 'setFlag', id: 'block05_emergency_revisit_unlocked', value: true },
+  ]
+  if (!s.tasks.some((t) => t.id === 'task_revisit_emergency_entry')) {
+    actions.push({
+      type: 'addTask',
+      id: 'task_revisit_emergency_entry',
+      label: 'Por que a polícia entrou no apartamento de Mariana?',
+    })
+  }
+  dispatchActions(actions)
 }
 
-/** Depois da reflexão “pode ser coincidência”: testar voltando à chamada inicial. */
+/** @deprecated progressão antiga — delega para grantMarianaOrderInsight */
+export function organizeMarianaContactChronology() {
+  grantMarianaOrderInsight()
+}
+
+/** @deprecated progressão antiga — delega para grantMarianaOrderInsight */
+export function comparePhoneFilesSequence() {
+  grantMarianaOrderInsight()
+}
+
+/** Legado — reflexão de coincidência foi fundida em refl-b05-maralto. */
 export function onCoincidenceReflectionDone() {
   const s = getInvestigationState()
   if (s.flags.block05_coincidence_reflection_done) return

@@ -527,12 +527,20 @@ function TimelineTab({ inv }: { inv: InvestigationState }) {
   const showMemoryOnset =
     inv.flags.block07_memory_onset_unlocked || inv.flags.block07_memory_onset_done
 
-  // Gates: só dispara com as flags de unlock — Timeline aberta cedo demais não marca progresso.
+  // Saves antigos: cronologia passou a fechar na reflexão Maralto (sem pendência na timeline).
   useEffect(() => {
-    if (inv.flags.block05_chronology_action_unlocked && !inv.flags.block05_chronology_done) {
+    if (
+      inv.flags.block05_maralto_reflection_done &&
+      inv.flags.block05_chronology_action_unlocked &&
+      !inv.flags.block05_chronology_done
+    ) {
       organizeMarianaContactChronology()
     }
-  }, [inv.flags.block05_chronology_action_unlocked, inv.flags.block05_chronology_done])
+  }, [
+    inv.flags.block05_maralto_reflection_done,
+    inv.flags.block05_chronology_action_unlocked,
+    inv.flags.block05_chronology_done,
+  ])
 
   useEffect(() => {
     if (inv.flags.block07_memory_onset_unlocked && !inv.flags.block07_memory_onset_done) {

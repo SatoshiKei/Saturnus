@@ -22,22 +22,13 @@ export function FilesApp({ onBack }: FilesAppProps) {
   const { phoneDevice } = useGameHub()
   const inv = useInvestigation()
 
-  // B5: comparar cronologia × arquivos — abrir Arquivos no celular de Mariana basta.
+  // Saves antigos: comparação de arquivos agora fecha com a reflexão Maralto.
   useEffect(() => {
     if (phoneDevice !== 'mariana') return
-    if (
-      inv.flags.block05_compare_unlocked &&
-      inv.flags.block05_chronology_done &&
-      !inv.flags.block05_compare_done
-    ) {
+    if (inv.flags.block05_maralto_reflection_done && !inv.flags.block05_compare_done) {
       comparePhoneFilesSequence()
     }
-  }, [
-    phoneDevice,
-    inv.flags.block05_compare_unlocked,
-    inv.flags.block05_chronology_done,
-    inv.flags.block05_compare_done,
-  ])
+  }, [phoneDevice, inv.flags.block05_maralto_reflection_done, inv.flags.block05_compare_done])
 
   const [query, setQuery] = useState('')
   const base = phoneDevice === 'augusto' ? augustoFilesLibrary : marianaFilesLibrary

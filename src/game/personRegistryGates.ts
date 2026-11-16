@@ -213,6 +213,8 @@ export function repairInvestigationState(state: InvestigationState): Investigati
     'task_locate_nico',
     'task_weigh_mariana_messages',
     'task_how_mariana_knew',
+    'task_mariana_contact_chronology',
+    'task_compare_phone_files',
   ])
   const liviaInterviewSatisfied = (s: InvestigationState) =>
     Boolean(s.flags.block03_livia_interview_done) ||
@@ -275,6 +277,31 @@ export function repairInvestigationState(state: InvestigationState): Investigati
   next = {
     ...next,
     tasks: tasks.map((t) => (TASK_LABEL_PATCH[t.id] ? { ...t, label: TASK_LABEL_PATCH[t.id]! } : t)),
+  }
+
+  if (next.flags.block05_maralto_reflection_done && !next.flags.block05_compare_done) {
+    const repair: import('./types').StoryActionRef[] = [
+      { type: 'setFlag', id: 'block05_chronology_action_unlocked', value: true },
+      { type: 'setFlag', id: 'block05_chronology_done', value: true },
+      { type: 'addEvidence', id: 'mariana_sought_people_before' },
+      { type: 'setFlag', id: 'block05_compare_unlocked', value: true },
+      { type: 'setFlag', id: 'block05_compare_done', value: true },
+      { type: 'addEvidence', id: 'phone_files_depend_on_order' },
+      { type: 'setFlag', id: 'block05_coincidence_reflection_done', value: true },
+      { type: 'setFlag', id: 'block05_refl_coincidence_pending', value: false },
+      { type: 'setFlag', id: 'refl-b05-coincidence_seen', value: true },
+      { type: 'removeTask', id: 'task_mariana_contact_chronology' },
+      { type: 'removeTask', id: 'task_compare_phone_files' },
+      { type: 'setFlag', id: 'block05_emergency_revisit_unlocked', value: true },
+    ]
+    if (!next.tasks.some((t) => t.id === 'task_revisit_emergency_entry')) {
+      repair.push({
+        type: 'addTask',
+        id: 'task_revisit_emergency_entry',
+        label: 'Por que a polícia entrou no apartamento de Mariana?',
+      })
+    }
+    next = applyStoryActions(next, repair)
   }
 
   const janaVisitPending =
