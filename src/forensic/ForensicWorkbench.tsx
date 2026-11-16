@@ -436,8 +436,25 @@ export function ForensicWorkbench({
   useEffect(() => {
     setMeasuredWave(null)
     setMeasuredSpec(null)
-    setTimelineView('waveform')
-  }, [playbackSource?.id])
+    if (session.completion?.kind !== 'spectrogram-survey') {
+      setTimelineView('waveform')
+    }
+  }, [playbackSource?.id, session.completion?.kind])
+
+  /** P06: com Spectrogram ativo, cada fragmento UNK conta ao ser selecionado. */
+  useEffect(() => {
+    if (session.completion?.kind !== 'spectrogram-survey') return
+    if (timelineView !== 'spectrogram' || !playbackSource?.id) return
+    const id = playbackSource.id
+    setUi((u) => {
+      if (u.spectrogramViewedSourceIds.includes(id)) return u
+      return {
+        ...u,
+        spectrogramViewedSourceIds: [...u.spectrogramViewedSourceIds, id],
+      }
+    })
+    onSpectrogramViewed?.(id)
+  }, [playbackSource?.id, timelineView, session.completion?.kind, onSpectrogramViewed])
 
   useEffect(() => {
     if (!recoveredProp) return
@@ -640,7 +657,12 @@ export function ForensicWorkbench({
       return
     }
 
-    if (completed || completedRef.current) return
+    if (completion.kind === 'spectrogram-survey') {
+      if (!spectrogramSurveyComplete(session, ui)) return
+      if (completedRef.current) return
+    } else if (completed || completedRef.current) {
+      return
+    }
     if (completion.kind === 'speech-recovery') {
       if (!source?.speechSegments) return
       if (!speechRecoveryComplete(ui.recoveredSpeech, source.speechSegments)) return

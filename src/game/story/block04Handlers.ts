@@ -110,24 +110,31 @@ export function onHexCallsPreserved() {
  */
 export function runHexagonSpectrogramSurvey() {
   const s = getInvestigationState()
-  if (s.flags.block04_hex_spectrograms_inspected) return
   if (!hexDeliveryInInventory(s.evidenceOwned)) return
-  const actions: StoryActionRef[] = [
-    { type: 'setFlag', id: 'block04_hex_spectrograms_inspected', value: true },
-    { type: 'addEvidence', id: 'hex_spectral_patterns' },
-    { type: 'completeTask', id: 'task_hexagon' },
-    { type: 'setFlag', id: 'block04_forensics_unlocked', value: true },
-  ]
-  if (s.flags.diary_package_known) {
-    actions.push({ type: 'completeTask', id: 'task_phone_forensics' })
-  } else {
-    actions.push({
-      type: 'addTask',
-      id: 'task_phone_forensics',
-      label: 'Pedir à Perícia uma análise do aparelho de Mariana',
-    })
+  const taskOpen = s.tasks.some((t) => t.id === 'task_hexagon' && !t.completed)
+  if (s.flags.block04_hex_spectrograms_inspected && !taskOpen) return
+
+  const actions: StoryActionRef[] = []
+  if (!s.flags.block04_hex_spectrograms_inspected) {
+    actions.push(
+      { type: 'setFlag', id: 'block04_hex_spectrograms_inspected', value: true },
+      { type: 'addEvidence', id: 'hex_spectral_patterns' },
+      { type: 'setFlag', id: 'block04_forensics_unlocked', value: true },
+    )
+    if (s.flags.diary_package_known) {
+      actions.push({ type: 'completeTask', id: 'task_phone_forensics' })
+    } else {
+      actions.push({
+        type: 'addTask',
+        id: 'task_phone_forensics',
+        label: 'Pedir à Perícia uma análise do aparelho de Mariana',
+      })
+    }
   }
-  dispatchActions(actions)
+  if (taskOpen) {
+    actions.push({ type: 'completeTask', id: 'task_hexagon' })
+  }
+  if (actions.length) dispatchActions(actions)
 }
 
 /**
@@ -136,10 +143,7 @@ export function runHexagonSpectrogramSurvey() {
 export function onHexagonSolved() {
   const s = getInvestigationState()
   if (s.flags.block04_hexagon_done) return
-  dispatchActions([
-    { type: 'setFlag', id: 'block04_hexagon_done', value: true },
-    { type: 'setFlag', id: 'block04_hex_spectrograms_inspected', value: true },
-  ])
+  dispatchActions([{ type: 'setFlag', id: 'block04_hexagon_done', value: true }])
 }
 
 export function onDiaryEntryRead(entryId: string, unlocksUnknown: boolean) {

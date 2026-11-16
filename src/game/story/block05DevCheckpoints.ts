@@ -88,6 +88,7 @@ export const block05DevCheckpoints: { id: string; label: string; actions: StoryA
       { type: 'completeTask', id: 'task_press_nico' },
       { type: 'setFlag', id: 'block05_jana_search_unlocked', value: true },
       { type: 'unlockLocation', id: 'titan', status: 'visited' },
+      { type: 'unlockLocation', id: 'jana-casa', status: 'visitAvailable' },
       {
         type: 'addTask',
         id: 'task_locate_jana',

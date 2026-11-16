@@ -5,6 +5,7 @@ import {
 } from '../data/block04/hexagonPuzzle'
 import { knowsTerm } from './knowledge/knownTerms'
 import { withKnownTermsFromFlags } from './knowledge/seedTermsFromFlags'
+import { applyStoryActions } from './story/actions'
 import type { InvestigationState } from './types'
 
 /**
@@ -274,6 +275,18 @@ export function repairInvestigationState(state: InvestigationState): Investigati
   next = {
     ...next,
     tasks: tasks.map((t) => (TASK_LABEL_PATCH[t.id] ? { ...t, label: TASK_LABEL_PATCH[t.id]! } : t)),
+  }
+
+  const janaVisitPending =
+    (next.tasks.some((t) => t.id === 'task_talk_jana' && !t.completed) &&
+      !next.flags.block05_jana_interview_done) ||
+    (next.tasks.some((t) => t.id === 'task_press_jana_again' && !t.completed) &&
+      !next.flags.block06_jana_followup_done)
+  const janaLoc = next.locations['jana-casa']
+  if (janaVisitPending && janaLoc && janaLoc.status !== 'visitAvailable') {
+    next = applyStoryActions(next, [
+      { type: 'unlockLocation', id: 'jana-casa', status: 'visitAvailable' },
+    ])
   }
 
   return withKnownTermsFromFlags(next)

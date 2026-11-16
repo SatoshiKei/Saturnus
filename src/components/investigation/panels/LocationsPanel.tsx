@@ -106,6 +106,20 @@ export function LocationsMap({ onClose }: { onClose: () => void }) {
         continue
       }
       if (
+        row.locationId === 'jana-casa' &&
+        inv.tasks.some((t) => t.id === 'task_talk_jana' && !t.completed) &&
+        !inv.flags.block05_jana_interview_done
+      ) {
+        continue
+      }
+      if (
+        row.locationId === 'jana-casa' &&
+        inv.tasks.some((t) => t.id === 'task_press_jana_again' && !t.completed) &&
+        !inv.flags.block06_jana_followup_done
+      ) {
+        continue
+      }
+      if (
         row.locationId === 'detencao-miro' &&
         inv.flags.block07_started &&
         !inv.flags.block07_miro_followup_done

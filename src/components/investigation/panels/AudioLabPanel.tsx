@@ -375,7 +375,7 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                             ? Boolean(inv.flags.block03_saturnalia_done)
                             : forensicSession.completion?.onCompleteAction ===
                                 'runHexagonSpectrogramSurvey'
-                              ? Boolean(inv.flags.block04_hexagon_done)
+                              ? Boolean(inv.flags.block04_hex_spectrograms_inspected)
                               : forensicSession.completion?.onCompleteAction ===
                                   'runShepherdMoonsExtract'
                                 ? Boolean(inv.flags.block06_pastor_extracted)
