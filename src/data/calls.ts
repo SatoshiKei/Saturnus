@@ -41,12 +41,24 @@ export const callScripts: CallScript[] = [
     available: () => true,
     lines: [
       { who: 'other', text: 'Fala.' },
-      { who: 'augusto', text: 'Nicolas Prado Reis? Aqui é Augusto Nogueira, da Polícia Civil. Preciso de alguns minutos com o senhor.' },
-      { who: 'other', text: 'Polícia. Sobre o quê, exatamente?' },
+      {
+        who: 'augusto',
+        text: 'Nicolas Prado Reis? Aqui é Augusto Nogueira, da Polícia Civil. Preciso de alguns minutos com o senhor.',
+      },
+      {
+        who: 'other',
+        text: 'Polícia. Sempre começa assim.\nSobre o quê, exatamente?',
+      },
       { who: 'augusto', text: 'Sobre o desaparecimento de Mariana Silva.' },
-      { who: 'other', text: '…A irmã do André. Então é isso. Achei que ia ser sobre a noite de seis anos atrás de novo, e acho que é, de um jeito ou de outro.' },
+      {
+        who: 'other',
+        text: '…A irmã do André.\nEntão é isso.\nAchei que ia ser só Mariana. Mas vocês sempre puxam a noite de seis anos atrás, de um jeito ou de outro.',
+      },
       { who: 'augusto', text: 'Posso ir até o senhor hoje.' },
-      { who: 'other', text: 'Eu estou no Titã. Passa antes de a casa abrir, depois a pista enche e ninguém ouve ninguém.' },
+      {
+        who: 'other',
+        text: 'Estou no Titã.\nPassa antes da casa abrir.\nDepois a pista enche e ninguém ouve ninguém, nem delegado.',
+      },
     ],
     onComplete: [
       { type: 'completeCall', id: 'call-nico' },

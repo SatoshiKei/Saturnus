@@ -18,17 +18,21 @@ export type NicoEarlyBeat = { speaker?: string; text: string; portrait?: 'nico' 
 export const nicoEarlyBeats: Record<NicoEarlyTopicId, NicoEarlyBeat[]> = {
   mariana: [
     { speaker: 'Augusto', text: 'Mariana Silva procurou você há pouco tempo.' },
-    { speaker: 'Nico', text: 'Procurou.', portrait: 'nico' },
+    {
+      speaker: 'Nico',
+      text: 'Procurou.\nApareceu no Titã como quem já tinha ensaiado a pergunta no elevador.',
+      portrait: 'nico',
+    },
     { speaker: 'Augusto', text: 'Sobre o quê?' },
     {
       speaker: 'Nico',
-      text: 'Horários. Sequência de uma noite antiga.\nEla queria encaixar pedaço com pedaço.',
+      text: 'Horários. Sequência de uma noite antiga.\nEla queria encaixar pedaço com pedaço, como se a madrugada fosse um quebra-cabeça que alguém tinha sacudido.',
       portrait: 'nico',
     },
     { speaker: 'Augusto', text: 'Qual noite?' },
     {
       speaker: 'Nico',
-      text: 'Se o senhor não sabe, eu não vou ser o primeiro a reabrir isso pra polícia.',
+      text: 'Se o senhor ainda não sabe o nome, eu não vou ser o primeiro a reabrir isso pra polícia.\nQuando souber, a gente conversa de verdade.',
       portrait: 'nico',
     },
   ],
@@ -36,13 +40,13 @@ export const nicoEarlyBeats: Record<NicoEarlyTopicId, NicoEarlyBeat[]> = {
     { speaker: 'Augusto', text: 'Você se recusa a dizer o que ela investigava?' },
     {
       speaker: 'Nico',
-      text: 'Eu me recuso a explicar uma história inteira pra quem ainda não sabe o nome dela.',
+      text: 'Eu me recuso a narrar uma noite inteira pra quem ainda não sabe de quem estamos falando.\nIsso não é birra. É limite.',
       portrait: 'nico',
     },
     { speaker: 'Augusto', text: 'Dela quem?' },
     {
       speaker: 'Nico',
-      text: 'Quando o senhor souber, a gente conversa de verdade.\nPor agora: ela esteve aqui, fez perguntas, e eu não entreguei nada que não fosse necessário.',
+      text: 'Quando o senhor souber, volta.\nPor agora: ela esteve aqui, fez perguntas, e eu não entreguei nada além do necessário.',
       portrait: 'nico',
     },
   ],
