@@ -5,6 +5,7 @@ import type { StoryActionRef } from '../types'
 /**
  * Rafael envia a gravação da balada (P3) — NÃO a própria mensagem de voz do P2.
  * Cadeia: Mariana → Rafael → Augusto.
+ * Dispara no primeiro play do anexo no WhatsApp (não exige ouvir o MP3 até o fim).
  */
 export function onRafaelClubAudioPlayed() {
   const s = getInvestigationState()

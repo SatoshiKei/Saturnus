@@ -195,60 +195,177 @@ export const rafaelScript: ChatScript = {
   requiresFlagsAll: ['block02_vertice_archive'],
   steps: [
     {
-      // Abertura — formal / direta / seca. Mesma resposta de Rafael.
       options: [
         'Rafael? Aqui é o delegado Augusto Nogueira. Estou com o celular da Mariana.',
-        'Rafael, sou Augusto Nogueira, da Polícia Civil. Preciso falar sobre a Mariana.',
-        'Rafael? Polícia Civil. É sobre a Mariana.',
+        'Rafael. Polícia Civil. A Mariana sumiu e preciso do que ficou no telefone dela.',
+        'Rafael, não some no meio da conversa. É o Augusto.',
       ],
       replies: [{ kind: 'text', text: 'KRL! Ela sumiu mesmo então?' }],
+      repliesByOption: [
+        [
+          {
+            kind: 'text',
+            text: 'Porra.\nEntão não era exagero de grupo.\nEla sumiu mesmo.',
+          },
+        ],
+        [
+          {
+            kind: 'text',
+            text: 'Cara, eu já vi os áudios no grupo.\nSó queria que vocês desmentissem.\nMas não desmentiram.',
+          },
+        ],
+        [
+          {
+            kind: 'text',
+            text: 'Augusto. Relaxa.\nTô aqui.\nE sim, ela sumiu.',
+          },
+        ],
+      ],
     },
     {
       options: [
-        'Ainda estamos procurando por ela. Eu vi a conversa de vocês no telefone. Tem um arquivo que ela te mandou e que não está mais no aparelho.',
-        'Ainda estamos procurando. Vi a conversa de vocês: o arquivo que ela te mandou sumiu do aparelho.',
-        'Ainda procurando. Um arquivo que ela te mandou não está mais no telefone dela.',
+        'Ainda estamos procurando. No aparelho dela há registro de um áudio que ela te mandou e que não está mais no celular.',
+        'Ela sumiu e o arquivo que te mandou evaporou do telefone. Isso não me agrada.',
+        'Traduz pra mim: existe conversa sua, não existe arquivo no celular dela?',
       ],
       replies: [{ kind: 'text', text: 'O áudio.' }],
-    },
-    {
-      options: ['Você ainda tem?', 'Ainda tem esse áudio?', 'Tem aí?'],
-      replies: [{ kind: 'text', text: 'Tenho.' }],
+      repliesByOption: [
+        [
+          {
+            kind: 'text',
+            text: 'O áudio da balada.\nA gravação que ela queria que eu ouvisse.',
+          },
+        ],
+        [
+          {
+            kind: 'text',
+            text: 'Sumiu daí, sim.\nDaqui eu ainda tenho.\nÓbvio.',
+          },
+        ],
+        [
+          {
+            kind: 'text',
+            text: 'WhatsApp mutila arquivo, não apaga do meu lado.\nÉ o áudio da noite no clube, Augusto.',
+          },
+        ],
+      ],
     },
     {
       options: [
-        'É a mesma gravação que você ouviu antes de mandar aquela mensagem pra ela?',
-        'É a mesma que você ouviu antes de responder pra ela?',
-        'É a que você analisou?',
+        'Você ainda conserva uma cópia desse material?',
+        'Você guarda tudo ou fez backup só dessa?',
+        'Mesmo depois desse tempo você ainda tem ou apagou na madrugada?',
       ],
-      replies: [{ kind: 'text', text: 'É.' }],
+      replies: [{ kind: 'text', text: 'Tenho.' }],
+      repliesByOption: [
+        [{ kind: 'text', text: 'Tenho. Original, sem passar de novo pelo zap.' }],
+        [{ kind: 'text', text: 'Tenho.\nE guardo coisa pior sem motivo.' }],
+        [
+          {
+            kind: 'text',
+            text: 'Augusto, eu tenho projeto de Ableton de 2017.\nClaro que eu tenho.',
+          },
+        ],
+      ],
     },
     {
-      options: ['Preciso de uma cópia.', 'Me manda uma cópia.', 'Preciso desse arquivo.'],
-      // Não reenvia a mensagem de voz de Rafael (P2): só a gravação da balada.
+      options: [
+        'Confirma que é a mesma gravação que você ouviu antes de responder à Mariana?',
+        'Não vai me mandar de novo aquela sua mensagem de voz e chamar de evidência?',
+        'É o áudio da balada ou mais um PTT teu filosofando em grave?',
+      ],
+      replies: [{ kind: 'text', text: 'É.' }],
+      repliesByOption: [
+        [
+          {
+            kind: 'text',
+            text: 'É a mesma.\nNão é minha voz, é o ambiente que ela mandou.',
+          },
+        ],
+        [
+          {
+            kind: 'text',
+            text: 'Vai se foder.\nNão é meu áudio.\nÉ a gravação dela.',
+          },
+        ],
+        [
+          {
+            kind: 'text',
+            text: 'Não sou eu falando.\nÉ o clube, com o PA todo espremido no celular.',
+          },
+        ],
+      ],
+    },
+    {
+      options: [
+        'Preciso de uma cópia íntegra para o inquérito.',
+        'Me manda. E não pelo WhatsApp de novo, se der.',
+        'Manda aí. Prometo não julgar teu disco rígido.',
+      ],
       replies: [
         { kind: 'text', text: 'Tá.\nSó um segundo.' },
         RAFAEL_FORWARD_AUDIO,
         { kind: 'text', text: 'É esse.' },
       ],
+      repliesByOption: [
+        [
+          { kind: 'text', text: 'Tá. Um segundo.\nSem recompressão feia.' },
+          RAFAEL_FORWARD_AUDIO,
+          { kind: 'text', text: 'É esse. O que eu ouvi na época.' },
+        ],
+        [
+          { kind: 'text', text: 'Pera aí.' },
+          RAFAEL_FORWARD_AUDIO,
+          { kind: 'text', text: 'Pronto.\nÉ o arquivo da balada.' },
+        ],
+        [
+          { kind: 'text', text: 'Segura.' },
+          RAFAEL_FORWARD_AUDIO,
+          { kind: 'text', text: 'É esse.\nBoa sorte limpando isso.' },
+        ],
+      ],
     },
     {
       options: [
-        'Mariana disse por que queria saber quem estava trabalhando naquela noite?',
-        'Ela disse por que queria saber quem estava trabalhando?',
-        'Ela explicou por que queria saber quem estava lá?',
+        'Mariana chegou a dizer por que queria saber quem estava trabalhando naquela noite?',
+        'Ela te deu motivo ou só pediu nome e calou?',
+        'Traduz: por que ela queria saber quem estava no turno?',
       ],
       replies: [{ kind: 'text', text: 'Não.' }],
-    },
-    {
-      options: ['Você perguntou?', 'Chegou a perguntar?', 'Perguntou a ela?'],
-      replies: [{ kind: 'text', text: 'Perguntei.\nEla desviou.' }],
+      repliesByOption: [
+        [{ kind: 'text', text: 'Não.\nSó pediu pra ouvir e depois apertou no nome.' }],
+        [{ kind: 'text', text: 'Não.\nMotivo ela não deu.' }],
+        [{ kind: 'text', text: 'Não em português claro.\nTipo, zero.' }],
+      ],
     },
     {
       options: [
-        'Ela tinha certeza de que era o Vértice?',
-        'Ela tinha certeza do lugar?',
-        'Era o Vértice mesmo?',
+        'Você chegou a perguntar o motivo?',
+        'E você deixou passar?',
+        'Você insistiu ou deixou ela desviar?',
+      ],
+      replies: [{ kind: 'text', text: 'Perguntei.\nEla desviou.' }],
+      repliesByOption: [
+        [{ kind: 'text', text: 'Perguntei.\nEla mudou de assunto.' }],
+        [
+          {
+            kind: 'text',
+            text: 'Não deixei passar.\nEla que não respondeu.\nPerguntei, ela desviou.',
+          },
+        ],
+        [
+          {
+            kind: 'text',
+            text: 'Insisti uma vez.\nEla soltou um "depois" e foi dormir no emoji.\nDesviou.',
+          },
+        ],
+      ],
+    },
+    {
+      options: [
+        'Quanto você confia na identificação dela? Consegue associar isso a algum lugar?',
+        'Ela jurava o Vértice ou você reconheceu o som pra mostrar serviço?',
+        'Certo. Agora em português: de onde veio esse barulho?',
       ],
       replies: [
         {
@@ -256,29 +373,106 @@ export const rafaelScript: ChatScript = {
           text: 'Ela disse que sabia de onde vinha.\nEu reconheci coisa do sistema de lá e falei que batia.',
         },
       ],
+      repliesByOption: [
+        [
+          {
+            kind: 'text',
+            text: 'Ela disse que sabia de onde vinha.\nEu bati o limiter abrindo quando entra voz, o grave, o sub.\nVértice.\nE não, não estou chutando.',
+          },
+        ],
+        [
+          {
+            kind: 'text',
+            text: 'Mostrar serviço?\nCara, passei noite demais naquele PA ouvindo techno ruim em equipamento bom.\nEla falou Vértice, eu ouvi e confirmei.\nNa prática bate.',
+          },
+        ],
+        [
+          {
+            kind: 'text',
+            text: 'Em português: essa porra é do Vértice.\nO sub daquele lugar parecia querer desmontar teu esterno.\nEla acertou no lugar.',
+          },
+        ],
+      ],
     },
     {
       options: [
-        'Mais alguma coisa que ela tenha dito sobre isso?',
-        'Ela disse mais alguma coisa?',
-        'Mais alguma coisa?',
+        'Ela disse mais alguma coisa sobre esse áudio?',
+        'Ficou alguma pista além do lugar?',
+        'Só isso, ou ela soltou mais papo de mesa de som?',
       ],
       replies: [{ kind: 'text', text: 'Só que precisava de um nome.' }],
+      repliesByOption: [
+        [{ kind: 'text', text: 'Só que precisava de um nome.' }],
+        [{ kind: 'text', text: 'Nada útil.\nSó que precisava de um nome.' }],
+        [
+          {
+            kind: 'text',
+            text: 'Papo de mesa de som não.\nSó que precisava de um nome.',
+          },
+        ],
+      ],
     },
     {
-      options: ['Que nome?', 'Nome de quem?', 'Qual nome?'],
+      options: [
+        'Nome de quem exatamente?',
+        'Que nome ela queria?',
+        'Nome pra quê, Rafael?',
+      ],
       replies: [{ kind: 'text', text: 'De quem estava trabalhando.' }],
+      repliesByOption: [
+        [{ kind: 'text', text: 'De quem estava trabalhando naquela noite.' }],
+        [{ kind: 'text', text: 'De quem estava no turno.\nQuem estava trabalhando.' }],
+        [
+          {
+            kind: 'text',
+            text: 'De quem estava trabalhando.\nNão era DJ, era operação da casa.',
+          },
+        ],
+      ],
     },
     {
-      options: ['Certo.', 'Entendi.', 'Ok.'],
+      options: [
+        'Certo. Anotado.',
+        'Tá. Não vou inventar que você colaborou de bom grado.',
+        'Beleza. Valeu pelo áudio, mesmo com o sarcasmo.',
+      ],
       replies: [{ kind: 'text', text: 'Delegado.' }],
+      repliesByOption: [
+        [{ kind: 'text', text: 'Delegado.' }],
+        [
+          {
+            kind: 'text',
+            text: 'Eu colaboro.\nSó não gosto de arquivo mutilado.\nDelegado.',
+          },
+        ],
+        [{ kind: 'text', text: 'O sarcasmo é de graça.\nDelegado.' }],
+      ],
     },
     {
-      options: ['Fala.', 'Pode falar.', 'Diga.'],
+      options: ['Fala.', 'Tem mais alguma coisa?', 'Só isso?'],
       replies: [{ kind: 'text', text: 'Se achar ela, me avisa.' }],
+      repliesByOption: [
+        [{ kind: 'text', text: 'Se achar ela, me avisa.' }],
+        [
+          {
+            kind: 'text',
+            text: 'Só isso.\nSe achar ela, me avisa.',
+          },
+        ],
+        [
+          {
+            kind: 'text',
+            text: 'Por enquanto sim.\nSe achar ela, me avisa.',
+          },
+        ],
+      ],
     },
     {
-      options: ['Aviso.', 'Aviso, sim.', 'Pode deixar.'],
+      options: [
+        'Aviso sim que a encontrarmos.',
+        'Pode deixar.',
+        'Se eu achar antes de você, também te falo.',
+      ],
       replies: [],
     },
   ],

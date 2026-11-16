@@ -154,7 +154,7 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
   }, [chatId, visibleMessages.length, pendingReplies])
 
   const onRafaelVerticeAudioComplete = useCallback(() => onRafaelAudioPlayed(), [])
-  const onRafaelClubAudioComplete = useCallback(() => onRafaelClubAudioPlayed(), [])
+  const onRafaelClubAudioPlay = useCallback(() => onRafaelClubAudioPlayed(), [])
   const onAnonHospitalBurstComplete = useCallback(() => receiveAnonHospitalAudio(), [])
 
   const choose = useCallback(
@@ -267,14 +267,17 @@ export function ChatView({ chatId, onBack }: ChatViewProps) {
             contact={contact}
             allMessages={chat.messages}
             onImageOpen={(src, alt, caption) => setLightbox({ src, alt, caption })}
+            onAudioPlay={
+              live.kind === 'audio' && live.id === RAFAEL_FORWARD_AUDIO.id
+                ? onRafaelClubAudioPlay
+                : undefined
+            }
             onAudioComplete={
               live.kind === 'audio' && live.id === 'rf-audio-reply'
                 ? onRafaelVerticeAudioComplete
-                : live.kind === 'audio' && live.id === 'r2-audio-forward'
-                  ? onRafaelClubAudioComplete
-                  : live.kind === 'audio' && live.id === 'anon-burst-1'
-                    ? onAnonHospitalBurstComplete
-                    : undefined
+                : live.kind === 'audio' && live.id === 'anon-burst-1'
+                  ? onAnonHospitalBurstComplete
+                  : undefined
             }
           />
           )
