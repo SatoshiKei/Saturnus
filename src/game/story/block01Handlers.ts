@@ -126,7 +126,6 @@ export function runProvisionalEmergencyAnalysis() {
     { type: 'addEvidence', id: 'emergency_call_restored' },
     { type: 'linkHypothesis', hypothesisId: 'hyp_kidnapping', evidenceId: 'emergency_call_restored', role: 'support' },
     { type: 'completeTask', id: 'task_listen_emergency' },
-    { type: 'addTask', id: 'task_trace_emergency_call', label: 'Verificar a divergência entre a central e o histórico do aparelho' },
     {
       type: 'notifyInvestigationUpdate',
       id: 'ach-cassini-division',
@@ -144,10 +143,6 @@ export function runProvisionalEmergencyAnalysis() {
       { type: 'removeTask', id: 'task_mariana_phone' },
       { type: 'addTask', id: 'task_mariana_phone', label: 'Examinar o celular de Mariana' },
     )
-  }
-  // Se o registro da central já foi lido, a origem técnica já está estabelecida.
-  if (s.documents['doc-central-chamada']?.read) {
-    actions.push({ type: 'completeTask', id: 'task_trace_emergency_call' })
   }
   dispatchActions(actions)
 }

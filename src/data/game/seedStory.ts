@@ -21,11 +21,6 @@ export const taskLabels = {
 } as const
 
 export const block01EndTasks: CaseTask[] = [
-  {
-    id: 'task_trace_emergency_call',
-    label: 'Verificar a divergência entre a central e o histórico do aparelho',
-    completed: false,
-  },
   { id: 'task_rafael_recording', label: 'Encontrar a gravação perdida', completed: false },
   { id: 'task_rafael_venue_staff', label: 'Descobrir a origem da gravação', completed: false },
 ]
