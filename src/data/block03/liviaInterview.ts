@@ -3,8 +3,8 @@ export type LiviaTopicId = 'mariana' | 'material'
 export const LIVIA_TOPIC_IDS: LiviaTopicId[] = ['mariana', 'material']
 
 export const liviaTopicLabels: Record<LiviaTopicId, string> = {
-  mariana: 'Mariana e a Maralto',
-  material: 'Material bruto',
+  mariana: 'Mariana',
+  material: 'O arquivo da rádio',
 }
 
 export const liviaTopicFlags: Record<LiviaTopicId, string> = {
@@ -18,38 +18,52 @@ export const liviaBeats: Record<LiviaTopicId, LiviaBeat[]> = {
   mariana: [
     {
       speaker: 'Augusto',
-      text: 'Mariana Silva esteve aqui procurando material sobre a Maralto?',
+      text: 'Mariana Silva entrou em contato com você há alguns meses?',
     },
     {
       speaker: 'Lívia',
-      text: 'Esteve. E não chegou pedindo uma matéria pronta, o que já fez ela subir um pouco no meu conceito.\nQueria saber o que eu ainda guardava dos protestos, principalmente coisa que nunca entrou na cobertura final.',
+      text: 'Entrou. Achei que fosse pauta no começo. Ela fez duas perguntas sobre uma cobertura antiga da Costeira e depois ficou quase uma hora comigo.',
       portrait: 'livia',
     },
     {
       speaker: 'Augusto',
-      text: 'Você costuma guardar esse tipo de material por seis anos?',
+      text: 'Cobertura de quê?',
     },
     {
       speaker: 'Lívia',
-      text: 'Sou jornalista há tempo suficiente para ter duas certezas: arquivo ocupa espaço demais e sempre faz falta na semana seguinte ao descarte.\nEntão, sim. Guardo mais do que deveria.',
+      text: 'Dos protestos contra a Maralto Granéis. Isso já faz uns seis anos.',
       portrait: 'livia',
     },
     {
       speaker: 'Augusto',
-      text: 'Ela explicou por que estava voltando à Maralto agora?',
+      text: 'Maralto Granéis?',
     },
     {
       speaker: 'Lívia',
-      text: 'Explicou pouco. Mariana não tinha jeito de fonte querendo aparecer nem de curiosa atrás de história velha.\nEla vinha com perguntas específicas e escutava a resposta inteira. Isso é mais raro do que parece.',
+      text: 'Uma empresa grande daqui. Terminal, logística, dinheiro suficiente para aparecer bastante na cidade e preferir não aparecer no jornal pelo motivo errado.',
       portrait: 'livia',
     },
     {
       speaker: 'Augusto',
-      text: 'E o que você entendeu que ela procurava?',
+      text: 'E o motivo errado eram os protestos.',
     },
     {
       speaker: 'Lívia',
-      text: 'Alguma coisa que tivesse passado entre as frestas da cobertura da época.\nNão me perguntou o que a Maralto dizia sobre os protestos. Queria saber o que tinha sido registrado antes de alguém escolher o que virava notícia.',
+      text: 'Na época, sim. Teve manifestação, confronto, denúncia de segurança particular passando do limite... ficou feio por algumas semanas e depois a cidade fez o que cidade faz muito bem: arrumou outro assunto.',
+      portrait: 'livia',
+    },
+    {
+      speaker: 'Augusto',
+      text: 'O que Mariana queria saber?',
+    },
+    {
+      speaker: 'Lívia',
+      text: 'Essa foi a parte curiosa. Ela não estava muito interessada no que a gente publicou. Isso ela podia achar sozinha.',
+      portrait: 'livia',
+    },
+    {
+      speaker: 'Lívia',
+      text: 'Queria saber o que tinha ficado de fora.',
       portrait: 'livia',
     },
   ],
@@ -57,38 +71,56 @@ export const liviaBeats: Record<LiviaTopicId, LiviaBeat[]> = {
   material: [
     {
       speaker: 'Augusto',
-      text: 'Você ainda tem o material que mostrou a ela?',
+      text: 'Ficou muita coisa de fora?',
     },
     {
       speaker: 'Lívia',
-      text: 'Tenho uma cópia do bruto. Áudio de rua, entrada ao vivo, pedaço de entrevista, coisa gravada enquanto a equipe ainda estava tentando entender o que estava acontecendo.\nNão é bonito, mas arquivo útil raramente é.',
+      text: 'Sempre fica. Reportagem não é ata de cartório. Você grava uma tarde inteira para usar dois minutos e meio, quando tem sorte.',
       portrait: 'livia',
     },
     {
       speaker: 'Augusto',
-      text: 'Foi isso que Mariana levou?',
+      text: 'E você ainda guarda isso?',
     },
     {
       speaker: 'Lívia',
-      text: 'Foi o que ela fez questão de pedir.\nEu ofereci a matéria fechada porque era mais fácil de consultar. Ela agradeceu e disse que preferia ouvir o que ainda não tinha sido organizado por ninguém.',
+      text: 'Guardo coisa demais. É um defeito profissional que já sobreviveu a três computadores e duas promessas de organizar meus arquivos.',
       portrait: 'livia',
     },
     {
       speaker: 'Augusto',
-      text: 'Ela encontrou alguma coisa?',
+      text: 'Foi esse material que Mariana pediu?',
     },
     {
       speaker: 'Lívia',
-      text: 'Se encontrou, não me contou.\nFicou bastante tempo ouvindo, voltou em alguns trechos e anotou umas coisas. Quando terminou, parecia mais interessada do que quando chegou. Não necessariamente mais satisfeita.',
+      text: 'Foi. Eu ofereci a matéria fechada primeiro. Ela nem fez desfeita, só perguntou se eu tinha as gravações originais.',
       portrait: 'livia',
     },
     {
       speaker: 'Augusto',
-      text: 'Posso levar uma cópia?',
+      text: 'Disse o que esperava encontrar nelas?',
     },
     {
       speaker: 'Lívia',
-      text: 'Pode. Só não me peça para fingir que isso é material limpo. Tem hora em que você vai ouvir mais vento do que gente.\nMas foi exatamente esse arquivo que a Mariana quis, então eu começaria por ele.',
+      text: 'Não exatamente. Ouviu bastante coisa aqui mesmo, voltou em alguns trechos, fez anotação. Tinha uma pergunta na cabeça, isso dava para perceber. Só não dividiu comigo qual era.',
+      portrait: 'livia',
+    },
+    {
+      speaker: 'Augusto',
+      text: 'Você ainda tem a mesma cópia?',
+    },
+    {
+      speaker: 'Lívia',
+      text: 'Tenho. Mas já vou estragar sua expectativa: é arquivo bruto de rádio. Tem vento, gente falando por cima, entrada cortada e gravação que começa no meio de frase.',
+      portrait: 'livia',
+    },
+    {
+      speaker: 'Augusto',
+      text: 'Serve.',
+    },
+    {
+      speaker: 'Lívia',
+      text: 'Foi o que a Mariana achou também.',
       portrait: 'livia',
     },
   ],

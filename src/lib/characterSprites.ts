@@ -20,6 +20,7 @@ import miro from '../assets/sprites/miro.png'
 import nico from '../assets/sprites/nico.png'
 import paula from '../assets/sprites/paula.png'
 import rafael from '../assets/sprites/rafael.png'
+import renata from '../assets/sprites/renata-v2.png'
 import ricardo from '../assets/sprites/ricardo.png'
 import rui from '../assets/sprites/rui.png'
 import samuel from '../assets/sprites/samuel.png'
@@ -52,6 +53,7 @@ export const CHARACTER_SPRITE_URLS: Record<string, string> = {
   nico,
   paula,
   rafael,
+  renata,
   ricardo,
   rui,
   samuel,

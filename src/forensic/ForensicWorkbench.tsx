@@ -200,6 +200,7 @@ export function ForensicWorkbench({
   const source = getActiveSource(liveSession, ui)
   const isClockSync = session.completion?.kind === 'clock-sync'
   const isApproach = session.completion?.kind === 'approach-reconstruction'
+  const isClipSequence = session.completion?.kind === 'clip-sequence'
   const isMemory = session.completion?.kind === 'memory-provenance'
   const derivedBag = useMemo(
     () => getInvestigationState().forensicDerivedArtifacts ?? {},
@@ -998,7 +999,13 @@ export function ForensicWorkbench({
               }
               setMeasuredWave(null)
               setMeasuredSpec(null)
-              patchUi({ activeSourceId: id, tracks, playheadSec: 0 })
+              patchUi({
+                activeSourceId: id,
+                tracks,
+                playheadSec: 0,
+                // Saturnalia: ouvir um slot por vez — sair do dual A/B ao trocar de arquivo.
+                ...(isClipSequence ? { compareSourceA: null, compareSourceB: null } : {}),
+              })
             }}
           />
           <div className="fw-tracks">

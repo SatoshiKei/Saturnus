@@ -18,6 +18,7 @@ const portraits = {
   julia: portraitSrcForStory('julia'),
   camila: portraitSrcForStory('camila'),
   augusto: portraitSrcForStory('augusto'),
+  renata: portraitSrcForStory('renata'),
 } as const
 
 type Mode = 'menu' | 'play' | 'outro'
@@ -100,6 +101,7 @@ export function HospitalInterviewScene({ onClose }: { onClose: () => void }) {
           text={currentBeat.text}
           narration={currentBeat.narration}
           portraitSrc={currentBeat.portrait ? portraits[currentBeat.portrait] : undefined}
+          portraitId={currentBeat.portrait}
           onRewind={() => setBeatIndex((i) => Math.max(0, i - 1))}
           onContinue={() => {
             const beats = activeTopic ? hospitalBeats[activeTopic] : []

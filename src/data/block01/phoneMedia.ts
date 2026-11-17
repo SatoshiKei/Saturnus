@@ -45,6 +45,7 @@ export const marianaPhotosLibrary: PhonePhotoItem[] = [
   { id: 'mp-1', label: 'Plantão, corredor', spriteId: 'mariana', folder: 'Câmera', device: 'mariana' },
   { id: 'mp-2', label: 'Júlia', spriteId: 'julia', folder: 'Câmera', device: 'mariana' },
   { id: 'mp-3', label: 'Camila', spriteId: 'camila', folder: 'Câmera', device: 'mariana' },
+  { id: 'mp-3b', label: 'Renata, posto', spriteId: 'renata', folder: 'Câmera', device: 'mariana' },
   { id: 'mp-4', label: 'Equipe. PA', spriteId: 'paula', folder: 'Câmera', device: 'mariana' },
 ]
 

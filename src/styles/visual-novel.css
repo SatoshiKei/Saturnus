@@ -42,6 +42,14 @@
   margin-top: -10%;
 }
 
+/* Cabelo volumoso até a borda do PNG — o recorte padrão (-10% / 22%) corta o topo. */
+.vn-characters__slot[data-sprite='renata'] img {
+  object-position: center top;
+  margin-top: 0;
+  min-height: 100%;
+  transform: translateY(6%);
+}
+
 .vn {
   position: absolute;
   inset: 0;

@@ -2,8 +2,10 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, render, screen, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ForensicWorkbench } from '../../src/forensic/ForensicWorkbench'
+import { createInitialUiState } from '../../src/forensic/forensicEngine'
 import {
   puzzle05ExpectedOrder,
+  puzzle05PhysicalOrder,
   puzzle05SaturnaliaSession,
 } from '../../src/forensic/puzzles/puzzle05Saturnalia'
 import { INSPECTOR_TABS } from '../../src/forensic/forensicTypes'
@@ -80,6 +82,30 @@ function stubAudio() {
 afterEach(() => cleanup())
 
 describe('Puzzle 05 workbench', () => {
+  it('does not open Compare dual by default; selecting a slot keeps a single active wave', async () => {
+    stubAudio()
+    const ui = createInitialUiState(puzzle05SaturnaliaSession)
+    expect(ui.compareSourceA).toBeNull()
+    expect(ui.compareSourceB).toBeNull()
+    expect(ui.activeSourceId).toBe(puzzle05PhysicalOrder[0])
+
+    const user = userEvent.setup()
+    render(
+      <ForensicWorkbench
+        session={puzzle05SaturnaliaSession}
+        onClose={() => {}}
+        onPuzzleComplete={() => {}}
+      />,
+    )
+    expect(screen.queryByTestId('fw-compare-bar')).toBeNull()
+    expect(screen.queryByTestId('timeline-multitrack')).toBeNull()
+
+    await user.click(screen.getByTestId('fw-file-RC_SLOT_03'))
+    expect(screen.getByTestId('fw-file-RC_SLOT_03').getAttribute('data-active')).toBe('true')
+    expect(screen.queryByTestId('fw-compare-bar')).toBeNull()
+    expect(screen.queryByTestId('timeline-multitrack')).toBeNull()
+  })
+
   it('shows generic tabs, sequence list, and does not complete on physical order', async () => {
     stubAudio()
     const onComplete = vi.fn()

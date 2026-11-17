@@ -18,6 +18,8 @@ interface VisualNovelDialogProps {
   speaker?: string
   text: string
   portraitSrc?: string
+  /** Id do sprite (`CHARACTER_SPRITE_URLS`) — enquadramento VN por personagem. */
+  portraitId?: string
   /** @deprecated Histórico vem do buffer da cena (`VnSceneHistoryProvider`). */
   logLines?: VnLine[]
   choices?: VnChoice[]
@@ -40,6 +42,7 @@ export function VisualNovelDialog({
   speaker,
   text,
   portraitSrc,
+  portraitId,
   choices,
   choiceHint,
   choiceVariant = 'default',
@@ -182,6 +185,7 @@ export function VisualNovelDialog({
     >
       <VNCharacterLayer
         leftSrc={portraitSide === 'left' ? portraitSrc : undefined}
+        leftSpriteId={portraitSide === 'left' ? portraitId : undefined}
         activeSide={portraitSide}
       />
 

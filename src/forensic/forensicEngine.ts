@@ -41,8 +41,10 @@ export function createInitialUiState(
   const clockSync = session.completion?.kind === 'clock-sync'
   const spectrogramSurvey = session.completion?.kind === 'spectrogram-survey'
   const approach = session.completion?.kind === 'approach-reconstruction'
+  const clipSequence = session.completion?.kind === 'clip-sequence'
   const firstAudio = audioSources[0]
-  const noDefaultCompare = clockSync || spectrogramSurvey || approach
+  /** Puzzles que ouvem um arquivo por vez — Compare só sob demanda. */
+  const noDefaultCompare = clockSync || spectrogramSurvey || approach || clipSequence
   return {
     activeSourceId: (noDefaultCompare ? firstAudio : first)?.id ?? null,
     inspectorTab: 'process',

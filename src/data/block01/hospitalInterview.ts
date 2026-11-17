@@ -3,7 +3,7 @@
 export type HospitalBeat = {
   speaker?: string
   text: string
-  portrait?: 'julia' | 'camila' | 'augusto'
+  portrait?: 'julia' | 'camila' | 'augusto' | 'renata'
   /** Narração interna — sem nome na caixa de diálogo. */
   narration?: boolean
 }
@@ -51,6 +51,7 @@ export const hospitalBeats: Record<HospitalTopicId, HospitalBeat[]> = {
     {
       speaker: 'Renata',
       text: 'Kit fechado. Passo no posto B antes de voltar.',
+      portrait: 'renata',
     },
     {
       speaker: 'Augusto',
@@ -69,6 +70,7 @@ export const hospitalBeats: Record<HospitalTopicId, HospitalBeat[]> = {
     {
       speaker: 'Renata',
       text: 'Tudo bem. A gente se fala depois.',
+      portrait: 'renata',
     },
     { text: '[Renata se afasta pelo corredor.]' },
     { speaker: 'Augusto', text: 'Quero começar pelo básico. Quando vocês viram Mariana pela última vez?' },
