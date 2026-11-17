@@ -1,5 +1,6 @@
 import { useMemo, useRef } from 'react'
 import type { RfCaptureConfig } from '../forensicTypes'
+import { resolveRfTargetChannel } from '../forensicEngine'
 
 /**
  * Waterfall genérico: eixo X = frequência, Y = tempo, brilho = energia.
@@ -18,6 +19,7 @@ export function RfWaterfall({
 }) {
   const drag = useRef<{ a: number; b: number } | null>(null)
   const { waterfall } = rf
+  const idealBw = rf.extract.idealBandwidthMhz
   const cells = useMemo(() => {
     const out: { c: number; r: number; v: number }[] = []
     for (let i = 0; i < waterfall.values.length; i++) {
@@ -34,6 +36,16 @@ export function RfWaterfall({
     const rect = el.getBoundingClientRect()
     const x = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width))
     return waterfall.freqMinMhz + x * (waterfall.freqMaxMhz - waterfall.freqMinMhz)
+  }
+
+  const snapSelect = (center: number, bw: number) => {
+    const near = resolveRfTargetChannel(rf, center)
+    // Clique / arraste mínimo perto de um canal → banda ideal (A/C/B).
+    if (near && bw < rf.extract.minBandwidthMhz) {
+      onSelectBand(Number(near.centerMhz.toFixed(4)), Number(idealBw.toFixed(4)))
+      return
+    }
+    onSelectBand(Number(center.toFixed(4)), Number(bw.toFixed(4)))
   }
 
   const selLo =
@@ -74,7 +86,7 @@ export function RfWaterfall({
           const hi = Math.max(a, b)
           const bw = Math.max(0.008, hi - lo)
           const center = (lo + hi) / 2
-          onSelectBand(Number(center.toFixed(4)), Number(bw.toFixed(4)))
+          snapSelect(center, bw)
         }}
       >
         {cells.map(({ c, r, v }) => (
@@ -113,15 +125,24 @@ export function RfWaterfall({
       </svg>
       <p className="fw-rf__hint">
         Drag horizontally to set center frequency and bandwidth. Time runs top → bottom.
+        Catalogued markers snap to that channel.
       </p>
       {/* Marcadores só dos canais catalogados — sem destacar o oculto */}
       <div className="fw-rf__known" data-testid="rf-known-channels">
         {rf.channels
           .filter((c) => c.known)
           .map((c) => (
-            <span key={c.id}>
+            <button
+              key={c.id}
+              type="button"
+              className="fw-rf__known-btn"
+              data-testid={`rf-known-channel-${c.id}`}
+              onClick={() =>
+                onSelectBand(Number(c.centerMhz.toFixed(4)), Number(idealBw.toFixed(4)))
+              }
+            >
               Catalogued · {c.centerMhz.toFixed(3)} MHz
-            </span>
+            </button>
           ))}
       </div>
     </div>

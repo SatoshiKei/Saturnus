@@ -108,7 +108,7 @@ export const block05DevCheckpoints: { id: string; label: string; actions: StoryA
       {
         type: 'addTask',
         id: 'task_talk_jana',
-        label: 'Ir ao endereço de Jana Ribeiro',
+        label: 'Ouvir Jana sobre a noite em que Elisa morreu',
       },
     ],
   },

@@ -1518,11 +1518,19 @@ export function Inspector({
 
         {tab === 'spectrum' && (
           <div className="fw-panel" data-testid="spectrum-panel">
-            {source?.rfCapture && onRfSelectBand ? (
+            {(() => {
+              const rfCapture =
+                source?.rfCapture ?? sources.find((s) => s.rfCapture)?.rfCapture ?? undefined
+              if (!rfCapture || !onRfSelectBand) {
+                return (
+                  <p className="fw-empty fw-empty--center">No spectrum capture for this source.</p>
+                )
+              }
+              return (
               <>
                 <Section title="Spectrum / Waterfall" tip="Spectrum">
                   <RfWaterfall
-                    rf={source.rfCapture}
+                    rf={rfCapture}
                     centerMhz={ui.rfCenterMhz}
                     bandwidthMhz={ui.rfBandwidthMhz}
                     onSelectBand={onRfSelectBand}
@@ -1569,7 +1577,7 @@ export function Inspector({
                       ui.rfCenterMhz == null ||
                       ui.rfBandwidthMhz == null ||
                       (() => {
-                        const target = resolveRfTargetChannel(source.rfCapture!, ui.rfCenterMhz!)
+                        const target = resolveRfTargetChannel(rfCapture, ui.rfCenterMhz!)
                         return target != null && ui.rfExtractedChannelIds.includes(target.id)
                       })()
                     }
@@ -1577,7 +1585,7 @@ export function Inspector({
                   >
                     {(() => {
                       if (ui.rfCenterMhz == null) return 'Extract Channel'
-                      const target = resolveRfTargetChannel(source.rfCapture!, ui.rfCenterMhz)
+                      const target = resolveRfTargetChannel(rfCapture, ui.rfCenterMhz)
                       if (target && ui.rfExtractedChannelIds.includes(target.id)) {
                         return `Channel ${target.id} extracted`
                       }
@@ -1591,9 +1599,8 @@ export function Inspector({
                   ) : null}
                 </Section>
               </>
-            ) : (
-              <p className="fw-empty fw-empty--center">No spectrum capture for this source.</p>
-            )}
+              )
+            })()}
           </div>
         )}
 

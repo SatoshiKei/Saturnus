@@ -662,6 +662,8 @@ export interface ForensicUiState {
   /** Canais já extraídos nesta sessão (A/B/C em Luas Pastoras). */
   rfExtractedChannelIds: string[]
   rfChannelExtractionQuality: Record<string, number>
+  /** Canal oculto (B) ouvido até o fim — libera G17N / progressão. */
+  rfHiddenChannelListened: boolean
   rfStatus: string | null
   /** Ciclos / Find Similar (Puzzle 08). */
   similarRegions: Array<{ cycleIndex: number; startSec: number; endSec: number; correlation: number }>

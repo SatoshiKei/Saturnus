@@ -393,14 +393,12 @@ export const seedDocuments: Document[] = [
       },
       {
         id: 'b3',
-        text: 'Último endereço residencial constante no arquivo da época: Rua das Acácias, 118.',
+        text: 'Não há informações atualizadas sobre o paradeiro atual. Endereço residencial não consta no arquivo disponível.',
       },
     ],
-    leads: [{ type: 'address', label: 'Endereço antigo', value: 'Rua das Acácias, 118' }],
     onOpen: [
-      { type: 'discoverPerson', id: 'marcelo', status: 'located' },
+      { type: 'discoverPerson', id: 'marcelo', status: 'identified' },
       { type: 'setFlag', id: 'marcelo_address_found', value: true },
-      { type: 'unlockLocation', id: 'samuel-casa', status: 'visitAvailable' },
     ],
   },
   {
@@ -661,11 +659,6 @@ export const seedDocuments: Document[] = [
       { type: 'discoverPerson', id: 'jana', status: 'located' },
       { type: 'unlockLocation', id: 'jana-casa', status: 'visitAvailable' },
       { type: 'completeTask', id: 'task_locate_jana' },
-      {
-        type: 'addTask',
-        id: 'task_talk_jana',
-        label: 'Ir ao endereço de Jana Ribeiro',
-      },
     ],
   },
   {

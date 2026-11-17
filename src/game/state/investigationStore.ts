@@ -246,6 +246,16 @@ export function openDocument(docId: string) {
     if (docId === 'doc-nico-cadastro' && next.flags.nico_early_done) {
       next = applyStoryActions(next, [{ type: 'completeTask', id: 'task_talk_nico' }])
     }
+    if (docId === 'doc-elisa-jana') {
+      if (next.flags.block05_jana_interview_done) {
+        next = applyStoryActions(next, [{ type: 'completeTask', id: 'task_talk_jana' }])
+      } else if (!next.tasks.some((t) => t.id === 'task_talk_jana')) {
+        const label = next.flags.jana_early_done
+          ? 'Perguntar a Jana sobre a jaqueta na noite de Elisa'
+          : 'Ouvir Jana sobre a noite em que Elisa morreu'
+        next = applyStoryActions(next, [{ type: 'addTask', id: 'task_talk_jana', label }])
+      }
+    }
     if (docId === 'doc-maralto-clipping') {
       const alreadySpoke =
         next.flags.block03_livia_interview_done ||

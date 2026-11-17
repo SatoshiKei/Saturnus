@@ -90,6 +90,7 @@ export function createInitialUiState(
     rfDerivedSourceId: null,
     rfExtractedChannelIds: [],
     rfChannelExtractionQuality: {},
+    rfHiddenChannelListened: false,
     rfStatus: null,
     similarRegions: [],
     referenceCycleIndexes: [],
@@ -520,16 +521,25 @@ export function evaluateRfExtraction(
   quality *= Math.max(0.4, 1 - bwErr * 0.5)
   quality = Math.max(0, Math.min(1, quality))
 
-  const ok =
+  const strictOk =
     quality >= 0.62 &&
     centerOk &&
     !tooNarrow &&
     !tooWide &&
     targetOverlap >= 0.85 &&
     contamination <= 0.12
+  /**
+   * Canais catalogados (A/C): basta o centro na tolerância.
+   * Na borda do waterfall (C) a banda arrastada estoura fácil o max — ainda assim
+   * gera a versão full do canal.
+   */
+  const knownOk = Boolean(target.known) && centerOk
+  const ok = strictOk || knownOk
+  if (knownOk && quality < 0.62) quality = Math.max(quality, 0.72)
   let message = 'Selection does not isolate a clean channel.'
-  if (tooNarrow) message = 'Bandwidth too narrow — parts of the signal are lost.'
-  else if (tooWide || contamination > 0.12) message = 'Bandwidth too wide — adjacent channels leak in.'
+  if (!target.known && tooNarrow) message = 'Bandwidth too narrow — parts of the signal are lost.'
+  else if (!target.known && (tooWide || contamination > 0.12))
+    message = 'Bandwidth too wide — adjacent channels leak in.'
   else if (!centerOk) message = 'Center frequency far from active energy.'
   else if (ok) message = 'Channel extracted. Derived source added to Files.'
   else if (targetOverlap > 0.5) message = 'Partial capture — adjust center or bandwidth.'
@@ -559,7 +569,20 @@ export function rfChannelExtractComplete(
     ui.rfChannelExtractionQuality[hiddenId] ??
     (ui.rfExtractedChannelIds.includes(hiddenId) ? ui.rfExtractionQuality : null) ??
     0
-  return ui.rfExtractedChannelIds.includes(hiddenId) && q >= 0.62
+  return (
+    ui.rfExtractedChannelIds.includes(hiddenId) &&
+    q >= 0.62 &&
+    Boolean(ui.rfHiddenChannelListened)
+  )
+}
+
+/** Id da fonte derivada do canal oculto (faixa full a ouvir). */
+export function rfHiddenDerivedSourceId(
+  rf: import('./forensicTypes').RfCaptureConfig | null | undefined,
+): string | null {
+  if (!rf) return null
+  const hidden = rf.channels.find((c) => c.id === rf.hiddenChannelId)
+  return hidden?.derived?.derivedSourceId ?? rf.extract.derivedSourceId ?? null
 }
 
 export function buildDerivedRfSource(

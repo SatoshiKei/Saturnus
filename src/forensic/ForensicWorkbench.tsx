@@ -34,6 +34,7 @@ import {
   findSimilarCycleRegions,
   relativeSourceOffsetSec,
   rfChannelExtractComplete,
+  rfHiddenDerivedSourceId,
   rtpStreamSeparationComplete,
   speechRecoveryComplete,
   spectrogramSurveyComplete,
@@ -408,14 +409,32 @@ export function ForensicWorkbench({
               (u.sourceOffsets[active.id] ?? 0) +
               t
             : t
+        const rfCap = liveSessionRef.current.sources.find((s) => s.rfCapture)?.rfCapture
+        const hiddenDerivedId = rfHiddenDerivedSourceId(rfCap)
+        let rfHiddenChannelListened = u.rfHiddenChannelListened
+        if (
+          !rfHiddenChannelListened &&
+          hiddenDerivedId &&
+          active?.id === hiddenDerivedId &&
+          (active.durationSec ?? 0) > 0
+        ) {
+          const dur = active.durationSec
+          const fileT = compareTimelineRef.current ? t : playheadSec
+          if (fileT >= dur - 0.4 || fileT / dur >= 0.98) {
+            rfHiddenChannelListened = true
+          }
+        }
         if (u.playing && !still) {
-          return { ...u, playheadSec, playing: false }
+          return { ...u, playheadSec, playing: false, rfHiddenChannelListened }
         }
         if (still && !u.playing) {
-          return { ...u, playing: true, playheadSec }
+          return { ...u, playing: true, playheadSec, rfHiddenChannelListened }
         }
         if (still) {
-          return { ...u, playheadSec }
+          return { ...u, playheadSec, rfHiddenChannelListened }
+        }
+        if (rfHiddenChannelListened !== u.rfHiddenChannelListened) {
+          return { ...u, rfHiddenChannelListened }
         }
         return u
       }),
@@ -713,6 +732,7 @@ export function ForensicWorkbench({
     ui.rfExtractedChannelIds,
     ui.rfChannelExtractionQuality,
     ui.rfExtractionQuality,
+    ui.rfHiddenChannelListened,
     ui.cycleDifferenceDone,
     ui.streamARecovered,
     ui.streamBRecovered,
@@ -1208,7 +1228,7 @@ export function ForensicWorkbench({
           onTab={(inspectorTab) => patchUi({ inspectorTab })}
           source={source}
           ui={ui}
-          sources={session.sources}
+          sources={liveSession.sources}
           showHelp={showHelp}
           onToggleHelp={() => setShowHelp((v) => !v)}
           onProcess={patchProcess}
@@ -1575,7 +1595,22 @@ export function ForensicWorkbench({
           }}
           onExtractChannel={() => {
             if (!rfCapture || ui.rfCenterMhz == null || ui.rfBandwidthMhz == null) return
-            const result = evaluateRfExtraction(rfCapture, ui.rfCenterMhz, ui.rfBandwidthMhz)
+            let result = evaluateRfExtraction(rfCapture, ui.rfCenterMhz, ui.rfBandwidthMhz)
+            // Catalogados (A/C): se o centro pegou o canal, extrai a full com banda ideal.
+            if (
+              result.targetChannelId &&
+              (!result.ok ||
+                rfCapture.channels.find((c) => c.id === result.targetChannelId)?.known)
+            ) {
+              const ch = rfCapture.channels.find((c) => c.id === result.targetChannelId)
+              if (ch?.known) {
+                result = evaluateRfExtraction(
+                  rfCapture,
+                  ch.centerMhz,
+                  rfCapture.extract.idealBandwidthMhz,
+                )
+              }
+            }
             if (!result.ok || !result.targetChannelId) {
               setUi((u) => ({
                 ...u,
@@ -1615,9 +1650,15 @@ export function ForensicWorkbench({
                 rfHiddenOverlap: result.hiddenOverlap,
                 rfStatus: result.message,
                 activeSourceId: derived.id,
+                // Extrair B só libera o arquivo — G17N após ouvir a faixa inteira.
+                ...(channelId === hiddenId ? { playheadSec: 0 } : {}),
               }
             })
-            setStatus(result.message)
+            setStatus(
+              channelId === hiddenId
+                ? 'Canal extraído. Ouça a faixa completa.'
+                : result.message,
+            )
           }}
           onFindSimilar={() => {
             const cfg = source?.cycleAnalysis
@@ -2142,8 +2183,8 @@ function ForensicDebug({
           <span>selectedBandwidth {ui.rfBandwidthMhz ?? '—'}</span>
           <span>hiddenChannelOverlap {ui.rfHiddenOverlap?.toFixed(3) ?? '—'}</span>
           <span>extractionQuality {ui.rfExtractionQuality?.toFixed(3) ?? '—'}</span>
-          <span>G17N recovered {String(ui.rfExtracted)}</span>
-          <span>23:40 recovered {String(ui.rfExtracted)}</span>
+          <span>G17N recovered {String(ui.rfHiddenChannelListened)}</span>
+          <span>23:40 recovered {String(ui.rfHiddenChannelListened)}</span>
           <span>locationCrossReferenced — (document)</span>
           <span>puzzleComplete {String(rfChannelExtractComplete(session, ui))}</span>
           {onDevResetPuzzle ? (

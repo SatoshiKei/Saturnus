@@ -72,7 +72,7 @@ describe('Puzzle 07 — LUAS PASTORAS', () => {
     expect(Math.max(...powersB)).toBeLessThan(Math.min(...powersA))
   })
 
-  it('D/E: A and C extract cleanly; puzzle só fecha com B', () => {
+  it('D/E: A and C extract cleanly (full derived); puzzle só fecha com B ouvido', () => {
     const rf = puzzle07RfCapture
     const onA = evaluateRfExtraction(rf, puzzle07Frequencies.A, 0.022)
     const onC = evaluateRfExtraction(rf, puzzle07Frequencies.C, 0.022)
@@ -80,10 +80,19 @@ describe('Puzzle 07 — LUAS PASTORAS', () => {
     expect(onC.ok).toBe(true)
     expect(onA.targetChannelId).toBe('A')
     expect(onC.targetChannelId).toBe('C')
+    // C na borda: banda larga demais ainda extrai (catalogado).
+    const wideC = evaluateRfExtraction(rf, puzzle07Frequencies.C, 0.08)
+    expect(wideC.ok).toBe(true)
+    expect(wideC.targetChannelId).toBe('C')
+    const softA = evaluateRfExtraction(rf, puzzle07Frequencies.A + 0.01, 0.02)
+    expect(softA.ok).toBe(true)
+    expect(softA.targetChannelId).toBe('A')
     const ui = createInitialUiState(puzzle07ShepherdMoonsSession)
     ui.rfExtractedChannelIds = ['A']
     ui.rfChannelExtractionQuality = { A: onA.quality }
     expect(rfChannelExtractComplete(puzzle07ShepherdMoonsSession, ui)).toBe(false)
+    expect(rf.channels.find((c) => c.id === 'A')?.derived?.derivedAudioSrc).toMatch(/462_525/)
+    expect(rf.channels.find((c) => c.id === 'C')?.derived?.derivedAudioSrc).toMatch(/462_625/)
   })
 
   it('F: intermediate frequency extracts hidden channel', () => {
@@ -115,6 +124,8 @@ describe('Puzzle 07 — LUAS PASTORAS', () => {
     onPastorHiddenExtracted()
     let s = getInvestigationState()
     expect(s.evidenceOwned).toContain('pastor_token_g17n')
+    expect(s.discoveries.some((d) => d.id === 'notify:pastor-g17n-recovered')).toBe(true)
+    expect(s.tasks.some((t) => t.id === 'task_pastor_crossref' && !t.completed)).toBe(true)
     expect(s.locations['galpao-17']?.status).not.toBe('visitAvailable')
     expect(s.flags.block06_pastor_done).toBeFalsy()
 
@@ -124,7 +135,7 @@ describe('Puzzle 07 — LUAS PASTORAS', () => {
     expect(s.flags.block06_pastor_done).toBe(true)
     expect(s.evidenceOwned).toContain('galpao17_operational_site')
     expect(s.discoveries.some((d) => d.id === 'notify:ach-shepherd-moons')).toBe(true)
-    expect(lookupPastorToken(PASTOR_TOKEN)).toBe('Galpão 17 — Pátio Norte')
+    expect(lookupPastorToken(PASTOR_TOKEN)).toBe('Galpão 17. Pátio Norte')
     expect(PASTOR_CODE_TABLE.some((r) => r.token === 'G17N')).toBe(true)
   })
 
@@ -159,6 +170,8 @@ describe('Puzzle 07 — LUAS PASTORAS', () => {
     ui.rfChannelExtractionQuality = { B: 0.8 }
     ui.rfExtracted = true
     ui.rfExtractionQuality = 0.8
+    expect(rfChannelExtractComplete(puzzle07ShepherdMoonsSession, ui)).toBe(false)
+    ui.rfHiddenChannelListened = true
     expect(rfChannelExtractComplete(puzzle07ShepherdMoonsSession, ui)).toBe(true)
     expect(puzzle01CassiniSession.id).toBeTruthy()
     expect(puzzle06HexagonSession.id).toBeTruthy()

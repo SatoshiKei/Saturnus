@@ -1702,6 +1702,22 @@
   font-family: ui-monospace, monospace;
 }
 
+.fw-rf__known-btn {
+  margin: 0;
+  padding: 0.15rem 0.45rem;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 35%, transparent);
+  border-radius: 2px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.fw-rf__known-btn:hover {
+  border-color: color-mix(in srgb, var(--text-muted) 70%, transparent);
+  color: var(--text);
+}
+
 /* ── P10 Ordem dos Anéis (workspace especializado) ── */
 
 .rings-ws {

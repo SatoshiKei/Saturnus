@@ -107,10 +107,21 @@ export function onPastorHiddenExtracted() {
     { type: 'setFlag', id: 'block06_pastor_extracted', value: true },
     { type: 'addEvidence', id: 'pastor_token_g17n' },
     { type: 'addEvidence', id: 'pastor_delivery_time_2340' },
+    { type: 'completeTask', id: 'task_pastor_moons' },
     {
       type: 'addTask',
       id: 'task_pastor_crossref',
       label: 'Cruzar G17N com a tabela logística apreendida',
+    },
+    {
+      type: 'notifyInvestigationUpdate',
+      id: 'pastor-g17n-recovered',
+      kind: 'evidence',
+      presentation: 'card',
+      label: 'EVIDÊNCIA REGISTRADA',
+      title: 'G17N · 23:40',
+      summary: 'Do canal intermediário: G · 1-7 · Norte. Horário operacional da entrega.',
+      refId: 'pastor_token_g17n',
     },
   ])
 }

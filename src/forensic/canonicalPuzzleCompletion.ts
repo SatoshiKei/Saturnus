@@ -462,6 +462,7 @@ const P07: CanonicalPuzzleDef = {
               rfExtractionQuality: r.quality,
               rfExtractedChannelIds: ['B'],
               rfChannelExtractionQuality: { B: r.quality },
+              rfHiddenChannelListened: true,
             }),
           )
         if (!ok) return { status: 'failed', reason: r.message }

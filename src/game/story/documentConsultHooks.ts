@@ -62,6 +62,13 @@ export function onDocumentConsulted(docId: string) {
   }
 
   if (
+    s.flags.block05_jana_interview_done &&
+    s.tasks.some((t) => t.id === 'task_talk_jana' && !t.completed)
+  ) {
+    dispatchActions([{ type: 'completeTask', id: 'task_talk_jana' }])
+  }
+
+  if (
     (s.flags.block03_livia_interview_done ||
       s.evidenceOwned.includes('livia_radio_archive_raw')) &&
     s.tasks.some((t) => t.id === 'task_talk_livia' && !t.completed)
