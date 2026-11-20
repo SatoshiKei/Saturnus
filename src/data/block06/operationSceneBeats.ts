@@ -1,199 +1,135 @@
 /** VN — Operação Galpão 17 (Bloco 6). */
 export const OPERATION_SCENE_BEATS: { speaker?: string; text: string }[] = [
   {
-    text: 'As equipes já cercavam o galpão havia alguns minutos. Do outro lado do terreno, as luzes do pátio deixavam contêineres, carros e gente passando entre as docas em silhueta.',
+    text: 'As equipes já cercavam o galpão havia alguns minutos. Havia movimento nas docas, dois carros no pátio e gente entrando e saindo pela lateral.',
   },
-
   {
     speaker: 'Rádio',
-    text: 'Unidade dois posicionada no norte. Dois indivíduos do lado de fora, mais movimento lá dentro.',
+    text: 'Unidade dois em posição no norte. Dois do lado de fora, mais gente lá dentro.',
   },
   {
     speaker: 'Augusto',
-    text: 'Mantém posição. Ninguém aborda sozinho.',
+    text: 'Segura. Ninguém entra sozinho.',
   },
   {
     speaker: 'Rádio',
-    text: 'Recebido. O portão dos fundos está aberto.',
+    text: 'Copiado.',
   },
   {
     speaker: 'Policial',
     text: 'Equipe três pronta na lateral.',
   },
-
-  {
-    text: 'Augusto observou o movimento pela entrada por mais alguns segundos. Um homem saiu carregando duas caixas. Outro veio atrás dele e parou para acender um cigarro.',
-  },
-
   {
     speaker: 'Rádio',
-    text: 'Tem mais gente vindo pro pátio. Acho que perceberam alguma coisa.',
+    text: 'Movimento nos fundos. Acho que perceberam a viatura.',
   },
   {
     speaker: 'Augusto',
-    text: 'Então acabou a espera. Equipe dois fecha o fundo. Três comigo pela lateral. Vai.',
-  },
-
-  {
-    speaker: 'Policial',
-    text: 'POLÍCIA! NINGUÉM SE MEXE!',
+    text: 'Então vai. Dois fecha o fundo. Três comigo.',
   },
   {
     speaker: 'Policial',
-    text: 'Mão na cabeça! No chão!',
+    text: 'POLÍCIA! MÃO NA CABEÇA! NO CHÃO!',
   },
   {
     speaker: 'Rádio',
-    text: 'Dois correndo pelo pátio norte!',
+    text: 'Dois correndo pro pátio norte!',
   },
   {
     speaker: 'Augusto',
-    text: 'Fecha o portão! Não deixa ninguém sair pra rua!',
-  },
-  {
-    speaker: 'Rádio',
-    text: 'Um contido. O outro voltou pro galpão.',
-  },
-
-  {
-    text: 'O interior virou uma confusão de ordens, passos e metal batendo no concreto. Alguns obedeceram imediatamente. Outros precisaram ser puxados de trás de bancadas e veículos.',
-  },
-
-  {
-    speaker: 'Policial',
-    text: 'Três detidos aqui!',
+    text: 'Fecha o portão. Ninguém sai pra rua.',
   },
   {
     speaker: 'Policial',
-    text: 'Tem mais um nos fundos!',
-  },
-  {
-    speaker: 'Augusto',
-    text: 'Revista todo mundo separado. Fotografa onde cada coisa foi encontrada antes de mexer.',
+    text: 'Parado! Mão onde eu possa ver!',
   },
   {
     speaker: 'Rádio',
-    text: 'Chefe, pegamos o homem que correu pro norte. Documento em nome de Miro Ferreira.',
-  },
-
-  {
-    text: 'Augusto atravessou o pátio. Miro estava encostado contra a lateral de uma viatura enquanto um policial terminava a revista.',
-  },
-
-  {
-    speaker: 'Miro',
-    text: 'Caralho... precisava trazer a cidade inteira?',
+    text: 'Um contido. Outro voltou pro galpão.',
   },
   {
-    speaker: 'Augusto',
-    text: 'Você correu quando viu a polícia. Não ajuda a economizar efetivo.',
+    text: 'O interior virou uma mistura de ordem gritada, passos e metal batendo no concreto. Alguns obedeceram. Outros precisaram ser tirados de trás de veículos e bancadas.',
   },
-  {
-    speaker: 'Miro',
-    text: 'Eu corro de polícia desde antes de você saber meu nome.',
-  },
-
   {
     speaker: 'Policial',
-    text: 'Com ele: telefone, rádio e chave de um dos veículos do galpão. Sem arma.',
+    text: 'Quatro detidos aqui!',
+  },
+  {
+    speaker: 'Policial',
+    text: 'Mais um nos fundos!',
   },
   {
     speaker: 'Augusto',
-    text: 'Embala separado e identifica tudo.',
+    text: 'Separa todo mundo. Fotografa antes de recolher qualquer coisa.',
   },
-
-  {
-    speaker: 'Miro',
-    text: 'Você é o delegado da Mariana, né?',
-  },
-  {
-    speaker: 'Augusto',
-    text: 'Sou o delegado que está te prendendo hoje.',
-  },
-
-  {
-    speaker: 'Miro',
-    text: 'Por quê? Porque eu estava trabalhando aqui?',
-  },
-  {
-    speaker: 'Augusto',
-    text: 'Não se faz de desentendido. Você foi encontrado numa operação clandestina, no meio do material que estamos apreendendo, tentou fugir quando a equipe entrou e está vinculado ao que vinha funcionando neste galpão.',
-  },
-  {
-    speaker: 'Augusto',
-    text: 'Você está preso em flagrante. Na delegacia vai ser informado formalmente de tudo que está sendo atribuído a você. Tem direito de permanecer calado e de falar com advogado.',
-  },
-
-  {
-    speaker: 'Miro',
-    text: 'Então leva todo mundo. Porque eu não sou dono de porra nenhuma aqui.',
-  },
-  {
-    speaker: 'Augusto',
-    text: 'Já estamos levando.',
-  },
-
   {
     speaker: 'Rádio',
-    text: 'Cinco detidos até agora. Equipe terminando a varredura do escritório.',
+    text: 'Chefe, o que correu pro norte está com documento em nome de Miro Ferreira.',
+  },
+  {
+    text: 'Augusto atravessou o pátio. Miro estava encostado numa viatura enquanto terminavam a revista.',
+  },
+  {
+    speaker: 'Miro',
+    text: 'Precisava trazer esse batalhão todo?',
   },
   {
     speaker: 'Augusto',
-    text: 'Ninguém sai daqui antes da perícia. Telefones, rádios, documentos e computadores ficam onde estão até serem registrados.',
+    text: 'Você correu quando viu a polícia. Não ajudou a manter a operação discreta.',
   },
-
   {
     speaker: 'Miro',
-    text: 'Delegado.',
+    text: 'Correr de polícia é um hábito antigo.',
+  },
+  {
+    speaker: 'Policial',
+    text: 'Telefone, rádio, duas chaves e dinheiro em espécie. Sem arma.',
   },
   {
     speaker: 'Augusto',
-    text: 'Fala.',
+    text: 'Lacra separado.',
   },
   {
     speaker: 'Miro',
-    text: 'Se você veio atrás de mim por causa do que aconteceu com a Elisa, perdeu seis anos seguindo a pessoa errada.',
-  },
-
-  {
-    text: 'Augusto parou.',
-  },
-
-  {
-    speaker: 'Augusto',
-    text: 'Eu não mencionei Elisa.',
-  },
-  {
-    speaker: 'Miro',
-    text: 'Não precisava.',
-  },
-  {
-    speaker: 'Miro',
-    text: 'Toda vez que alguém aparece fazendo pergunta sobre aquela época, uma hora chega em mim.',
+    text: 'E qual é a acusação da vez?',
   },
   {
     speaker: 'Augusto',
-    text: 'Hoje você vai ter oportunidade de explicar por quê.',
+    text: 'Você foi encontrado numa operação ligada a extorsão, agiotagem e associação criminosa. Tentou fugir e estava com material vinculado ao galpão.',
   },
   {
     speaker: 'Miro',
-    text: 'Hoje eu vou ser interrogado. Explicar é outra coisa.',
+    text: 'Então prende o galpão inteiro.',
   },
-
+  {
+    speaker: 'Augusto',
+    text: 'É o que estamos fazendo.',
+  },
+  {
+    speaker: 'Rádio',
+    text: 'Seis detidos. Escritório quase limpo.',
+  },
+  {
+    speaker: 'Augusto',
+    text: 'Ninguém mexe nos computadores até a perícia. Telefones e rádios ficam individualizados.',
+  },
+  {
+    speaker: 'Miro',
+    text: 'Delegado, isso aí vai dar mais trabalho do que vocês acham.',
+  },
+  {
+    speaker: 'Augusto',
+    text: 'Ótimo. Eu vim trabalhar.',
+  },
+  {
+    speaker: 'Miro',
+    text: 'Você gosta de frase bonita, né?',
+  },
   {
     speaker: 'Augusto',
     text: 'Coloca ele na viatura. Separado dos outros.',
   },
   {
-    speaker: 'Miro',
-    text: 'Aí, delegado... essa parte você devia ouvir antes de decidir o que já sabe sobre mim.',
-  },
-  {
-    speaker: 'Augusto',
-    text: 'Guarda pra delegacia.',
-  },
-
-  {
-    text: 'Miro entrou na viatura. Atrás dele, outros presos eram conduzidos para fora do galpão enquanto as equipes começavam a transformar o caos da operação em evidência.',
+    text: 'Miro foi levado junto com os demais. O galpão continuou cheio de gente, caixas abertas e policiais transformando o que parecia rotina em evidência.',
   },
 ]
