@@ -10,6 +10,7 @@ export const block01DevCheckpoints: { id: string; label: string; actions: StoryA
     actions: [
       { type: 'setFlag', id: 'block01_bo_registered', value: true },
       { type: 'setFlag', id: 'block01_opening_seen', value: true },
+      { type: 'setFlag', id: 'mari_hub_welcome_seen', value: true },
       { type: 'addEvidence', id: 'initial_police_report' },
       { type: 'addEvidence', id: 'mariana_phone' },
       { type: 'addEvidence', id: 'emergency_call_raw' },

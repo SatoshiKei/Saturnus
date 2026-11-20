@@ -268,7 +268,13 @@ export const CANONICAL_STORY_MANIFEST: CanonicalCheckpointDef[] = [
   {
     id: 'b01-after-bo',
     steps: [
-      { act: [{ type: 'setFlag', id: 'block01_opening_seen', value: true }], why: 'Cutscene de abertura (OpeningScene)' },
+      {
+        act: [
+          { type: 'setFlag', id: 'block01_opening_seen', value: true },
+          { type: 'setFlag', id: 'mari_hub_welcome_seen', value: true },
+        ],
+        why: 'Cutscene de abertura (OpeningScene) + Mari pós-abertura',
+      },
       { h: 'registerInitialPoliceReport' },
     ],
   },

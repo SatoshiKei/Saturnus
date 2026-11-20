@@ -7,7 +7,16 @@ export const seedPeople: Person[] = [
     status: 'identified',
     occupation: 'Delegado, designação interina',
     relatedEvidenceIds: [],
-    relatedPersonIds: [],
+    relatedPersonIds: ['mari', 'roberto'],
+  },
+  {
+    id: 'mari',
+    name: 'Mari',
+    status: 'identified',
+    occupation: 'Assistente da delegacia',
+    notes: ['Trabalha com Augusto desde a designação interina'],
+    relatedEvidenceIds: [],
+    relatedPersonIds: ['augusto', 'roberto'],
   },
   {
     id: 'mariana',
@@ -277,6 +286,6 @@ export const seedPeople: Person[] = [
     occupation: 'Delegado (afastado)',
     notes: ['Antecessor interino removido pouco antes do caso'],
     relatedEvidenceIds: [],
-    relatedPersonIds: ['augusto'],
+    relatedPersonIds: ['augusto', 'mari'],
   },
 ]

@@ -1,0 +1,35 @@
+/* Mari sobre o hub — ADV diegético sem cena fullscreen. */
+.mari-companion {
+  position: absolute;
+  inset: 0;
+  z-index: 112;
+  pointer-events: auto;
+}
+
+.mari-companion__veil {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  background: rgba(4, 6, 10, 0.38);
+  cursor: default;
+}
+
+.mari-companion .vn-characters {
+  z-index: 2;
+}
+
+.mari-companion .vn {
+  z-index: 3;
+}
+
+/* Hub ainda legível atrás; sombra ADV um pouco mais leve */
+.mari-companion .vn-adv__shade {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(0, 0, 0, 0.15) 45%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+}

@@ -10,6 +10,12 @@ Delegado, interino no caso, cansado e preciso. Faz perguntas curtas e diretas; c
 em frases curtas, sem certeza que não tem: “Ele tem motivo para usar a irmã. Também tem motivo para querer que ela
 pare.” (as duas possibilidades, nenhuma decidida).
 
+## Mari
+
+Assistente da delegacia. Direta, prática, sem bajulação. Conhece a casa (arquivos, ramais, hábitos do Siqueira).
+Com Augusto é colega de trabalho: informa o que está na mesa, oferece ajuda sem tutorá-lo. Em beats futuros de
+puzzle, observa o material com ouvido/olho de quem “já viu estranho” — nunca instrui clique ou solução.
+
 ## Lucas Moreira
 
 Educado, desconfortável, melancólico. Responde por inteiro, mas puxa o assunto para onde dói; informação sai de forma

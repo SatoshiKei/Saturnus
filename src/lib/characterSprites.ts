@@ -12,6 +12,7 @@ import jana from '../assets/sprites/jana.png'
 import julia from '../assets/sprites/julia.png'
 import livia from '../assets/sprites/livia.png'
 import lucas from '../assets/sprites/lucas.png'
+import mari from '../assets/sprites/Mari.png'
 import mariana from '../assets/sprites/mariana.png'
 import marianaDark from '../assets/sprites/mariana-dark.png'
 import marianaDarkGunpoint from '../assets/sprites/mariana-dark-gunpoint.png'
@@ -45,6 +46,7 @@ export const CHARACTER_SPRITE_URLS: Record<string, string> = {
   julia,
   livia,
   lucas,
+  mari,
   mariana,
   'mariana-dark': marianaDark,
   'mariana-dark-gunpoint': marianaDarkGunpoint,

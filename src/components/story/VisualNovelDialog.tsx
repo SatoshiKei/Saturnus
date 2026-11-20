@@ -20,6 +20,13 @@ interface VisualNovelDialogProps {
   portraitSrc?: string
   /** Id do sprite (`CHARACTER_SPRITE_URLS`) — enquadramento VN por personagem. */
   portraitId?: string
+  /**
+   * Força lado do sprite. Sem isto: NPC à esquerda; Augusto/narracão sem retrato
+   * (exceto se `forcePortrait`).
+   */
+  portraitSide?: 'left' | 'right' | 'none'
+  /** Mostra `portraitSrc` mesmo com speaker Augusto / narração. */
+  forcePortrait?: boolean
   /** @deprecated Histórico vem do buffer da cena (`VnSceneHistoryProvider`). */
   logLines?: VnLine[]
   choices?: VnChoice[]
@@ -43,6 +50,8 @@ export function VisualNovelDialog({
   text,
   portraitSrc,
   portraitId,
+  portraitSide: portraitSideProp,
+  forcePortrait,
   choices,
   choiceHint,
   choiceVariant = 'default',
@@ -173,8 +182,11 @@ export function VisualNovelDialog({
   )
 
   const choiceHeading = choiceVariant === 'topics' ? 'Escolha um assunto' : undefined
-  const portraitSide =
-    portraitSrc && speaker && speaker !== 'Augusto' ? ('left' as const) : ('none' as const)
+  const portraitSide: 'left' | 'right' | 'none' =
+    portraitSideProp ??
+    (portraitSrc && (forcePortrait || (speaker && speaker !== 'Augusto'))
+      ? 'left'
+      : 'none')
 
   return (
     <div
@@ -186,7 +198,9 @@ export function VisualNovelDialog({
       <VNCharacterLayer
         leftSrc={portraitSide === 'left' ? portraitSrc : undefined}
         leftSpriteId={portraitSide === 'left' ? portraitId : undefined}
-        activeSide={portraitSide}
+        rightSrc={portraitSide === 'right' ? portraitSrc : undefined}
+        rightSpriteId={portraitSide === 'right' ? portraitId : undefined}
+        activeSide={portraitSide === 'none' ? 'none' : portraitSide}
       />
 
       {hasChoices ? (

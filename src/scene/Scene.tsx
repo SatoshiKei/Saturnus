@@ -30,6 +30,7 @@ import { setFlag } from '../game/state/investigationStore'
 import { afterReflectionComplete } from '../game/story/reflectionAftermath'
 import { absorbLegacyB5MicroReflections } from '../game/story/block05Handlers'
 import { MemoryWordOverlay } from '../components/investigation/MemoryWordOverlay'
+import { MariCompanionHost } from '../components/investigation/MariCompanionHost'
 import { onMarianaPhoneClosed, onMarianaPhoneOpened } from '../game/story/block01Handlers'
 import '../styles/tokens.css'
 import '../styles/scene.css'
@@ -427,6 +428,9 @@ export function Scene() {
         ) : null}
         {!soloReflectionActive && !locationScene && !hubPanel && !phoneOpen ? (
           <MemoryWordOverlay />
+        ) : null}
+        {openingDone && !overlaysLocked && !menuOpen && !hubPanel && !phoneOpen ? (
+          <MariCompanionHost hubIdle />
         ) : null}
         {returnFade ? <div className="tr-return" data-testid="vn-return-fade" aria-hidden /> : null}
 

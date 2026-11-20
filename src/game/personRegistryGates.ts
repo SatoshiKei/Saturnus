@@ -14,6 +14,8 @@ import type { InvestigationState } from './types'
  * endereço ou instituição descobertos por documentos.)
  */
 export const personRegistryFlag: Record<string, string> = {
+  /** Presente na abertura; entra no caderno depois da cena com Augusto. */
+  mari: 'block01_opening_seen',
   elisa: 'block02_elisa_search_unlocked',
   andre: 'block02_elisa_search_unlocked',
   nico: 'block02_vertice_set_crossref',
