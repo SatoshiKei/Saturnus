@@ -86,10 +86,46 @@
   background: rgba(0, 0, 0, 0.3);
   z-index: 25;
   pointer-events: none;
+  border: 0;
+  padding: 0;
+}
+
+.phone-shell__home-indicator--back {
+  pointer-events: auto;
+  cursor: pointer;
+  /* Área de toque maior que a pill visual */
+  width: 148px;
+  height: 32px;
+  bottom: 6px;
+  background: transparent;
+}
+
+.phone-shell__home-indicator--back::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 5px;
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.phone-shell__device:has(.ios-weather) .phone-shell__home-indicator--back {
+  bottom: 10px;
+}
+
+.phone-shell__device:has(.ios-weather) .phone-shell__home-indicator--back::after {
+  bottom: 12px;
 }
 
 .phone-shell__device:has(.phone-home) .phone-shell__home-indicator {
   background: rgba(255, 255, 255, 0.35);
+}
+
+.phone-shell__device:has(.ios-calc) .phone-shell__home-indicator--back::after {
+  background: rgba(255, 255, 255, 0.42);
 }
 
 .phone-shell__close {
@@ -164,9 +200,23 @@
   .calendar-app,
   .ios-files,
   .ios-photos,
+  .ios-clock,
   .diary-app
 ) .phone-status {
   color: #111;
+}
+
+.phone-shell__device:has(.ios-calc, .ios-weather, .tt-app) .phone-status {
+  color: #fff;
+}
+
+.phone-shell__device:has(.ios-calc, .ios-weather, .tt-app)
+  .phone-shell__home-indicator:not(.phone-shell__home-indicator--back) {
+  background: rgba(255, 255, 255, 0.32);
+}
+
+.phone-shell__device:has(.ios-weather, .tt-app) .phone-shell__home-indicator--back::after {
+  background: rgba(255, 255, 255, 0.42);
 }
 
 .phone-shell__device:has(.cs--ios) .phone-status {
@@ -1093,4 +1143,671 @@
 .wa-calls__dir .ui-glyph {
   width: 14px;
   height: 14px;
+}
+
+/* ── Calculadora (iOS) ── */
+
+.ios-calc {
+  --ios-font: var(--phone-font, -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #000;
+  color: #fff;
+  font-family: var(--ios-font);
+  padding: 0.55rem 0.55rem 0;
+  box-sizing: border-box;
+}
+
+.ios-calc__display {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  font-size: 3.1rem;
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  padding: 0.4rem 0.35rem 0.85rem;
+  overflow: hidden;
+  word-break: break-all;
+  text-align: right;
+}
+
+.ios-calc__pad {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.45rem;
+}
+
+.ios-calc__home-spacer {
+  display: block;
+  flex: 0 0 1.65rem;
+  height: 1.65rem;
+}
+
+.ios-calc__key {
+  aspect-ratio: 1;
+  border: 0;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 1.35rem;
+  font-weight: 400;
+  cursor: pointer;
+  color: #fff;
+  background: #333;
+}
+
+.ios-calc__key--fn {
+  background: #a5a5a5;
+  color: #000;
+  font-weight: 500;
+}
+
+.ios-calc__key--op {
+  background: #ff9f0a;
+  color: #fff;
+}
+
+.ios-calc__key--op.is-active {
+  background: #fff;
+  color: #ff9f0a;
+}
+
+.ios-calc__key--zero {
+  grid-column: span 2;
+  aspect-ratio: auto;
+  min-height: 0;
+  height: 100%;
+  border-radius: 999px;
+  text-align: left;
+  padding-left: 1.35rem;
+}
+
+/* ── Relógio (iOS) ── */
+
+.ios-clock {
+  --ios-font: var(--phone-font, -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #f2f2f7;
+  color: #000;
+  font-family: var(--ios-font);
+}
+
+.ios-app-header--clock {
+  background: #f2f2f7;
+  padding-left: 1.1rem;
+  padding-right: 1.1rem;
+}
+
+.ios-clock__body {
+  flex: 1;
+  overflow: auto;
+  padding: 0.55rem 1.1rem 0.75rem;
+}
+
+.ios-clock__world,
+.ios-clock__alarms,
+.ios-clock__laps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ios-clock__city,
+.ios-clock__alarm {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.ios-clock__city-name,
+.ios-clock__alarm-label {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.ios-clock__city-meta,
+.ios-clock__alarm-label {
+  color: #8e8e93;
+  font-size: 0.78rem;
+  font-weight: 400;
+}
+
+.ios-clock__city-time,
+.ios-clock__alarm-time {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 300;
+  letter-spacing: -0.03em;
+}
+
+.ios-clock__toggle {
+  width: 3.1rem;
+  height: 1.85rem;
+  border: 0;
+  border-radius: 999px;
+  background: #e5e5ea;
+  padding: 0.15rem;
+  cursor: pointer;
+}
+
+.ios-clock__toggle.is-on {
+  background: #34c759;
+}
+
+.ios-clock__toggle-knob {
+  display: block;
+  width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: transform 0.15s ease;
+}
+
+.ios-clock__toggle.is-on .ios-clock__toggle-knob {
+  transform: translateX(1.2rem);
+}
+
+.ios-clock__stopwatch,
+.ios-clock__timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.75rem 0.35rem 1rem;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.ios-clock__big {
+  margin: 0;
+  font-size: 3.2rem;
+  font-weight: 200;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+  padding-inline: 0.25rem;
+}
+
+.ios-clock__actions {
+  display: flex;
+  gap: 1.4rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.ios-clock__btn {
+  width: 4.4rem;
+  height: 4.4rem;
+  border-radius: 50%;
+  border: 0;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ios-clock__btn--muted {
+  background: #e5e5ea;
+  color: #111;
+}
+
+.ios-clock__btn--go {
+  background: rgba(52, 199, 89, 0.22);
+  color: #1f8a3b;
+}
+
+.ios-clock__btn--stop {
+  background: rgba(255, 59, 48, 0.2);
+  color: #d70015;
+}
+
+.ios-clock__laps {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.ios-clock__laps li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.55rem 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.9rem;
+}
+
+.ios-clock__picker {
+  display: flex;
+  gap: 1.2rem;
+}
+
+.ios-clock__picker label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  color: #8e8e93;
+}
+
+.ios-clock__picker input {
+  width: 4.2rem;
+  border: 0;
+  border-radius: 0.55rem;
+  background: #fff;
+  padding: 0.55rem;
+  font: inherit;
+  font-size: 1.4rem;
+  text-align: center;
+}
+
+.ios-clock__tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.15rem;
+  padding: 0.4rem 0.55rem calc(0.55rem + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(242, 242, 247, 0.96);
+}
+
+.ios-clock__tab {
+  border: 0;
+  background: transparent;
+  color: #8e8e93;
+  font: inherit;
+  font-size: 0.62rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.35rem 0.2rem;
+  cursor: pointer;
+}
+
+.ios-clock__tab.is-active {
+  color: #ff9f0a;
+}
+
+.ios-clock__tab-icon {
+  display: grid;
+  place-items: center;
+  width: 1.45rem;
+  height: 1.45rem;
+  line-height: 1;
+}
+
+.ios-clock__tab-svg {
+  width: 1.35rem;
+  height: 1.35rem;
+  display: block;
+}
+
+/* ── Clima (iOS Weather) ── */
+
+.ios-weather {
+  --ios-font: var(--phone-font, -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  height: 100%;
+  overflow: auto;
+  color: #fff;
+  font-family: var(--ios-font);
+  background: linear-gradient(180deg, #1b6fd6 0%, #5aa7ff 42%, #8ec8ff 100%);
+  padding: 0.35rem 0.75rem 0;
+  box-sizing: border-box;
+}
+
+.ios-weather[data-condition='rain'],
+.ios-weather[data-condition='storm'],
+.ios-weather[data-condition='cloud'] {
+  background: linear-gradient(180deg, #3a4a63 0%, #5d6f88 50%, #7f91a8 100%);
+}
+
+.ios-weather__hero {
+  text-align: center;
+  /* Abaixo do status bar / Dynamic Island — sem “‹ Início” */
+  padding: calc(var(--phone-inset-top, 47px) + 0.35rem) 0 1.1rem;
+}
+
+.ios-weather__home-spacer {
+  display: block;
+  height: 2rem;
+  flex-shrink: 0;
+}
+
+.ios-weather__city {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 500;
+}
+
+.ios-weather__temp {
+  margin: 0.1rem 0;
+  font-size: 4.6rem;
+  font-weight: 200;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.ios-weather__cond,
+.ios-weather__hi-lo {
+  margin: 0.15rem 0 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.ios-weather__hi-lo {
+  opacity: 0.92;
+  font-weight: 400;
+}
+
+.ios-weather__card {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 0.85rem;
+  padding: 0.7rem 0.75rem;
+  margin-bottom: 0.65rem;
+  backdrop-filter: blur(8px);
+}
+
+.ios-weather__card-title {
+  margin: 0 0 0.45rem;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.85;
+  font-weight: 600;
+}
+
+.ios-weather__hourly {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 0.85rem;
+  overflow-x: auto;
+}
+
+.ios-weather__hour {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 2.4rem;
+  font-size: 0.78rem;
+}
+
+.ios-weather__glyph {
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.ios-weather__daily {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ios-weather__day {
+  display: grid;
+  grid-template-columns: 2.6rem 1.4rem 1fr;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 0.92rem;
+}
+
+.ios-weather__day:first-child {
+  border-top: 0;
+}
+
+.ios-weather__day-name {
+  font-weight: 500;
+}
+
+.ios-weather__day-range {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.35rem;
+}
+
+.ios-weather__day-range .is-low {
+  opacity: 0.7;
+  min-width: 1.6rem;
+  text-align: right;
+}
+
+.ios-weather__bar {
+  flex: 1;
+  height: 0.22rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #6ec6ff, #ffd36b);
+  max-width: 5.5rem;
+}
+
+.ios-weather__meta {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.45rem;
+}
+
+.ios-weather__meta > div {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 0.85rem;
+  padding: 0.65rem 0.55rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.ios-weather__meta span {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.ios-weather__meta strong {
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+
+/* ── TikTok (Mariana) ── */
+
+.app-icon--tiktok {
+  background: #111;
+}
+
+.tt-app {
+  --ios-font: var(--phone-font, -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  height: 100%;
+  background: #000;
+  color: #fff;
+  font-family: var(--ios-font);
+}
+
+.tt-app__stage {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+}
+
+.tt-app__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #000;
+}
+
+.tt-app__play-hint {
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  transform: translate(-50%, -50%);
+  width: 3.4rem;
+  height: 3.4rem;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 3;
+}
+
+.tt-app__top {
+  position: absolute;
+  /* Abaixo do Dynamic Island / status — evita overlap com a barra preta */
+  top: calc(var(--phone-inset-top, 47px) + 0.15rem);
+  left: 0;
+  right: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.15rem 2.6rem 0.35rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+.tt-app__mute {
+  position: absolute;
+  right: 0.55rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: grid;
+  place-items: center;
+  pointer-events: auto;
+  width: 2rem;
+  height: 2rem;
+}
+
+.tt-app__mute-svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  display: block;
+}
+
+.tt-app__tabs {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.15rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  opacity: 0.85;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.tt-app__tabs .is-active {
+  opacity: 1;
+  border-bottom: 2px solid #fff;
+  padding-bottom: 0.12rem;
+}
+
+.tt-app__rail {
+  position: absolute;
+  right: 0.45rem;
+  bottom: 5.2rem;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.tt-app__avatar {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #ff0050, #00f2ea);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  border: 2px solid #fff;
+}
+
+.tt-app__action {
+  border: 0;
+  background: transparent;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  cursor: pointer;
+  font: inherit;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+}
+
+.tt-app__action span {
+  font-size: 1.55rem;
+  line-height: 1;
+}
+
+.tt-app__action small {
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+.tt-app__action.is-liked span {
+  color: #fe2c55;
+}
+
+.tt-app__meta {
+  position: absolute;
+  left: 0.7rem;
+  right: 3.6rem;
+  bottom: 1.55rem;
+  z-index: 4;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.65);
+}
+
+.tt-app__user {
+  margin: 0 0 0.25rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.tt-app__caption,
+.tt-app__sound {
+  margin: 0.15rem 0 0;
+  font-size: 0.82rem;
+  line-height: 1.25;
+}
+
+.tt-app__sound {
+  opacity: 0.9;
+  margin-top: 0.4rem;
+}
+
+.tt-app__progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.55rem;
+  height: 0.14rem;
+  background: rgba(255, 255, 255, 0.25);
+  z-index: 5;
+}
+
+.tt-app__progress-fill {
+  height: 100%;
+  background: #fff;
+  width: 0;
 }

@@ -20,6 +20,7 @@ const labels: Record<PhoneAppId, string> = {
   clock: 'Relógio',
   calculator: 'Calculadora',
   weather: 'Clima',
+  tiktok: 'TikTok',
 }
 
 interface AppIconProps {
@@ -217,6 +218,25 @@ function AppGlyph({ appId }: { appId: PhoneAppId }) {
         <svg viewBox="0 0 48 48" className="app-icon__svg">
           <circle cx="19" cy="19" r="7" fill="#ffeaa7" />
           <path fill="#fff" d="M17 36a7 7 0 010-14 9 9 0 0117 2 6 6 0 01-1 12H17z" />
+        </svg>
+      )
+    case 'tiktok':
+      return (
+        <svg viewBox="0 0 48 48" className="app-icon__svg">
+          <path
+            fill="#fff"
+            d="M29.5 12.2c1.6 1.5 3.6 2.5 5.8 2.8v4.3c-2 0-3.9-.5-5.6-1.4v9.6c0 5.5-4.5 10-10 10s-10-4.5-10-10 4.5-10 10-10c.5 0 1 0 1.5.1v4.5c-.5-.1-1-.2-1.5-.2-3 0-5.4 2.4-5.4 5.4s2.4 5.4 5.4 5.4 5.4-2.4 5.4-5.4V12.2h4.4z"
+          />
+          <path
+            fill="#fe2c55"
+            opacity="0.85"
+            d="M27.8 10.4c1.6 1.5 3.6 2.5 5.8 2.8v2.2c-2.1-.1-4-.7-5.8-1.7V10.4z"
+          />
+          <path
+            fill="#25f4ee"
+            opacity="0.75"
+            d="M31.2 16.8v2.1c-2 0-3.9-.5-5.6-1.4v-2.1c1.7.9 3.6 1.4 5.6 1.4z"
+          />
         </svg>
       )
     default:

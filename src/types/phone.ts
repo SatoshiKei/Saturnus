@@ -18,6 +18,7 @@ export type PhoneAppId =
   | 'clock'
   | 'calculator'
   | 'weather'
+  | 'tiktok'
 
 export type WhatsAppTab = 'chats' | 'updates' | 'communities' | 'calls' | 'settings'
 
@@ -36,6 +37,10 @@ export type PhoneRoute =
   | { screen: 'photos' }
   | { screen: 'files' }
   | { screen: 'files-browser' }
+  | { screen: 'calculator' }
+  | { screen: 'clock' }
+  | { screen: 'weather' }
+  | { screen: 'tiktok' }
 
 export interface PhoneAppDef {
   id: PhoneAppId

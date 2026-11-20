@@ -33,6 +33,12 @@ export function visibleAppsForDevice(
     ids.push('hidden-diary')
   }
 
+  // Save antigo: TikTok pré-instalado só na Mariana.
+  if (device === 'mariana' && !ids.includes('tiktok')) {
+    const def = appDefinitions.find((a) => a.id === 'tiktok')
+    if (def?.preinstalled) ids.push('tiktok')
+  }
+
   return ids
 }
 

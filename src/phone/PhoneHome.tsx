@@ -9,16 +9,7 @@ import { newContactIds } from '../lib/contactsSeen'
 import type { PhoneAppId } from '../types/phone'
 
 /** Apps de cenário sem tela própria: tocar não faz nada (sem “bloqueado”). */
-const COMMON_INERT = new Set<PhoneAppId>([
-  'browser',
-  'messages',
-  'camera',
-  'mail',
-  'maps',
-  'clock',
-  'calculator',
-  'weather',
-])
+const COMMON_INERT = new Set<PhoneAppId>(['browser', 'messages', 'camera', 'mail', 'maps'])
 
 const DOCK: PhoneAppId[] = ['phone', 'whatsapp', 'messages', 'settings']
 const PAGE_SIZE = 12
@@ -91,6 +82,22 @@ export function PhoneHome() {
     }
     if (id === 'files') {
       push({ screen: 'files' })
+      return
+    }
+    if (id === 'calculator') {
+      push({ screen: 'calculator' })
+      return
+    }
+    if (id === 'clock') {
+      push({ screen: 'clock' })
+      return
+    }
+    if (id === 'weather') {
+      push({ screen: 'weather' })
+      return
+    }
+    if (id === 'tiktok') {
+      push({ screen: 'tiktok' })
       return
     }
     if (id === 'hidden-diary') {

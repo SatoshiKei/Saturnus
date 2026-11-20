@@ -25,6 +25,7 @@ export const appDefinitions: AppDefinition[] = [
   { id: 'recorder', name: 'Gravador', device: 'mariana', preinstalled: true },
   { id: 'browser', name: 'Navegador', device: 'mariana', preinstalled: true },
   { id: 'appstore', name: 'Loja de apps', device: 'mariana', preinstalled: true },
+  { id: 'tiktok', name: 'TikTok', device: 'mariana', preinstalled: true },
   {
     id: 'hidden-diary',
     name: 'Diário',
