@@ -20,6 +20,7 @@ import { useInvestigation } from '../../../game/hooks/useInvestigation'
 import { resolveChatMediaSrc } from '../../../lib/characterSprites'
 import { playSfx } from '../../../lib/sfx'
 import { MorsaCctvReveal } from '../MorsaCctvReveal'
+import { MariWorkbenchHints } from '../MariWorkbenchHints'
 
 type Phase =
   | 'media'
@@ -330,6 +331,8 @@ export function RingsSession({ revealRequest = 0 }: { revealRequest?: number } =
   const [showCctv, setShowCctv] = useState(false)
   const [devOpen, setDevOpen] = useState(false)
   const [lightbox, setLightbox] = useState<StillLightbox | null>(null)
+  const [mariActivity, setMariActivity] = useState(0)
+  const bumpMariActivity = () => setMariActivity((n) => n + 1)
 
   useEffect(() => {
     if (revealRequest > 0 && routeUnlocked && !revealDone) setShowCctv(true)
@@ -364,6 +367,7 @@ export function RingsSession({ revealRequest = 0 }: { revealRequest?: number } =
       return
     }
     playSfx('ui')
+    bumpMariActivity()
     const r = compareAudioFingerprints(fpA, fpB)
     setFpMsg(r.message)
     setFpOk(r.match)
@@ -376,6 +380,7 @@ export function RingsSession({ revealRequest = 0 }: { revealRequest?: number } =
       return
     }
     playSfx('ui')
+    bumpMariActivity()
     const r = compareFramePatterns(frA, frB)
     setFrMsg(r.message)
     setFrOk(r.match)
@@ -388,6 +393,7 @@ export function RingsSession({ revealRequest = 0 }: { revealRequest?: number } =
       setRouteMsg('Os vínculos temporais entre as mídias ainda estão incompletos.')
       return
     }
+    bumpMariActivity()
     setSelectedRoute(routePick)
     const route = RING_ROUTES.find((r) => r.id === routePick)!
     if (!route.compatible) {
@@ -405,6 +411,7 @@ export function RingsSession({ revealRequest = 0 }: { revealRequest?: number } =
   const inspectStructure = () => {
     if (!canInspectDvr) return
     playSfx('ui')
+    bumpMariActivity()
     const r = inspectCam11Structure()
     setStructMsg(r.message)
     setStructOk(true)
@@ -412,6 +419,7 @@ export function RingsSession({ revealRequest = 0 }: { revealRequest?: number } =
 
   const runSearch = () => {
     playSfx('ui')
+    bumpMariActivity()
     setRawHits(searchRawStorage(query))
   }
 
@@ -831,6 +839,11 @@ export function RingsSession({ revealRequest = 0 }: { revealRequest?: number } =
           Segmento CAM11 inspecionado. O caderno registra a continuação.
         </p>
       ) : null}
+      <MariWorkbenchHints
+        puzzleId="puzzle-10-rings"
+        activityCount={mariActivity}
+        puzzleCompleted={fullyDone || revealDone}
+      />
     </div>
   )
 }

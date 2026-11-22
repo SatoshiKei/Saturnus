@@ -13,8 +13,13 @@ pare.” (as duas possibilidades, nenhuma decidida).
 ## Mari
 
 Assistente da delegacia. Direta, prática, sem bajulação. Conhece a casa (arquivos, ramais, hábitos do Siqueira).
-Com Augusto é colega de trabalho: informa o que está na mesa, oferece ajuda sem tutorá-lo. Em beats futuros de
-puzzle, observa o material com ouvido/olho de quem “já viu estranho” — nunca instrui clique ou solução.
+
+**Papel principal:** na **Bancada**, durante os puzzles forenses, 2–3 comentários por sessão para orientar
+*como trabalhar* o material (o que comparar, o que ouvir, qual ferramenta faz sentido agora) — dica diegética de
+colega, não checklist de UI. Não entrega a resposta final (frequência exata, PIN, sequência, nome do suspeito).
+
+**Papel secundário:** no **hub** entre ações, falas de cotidiano (rotina, Siqueira, café) para desenvolver o
+personagem e contrastar com o tom mais técnico da perícia.
 
 ## Lucas Moreira
 

@@ -14,8 +14,8 @@ interface MariCompanionHostProps {
 }
 
 /**
- * Piloto: Mari aparece sobre o hub com ADV curto (relação / orientação leve).
- * Sem beats de puzzle ainda.
+ * Piloto: Mari no hub livre (cotidiano — papel secundário).
+ * Dicas na Bancada durante puzzles: planejadas; ver docs/companion/MARI_HUB_COMPANION.md.
  */
 export function MariCompanionHost({ hubIdle }: MariCompanionHostProps) {
   const inv = useInvestigation()
@@ -25,14 +25,14 @@ export function MariCompanionHost({ hubIdle }: MariCompanionHostProps) {
   useEffect(() => {
     if (!hubIdle) return
     if (active) return
-    const next = pickMariCompanionBeat(inv.flags)
+    const next = pickMariCompanionBeat({ flags: inv.flags, locations: inv.locations })
     if (!next) return
     const t = window.setTimeout(() => {
       setActive(next)
       setLineIndex(0)
     }, 700)
     return () => window.clearTimeout(t)
-  }, [hubIdle, inv.flags, active])
+  }, [hubIdle, inv.flags, inv.locations, active])
 
   const dismiss = useCallback(() => {
     if (!active) return

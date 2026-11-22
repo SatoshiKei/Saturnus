@@ -7,6 +7,7 @@
   --fw-line: rgba(226, 223, 213, 0.08);
   --fw-accent: var(--accent-saturn);
   --fw-radius: 5px;
+  position: relative;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -1721,6 +1722,7 @@
 /* ── P10 Ordem dos Anéis (workspace especializado) ── */
 
 .rings-ws {
+  position: relative;
   display: grid;
   gap: 1.15rem;
   width: 100%;

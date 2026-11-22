@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { MariWorkbenchHints } from '../components/investigation/MariWorkbenchHints'
 import '../styles/forensic-workbench.css'
 import { ForensicAudioEngine } from './forensicAudio'
 import type { PlayheadLiveClock } from './playheadLive'
@@ -168,6 +169,8 @@ export function ForensicWorkbench({
     import('./forensicTypes').PacketRow[] | null
   >(null)
   const engineRef = useRef<ForensicAudioEngine | null>(null)
+  const [mariActivity, setMariActivity] = useState(0)
+  const bumpMariActivity = useCallback(() => setMariActivity((n) => n + 1), [])
   const completedRef = useRef(false)
   const holdRef = useRef<Record<string, number>>({})
   const showDebug = import.meta.env.DEV
@@ -754,9 +757,24 @@ export function ForensicWorkbench({
     onPuzzleComplete,
   ])
 
-  const patchUi = (patch: Partial<ForensicUiState>) => setUi((u) => ({ ...u, ...patch }))
-  const patchProcess = (patch: Partial<ProcessParams>) =>
-    setUi((u) => ({ ...u, process: { ...u.process, ...patch } }))
+  const patchUi = useCallback(
+    (patch: Partial<ForensicUiState>) => {
+      setUi((u) => ({ ...u, ...patch }))
+      const keys = Object.keys(patch)
+      const playheadOnly =
+        keys.length > 0 &&
+        keys.every((k) => k === 'playheadSec' || k === 'playing')
+      if (!playheadOnly) bumpMariActivity()
+    },
+    [bumpMariActivity],
+  )
+  const patchProcess = useCallback(
+    (patch: Partial<ProcessParams>) => {
+      setUi((u) => ({ ...u, process: { ...u.process, ...patch } }))
+      bumpMariActivity()
+    },
+    [bumpMariActivity],
+  )
 
   const onApproachConsult = useCallback((tag: string) => {
     const parsed = parseApproachConsultTag(tag)
@@ -825,6 +843,7 @@ export function ForensicWorkbench({
   const play = async () => {
     const eng = engineRef.current
     if (!eng) return
+    bumpMariActivity()
     const head = ui.loop && ui.selection ? ui.selection.startSec : ui.playheadSec
     const from = compareDual ? fileSecFromTimeline(head) : head
     patchUi({ playing: true })
@@ -2059,6 +2078,11 @@ export function ForensicWorkbench({
         />
       ) : null}
       {status && <div className="fw-status">{status}</div>}
+      <MariWorkbenchHints
+        puzzleId={session.id}
+        activityCount={mariActivity}
+        puzzleCompleted={completed}
+      />
     </div>
   )
 }
