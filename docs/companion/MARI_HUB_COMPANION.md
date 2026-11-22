@@ -4,7 +4,7 @@ Assistente **Mari** (≠ Mariana Silva). Backlog de falas + estratégia de integ
 
 | Runtime hoje | Lacuna |
 |--------------|--------|
-| Abertura VN + hub B1 (`hub-welcome` + 4 beats) | Hub cotidiano B2–B9 (raro) |
+| Hub B1–B7 cotidiano (`hub-welcome` + beats por flag) | B8–B9 omitidos de propósito |
 | `mariPuzzleHints.ts` + `MariWorkbenchHints` em P01–P12 | Playtest de gatilhos / soft-lock |
 | `mariCompanion.ts`, `MariCompanionHost.tsx` | — |
 
@@ -47,7 +47,7 @@ Pendências do caderno continuam na voz de Augusto; Mari **não** substitui noti
 | Contexto | UI | Status |
 |----------|-----|--------|
 | Abertura B1 | VN `openingSceneBeats.ts` | ✅ |
-| Hub livre (mesa, sem painel/phone) | `MariCompanionHost` overlay ADV | ✅ parcial |
+| Hub livre (mesa, sem painel/phone) | `MariCompanionHost` overlay ADV | ✅ B1–B7 |
 | **Bancada forense** (Audio Lab → `ForensicWorkbench` / P10 `RingsSession`) | `MariWorkbenchHints` — balão canto, `data-testid=mari-workbench-hint` | ✅ |
 | VN / reflexão / telefone aberto | Silêncio | ✅ |
 
@@ -142,21 +142,34 @@ Escalada em código: `nextMariPuzzleHintTier()` — h1 imediato; h2 após `activ
 **Augusto:** Certo. Tô saindo.
 <!-- REFATORAÇÃO FIM -->
 
-### Blocos 2–9 (cotidiano)
+### Blocos 2–7 — em `mariCompanion.ts`
 
-Poucos beats cada — só onde reforçar casa/personagem. Não obrigatório por bloco.
+| id | seenFlag | requer (resumo) | notas |
+|----|----------|-----------------|-------|
+| `hub-b02-vertice` | `mari_hub_b02_vertice_seen` | `block02_vertice_visit_done` | ¬ `block03_started` |
+| `hub-b02-elisa-thread` | `mari_hub_b02_elisa_seen` | Lucas + crossref Vértice | ¬ `block03_started` |
+| `hub-b03-nico` | `mari_hub_b03_nico_seen` | `block03_nico_interview_done` | ¬ `block04_started` |
+| `hub-b03-janus` | `mari_hub_b03_janus_seen` | `block03_janus_done` | ¬ `block04_hexagon_done` |
+| `hub-b04-hex-delivery` | `mari_hub_b04_hex_seen` | `block04_hex_received` | ¬ `block04_hexagon_done` |
+| `hub-b04-andre` | `mari_hub_b04_andre_seen` | `block04_andre_interview_done` | ¬ `block05_started` |
+| `hub-b05-jana` | `mari_hub_b05_jana_seen` | `block05_jana_interview_done` | ¬ `block06_started` |
+| `hub-b06-operation` | `mari_hub_b06_operation_seen` | `block06_operation_done` | ¬ `block07_started` |
+| `hub-b07-hospital-twist` | `mari_hub_b07_hospital_seen` | `block07_hospital_deposit_done` | ¬ Henrique / `block08_started` |
 
-| id proposto | gatilho | Fala |
-|-------------|---------|------|
-| `hub-b02-…` | — | <!-- REFATORAÇÃO INÍCIO --><!-- REFATORAÇÃO FIM --> |
+### Blocos 8–9
+
+| id | Status |
+|----|--------|
+| `hub-b08-morsa` | **SKIP** — ritmo de câmeras/confronto |
+| `hub-b09-silence` | **SKIP** — encerramento só Augusto |
 
 ---
 
 ## Próximo
 
 1. Playtest timing (h2/h3) em sessões longas.  
-2. Hub B2–B9 só onde faltar respiro narrativo.  
-3. Opcional: `dump:story-master` incluir hints da Mari.
+2. Playtest fila de beats no hub (jogador que pula idas à mesa).  
+3. Opcional: `dump:story-master` incluir hints + hub Mari.
 
 ---
 

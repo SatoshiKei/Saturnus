@@ -126,6 +126,217 @@ export const MARI_COMPANION_BEATS: MariCompanionBeat[] = [
       },
     ],
   },
+  {
+    id: 'hub-b02-vertice',
+    seenFlag: 'mari_hub_b02_vertice_seen',
+    requireFlags: ['block02_vertice_visit_done'],
+    blockIfFlags: ['mari_hub_b02_vertice_seen', 'block03_started'],
+    lines: [
+      {
+        speaker: 'Mari',
+        portraitId: 'mari',
+        text: 'Casa noturna que passou por reforma e troca de gente costuma ter arquivo capenga — igual prateleira de supermercado depois de promoção. Se sobrou alguma coisa daquela época, tá enfiada no canto que ninguém quis limpar.',
+      },
+      {
+        speaker: 'Augusto',
+        portraitId: 'augusto',
+        text: 'Eles não ajudaram muito hoje.',
+      },
+      {
+        speaker: 'Mari',
+        portraitId: 'mari',
+        text: 'Normal. Quem vive de madrugada odeia olhar pra cara de alguém antes do almoço.',
+      },
+    ],
+  },
+  {
+    id: 'hub-b02-elisa-thread',
+    seenFlag: 'mari_hub_b02_elisa_seen',
+    requireFlags: ['block02_lucas_interview_done', 'block02_vertice_set_crossref'],
+    blockIfFlags: ['mari_hub_b02_elisa_seen', 'block03_started'],
+    lines: [
+      {
+        speaker: 'Mari',
+        portraitId: 'mari',
+        text: 'Quando processo velho entra no meio de caso novo, o pessoal já vem de guarda alta. Todo mundo jura que já deu o recado inteiro e não tem mais nada pra falar.',
+      },
+      {
+        speaker: 'Augusto',
+        portraitId: 'augusto',
+        text: 'E quase sempre esconde o resto.',
+      },
+      {
+        speaker: 'Mari',
+        portraitId: 'mari',
+        text: 'Ou só cansou de repetir a mesma ladainha.',
+      },
+    ],
+  },
+  {
+    id: 'hub-b03-nico',
+    seenFlag: 'mari_hub_b03_nico_seen',
+    requireFlags: ['block03_nico_interview_done'],
+    blockIfFlags: ['mari_hub_b03_nico_seen', 'block04_started'],
+    lines: [
+      {
+        speaker: 'Mari',
+        portraitId: 'mari',
+        text: 'Gente de cabine e de palco tem uma relação esquisita com relógio — pra eles, a noite só acaba quando apagam a luz ou quando a cabeça pifa.',
+      },
+      {
+        speaker: 'Augusto',
+        portraitId: 'augusto',
+        text: 'Ele não deu hora certa de nada.',
+      },
+      {
+        speaker: 'Mari',
+        portraitId: 'mari',
+        text: 'Nunca dão. Só lembram quem tava fazendo barulho e quem sumiu antes da saideira.',
+      },
+    ],
+  },
+  {
+    id: 'hub-b03-janus',
+    seenFlag: 'mari_hub_b03_janus_seen',
+    requireFlags: ['block03_janus_done'],
+    blockIfFlags: ['mari_hub_b03_janus_seen', 'block04_hexagon_done'],
+    lines: [
+      {
+        speaker: 'Mari',
+        portraitId: 'mari',
+        text: 'Não é a primeira vez que alguém confunde relógio mal ajustado com verdade absoluta. O Siqueira vivia implicando com horário de log antes de acreditar em papel timbrado.',
+      },
+      {
+        speaker: 'Augusto',
+        portraitId: 'augusto',
+        text: 'Desta vez o relógio fazia diferença.',
+      },
+      {
+        speaker: 'Mari',
+        portraitId: 'mari',
+        text: 'Pois é. Até relógio parado acerta duas vezes, mas relógio torto só atrapalha.',
+      },
+    ],
+  },
+  {
+    id: 'hub-b04-hex-delivery',
+    seenFlag: 'mari_hub_b04_hex_seen',
+    requireFlags: ['block04_hex_received'],
+    blockIfFlags: ['mari_hub_b04_hex_seen', 'block04_hexagon_done'],
+    lines: [
+      {
+        speaker: 'Mari',
+        portraitId: 'mari',
+        text: 'Ligação muda seguida de pacote solto assim não veio por trâmite normal da casa, não. Alguém fez questão de bater na porta sem deixar cartão de visita.',
+      },
+      {
+        speaker: 'Augusto',
+        portraitId: 'augusto',
+        text: 'E o fixo tocou direto aqui.',
+      },
+      {
+        speaker: 'Mari',
+        portraitId: 'mari',
+        text: 'Pois é. Às vezes a delegacia parece caixa de correio de quem não quer dar as caras.',
+      },
+    ],
+  },
+  {
+    id: 'hub-b04-andre',
+    seenFlag: 'mari_hub_b04_andre_seen',
+    requireFlags: ['block04_andre_interview_done'],
+    blockIfFlags: ['mari_hub_b04_andre_seen', 'block05_started'],
+    lines: [
+      {
+        speaker: 'Mari',
+        portraitId: 'mari',
+        text: 'Quando preso manda parente parar de mexer no passado, quase nunca é por falta de assunto. Ou tá protegendo alguém, ou tá tentando não deixar estourar outro fio.',
+      },
+      {
+        speaker: 'Augusto',
+        portraitId: 'augusto',
+        text: 'Ele disse que era pra poupar a irmã.',
+      },
+      {
+        speaker: 'Mari',
+        portraitId: 'mari',
+        text: 'Pode até ser. Mas cadeia ensina a medir cada palavra antes de soltar.',
+      },
+    ],
+  },
+  {
+    id: 'hub-b05-jana',
+    seenFlag: 'mari_hub_b05_jana_seen',
+    requireFlags: ['block05_jana_interview_done'],
+    blockIfFlags: ['mari_hub_b05_jana_seen', 'block06_started'],
+    lines: [
+      {
+        speaker: 'Mari',
+        portraitId: 'mari',
+        text: 'Tem gente que passa anos tentando engessar uma história só pra não ter que encarar a própria parte nela. Quando alguém cutuca, o pessoal reage como se fosse invasão de domicílio.',
+      },
+      {
+        speaker: 'Augusto',
+        portraitId: 'augusto',
+        text: 'Ela fechou a cara na hora.',
+      },
+      {
+        speaker: 'Mari',
+        portraitId: 'mari',
+        text: 'Quem quer virar a página não gosta que fiquem passando marca-texto atrás.',
+      },
+    ],
+  },
+  {
+    id: 'hub-b06-operation',
+    seenFlag: 'mari_hub_b06_operation_seen',
+    requireFlags: ['block06_operation_done'],
+    blockIfFlags: ['mari_hub_b06_operation_seen', 'block07_started'],
+    lines: [
+      {
+        speaker: 'Mari',
+        portraitId: 'mari',
+        text: 'Operação de madrugada sempre deixa a sala cheirando a café requentado, papel molhado e gente com cara de sono. Pelo menos agora tem gente prestando depoimento em vez de fugir.',
+      },
+      {
+        speaker: 'Augusto',
+        portraitId: 'augusto',
+        text: 'Falta fazer a história fechar.',
+      },
+      {
+        speaker: 'Mari',
+        portraitId: 'mari',
+        text: 'Isso nunca vem de bandeja.',
+      },
+    ],
+  },
+  {
+    id: 'hub-b07-hospital-twist',
+    seenFlag: 'mari_hub_b07_hospital_seen',
+    requireFlags: ['block07_hospital_deposit_done'],
+    blockIfFlags: [
+      'mari_hub_b07_hospital_seen',
+      'block07_henrique_identified',
+      'block08_started',
+    ],
+    lines: [
+      {
+        speaker: 'Mari',
+        portraitId: 'mari',
+        text: 'Quando prontuário velho e nome trocado começam a cruzar caminho, o caso muda de figura num piscar de olhos. Parece que cada gaveta aberta puxa outra que ninguém tinha pedido.',
+      },
+      {
+        speaker: 'Augusto',
+        portraitId: 'augusto',
+        text: 'E o rastro dela passa por isso.',
+      },
+      {
+        speaker: 'Mari',
+        portraitId: 'mari',
+        text: 'Passa. E cada vez menos parece coincidência de plantão.',
+      },
+    ],
+  },
 ]
 
 export type MariCompanionPickContext = {

@@ -796,16 +796,17 @@
   transition: opacity 480ms ease;
 }
 
-.block01-opening--out {
-  opacity: 0;
-}
-
 .block01-opening__date {
   margin: 0;
   font-size: clamp(15px, calc(var(--u, 1) * 18px), 22px);
   letter-spacing: 0.06em;
   color: rgba(226, 223, 213, 0.88);
   animation: block01-date-in 0.35s ease both;
+  transition: opacity 480ms ease;
+}
+
+.block01-opening--out .block01-opening__date {
+  opacity: 0;
 }
 
 @keyframes block01-date-in {

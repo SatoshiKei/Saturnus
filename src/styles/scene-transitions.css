@@ -107,6 +107,9 @@
   z-index: 200;
   pointer-events: auto;
 }
+.tr-refl-layer .vn-nvl.tr-refl {
+  animation: none;
+}
 /* Reflexão: reusa a casca NVL; fundo de cena sob o véu */
 .tr-refl.vn-nvl {
   z-index: 200;

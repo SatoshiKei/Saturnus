@@ -320,7 +320,16 @@ export function SceneRunner({
       (!def.whenFlag || s.flags[def.whenFlag]) &&
       (gallery || !s.flags[seenKey])
     if (showRefl) {
-      setPhase('reflection')
+      setBlack(true)
+      const delay = prefersReducedMotion() ? 0 : 320
+      timers.current.push(
+        window.setTimeout(() => {
+          setPhase('reflection')
+          timers.current.push(
+            window.setTimeout(() => setBlack(false), prefersReducedMotion() ? 0 : 120),
+          )
+        }, delay),
+      )
       return
     }
     startOutro()

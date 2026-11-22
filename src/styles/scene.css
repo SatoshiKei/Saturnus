@@ -52,6 +52,13 @@
   filter: brightness(0.42) blur(3px);
 }
 
+/* Mesa interativa some enquanto VN/reflexão/abertura cobrem o hub (evita flash da delegacia). */
+.scene-stage--hub-desk-hidden .scene-canvas,
+.scene-stage--hub-desk-hidden .scene-hud {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 /* ───────────── Objetos da cena ───────────── */
 .scene-object {
   position: absolute;

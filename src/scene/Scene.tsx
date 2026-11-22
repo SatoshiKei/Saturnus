@@ -160,15 +160,17 @@ export function Scene() {
   const pending = useRef<number | null>(null)
 
   const cinematic = Boolean(locationScene || (soloReflectionId && soloReflectionDef))
+  const openingActive = !openingDone && !inv.flags.block01_opening_seen
+  const hubDeskHidden = Boolean(cinematic || returnFade || openingActive)
   const overlaysLocked = Boolean(cinematic || returnFade)
   const soloReflectionActive = Boolean(!locationScene && soloReflectionId && soloReflectionDef)
 
-  // Pausar discoveries enquanto a reflection solo cobre o hub.
+  // Pausar discoveries enquanto abertura ou reflection solo cobrem o hub.
   useEffect(() => {
-    if (!soloReflectionActive) return
+    if (!soloReflectionActive && !openingActive) return
     setFullscreenScene(true)
     return () => setFullscreenScene(false)
-  }, [soloReflectionActive])
+  }, [soloReflectionActive, openingActive])
 
   useEffect(() => {
     if (!cinematic) return
@@ -334,7 +336,7 @@ export function Scene() {
   return (
     <div className="scene-viewport" ref={viewportRef} data-testid="investigation-scene">
       <div
-        className={`scene-stage${phoneOpen ? ' scene-stage--phone-open' : ''}${hubPanel ? ' scene-stage--hub-open' : ''}`}
+        className={`scene-stage${phoneOpen ? ' scene-stage--phone-open' : ''}${hubPanel ? ' scene-stage--hub-open' : ''}${hubDeskHidden ? ' scene-stage--hub-desk-hidden' : ''}`}
         style={
           {
             left: scale.offsetX,
@@ -399,7 +401,7 @@ export function Scene() {
           </div>
         ) : null}
 
-        {!menuOpen && !openingDone && !inv.flags.block01_opening_seen ? (
+        {!menuOpen && openingActive ? (
           <Block01Opening onDone={() => setOpeningDone(true)} />
         ) : null}
 
