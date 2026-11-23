@@ -33,4 +33,9 @@ Fluxo tutorial (overlays sobre UI real):
 Ferramentas globais:
   Compare (por arraste), Clock align, Timing, Files (.txt sem waveform).
 
+Finding técnico (handler / caderno, não na bancada):
+  puzzle04FindingText =
+  "Offset de relógio formalizado: referência externa adiantada +00:07:30 em relação ao relógio local da cabine."
+
 Investigação (Caderno / timeline) recebe finding após handler — não a bancada.
+Conclusão narrativa (Sandra / Elisa) vem das entrevistas — não deste string literal.

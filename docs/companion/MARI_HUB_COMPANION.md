@@ -20,7 +20,7 @@ Durante cada um dos **12 puzzles**, a Mari faz **2 a 3 comentários** enquanto A
 - Tom: colega que já viu perícia estranha na mesma ferramenta — “começa pelo ruído de fundo”, “compara as duas janelas”, “isso aqui não fecha se o horário não bater”.
 - **Pode** apontar **modo de trabalho** (espectrograma vs waveform, comparar fontes, timeline, ordem dos clipes). **Não** deve entregar solução literal (frequência exata, PIN, sequência final, nome do suspeito).
 - Disparo sugerido por puzzle: **(1)** abertura da sessão, **(2)** após tempo ou primeiro progresso parcial, **(3)** se o jogador estiver parado / segunda tentativa (anti-softlock leve).
-- Referência técnica (só dev): `docs/puzzles/puzzleNN_tutorial.txt` → traduzir para voz da Mari, não copiar UI.
+- Referência técnica (só dev): `docs/puzzles/PUZZLES_MASTER.md` (tutoriais P01–P12 completos) → traduzir para voz da Mari, não copiar UI.
 
 ### Secundário — cotidiano no hub
 
@@ -84,7 +84,8 @@ Hub cotidiano: `requireFlags` / `blockIfFlags` / `seenFlag` como hoje.
 
 **Fonte canônica de copy:** `src/data/companion/mariPuzzleHints.ts`  
 **Runtime:** `MariWorkbenchHints` (`ForensicWorkbench` + `RingsSession` para P10).  
-**Flags:** `mari_pNN_hN_seen` ao fechar o balão (“Entendi”).
+**Flags:** `mari_pNN_hN_seen` ao fechar o balão (“Entendi”).  
+**Revisão (etapas + copy sugerida):** [`MARI_PUZZLE_HINTS_AUDIT.md`](MARI_PUZZLE_HINTS_AUDIT.md)
 
 | puzzleId | h1 | h2 | h3 |
 |----------|----|----|-----|
@@ -185,5 +186,5 @@ Escalada em código: `nextMariPuzzleHintTier()` — h1 imediato; h2 após `activ
 ## Referências
 
 - Voz: `docs/gameplay/CHARACTER_VOICES.md`  
-- Puzzles (dev): `docs/puzzles/puzzleNN_tutorial.txt`  
+- Puzzles (dev): `docs/puzzles/PUZZLES_MASTER.md`  
 - Código: `mariPuzzleHints.ts`, `MariWorkbenchHints.tsx`, `mariCompanion.ts`, `MariCompanionHost.tsx`

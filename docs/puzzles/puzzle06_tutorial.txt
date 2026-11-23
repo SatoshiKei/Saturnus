@@ -45,24 +45,28 @@ Como jogar na Bancada
 5. Sem botão DECODE / campo de PIN na Bancada.
 
 
-Integração
-----------
-Após Spectrogram nos seis arquivos:
-  flag block04_hexagon_done
-  evidência hex_spectral_patterns
-    “Os seis arquivos contêm padrões espectrais deliberadamente estruturados.”
-  (NÃO registra 481526)
-  libera pedido de perícia / forensics_unlocked
+Integração (duas fases — ver canonicalPuzzleCompletion P06)
+-------------------------------------------------------------
+FASE A — Survey na Bancada (espectrograma nos seis UNK):
+  runHexagonSpectrogramSurvey
+  → flag block04_hex_spectrograms_inspected
+  → evidência hex_spectral_patterns
+  → flag block04_forensics_unlocked
+  → task_phone_forensics (pedir perícia no aparelho, se aplicável)
+  (NÃO registra 481526 na bancada)
 
-Diário oculto (keypad existente): só 481526 abre.
-Achievement HEXÁGONO (ach-hexagon): hexágono feito + diário desbloqueado.
+FASE B — Diário no celular Mariana (após laudo / block04_forensics_access):
+  tryDiaryPin('481526')
+  → onHexagonSolved → flag block04_hexagon_done
+  → diaryUnlocked, hidden_diary_recovered
+Achievement HEXÁGONO (ach-hexagon): block04_hexagon_done + diário desbloqueado.
 
 
 Story actions / flags
 ---------------------
-onHexCallsPreserved → addEvidence hex_audio_unk_01…06, block04_hexagon_available
-runHexagonSpectrogramSurvey / onHexagonSolved → block04_hexagon_done, hex_spectral_patterns
-tryDiaryPin('481526') → diaryUnlocked, hidden_diary_recovered, discoverPassword diary
+onHexCallsPreserved → evidências hex_audio_unk_01…06, block04_hexagon_available
+runHexagonSpectrogramSurvey → block04_hex_spectrograms_inspected (+ hex_spectral_patterns)
+onHexagonSolved / PIN correto → block04_hexagon_done
 
 
 DEV MODE

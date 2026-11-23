@@ -1,136 +1,99 @@
 PUZZLE 03 — ANÉIS
-Documento de desenvolvimento — NÃO aparece para o jogador.
-
-Arquivo: REC_VTX_OLD_01.m4a
-evidenceId: rec_vtx_old_01
-Runtime: public/assets/audio/forensic/puzzle03/rec_vtx_old_01_final.mp3
-Duração: 180 s
-
+Documento de desenvolvimento — NÃO aparece ao jogador.
+Sessão: puzzle-03-anels · evidência: rec_vtx_old_01
+Completion: speech-recovery (voz masculina incidental na balada).
 
 ========================================================================
 O QUE O JOGADOR ESTÁ RESOLVENDO
 ========================================================================
 
-A gravação da balada tem três regiões:
+Gravação da balada (REC_VTX_OLD_01). Entre música e DJ há gritaria de plantonista
+— uma voz masculina embutida na mixagem, abafada, que precisa ser isolada.
 
-  A   — música antes do DJ abrir o microfone
-  MIC — voz do DJ + transição / crowd
-  B   — música depois da intervenção
+Resultado na Bancada: trecho isolado + conquista ANÉIS.
+Nico NÃO é identificado aqui — só na 2ª visita ao Vértice com o trecho.
 
-Pergunta técnica: qual a transição ordenada A→B?
-
-Resultado do puzzle na Bancada: chave A→B isolada (conquista ANÉIS).
-Nico NÃO aparece aqui — só na 2ª visita ao Vértice.
+(Doc legado descrevia fingerprint A→B e transição musical — substituído pelo
+isolamento de voz. Código arquivado em puzzle03Fingerprint.ts para futura Faixa B.)
 
 
 ========================================================================
 COMO CHEGAR AO ARQUIVO
 ========================================================================
 
-1. P2 (áudio de Rafael no celular de Mariana) → aponta Vértice.
-2. 1ª visita ao Vértice → Mariana / arquivos históricos existem.
-   NÃO entrega REC_VTX_OLD_01. NÃO identifica Nico.
-3. WhatsApp Augusto → Rafael → pedir a gravação original que ela lhe mandou.
-4. Rafael envia a balada → evidência rec_vtx_old_01 na Bancada.
+1. P2 (Rafael no celular de Mariana) → aponta Vértice.
+2. 1ª visita ao Vértice → arquivos históricos; NÃO entrega REC_VTX_OLD_01; NÃO Nico.
+3. WhatsApp Augusto → Rafael → pedir gravação que Mariana tinha enviado.
+4. Rafael envia → rec_vtx_old_01 na Bancada.
 
 Proveniência: Mariana → Rafael → Augusto (WhatsApp).
-NÃO é arquivo obtido no Vértice. NÃO é a voz do P2.
+NÃO é arquivo obtido no Vértice. NÃO é o áudio do P2.
 
 
 ========================================================================
-TIMING DO MASTER (referência)
+TIMING (puzzle03VoiceMeta.json)
 ========================================================================
 
-  00:00 – 01:12   região A (música pré-DJ)
-  01:12 – 01:30   MIC / transição (djStart 72.000 → djEnd 90.678)
-  01:30 – 03:00   região B (música pós-DJ)
+Duração: 180 s
+Voz alvo (seg_club_male): ~94.0 – 100.7 s
+Janela recomendada de perfil de ruído (sem fala): ~12.0 – 58.0 s
 
-Janelas limpas para fingerprint (evitar bordas do MIC):
-
-  A:  00:08 – 01:08   (8.0 – 68.0 s)
-  B:  01:36 – 02:30   (96.0 – 150.0 s)
-
-MIC (não usar para match forte):
-
-  01:12 – 01:30
+Stems de trabalho: stem_club_background / stem_club_voice_buried
+Master runtime: public/assets/audio/forensic/puzzle03/rec_vtx_old_01_final.mp3
 
 
 ========================================================================
 PASSO A PASSO NA BANCADA
 ========================================================================
 
-1. Abrir REC_VTX_OLD_01 / ouvir.
-   Perceber: música → microfone do DJ → música diferente (ou outra região).
+1. Abrir REC_VTX_OLD_01 / ouvir — música de clube + intervenção do DJ + trecho
+   com fala masculina quase inaudível no meio da noite.
 
-2. Selecionar um trecho limpo da região A (ex.: ~00:20–00:50).
-   Analysis → Fingerprint Search.
-   Esperado: match dominante TRACK_REF_A (forte).
+2. Processamento spectral (mesma família de ferramentas do P01, escopo menor):
+   capturar perfil de ruído num trecho limpo longo (música/pista sem a voz alvo)
+   e aplicar redução espectral até o segmento desbloquear em Recovered Speech.
 
-3. Selecionar um trecho limpo da região B (ex.: ~01:40–02:10).
-   Fingerprint Search de novo.
-   Esperado: match dominante TRACK_REF_B (forte).
+3. Play com playhead dentro do trecho recuperado — obrigatório para registrar
+   Recovered Speech (mesma regra geral da bancada).
 
-4. Com A e B confirmados, a UI estabelece transição A→B.
-   Archive do Vértice (local na bancada) pode filtrar por adjacência A→B.
-   Abrir sessão / ver record id é opcional para flavor — o operador
-   NÃO é revelado na bancada (“confirmar no Vértice”).
-
-5. Quando A→B estiver pronto → conclusão técnica:
+4. Conclusão técnica automática:
    - flag block02_rings_provisional
-   - evidence rec_vtx_fingerprint_transition
+   - evidência club_voice_isolated
    - conquista ANÉIS (ach-rings)
-   - Vértice reabre no mapa para a 2ª visita
+   - task_vertice_cross_reference
+   - Vértice reabre para 2ª visita
 
-
-Seleção ruim (só MIC, crowd, crossfade curto):
-  confiança baixa / sem match forte — esperado.
+NÃO há fingerprint A→B nem archive de set na sessão atual.
 
 
 ========================================================================
 DEPOIS DO PUZZLE (não é a Bancada)
 ========================================================================
 
-2ª visita ao Vértice → tópico “Cruzar transição musical com registros de set”
-  → Sandro filtra o HD com A→B
-  → Nicolas “Nico” Prado Reis
-  → block02_vertice_set_crossref + nico_dj_identified
-
-Só então: localizar / entrevistar Nico → P4.
+2ª visita ao Vértice com o trecho isolado → cruzamento com registros de set
+→ Nicolas “Nico” Prado Reis
+→ block02_vertice_set_crossref + nico_dj_identified
+→ desbloqueio entrevista Nico / P4.
 
 
 ========================================================================
-O QUE NÃO RESOLVE
-========================================================================
-
-- Só fingerprint A (ou só B)
-- Abrir sessão do archive sem A→B
-- Força bruta em registros sem análise
-- 1ª visita ao Vértice
-- Ouvir o áudio de Rafael (P2) de novo
-
-
-========================================================================
-IDs / FLAGS (dev)
-========================================================================
-
-Entrega do áudio:     block02_rafael_club_received + rec_vtx_old_01
-P3 técnico:           block02_rings_provisional + rec_vtx_fingerprint_transition
-Nico (2ª visita):     block02_vertice_set_crossref + nico_dj_identified
-Sessão canónica (id): vtx-set-2019-11-08-nico / VTX-SET-20-C
-Tracks:               TRACK_REF_A / TRACK_REF_B
-
-
-========================================================================
-STATUS DE ASSET (conteúdo musical)
+ASSET / DESIGN (dev)
 ========================================================================
 
 PENDING ASSET — P03_SECOND_TRACK_REQUIRED
+Arquivo puzzle03Fingerprint.ts mantém desenho A≠B para quando existir Source B
+aprovada; playtest atual usa master legado (uma música + DJ + voz enterrada).
 
-Design exige duas faixas genuinamente distintas (A ≠ B).
-Hoje só existe Source A aprovada em p3/:
-  Give-Me-Everything-Tonight-Hardtekk-The-Dark-Triad-Song.mp3
-Source B: ausente (não inventar / não stretch da mesma faixa).
+Build voz: tools/audio + carrier em puzzle03VoiceMeta.json (sem TTS).
 
-O master atual ainda é legado (uma música + DJ).
-Arquitetura Fingerprint + gates acima já funciona para playtest;
-o design musical só fica FIXED quando B real entrar e o master for rebuildado.
+
+========================================================================
+FLAGS (canônico)
+========================================================================
+
+Entrega: block02_rafael_club_received + rec_vtx_old_01
+P3 técnico: block02_rings_provisional + club_voice_isolated
+Nico: block02_vertice_set_crossref + nico_dj_identified (2ª visita)
+
+Handler: runProvisionalRingsAnalysis
+Session: puzzle03AnelsSession · completion.kind = speech-recovery
