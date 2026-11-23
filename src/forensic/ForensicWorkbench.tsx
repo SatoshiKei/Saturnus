@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { MariWorkbenchHints } from '../components/investigation/MariWorkbenchHints'
+import { forensicUiToMariProgress } from '../data/companion/mariPuzzleProgressHints'
 import '../styles/forensic-workbench.css'
 import { ForensicAudioEngine } from './forensicAudio'
 import type { PlayheadLiveClock } from './playheadLive'
@@ -209,6 +210,10 @@ export function ForensicWorkbench({
   const derivedBag = useMemo(
     () => getInvestigationState().forensicDerivedArtifacts ?? {},
     [ui.memoryConfirmedSources.length, ui.memorySearchHits.length],
+  )
+  const mariForensicProgress = useMemo(
+    () => forensicUiToMariProgress(ui, ui.activeSourceId),
+    [ui],
   )
   /** Só o arquivo ativo com stems — sem fallback para outro áudio. */
   const playbackSource = source?.audio ? source : null
@@ -2082,6 +2087,7 @@ export function ForensicWorkbench({
         puzzleId={session.id}
         activityCount={mariActivity}
         puzzleCompleted={completed}
+        forensicProgress={mariForensicProgress}
       />
     </div>
   )

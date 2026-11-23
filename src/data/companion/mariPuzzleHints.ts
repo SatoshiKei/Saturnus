@@ -296,35 +296,3 @@ const packByPuzzleId = new Map(MARI_PUZZLE_HINTS.map((p) => [p.puzzleId, p]))
 export function mariHintsForPuzzle(puzzleId: string): MariPuzzleHint[] {
   return packByPuzzleId.get(puzzleId)?.hints ?? []
 }
-
-export function nextMariPuzzleHintTier(
-  puzzleId: string,
-  flags: Record<string, boolean>,
-  activityCount: number,
-  idleSec: number,
-  sessionOpenSec: number,
-): MariPuzzleHint | null {
-  const hints = mariHintsForPuzzle(puzzleId)
-  if (!hints.length) return null
-
-  const byTier = (tier: 1 | 2 | 3) => hints.find((h) => h.tier === tier)
-
-  const h1 = byTier(1)
-  const h2 = byTier(2)
-  const h3 = byTier(3)
-
-  if (h1 && !flags[h1.seenFlag] && sessionOpenSec >= 0.8) return h1
-  if (h1 && !flags[h1.seenFlag]) return null
-
-  if (h2 && !flags[h2.seenFlag] && (activityCount >= 1 || sessionOpenSec >= 35)) return h2
-  if (h2 && !flags[h2.seenFlag]) return null
-
-  if (
-    h3 &&
-    !flags[h3.seenFlag] &&
-    (idleSec >= 50 || activityCount >= 4 || sessionOpenSec >= 100)
-  ) {
-    return h3
-  }
-  return null
-}

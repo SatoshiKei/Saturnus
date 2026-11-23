@@ -1,7 +1,7 @@
 # Mari — auditoria de dicas na Bancada (P01–P12)
 
 Revisão **autoritativa** contra `docs/puzzles/PUZZLES_MASTER.md`.  
-**Runtime:** `src/data/companion/mariPuzzleHints.ts` · gatilhos: `nextMariPuzzleHintTier` + `MariWorkbenchHints.tsx`.
+**Runtime:** `mariPuzzleHints.ts` (copy) · `mariPuzzleProgressHints.ts` (marcos) · `MariWorkbenchHints.tsx`.
 
 Cada hint é julgada por:
 
@@ -23,7 +23,7 @@ Cada hint é julgada por:
 
 Hoje: h1 ~0,8 s após abrir; h2 após 1 interação **ou** 35 s; h3 após idle 50 s **ou** 4 interações **ou** 100 s.
 
-**Problema:** ainda é cronômetro adivinhando o que o jogador entendeu — não substitui marcos reais.
+**Antes:** cronômetro + `activityCount`. **Agora (código):** marcos em `mariPuzzleProgressHints.ts`; fallback só após ~120 s / ~180 s + idle.
 
 **Diretriz (implementação futura)** — **não** resolver só com `activityCount >= 3 && sessionOpenSec >= 90`:
 
@@ -186,11 +186,14 @@ Cruzamento **doc-tabela-logistica-g17n** = investigação pós-bancada, não Mar
 
 ## Backlog de implementação (gatilhos)
 
-1. **`mariPuzzleProgressHints.ts`** (ou extensão de `nextMariPuzzleHintTier`) — predicados por `puzzleId` + tier, lendo UI forense / flags leves.
-2. **P10 / P11 / P12** — integrar `bumpMariActivity` ou flags de fase nas UIs especializadas (`RingsSession`, rotation sources, memory search).
-3. **Cooldown** — após `dismiss`, bloquear tier seguinte por N segundos **ou** até marco.
-4. **Telemetria playtest** — `data-hint` + tempo até dispensar / concluir puzzle.
-5. **Descartado:** h2/h3 baseados só em `activityCount` + `sessionOpenSec` sem marco.
+| Item | Status |
+|------|--------|
+| `mariPuzzleProgressHints.ts` + marcos P01–P12 | ✅ |
+| `forensicUiToMariProgress` na `ForensicWorkbench` | ✅ |
+| `ringsProgress` no `RingsSession` (P10) | ✅ |
+| Cooldown ~28 s após dismiss | ✅ |
+| Telemetria playtest (`data-hint` + tempo) | pendente |
+| Refinar marcos com playtest (falsos positivos) | pendente |
 
 ---
 

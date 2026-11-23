@@ -89,11 +89,9 @@ Hub cotidiano: `requireFlags` / `blockIfFlags` / `seenFlag` como hoje.
 
 | puzzleId | h1 | h2 | h3 |
 |----------|----|----|-----|
-| `puzzle-01-cassini` … `puzzle-09-cassini-huygens` | abertura (~0,8 s) | progresso / ~35 s | idle / atividade |
-| `puzzle-10-rings` | idem | idem | — (2 dicas) |
-| `puzzle-11-saturn-rotation`, `puzzle-12-memory` | idem | idem | — (2 dicas) |
+| P01–P12 | ~0,8 s após abrir | **marco de fase** na UI (ver audit) | marco ou idle longo |
 
-Escalada em código: `nextMariPuzzleHintTier()` — h1 imediato; h2 após `activityCount` ou tempo; h3 após idle longo (quando existir).
+Escalada em código: `mariPuzzleProgressHints.ts` + `nextMariPuzzleHintTier()` — h1 imediato; h2/h3 após marcos forenses (`forensicUiToMariProgress`) ou P10 (`ringsProgress`); cooldown ~28 s após “Entendi”; fallback lento por idle (~120 s / ~180 s).
 
 ---
 

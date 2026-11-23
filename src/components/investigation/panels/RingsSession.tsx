@@ -442,6 +442,17 @@ export function RingsSession({ revealRequest = 0 }: { revealRequest?: number } =
     [fpOk, frOk, selectedRoute],
   )
 
+  const mariRingsProgress = useMemo(
+    () => ({
+      fpOk,
+      frOk,
+      routeResolved: routeUnlocked || (fpOk && frOk && selectedRoute === 'service'),
+      dvrInspected: structOk,
+      storageSearched: rawHits.length > 0,
+    }),
+    [fpOk, frOk, routeUnlocked, selectedRoute, structOk, rawHits.length],
+  )
+
   const openStill = (payload: StillLightbox) => {
     playSfx('ui')
     setLightbox(payload)
@@ -843,6 +854,7 @@ export function RingsSession({ revealRequest = 0 }: { revealRequest?: number } =
         puzzleId="puzzle-10-rings"
         activityCount={mariActivity}
         puzzleCompleted={fullyDone || revealDone}
+        ringsProgress={mariRingsProgress}
       />
     </div>
   )
