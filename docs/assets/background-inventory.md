@@ -56,6 +56,8 @@ Gerado a partir de `assets/manifest/backgrounds.json`. Reexecute após download:
 | misc-06-seaside-urban.jpg | assets/backgrounds/raw/misc/misc-06-seaside-urban.jpg | — | Unsplash | Unsplash License | Unsplash | misc | generic | Beira-mar urbano — Niterói/Rio genérico | ok | Substituir se 404; ver misc-06-alt |
 | misc-07-workshop-garage.jpg | assets/backgrounds/raw/misc/misc-07-workshop-garage.jpg | — | Unsplash | Unsplash License | Unsplash | misc | generic | Oficina / depósito | ok | Interior industrial |
 | misc-08-simple-house-exterior.jpg | assets/backgrounds/raw/misc/misc-08-simple-house-exterior.jpg | — | Unsplash | Unsplash License | Unsplash | misc | generic | Casa simples de testemunha | ok | Externa residencial neutra |
+| geraldo-01-boteco-backbar.jpg | assets/backgrounds/raw/bar/geraldo-01-boteco-backbar.jpg | assets/backgrounds/processed/bar/geraldo-01-boteco-backbar.jpg | Pexels | Pexels License | Quang Nguyen Vinh | bar | generic | Boteco do Geraldo — balcão e prateleiras com bebidas ao fundo | manifest | Sem pessoas; madeira quente; crop se aparecer rótulo legível |
+| sandra-01-living-inside.jpg | assets/backgrounds/raw/apartment/sandra-01-living-inside.jpg | assets/backgrounds/processed/apartment/sandra-01-living-inside.jpg | Pexels | Pexels License | Jean van der Meulen | apartment | generic | Sala da residência de Sandra (interior modesto) | manifest | Vazio; sem quadros com texto legível — crop lateral se preciso |
 
 ## Licenças (resumo)
 

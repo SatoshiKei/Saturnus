@@ -751,5 +751,35 @@
     "narrativeFit": "Casa simples de testemunha",
     "notes": "Externa residencial neutra",
     "process": false
+  },
+  {
+    "id": "geraldo-bar",
+    "category": "bar",
+    "filename": "geraldo-01-boteco-backbar.jpg",
+    "url": "https://images.pexels.com/photos/6877609/pexels-photo-6877609.jpeg?auto=compress&cs=tinysrgb&w=1920",
+    "sourcePage": "https://www.pexels.com/photo/empty-stools-by-bar-counter-6877609/",
+    "author": "Quang Nguyen Vinh",
+    "source": "Pexels",
+    "license": "Pexels License",
+    "region": "generic",
+    "tags": ["boteco", "bar", "garrafas", "balcao"],
+    "narrativeFit": "Boteco do Geraldo — balcão e prateleiras com bebidas ao fundo",
+    "notes": "Sem pessoas; madeira quente; crop se aparecer rótulo legível",
+    "process": true
+  },
+  {
+    "id": "sandra-home",
+    "category": "apartment",
+    "filename": "sandra-01-living-inside.jpg",
+    "url": "https://images.pexels.com/photos/1918291/pexels-photo-1918291.jpeg?auto=compress&cs=tinysrgb&w=1920",
+    "sourcePage": "https://www.pexels.com/photos/a-living-room-with-a-couch-and-a-table-1918291/",
+    "author": "Jean van der Meulen",
+    "source": "Pexels",
+    "license": "Pexels License",
+    "region": "generic",
+    "tags": ["sala", "casa", "testemunha", "sofa"],
+    "narrativeFit": "Sala da residência de Sandra (interior modesto)",
+    "notes": "Vazio; sem quadros com texto legível — crop lateral se preciso",
+    "process": true
   }
 ]

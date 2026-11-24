@@ -116,10 +116,10 @@ export const sceneBackgrounds: Record<SceneId, string> = {
   // Miro: sala de entrevista da detenção / polícia civil.
   miro: `${BG}/police/police-interrogation-room.png`,
 
-  // Residências — variantes reutilizáveis (escura / clara / hall); Bia tem asset próprio.
+  // Residências / visitas — variantes distintas; Geraldo = boteco; Sandra = sala própria.
   samuel: `${BG}/apartment/apartment-01-living-room.jpg`,
-  geraldo: `${BG}/apartment/apartment-01-living-room.jpg`,
-  sandra: `${BG}/apartment/apartment-01-living-room.jpg`,
+  geraldo: `${BG}/bar/geraldo-01-boteco-backbar.jpg`,
+  sandra: `${BG}/apartment/sandra-01-living-inside.jpg`,
   bia: `${BG}/apartment/apartment-bia-house.png`,
   jana: `${BG}/apartment/apartment-01-living-modest.jpg`,
   mauro: `${BG}/apartment/apartment-01-living-modest.jpg`,
