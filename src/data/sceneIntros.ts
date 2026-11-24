@@ -122,7 +122,7 @@ export const sceneBackgrounds: Record<SceneId, string> = {
   sandra: `${BG}/apartment/sandra-01-living-inside.jpg`,
   bia: `${BG}/apartment/apartment-bia-house.png`,
   jana: `${BG}/apartment/apartment-01-living-modest.jpg`,
-  mauro: `${BG}/apartment/apartment-01-living-modest.jpg`,
+  mauro: `${BG}/apartment/mauro-01-living-house.jpg`,
   rui: `${BG}/apartment/apartment-01-living-modest.jpg`,
   cecilia: `${BG}/apartment/apartment-04-hall-brazil-sp.jpg`,
 

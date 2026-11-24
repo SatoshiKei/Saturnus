@@ -844,5 +844,20 @@
     "notes": "Sem pessoas; processDark",
     "process": true,
     "processDark": true
+  },
+  {
+    "id": "mauro-home",
+    "category": "apartment",
+    "filename": "mauro-01-living-house.jpg",
+    "url": "https://images.pexels.com/photos/10551147/pexels-photo-10551147.jpeg?auto=compress&cs=tinysrgb&w=1920",
+    "sourcePage": "https://www.pexels.com/photo/a-spacious-living-room-with-couch-and-wooden-television-stand-10551147/",
+    "author": "Pexels",
+    "source": "Pexels",
+    "license": "Pexels License",
+    "region": "generic",
+    "tags": ["sala", "casa", "sofa", "tv", "suburbio"],
+    "narrativeFit": "Casa do Mauro (Rua do Cedro) — sala modesta com sofá e ventilador",
+    "notes": "Vazio; distinto de Sandra/Jana; conferir id na sourcePage",
+    "process": true
   }
 ]
