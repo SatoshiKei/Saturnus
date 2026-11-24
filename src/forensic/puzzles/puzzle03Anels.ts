@@ -28,8 +28,9 @@ export const puzzle03SpeechSegments: SpeechSegment[] = [
     text: voiceMeta.voice.recoveredText as string,
     startSec: voiceMeta.voice.startSec as number,
     durationSec: (voiceMeta.voice.endSec as number) - (voiceMeta.voice.startSec as number),
-    clarityThreshold: 0.44,
-    recoveryWeights: { center: 0.15, depth: 0.35, width: 0.25, noise: 0.25 },
+    clarityThreshold: 0.32,
+    /** P03 = só redução espectral (sem notch); pesos alinhados ao P01 «seg_cadeia». */
+    recoveryWeights: { center: 0.05, depth: 0.05, width: 0.05, noise: 0.85 },
     voiceWeight: 1.1,
     noiseWeight: 1.4,
     debrisWeight: 0.25,

@@ -157,11 +157,11 @@ export function Scene() {
   const [camera, setCamera] = useState<Camera | null>(null)
   const [hints, setHints] = useState(false)
   const [returnFade, setReturnFade] = useState(false)
-  const [openingDone, setOpeningDone] = useState(() => Boolean(inv.flags.block01_opening_seen))
+  const openingSeen = Boolean(inv.flags.block01_opening_seen)
   const pending = useRef<number | null>(null)
 
   const mariAptSceneActive = Boolean(
-    openingDone &&
+    openingSeen &&
       inv.flags.mari_apartment_scene_pending &&
       !inv.flags.mari_flashback_apt_0803_seen &&
       !locationScene &&
@@ -171,7 +171,7 @@ export function Scene() {
       !menuOpen,
   )
   const cinematic = Boolean(locationScene || (soloReflectionId && soloReflectionDef))
-  const openingActive = !openingDone && !inv.flags.block01_opening_seen
+  const openingActive = !openingSeen
   const hubDeskHidden = Boolean(cinematic || returnFade || openingActive || mariAptSceneActive)
   const overlaysLocked = Boolean(cinematic || returnFade || mariAptSceneActive)
   const soloReflectionActive = Boolean(!locationScene && soloReflectionId && soloReflectionDef)
@@ -194,10 +194,6 @@ export function Scene() {
       pending.current = null
     }
   }, [cinematic, closePhone, closeHub, deferSoloForMarianaPhone])
-
-  useEffect(() => {
-    if (inv.flags.block01_opening_seen) setOpeningDone(true)
-  }, [inv.flags.block01_opening_seen])
 
   useEffect(() => {
     const el = viewportRef.current
@@ -324,12 +320,12 @@ export function Scene() {
         handleClosePhone()
         return
       }
-      if (shell !== 'playing' || cinematic || hubPanel || !openingDone) return
+      if (shell !== 'playing' || cinematic || hubPanel || !openingSeen) return
       openPauseMenu()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [phoneOpen, handleClosePhone, shell, cinematic, hubPanel, openingDone])
+  }, [phoneOpen, handleClosePhone, shell, cinematic, hubPanel, openingSeen])
 
   const s = scale.scale
   const z = camera?.zoom ?? 1
@@ -412,9 +408,7 @@ export function Scene() {
           </div>
         ) : null}
 
-        {!menuOpen && openingActive ? (
-          <Block01Opening onDone={() => setOpeningDone(true)} />
-        ) : null}
+        {!menuOpen && openingActive ? <Block01Opening onDone={() => undefined} /> : null}
 
         {mariAptSceneActive ? (
           <MariApartmentReconstructionScene onDone={() => undefined} />
@@ -448,7 +442,7 @@ export function Scene() {
         {!soloReflectionActive && !locationScene && !hubPanel && !phoneOpen ? (
           <MemoryWordOverlay />
         ) : null}
-        {openingDone && !overlaysLocked && !menuOpen && !hubPanel && !phoneOpen ? (
+        {openingSeen && !overlaysLocked && !menuOpen && !hubPanel && !phoneOpen ? (
           <MariCompanionHost hubIdle />
         ) : null}
         {returnFade ? <div className="tr-return" data-testid="vn-return-fade" aria-hidden /> : null}

@@ -1,9 +1,16 @@
 import { describe, expect, it, beforeEach } from 'vitest'
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { speechRecoveryComplete } from '../../src/forensic/forensicEngine'
+import {
+  captureNoiseProfile,
+  evaluateSegmentClarity,
+  speechRecoveryComplete,
+  voiceSpansFromSource,
+} from '../../src/forensic/forensicEngine'
+import { DEFAULT_PROCESS, GENERIC_SPECTRAL_RULE } from '../../src/forensic/forensicTypes'
 import {
   puzzle03AnelsSession,
+  puzzle03Ideal,
   puzzle03SpeechSegments,
   puzzle03Timing,
   PUZZLE03_CLUB_VOICE_ISOLATED_SRC,
@@ -72,6 +79,41 @@ describe('Puzzle 03 — ANÉIS (voz na balada)', () => {
     expect(puzzle03SpeechSegments[0]!.text).not.toMatch(/nico/i)
     expect(getForensicSessionForEvidence('rec_vtx_old_01')?.completion?.kind).toBe('speech-recovery')
     expect(puzzle03Timing.voiceStartSec).toBeGreaterThan(90)
+  })
+
+  it('perfil limpo + spectral ideal desbloqueia clareza do segmento (sem depender de notch)', () => {
+    const spans = voiceSpansFromSource(recording)
+    const cap = captureNoiseProfile(
+      { startSec: 12, endSec: 58 },
+      recording.noiseRegions,
+      [],
+      spans,
+    )
+    expect(cap.ok).toBe(true)
+    if (!cap.ok) return
+    const process = {
+      ...DEFAULT_PROCESS,
+      spectralReduction: puzzle03Ideal.spectralReduction,
+      spectralSensitivity: puzzle03Ideal.spectralSensitivity,
+      spectralSmoothing: puzzle03Ideal.spectralSmoothing,
+    }
+    const base = {
+      FILE: 1,
+      CORRUPTED_BASE: 1,
+      VOICE: 3.2,
+      BACKGROUND_NOISE: 1,
+      TONE_1700: 1,
+      VOCAL_DEBRIS: 1,
+      CLICKS: 1,
+    }
+    const row = evaluateSegmentClarity(
+      puzzle03SpeechSegments[0]!,
+      process,
+      cap.profile,
+      base,
+      { spectral: GENERIC_SPECTRAL_RULE },
+    )
+    expect(row.clarityScore).toBeGreaterThanOrEqual(row.threshold)
   })
 
   it('conclusão técnica e narrativa: trecho isolado, Nico só na 2ª visita', () => {
