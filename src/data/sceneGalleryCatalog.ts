@@ -5,7 +5,7 @@ import {
   buildCanonicalCheckpointStateBefore,
   type CanonicalInterviewId,
 } from '../game/story/canonicalStoryManifest'
-import type { SceneId } from './sceneIntros'
+import { HUB_REFLECTION_BACKGROUND, sceneBackgrounds, type SceneId } from './sceneIntros'
 import type { LocationSceneRenderOpts } from '../scene/locationSceneRender'
 
 const VN_SCENE: Record<CanonicalInterviewId, SceneId> = {
@@ -56,6 +56,7 @@ const VN_TITLES: Record<CanonicalInterviewId, string> = {
 
 export type SceneGalleryKind =
   | 'opening'
+  | 'mari-apartment'
   | 'scene-runner'
   | 'vertice'
   | 'hospital-deposit'
@@ -74,6 +75,8 @@ export interface SceneGalleryEntry {
   renderOpts?: LocationSceneRenderOpts
   /** Ajustes finos ao estado preparado (galeria / rotas antecipadas). */
   patchPrep?: (state: InvestigationState) => void
+  /** Miniatura opcional (path em `public/`). */
+  thumbnail?: string
 }
 
 function pushEntry(list: SceneGalleryEntry[], entry: SceneGalleryEntry) {
@@ -90,6 +93,20 @@ export function buildSceneGalleryEntries(): SceneGalleryEntry[] {
     subtitle: '3 de novembro de 2026',
     kind: 'opening',
     prepBeforeCheckpoint: 'b01-start',
+  })
+
+  pushEntry(list, {
+    id: 'mari-apartment-0803',
+    title: 'Apartamento 402 — entrada',
+    subtitle: '3 de novembro · reconstrução com Mari',
+    kind: 'mari-apartment',
+    prepBeforeCheckpoint: 'b01-after-bo',
+    thumbnail: '/assets/scenes/apartment/mariana-402-interior-phone.jpg',
+    patchPrep: (st) => {
+      st.flags.block01_opening_seen = true
+      st.flags.mari_flashback_apt_0803_seen = false
+      st.flags.mari_apartment_scene_pending = false
+    },
   })
 
   for (const cp of CANONICAL_STORY_MANIFEST) {
@@ -256,4 +273,30 @@ export function prepGalleryEntryState(entry: SceneGalleryEntry): InvestigationSt
   const st = buildCanonicalCheckpointStateBefore(entry.prepBeforeCheckpoint)
   entry.patchPrep?.(st)
   return st
+}
+
+const MORSA_GALLERY_THUMB = '/assets/block08/rings/morsa-enter-1.png'
+
+/** Miniatura retangular para o cartão da galeria. */
+export function galleryThumbnailFor(entry: SceneGalleryEntry): string {
+  if (entry.thumbnail) return entry.thumbnail
+  switch (entry.kind) {
+    case 'opening':
+      return HUB_REFLECTION_BACKGROUND
+    case 'mari-apartment':
+      return '/assets/scenes/apartment/mariana-402-interior-phone.jpg'
+    case 'morsa-cctv':
+      return MORSA_GALLERY_THUMB
+    case 'vertice':
+    case 'scene-runner':
+    case 'hospital-deposit':
+    case 'early':
+      if (entry.sceneId && sceneBackgrounds[entry.sceneId]) {
+        return sceneBackgrounds[entry.sceneId]
+      }
+      break
+    default:
+      break
+  }
+  return HUB_REFLECTION_BACKGROUND
 }

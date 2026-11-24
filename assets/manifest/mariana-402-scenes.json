@@ -1,0 +1,20 @@
+[
+  {
+    "id": "mariana-402-door",
+    "filename": "porta-angelim-solida-fri-13.webp",
+    "publicPath": "public/assets/scenes/apartment/porta-angelim-solida-fri-13.webp",
+    "source": "local",
+    "narrativeFit": "Porta sólida de angelim — entrada do apartamento (402)"
+  },
+  {
+    "id": "mariana-402-interior",
+    "filename": "mariana-402-interior-phone.jpg",
+    "publicPath": "public/assets/scenes/apartment/mariana-402-interior-phone.jpg",
+    "url": "https://images.pexels.com/photos/7027998/pexels-photo-7027998.jpeg?auto=compress&cs=tinysrgb&w=2400",
+    "sourcePage": "https://www.pexels.com/photo/empty-bedroom-with-wooden-flooring-7027998/",
+    "author": "Curtis Adams",
+    "source": "Pexels",
+    "license": "Pexels License",
+    "narrativeFit": "Quarto vazio — apartamento despojado no local"
+  }
+]

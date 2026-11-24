@@ -307,7 +307,7 @@ export const callScripts: CallScript[] = [
       { who: 'other', text: 'Perícia, dispositivos móveis.' },
       {
         who: 'augusto',
-        text: 'Augusto Nogueira. Aparelho apreendido de Mariana Silva, lacre 0412. Preciso de uma análise dos pacotes instalados: o que existe no sistema além do que a tela mostra.',
+        text: 'Augusto Nogueira. Aparelho apreendido de Mariana Silva, lacre 0402. Preciso de uma análise dos pacotes instalados: o que existe no sistema além do que a tela mostra.',
       },
       { who: 'other', text: 'Listagem direta do sistema de arquivos, sem passar pelo launcher. Leva um tempo.' },
       { who: 'augusto', text: 'Peço que me retorne com o laudo.' },

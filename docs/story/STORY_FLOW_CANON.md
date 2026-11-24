@@ -249,7 +249,7 @@ Monitor → André → visitas (telefone presídio) → ligar → mapa → pres�
 
 1. Caso → cruzar Henrique × Mariana → **O Omitido** nomeado.
 2. Releitura do diário → assistência técnica no plano.
-3. Consulta Roberto/Siqueira → denúncia anônima → Augusto colocado no caso.
+3. Consulta Delegado Siqueira / Roberto Siqueira → denúncia anônima → Augusto colocado no caso.
 4. WhatsApp Augusto → mensagens “Mariana” (ondas 1→2→3).
 5. Caso → trilha física → mapa → local final → morte → reflexão.
 6. Pós-morte / outros desaparecimentos / anomalias Augusto.

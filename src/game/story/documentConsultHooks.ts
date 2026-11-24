@@ -3,6 +3,7 @@ import {
   revisitEmergencyEntry,
 } from './block05Handlers'
 import { onPastorLogisticsCrossRef } from './block06Handlers'
+import { scheduleMariApartmentReconstructionIfReady } from './block01Handlers'
 import {
   onForumHvalencaOpened,
   onHenriqueCadastroOpened,
@@ -174,5 +175,9 @@ export function onDocumentConsulted(docId: string) {
     !s.flags.block09_other_cases_done
   ) {
     findOtherDisappearances()
+  }
+
+  if (docId === 'doc-entrada-apartamento' || docId === 'doc-apreensao-celular') {
+    scheduleMariApartmentReconstructionIfReady()
   }
 }

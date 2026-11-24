@@ -53,7 +53,7 @@ export const MARI_COMPANION_BEATS: MariCompanionBeat[] = [
       {
         speaker: 'Mari',
         portraitId: 'mari',
-        text: 'O registro subiu pro sistema. Quando o Siqueira pegava ocorrência assim de madrugada, a primeira coisa que ele pedia era saber quem tinha mexido no horário antes de bater o ponto.',
+        text: 'O registro subiu pro sistema. Quando o Delegado Siqueira pegava ocorrência assim de madrugada, a primeira coisa que ele pedia era saber quem tinha mexido no horário antes de bater o ponto.',
       },
       {
         speaker: 'Augusto',
@@ -204,7 +204,7 @@ export const MARI_COMPANION_BEATS: MariCompanionBeat[] = [
       {
         speaker: 'Mari',
         portraitId: 'mari',
-        text: 'Não é a primeira vez que alguém confunde relógio mal ajustado com verdade absoluta. O Siqueira vivia implicando com horário de log antes de acreditar em papel timbrado.',
+        text: 'Não é a primeira vez que alguém confunde relógio mal ajustado com verdade absoluta. O Delegado Siqueira vivia implicando com horário de log antes de acreditar em papel timbrado.',
       },
       {
         speaker: 'Augusto',

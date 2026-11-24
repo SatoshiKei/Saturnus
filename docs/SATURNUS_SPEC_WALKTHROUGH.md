@@ -487,7 +487,7 @@ Extra: Cartório **204** (cronologia Elisa); ler autos pode registrar contradiç
 
 1. Caso → cruzar Henrique × Mariana → **O Omitido** nomeado  
 2. Caso → revisitar diário → assistência técnica no plano  
-3. Monitor → Roberto / Siqueira → Augusto colocado no caso  
+3. Monitor → Delegado Siqueira / Roberto Siqueira → Augusto colocado no caso  
 4. WhatsApp Augusto → mensagens “Mariana” (ondas 1→2→3)  
 5. Caso → mensagens que sabem demais → trilha física → mapa → local final → morte → reflexão  
 6. Mensagem pós-morte → outros desaparecimentos / anomalias Augusto  

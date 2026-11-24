@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { GalleryPlaybackProvider } from '../../app/GalleryPlaybackContext'
 import { Block01Opening } from '../story/Block01Opening'
+import { MariApartmentReconstructionScene } from '../story/MariApartmentReconstructionScene'
 import { SceneRunner } from '../story/vn/SceneTransitions'
 import { MorsaCctvReveal } from './MorsaCctvReveal'
 import { renderLocationScene } from '../../scene/locationSceneRender'
@@ -45,6 +46,12 @@ export function SceneGalleryPlayer({ entry, onDone }: { entry: SceneGalleryEntry
         return (
           <div className="inv-gallery-player" data-testid="gallery-player-opening">
             <Block01Opening onDone={finish} />
+          </div>
+        )
+      case 'mari-apartment':
+        return (
+          <div className="inv-gallery-player" data-testid="gallery-player-mari-apartment">
+            <MariApartmentReconstructionScene onDone={finish} />
           </div>
         )
       case 'morsa-cctv':

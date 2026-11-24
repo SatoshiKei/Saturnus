@@ -183,7 +183,7 @@ Muitos passos estão na aba **Caso** do monitor; o WhatsApp do Augusto ganha men
 
 1. Cruzar o sistema de Henrique com os registros de Mariana → **O Omitido** aparece nos papéis.  
 2. Releitura do diário à luz disso → o que foi “assistência técnica” no plano dela.  
-3. Consulta **Roberto Siqueira** / denúncia anônima → por que Augusto caiu no comando do caso.  
+3. Consulta **Delegado Siqueira** ou **Roberto Siqueira** / denúncia anônima → por que Augusto caiu no comando do caso.  
 4. WhatsApp do Augusto → leia as mensagens em nome de Mariana (primeira onda, depois a que “sabe demais”, depois a que chega tarde demais).  
 5. **Caso** → montar trilha física → **mapa** → local final → confirmação da morte → reflexão.  
 6. **Caso** → outros desaparecimentos parecidos → anomalias que envolvem o próprio Augusto.  

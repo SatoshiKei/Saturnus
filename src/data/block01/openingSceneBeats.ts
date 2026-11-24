@@ -12,32 +12,32 @@ export const OPENING_SCENE_BEATS: OpeningBeat[] = [
   {
     narration: true,
     portraitId: 'augusto',
-    text: 'Três dias nesta mesa. A placa ainda tem o nome do Siqueira por baixo do adesivo.',
+    text: 'Três dias nessa mesa. A placa ainda guarda o nome do Delegado Siqueira por baixo do adesivo.',
   },
   {
     narration: true,
     portraitId: 'augusto',
-    text: 'Ele saiu. Eu entrei. Designação interina. E o primeiro dossiê na minha frente já é desaparecimento.',
+    text: 'Ele rodou, eu assumi — interino, no tapa — e o primeiro caso que cai no meu colo já é desaparecimento.',
   },
   {
     narration: true,
     portraitId: 'augusto',
-    text: 'Mariana Silva. Enfermeira. Não chegou ao plantão. Ligação de emergência. Celular apreendido.',
+    text: 'Mariana Silva. Enfermeira. Não apareceu pro plantão. Ligação de emergência na madrugada, celular apreendido.',
   },
   {
     speaker: 'Mari',
     portraitId: 'mari',
-    text: 'Delegado? Posso?',
+    text: 'Delegado? Posso encostar?',
   },
   {
     speaker: 'Augusto',
     portraitId: 'augusto',
-    text: 'Pode.',
+    text: 'Entra.',
   },
   {
     speaker: 'Mari',
     portraitId: 'mari',
-    text: 'Sou a Mari. Fiquei com a sala quando o Siqueira saiu. Agora fico com o senhor.',
+    text: 'Sou a Mari. Sobrou pra mim segurar as pontas quando o Delegado Siqueira saiu. Agora sobra com o senhor.',
   },
   {
     speaker: 'Augusto',
@@ -47,26 +47,26 @@ export const OPENING_SCENE_BEATS: OpeningBeat[] = [
   {
     speaker: 'Mari',
     portraitId: 'mari',
-    text: 'Eu sei. A chefia avisou ontem. Deixei a pasta na sua mesa — ocorrência, resumo da ligação, o celular já está no lacre.',
+    text: 'Já me avisaram ontem. Separei tudo na pasta: BO, resumo da chamada, e o celular já tá lacrado.',
   },
   {
     speaker: 'Augusto',
     portraitId: 'augusto',
-    text: 'Sumiço com pedido de ajuda na madrugada. Querem resultado rápido.',
+    text: 'Chamada de emergência de madrugada e enfermeira sumida... Vão cobrar resposta ontem.',
   },
   {
     speaker: 'Mari',
     portraitId: 'mari',
-    text: 'Querem. Eu fico por perto. Se precisar de ramal, arquivo ou café que não seja o da máquina, é só chamar.',
+    text: 'Como sempre. Se precisar puxar ramal, desenterrar arquivo velho ou fugir do café aguado da máquina, só dar um toque.',
   },
   {
     speaker: 'Augusto',
     portraitId: 'augusto',
-    text: 'Café da máquina serve. O resto a gente vê.',
+    text: 'O da máquina dá pro gasto. O resto a gente desenrola.',
   },
   {
     speaker: 'Mari',
     portraitId: 'mari',
-    text: 'Começa pela pasta. Eu volto daqui a pouco.',
+    text: 'Dá uma olhada na pasta primeiro. Já volto.',
   },
 ]

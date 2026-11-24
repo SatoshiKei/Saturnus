@@ -964,6 +964,19 @@ export const seedSearchRules: SearchRule[] = [
     ],
   },
   {
+    id: 'block09_delegado_siqueira',
+    category: 'police',
+    requiredFlags: ['block09_roberto_search_unlocked'],
+    requiredTerms: ['delegado', 'siqueira'],
+    results: [
+      {
+        title: 'Roberto Siqueira, afastamento e denúncia anônima',
+        snippet: 'Timing, metadata e material correlato.',
+        documentId: 'doc-roberto-denuncia',
+      },
+    ],
+  },
+  {
     id: 'block09_omitido',
     category: 'police',
     requiredFlags: ['block09_omitido_named'],

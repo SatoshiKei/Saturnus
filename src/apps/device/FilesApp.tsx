@@ -13,6 +13,8 @@ import { comparePhoneFilesSequence } from '../../game/story/block05Handlers'
 import { CHK_UNK_PHONE_FILE_ID } from '../../data/block04/chkUnkRecording'
 import { onUnknownRecordingFound } from '../../game/story/block04Handlers'
 import { ChkUnkAudioViewer } from './ChkUnkAudioViewer'
+import { MELODIE_PHONE_FILE_ID } from '../../data/block01/phoneMedia'
+import { MelodieAudioViewer } from './MelodieAudioViewer'
 
 interface FilesAppProps {
   onBack: () => void
@@ -65,6 +67,7 @@ export function FilesApp({ onBack }: FilesAppProps) {
   }, [items])
   const [folder, setFolder] = useState(folders[0] ?? 'WhatsApp')
   const [chkPlayerOpen, setChkPlayerOpen] = useState(false)
+  const [melodiePlayerOpen, setMelodiePlayerOpen] = useState(false)
   const q = query.trim().toLowerCase()
   const visible = items.filter((i) => {
     if ((i.folder ?? 'Outros') !== folder) return false
@@ -115,10 +118,12 @@ export function FilesApp({ onBack }: FilesAppProps) {
               if (!inv.flags.block04_unknown_recording_found) onUnknownRecordingFound()
               setChkPlayerOpen(true)
             }}
+            onOpenMelodie={() => setMelodiePlayerOpen(true)}
           />
         ))}
       </ul>
       {chkPlayerOpen ? <ChkUnkAudioViewer onClose={() => setChkPlayerOpen(false)} /> : null}
+      {melodiePlayerOpen ? <MelodieAudioViewer onClose={() => setMelodiePlayerOpen(false)} /> : null}
     </div>
   )
 }
@@ -130,11 +135,20 @@ function provenanceHint(item: PhoneMediaItem, exported: boolean): string | null 
   return null
 }
 
-function FileRow({ item, onOpenChkUnk }: { item: PhoneMediaItem; onOpenChkUnk: () => void }) {
+function FileRow({
+  item,
+  onOpenChkUnk,
+  onOpenMelodie,
+}: {
+  item: PhoneMediaItem
+  onOpenChkUnk: () => void
+  onOpenMelodie: () => void
+}) {
   const inv = useInvestigation()
   const src = item.spriteId ? contactAvatarSrc(item.spriteId) : undefined
   const isChk = item.id === CHK_UNK_PHONE_FILE_ID
   const chkOpenable = isChk && inv.flags.block04_unknown_recording_unlocked
+  const melodieOpenable = item.id === MELODIE_PHONE_FILE_ID && Boolean(item.audioSrc)
   const hint = provenanceHint(
     item,
     isChk && inv.flags.block04_unknown_recording_found,
@@ -155,6 +169,16 @@ function FileRow({ item, onOpenChkUnk }: { item: PhoneMediaItem; onOpenChkUnk: (
           className="ios-files__action"
           data-testid="mariana-unknown-file"
           onClick={onOpenChkUnk}
+        >
+          {item.label}
+          {hint ? <span className="ios-files__hint">{hint}</span> : null}
+        </button>
+      ) : melodieOpenable ? (
+        <button
+          type="button"
+          className="ios-files__action"
+          data-testid="mariana-melodie-file"
+          onClick={onOpenMelodie}
         >
           {item.label}
           {hint ? <span className="ios-files__hint">{hint}</span> : null}

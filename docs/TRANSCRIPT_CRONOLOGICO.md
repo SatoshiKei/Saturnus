@@ -91,7 +91,7 @@ Texto diegético extraído das fontes do jogo (cenas, WhatsApp, notas, diário, 
 
 *Delegacia · 03/11/2026*
 
-> Item 1: smartphone, tela desbloqueada ao ser localizado. Lacre nº 0412. Apreensão determinada pela autoridade policial responsável.
+> Item 1: smartphone, tela desbloqueada ao ser localizado. Lacre nº 0402. Apreensão determinada pela autoridade policial responsável.
 
 > O aparelho foi entregue à delegacia e permanece sob guarda do delegado Augusto Nogueira.
 
@@ -2171,7 +2171,7 @@ Texto diegético extraído das fontes do jogo (cenas, WhatsApp, notas, diário, 
 
 **Augusto**
 
-> Augusto Nogueira. Aparelho apreendido de Mariana Silva, lacre 0412. Preciso de uma análise dos pacotes instalados: o que existe no sistema além do que a tela mostra.
+> Augusto Nogueira. Aparelho apreendido de Mariana Silva, lacre 0402. Preciso de uma análise dos pacotes instalados: o que existe no sistema além do que a tela mostra.
 
 **Perícia — dispositivos móveis**
 

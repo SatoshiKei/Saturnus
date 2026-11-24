@@ -1,3 +1,5 @@
+import { MELODIE_PHONE_AUDIO_SRC, MELODIE_PHONE_FILE_ID } from './mariApartmentSceneAssets'
+
 /** Galeria Fotos / Arquivos — mídia diegética do Bloco 1 (sprites, sem spoilers). */
 
 export type PhoneMediaProvenance =
@@ -18,7 +20,11 @@ export type PhoneMediaItem = {
   provenance?: PhoneMediaProvenance
   /** Texto curto opcional sob o nome no app Arquivos. */
   provenanceNote?: string
+  /** Áudio reproduzível no app Arquivos (ex.: toque salvo no aparelho). */
+  audioSrc?: string
 }
+
+export { MELODIE_PHONE_FILE_ID }
 
 export const PROVENANCE_LABEL: Record<PhoneMediaProvenance, string> = {
   existing: 'No aparelho',
@@ -53,6 +59,14 @@ export const marianaFilesLibrary: PhoneMediaItem[] = [
   { id: 'mf-wa-1', label: 'Foto, documento turno', spriteId: 'julia', folder: 'WhatsApp' },
   { id: 'mf-wa-2', label: 'Contato. Rafael', spriteId: 'rafael', folder: 'WhatsApp' },
   { id: 'mf-dl-1', label: 'Escala outubro.pdf', folder: 'Downloads' },
+  {
+    id: MELODIE_PHONE_FILE_ID,
+    label: 'Melodie.mp3',
+    folder: 'Downloads',
+    provenance: 'existing',
+    provenanceNote: 'Toque salvo no aparelho',
+    audioSrc: MELODIE_PHONE_AUDIO_SRC,
+  },
 ]
 
 export const augustoPhotosLibrary: PhonePhotoItem[] = [

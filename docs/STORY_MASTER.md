@@ -269,7 +269,7 @@ Monitor → André → visitas (telefone presídio) → ligar → mapa → pres�
 
 1. Caso → cruzar Henrique × Mariana → **O Omitido** nomeado.
 2. Releitura do diário → assistência técnica no plano.
-3. Consulta Roberto/Siqueira → denúncia anônima → Augusto colocado no caso.
+3. Consulta **Delegado Siqueira** / **Roberto Siqueira** → denúncia anônima → Augusto colocado no caso.
 4. WhatsApp Augusto → mensagens “Mariana” (ondas 1→2→3).
 5. Caso → trilha física → mapa → local final → morte → reflexão.
 6. Pós-morte / outros desaparecimentos / anomalias Augusto.
@@ -313,27 +313,27 @@ Entrevistas por tópicos, cenas lineares, reflexões e ligações. Cada cena em 
 
 **narração**
 
-> Três dias nesta mesa. A placa ainda tem o nome do Siqueira por baixo do adesivo.
+> Três dias nessa mesa. A placa ainda guarda o nome do Delegado Siqueira por baixo do adesivo.
 
 **narração**
 
-> Ele saiu. Eu entrei. Designação interina. E o primeiro dossiê na minha frente já é desaparecimento.
+> Ele rodou, eu assumi — interino, no tapa — e o primeiro caso que cai no meu colo já é desaparecimento.
 
 **narração**
 
-> Mariana Silva. Enfermeira. Não chegou ao plantão. Ligação de emergência. Celular apreendido.
+> Mariana Silva. Enfermeira. Não apareceu pro plantão. Ligação de emergência na madrugada, celular apreendido.
 
 **Mari**
 
-> Delegado? Posso?
+> Delegado? Posso encostar?
 
 **Augusto**
 
-> Pode.
+> Entra.
 
 **Mari**
 
-> Sou a Mari. Fiquei com a sala quando o Siqueira saiu. Agora fico com o senhor.
+> Sou a Mari. Sobrou pra mim segurar as pontas quando o Delegado Siqueira saiu. Agora sobra com o senhor.
 
 **Augusto**
 
@@ -341,23 +341,23 @@ Entrevistas por tópicos, cenas lineares, reflexões e ligações. Cada cena em 
 
 **Mari**
 
-> Eu sei. A chefia avisou ontem. Deixei a pasta na sua mesa — ocorrência, resumo da ligação, o celular já está no lacre.
+> Já me avisaram ontem. Separei tudo na pasta: BO, resumo da chamada, e o celular já tá lacrado.
 
 **Augusto**
 
-> Sumiço com pedido de ajuda na madrugada. Querem resultado rápido.
+> Chamada de emergência de madrugada e enfermeira sumida... Vão cobrar resposta ontem.
 
 **Mari**
 
-> Querem. Eu fico por perto. Se precisar de ramal, arquivo ou café que não seja o da máquina, é só chamar.
+> Como sempre. Se precisar puxar ramal, desenterrar arquivo velho ou fugir do café aguado da máquina, só dar um toque.
 
 **Augusto**
 
-> Café da máquina serve. O resto a gente vê.
+> O da máquina dá pro gasto. O resto a gente desenrola.
 
 **Mari**
 
-> Começa pela pasta. Eu volto daqui a pouco.
+> Dá uma olhada na pasta primeiro. Já volto.
 
 ### Mari no hub — hub-welcome
 
@@ -5705,7 +5705,7 @@ Entrevistas por tópicos, cenas lineares, reflexões e ligações. Cada cena em 
 
 **Augusto**
 
-> Augusto Nogueira. Aparelho apreendido de Mariana Silva, lacre 0412. Preciso de uma análise dos pacotes instalados: o que existe no sistema além do que a tela mostra.
+> Augusto Nogueira. Aparelho apreendido de Mariana Silva, lacre 0402. Preciso de uma análise dos pacotes instalados: o que existe no sistema além do que a tela mostra.
 
 **Perícia, dispositivos móveis**
 
@@ -7537,7 +7537,7 @@ WhatsApp, scripts jogáveis, notas, diário e documentos-chave. Sem cenas VN.
 >  
 > O aparelho estava ligado no momento da apreensão e permanece sob custódia da Polícia Civil.
 >  
-> Lacre: 0412.
+> Lacre: 0402.
 
 #### Extração inicial, aparelho de Mariana
 

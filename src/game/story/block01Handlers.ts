@@ -39,6 +39,17 @@ export function registerInitialPoliceReport() {
   dispatchActions(actions)
 }
 
+const MARI_APT_ENTRY_DOCS = ['doc-entrada-apartamento', 'doc-apreensao-celular'] as const
+
+/** Após os dois laudos do 03/11 lidos — fila one-shot da reconstrução com Mari. */
+export function scheduleMariApartmentReconstructionIfReady() {
+  const s = getInvestigationState()
+  if (s.flags.mari_flashback_apt_0803_seen || s.flags.mari_apartment_scene_pending) return
+  const bothRead = MARI_APT_ENTRY_DOCS.every((id) => Boolean(s.documents[id]?.read))
+  if (!bothRead) return
+  setFlag('mari_apartment_scene_pending', true)
+}
+
 export function onMarianaPhoneOpened() {
   const s = getInvestigationState()
   if (s.flags.block01_mariana_phone_opened) return

@@ -24,7 +24,7 @@ Durante cada um dos **12 puzzles**, a Mari faz **2 a 3 comentários** enquanto A
 
 ### Secundário — cotidiano no hub
 
-Entre puzzles e entre idas ao mapa/telefone: beats **curtos no hub livre** (pasta, café, Siqueira, rotina da delegacia).
+Entre puzzles e entre idas ao mapa/telefone: beats **curtos no hub livre** (pasta, café, Delegado Siqueira, rotina da delegacia).
 
 - Objetivo: **personagem** + fazer a presença dela na bancada parecer **natural por contraste** (antes ela existia como gente da casa; na perícia ela fica séria e útil).
 - Frequência: **espaçado** — não competir com as 2–3 dicas por puzzle.
@@ -108,7 +108,7 @@ Escalada em código: `mariPuzzleProgressHints.ts` + `nextMariPuzzleHintTier()` �
 **1. `hub-b01-after-bo`** — `mari_hub_b01_bo_seen` · requer `block01_bo_registered`
 
 <!-- REFATORAÇÃO INÍCIO -->
-**Mari:** O registro subiu pro sistema. Quando o Siqueira pegava ocorrência assim de madrugada, a primeira coisa que ele pedia era saber quem tinha mexido no horário antes de bater o ponto.
+**Mari:** O registro subiu pro sistema. Quando o Delegado Siqueira pegava ocorrência assim de madrugada, a primeira coisa que ele pedia era saber quem tinha mexido no horário antes de bater o ponto.
 
 **Augusto:** E aqui?
 

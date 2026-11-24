@@ -181,7 +181,7 @@ Ordem lógica (várias ações ficam na aba **Caso** do monitor):
 
 1. **Caso** → cruzar sistema de **Henrique** com registros de **Mariana** → **O Omitido** nomeado.
 2. **Caso** → revisitar **diário** à luz do Omitido → mapear **assistência técnica** no plano do desaparecimento.
-3. **Monitor** → consulta **Roberto** / **Siqueira** → denúncia anônima → Augusto **colocado** no caso.
+3. **Monitor** → consulta **Delegado Siqueira** ou **Roberto Siqueira** → denúncia anônima → Augusto **colocado** no caso.
 4. **Celular Augusto** → WhatsApp → mensagens em nome de **Mariana** (ondas 1 → 2 → 3 após eventos).
 5. **Caso** → conferir mensagens que **sabem demais** → montar **trilha física** → **mapa** → local final → confirmação da **morte** → reflexão.
 6. Ler mensagem **pós-morte** → **Caso** → outros desaparecimentos → anomalias envolvendo **Augusto**.

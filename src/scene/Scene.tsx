@@ -21,6 +21,7 @@ import { startRing, stopLoop } from '../lib/sfx'
 import { HubOverlay } from '../components/investigation/HubOverlay'
 import { CaseNotepad } from '../components/investigation/CaseNotepad'
 import { Block01Opening } from '../components/story/Block01Opening'
+import { MariApartmentReconstructionScene } from '../components/story/MariApartmentReconstructionScene'
 import { SceneRunner } from '../components/story/vn/SceneTransitions'
 import { renderLocationScene } from './locationSceneRender'
 import { ReflectionView } from '../components/story/vn/SceneTransitions'
@@ -159,18 +160,28 @@ export function Scene() {
   const [openingDone, setOpeningDone] = useState(() => Boolean(inv.flags.block01_opening_seen))
   const pending = useRef<number | null>(null)
 
+  const mariAptSceneActive = Boolean(
+    openingDone &&
+      inv.flags.mari_apartment_scene_pending &&
+      !inv.flags.mari_flashback_apt_0803_seen &&
+      !locationScene &&
+      !soloReflectionId &&
+      !hubPanel &&
+      !phoneOpen &&
+      !menuOpen,
+  )
   const cinematic = Boolean(locationScene || (soloReflectionId && soloReflectionDef))
   const openingActive = !openingDone && !inv.flags.block01_opening_seen
-  const hubDeskHidden = Boolean(cinematic || returnFade || openingActive)
-  const overlaysLocked = Boolean(cinematic || returnFade)
+  const hubDeskHidden = Boolean(cinematic || returnFade || openingActive || mariAptSceneActive)
+  const overlaysLocked = Boolean(cinematic || returnFade || mariAptSceneActive)
   const soloReflectionActive = Boolean(!locationScene && soloReflectionId && soloReflectionDef)
 
   // Pausar discoveries enquanto abertura ou reflection solo cobrem o hub.
   useEffect(() => {
-    if (!soloReflectionActive && !openingActive) return
+    if (!soloReflectionActive && !openingActive && !mariAptSceneActive) return
     setFullscreenScene(true)
     return () => setFullscreenScene(false)
-  }, [soloReflectionActive, openingActive])
+  }, [soloReflectionActive, openingActive, mariAptSceneActive])
 
   useEffect(() => {
     if (!cinematic) return
@@ -403,6 +414,10 @@ export function Scene() {
 
         {!menuOpen && openingActive ? (
           <Block01Opening onDone={() => setOpeningDone(true)} />
+        ) : null}
+
+        {mariAptSceneActive ? (
+          <MariApartmentReconstructionScene onDone={() => undefined} />
         ) : null}
 
         {locationScene ? (

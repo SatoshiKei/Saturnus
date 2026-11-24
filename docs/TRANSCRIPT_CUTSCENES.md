@@ -5624,7 +5624,7 @@ Entrevistas em tópicos (VN), cenas lineares, reflexões de Augusto e diálogos 
 
 **Augusto**
 
-> Augusto Nogueira. Aparelho apreendido de Mariana Silva, lacre 0412. Preciso de uma análise dos pacotes instalados: o que existe no sistema além do que a tela mostra.
+> Augusto Nogueira. Aparelho apreendido de Mariana Silva, lacre 0402. Preciso de uma análise dos pacotes instalados: o que existe no sistema além do que a tela mostra.
 
 **Perícia — dispositivos móveis**
 
