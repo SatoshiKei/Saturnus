@@ -100,21 +100,21 @@ const BG = '/assets/backgrounds/processed'
  * Fundos (processados) usados em cada cena — auditoria de backgrounds.
  * Só arquivos em `public/assets/backgrounds/processed/` são servidos.
  *
- * ATENÇÃO: o nome de vários arquivos em `assets/backgrounds/` NÃO corresponde ao
- * conteúdo (ex.: `misc-07-workshop-garage` = tela de código; `bar-01-…` = prato
- * de comida; `port-03-warehouse-harbor` = centro logístico iluminado).
- * Só usar um arquivo após conferir a imagem.
+ * ATENÇÃO: conferir o JPEG em disco antes de apontar aqui — URLs Pexels com ID
+ * errado devolvem foto aleatória. Use `scripts/verify-background-download.mjs`.
+ * PNGs antigos (ex. `denis-workshop.png`, `warehouse-17-north-yard.png`) ficam
+ * em `public/` só como backup; as cenas activas usam os JPG processados novos.
  */
 export const sceneBackgrounds: Record<SceneId, string> = {
   hospital: `${BG}/hospital/hospital-02-corridor-chairs.jpg`,
   vertice: `${BG}/nightclub/nightclub-01-lights-haze.jpg`,
   lucas: `${BG}/university/university-03-classroom-empty.jpg`,
-  livia: `${BG}/radio/radio-01-newsroom.jpg`,
+  livia: `${BG}/radio/costeira-01-newsroom.jpg`,
   // Titã Club ≠ Vértice: segunda variante de casa noturna (palco/fumaça vermelha).
   nico: `${BG}/nightclub/nightclub-02-dj-booth.jpg`,
   andre: `${BG}/prison/prison-01-visit-room.jpg`,
   // Miro: sala de entrevista da detenção / polícia civil.
-  miro: `${BG}/police/police-interrogation-room.png`,
+  miro: `${BG}/police/miro-detention-01-cell.jpg`,
 
   // Residências / visitas — variantes distintas; Geraldo = boteco; Sandra = sala própria.
   samuel: `${BG}/apartment/apartment-01-living-room.jpg`,
@@ -127,8 +127,8 @@ export const sceneBackgrounds: Record<SceneId, string> = {
   cecilia: `${BG}/apartment/apartment-04-hall-brazil-sp.jpg`,
 
   // Galpão 17 (prisão de Miro) ≠ galpão final (Mariana).
-  operation: `${BG}/warehouse/warehouse-17-north-yard.png`,
-  denis: `${BG}/workshop/denis-workshop.png`,
+  operation: `${BG}/warehouse/operation-17-night-exterior.jpg`,
+  denis: `${BG}/workshop/denis-01-garage-interior.jpg`,
   trail: `${BG}/warehouse/warehouse-final-north-sector.png`,
 }
 

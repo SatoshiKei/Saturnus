@@ -26,14 +26,32 @@ const vignetteSvg = (w, h) =>
   <rect width="100%" height="100%" fill="url(#v)"/>
 </svg>`)
 
-async function processOne(inputPath, outputPath) {
-  const meta = await sharp(inputPath).metadata()
-  const width = Math.min(meta.width ?? 1920, 1920)
+function toneForItem(item) {
+  if (item.processDark) return { saturation: 0.6, brightness: 0.44 }
+  if (item.processNightSource) return { saturation: 0.65, brightness: 0.72 }
+  if (item.processNight) return { saturation: 0.58, brightness: 0.38 }
+  return { saturation: 0.72, brightness: 0.96 }
+}
 
-  const mid = await sharp(inputPath)
-    .rotate()
-    .resize({ width, withoutEnlargement: true })
-    .modulate({ saturation: 0.72, brightness: 0.96 })
+async function processOne(inputPath, outputPath, item) {
+  const meta = await sharp(inputPath).metadata()
+  let input = sharp(inputPath).rotate()
+  if (item.cropLandscape && meta.width && meta.height && meta.height > meta.width) {
+    const cropH = Math.floor(meta.width * (9 / 16))
+    const top = Math.max(0, Math.floor((meta.height - cropH) * 0.42))
+    input = input.extract({
+      left: 0,
+      top,
+      width: meta.width,
+      height: Math.min(cropH, meta.height - top),
+    })
+  }
+  const width = Math.min((await input.metadata()).width ?? 1920, 1920)
+
+  let pipe = input.resize({ width, withoutEnlargement: true })
+  pipe = pipe.modulate(toneForItem(item))
+
+  const mid = await pipe
     .linear(1.06, -6)
     .blur(0.35)
     .recomb([
@@ -73,6 +91,7 @@ for (const item of manifest.filter((m) => ids.has(m.id))) {
     item.filename.replace(/\.(jpg|jpeg|png)$/i, '.jpg'),
   )
   await mkdir(dirname(output), { recursive: true })
-  await processOne(input, output)
-  console.log('processed', item.id, '->', output)
+  await processOne(input, output, item)
+  const tag = item.processDark ? 'dark' : item.processNightSource ? 'night-src' : item.processNight ? 'night' : ''
+  console.log('processed', item.id, tag, '->', output)
 }
