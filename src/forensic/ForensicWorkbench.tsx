@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { isLocalhostHost } from '../lib/localhostHost'
 import { MariWorkbenchHints } from '../components/investigation/MariWorkbenchHints'
 import { forensicUiToMariProgress } from '../data/companion/mariPuzzleProgressHints'
 import '../styles/forensic-workbench.css'
@@ -174,7 +175,7 @@ export function ForensicWorkbench({
   const bumpMariActivity = useCallback(() => setMariActivity((n) => n + 1), [])
   const completedRef = useRef(false)
   const holdRef = useRef<Record<string, number>>({})
-  const showDebug = import.meta.env.DEV
+  const showDebug = import.meta.env.DEV && isLocalhostHost()
 
   useEffect(() => {
     if (session.completion?.kind !== 'rtp-stream-separation') return

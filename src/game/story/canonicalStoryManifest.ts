@@ -215,6 +215,10 @@ const INTERVIEWS = {
 } as const satisfies Record<string, { flags: Record<string, string>; finish: () => void; doneFlag: string }>
 export type CanonicalInterviewId = keyof typeof INTERVIEWS
 
+export function canonicalInterviewDoneFlag(id: CanonicalInterviewId): string {
+  return INTERVIEWS[id].doneFlag
+}
+
 /** Pós-ligação que os painéis de telefone executam ao encerrar (PoliceLandlinePanel / PhoneCallsHome). */
 const CALL_AFTERMATH: Record<string, () => void> = {
   'call-julia-onset': deliverAnonWhatsApp,

@@ -32,6 +32,7 @@ export function DevPuzzleToolbar({
 }) {
   const [msg, setMsg] = useState<string | null>(null)
   if (!import.meta.env.DEV) return null
+  // Toolbar só em localhost — ver AudioLabPanel (showForensicDevToolbar).
   const def = CANONICAL_PUZZLES[puzzleId]
   const hasReveal = puzzleHasRevealStage(puzzleId)
 

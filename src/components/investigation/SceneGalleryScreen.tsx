@@ -1,6 +1,11 @@
 import { useMemo } from 'react'
-import { buildSceneGalleryEntries, galleryThumbnailFor } from '../../data/sceneGalleryCatalog'
+import {
+  buildSceneGalleryEntries,
+  galleryThumbnailFor,
+  isSceneGalleryEntryUnlocked,
+} from '../../data/sceneGalleryCatalog'
 import type { SceneGalleryEntry } from '../../data/sceneGalleryCatalog'
+import { useInvestigation } from '../../game/hooks/useInvestigation'
 import { assetPath } from '../../lib/assetPath'
 
 export function SceneGalleryScreen({
@@ -10,7 +15,9 @@ export function SceneGalleryScreen({
   onBack: () => void
   onPlay: (entry: SceneGalleryEntry) => void
 }) {
+  const inv = useInvestigation()
   const entries = useMemo(() => buildSceneGalleryEntries(), [])
+  const unlockedCount = entries.filter((e) => isSceneGalleryEntryUnlocked(e, inv.flags)).length
 
   return (
     <div className="inv-gallery" data-testid="scene-gallery">
@@ -19,10 +26,13 @@ export function SceneGalleryScreen({
           ‹ Voltar
         </button>
         <h2>Galeria</h2>
-        <p className="inv-gallery__count">{entries.length} cenas</p>
+        <p className="inv-gallery__count">
+          {unlockedCount} / {entries.length} cenas
+        </p>
       </header>
       <div className="inv-gallery__grid" role="list">
         {entries.map((entry, index) => {
+          const unlocked = isSceneGalleryEntryUnlocked(entry, inv.flags)
           const thumb = assetPath(galleryThumbnailFor(entry))
           return (
             <button
@@ -31,17 +41,28 @@ export function SceneGalleryScreen({
               role="listitem"
               className="inv-gallery__card"
               data-testid={`gallery-item-${entry.id}`}
-              onClick={() => onPlay(entry)}
+              data-locked={!unlocked || undefined}
+              disabled={!unlocked}
+              onClick={() => {
+                if (unlocked) onPlay(entry)
+              }}
             >
               <div className="inv-gallery__screen" aria-hidden>
-                <img src={thumb} alt="" loading="lazy" decoding="async" />
+                <img
+                  src={thumb}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  className={unlocked ? undefined : 'inv-gallery__screen--locked'}
+                />
                 <span className="inv-gallery__screen-glass" />
+                {!unlocked ? <span className="inv-gallery__lock" aria-hidden /> : null}
               </div>
               <div className="inv-gallery__meta">
                 <span className="inv-gallery__index">{String(index + 1).padStart(2, '0')}</span>
                 <div className="inv-gallery__copy">
-                  <strong>{entry.title}</strong>
-                  {entry.subtitle ? <p>{entry.subtitle}</p> : null}
+                  <strong>{unlocked ? entry.title : 'Ainda não revelada'}</strong>
+                  {unlocked && entry.subtitle ? <p>{entry.subtitle}</p> : null}
                 </div>
               </div>
             </button>

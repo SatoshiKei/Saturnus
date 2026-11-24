@@ -18,6 +18,7 @@ import { ForensicWorkbench } from '../../../forensic/ForensicWorkbench'
 import { getForensicSessionForEvidence } from '../../../forensic/forensicRegistry'
 import { puzzleIdForEvidence } from '../../../forensic/canonicalPuzzleCompletion'
 import { DevPuzzleToolbar } from '../../../forensic/DevPuzzleToolbar'
+import { showForensicDevToolbar } from '../../../lib/localhostHost'
 import {
   runJanusEpimetheusAnalysis,
   runSaturnaliaReconstruct,
@@ -393,7 +394,7 @@ export function AudioWorkbench({ onClose }: { onClose: () => void }) {
                       session={forensicSession}
                       specializedWorkspace={specialized ?? undefined}
                       devToolbar={
-                        import.meta.env.DEV && puzzleId ? (
+                        showForensicDevToolbar() && puzzleId ? (
                           <DevPuzzleToolbar
                             puzzleId={puzzleId}
                             onApplied={() => setDevRemount((n) => n + 1)}

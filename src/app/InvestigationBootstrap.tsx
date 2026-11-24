@@ -3,6 +3,7 @@ import { unlockSfxAudio } from '../lib/sfx'
 import { addPlayTime, loadGame } from '../game/state/investigationStore'
 import { MainMenuOverlay } from '../components/investigation/MainMenuOverlay'
 import { DevStoryPanel } from '../components/investigation/DevStoryPanel'
+import { PlayerCampaignPanel } from '../components/investigation/PlayerCampaignPanel'
 import { DiscoveryHost } from '../components/investigation/DiscoveryHost'
 import { useUiState } from './uiStore'
 
@@ -45,6 +46,7 @@ export function InvestigationBootstrap({ children }: { children: ReactNode }) {
       {children}
       <MainMenuOverlay />
       <DiscoveryHost />
+      <PlayerCampaignPanel />
       {import.meta.env.DEV || import.meta.env.VITE_ENABLE_DEV_PANEL === 'true' ? (
         <DevStoryPanel />
       ) : null}

@@ -3,8 +3,10 @@ import type { InvestigationState } from '../game/types'
 import {
   CANONICAL_STORY_MANIFEST,
   buildCanonicalCheckpointStateBefore,
+  canonicalInterviewDoneFlag,
   type CanonicalInterviewId,
 } from '../game/story/canonicalStoryManifest'
+import { isSceneGalleryFullyUnlocked } from '../lib/localhostHost'
 import { HUB_REFLECTION_BACKGROUND, sceneBackgrounds, type SceneId } from './sceneIntros'
 import type { LocationSceneRenderOpts } from '../scene/locationSceneRender'
 
@@ -278,6 +280,39 @@ export function prepGalleryEntryState(entry: SceneGalleryEntry): InvestigationSt
 const MORSA_GALLERY_THUMB = '/assets/block08/rings/morsa-enter-1.png'
 
 /** Miniatura retangular para o cartão da galeria. */
+const GALLERY_UNLOCK_BY_ID: Record<string, string> = {
+  opening: 'block01_opening_seen',
+  'mari-apartment-0803': 'mari_flashback_apt_0803_seen',
+  'vertice-1': 'block02_vertice_archive',
+  'vertice-2': 'block02_vertice_set_crossref',
+  operation: 'block06_operation_done',
+  trail: 'block09_trail_ready',
+  'hospital-deposit': 'block07_hospital_deposit_done',
+  'morsa-cctv': 'block08_morsa_reveal_played',
+  'early-nico': 'nico_early_done',
+  'early-samuel': 'samuel_accidental_done',
+  'early-jana': 'jana_early_done',
+  'early-geraldo': 'geraldo_early_done',
+}
+
+/** Jogador: cena liberada após concluir a VN / evento correspondente (localhost = tudo). */
+export function isSceneGalleryEntryUnlocked(
+  entry: SceneGalleryEntry,
+  flags: Record<string, boolean>,
+): boolean {
+  if (isSceneGalleryFullyUnlocked()) return true
+
+  const direct = GALLERY_UNLOCK_BY_ID[entry.id]
+  if (direct) return Boolean(flags[direct])
+
+  if (entry.id.startsWith('vn-')) {
+    const vn = entry.id.slice('vn-'.length) as CanonicalInterviewId
+    return Boolean(flags[canonicalInterviewDoneFlag(vn)])
+  }
+
+  return false
+}
+
 export function galleryThumbnailFor(entry: SceneGalleryEntry): string {
   if (entry.thumbnail) return entry.thumbnail
   switch (entry.kind) {

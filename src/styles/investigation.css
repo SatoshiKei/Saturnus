@@ -396,6 +396,27 @@
   transition: transform 140ms ease;
 }
 
+.inv-gallery__card[data-locked] {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.inv-gallery__card[data-locked]:hover,
+.inv-gallery__card[data-locked]:focus-visible {
+  outline: none;
+}
+
+.inv-gallery__screen--locked {
+  filter: blur(7px) saturate(0.35);
+  transform: scale(1.04);
+}
+
+.inv-gallery__lock {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.55));
+}
+
 .inv-gallery__card:hover,
 .inv-gallery__card:focus-visible {
   transform: translateY(-2px);
@@ -514,10 +535,30 @@
 }
 
 /* Ferramentas de desenvolvimento (só em dev / build e2e) */
-.inv-dev-toggle {
+.inv-campaign-toggle {
   position: fixed;
   bottom: 0.65rem;
   right: 0.65rem;
+  z-index: 2500;
+  opacity: 0.42;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0.32rem 0.42rem;
+  color: #c5d4c8;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  cursor: pointer;
+  transition: opacity 160ms ease;
+}
+
+.inv-campaign-toggle:hover {
+  opacity: 0.92;
+}
+
+.inv-dev-toggle {
+  position: fixed;
+  bottom: 0.65rem;
+  right: 2.65rem;
   z-index: 2500;
   opacity: 0.28;
   font-size: 0.62rem;
@@ -690,6 +731,28 @@
   color: #8d979e;
 }
 
+.inv-dev__block-title-wrap {
+  position: relative;
+  display: block;
+  min-height: 1.1em;
+}
+
+.inv-dev__block-title--spoiler {
+  filter: blur(5px);
+  opacity: 0.5;
+  user-select: none;
+  pointer-events: none;
+}
+
+.inv-dev__block-title--masked {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  letter-spacing: 0.2em;
+  color: rgba(215, 221, 217, 0.55);
+}
+
 .inv-dev__block-title {
   font-size: 0.72rem;
   letter-spacing: 0.12em;
@@ -735,6 +798,30 @@
   text-align: left;
   font: inherit;
   padding: 0.1rem 0.2rem;
+}
+
+.inv-dev__cp--static {
+  cursor: default;
+  position: relative;
+}
+
+.inv-dev__cp-label--spoiler {
+  position: absolute;
+  left: 1.75rem;
+  right: 0;
+  filter: blur(5px);
+  opacity: 0.55;
+  user-select: none;
+  pointer-events: none;
+}
+
+.inv-dev__cp-label--masked {
+  letter-spacing: 0.2em;
+  color: rgba(215, 221, 217, 0.55);
+}
+
+.inv-dev--player .inv-dev__head {
+  letter-spacing: 0.14em;
 }
 
 .inv-dev__dot {
