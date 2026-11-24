@@ -85,6 +85,7 @@ export function VerticeInterviewScene({ onClose }: { onClose: () => void }) {
       title="Boate Vértice"
       onClose={finishVisit}
       testId="vertice-scene"
+      bgmSceneKey={setCrossrefUnlocked(inv.flags) ? 'vertice-2' : 'vertice-1'}
       backgroundStyle={{
         backgroundImage: `linear-gradient(180deg, rgba(0,0,0,.28), rgba(0,0,0,.55)), url(${bg})`,
       }}

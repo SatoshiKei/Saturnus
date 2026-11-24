@@ -191,7 +191,8 @@
   margin: 0;
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
+  overflow-y: hidden;
+  overscroll-behavior: none;
   font-size: var(--text-dialogue);
   line-height: var(--line-dialogue);
   color: var(--vn-text-color);

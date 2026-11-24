@@ -150,12 +150,23 @@ IDs listados em `src/data/reflections.ts`; coluna **Perfil** é o que o runtime 
 
 ---
 
-## Próximos passos (implementação)
+## Implementação no código (piloto)
 
-1. **Entregar 4 loops** (famílias A–D) como mínimo. Stem “tense” gravado = **opcional**; perfil **TENSE** no motor é o caminho principal.
-2. **Data layer:** `sceneId` / `reflectionId` → `{ family, profile, mixPreset? }` — ex.: `refl-hex-call` → `{ family: A, profile: HUB, mixPreset: bandLimited }`; não → arquivo único por cena.
-3. **Motor:** ducking no ADV; validar níveis em TV/laptop, não só em fone de referência.
-4. **QA auditivo:** duas passagens — leitura rápida (typewriter skip) e leitura lenta — mesma faixa deve funcionar nos dois casos.
+| Peça | Caminho |
+|------|---------|
+| Stems A–D | `public/assets/audio/vn/bgm/family-*.mp3` (+ `manifest.json` com créditos OGA) |
+| Baixar de novo | `npm run assets:vn-bgm` |
+| Catálogo cena/reflexão | `src/data/audio/vnBgmCatalog.ts` |
+| Motor (loop, fade, duck) | `src/lib/vnBgmEngine.ts` |
+| Provider VN | `src/components/story/vn/VnBgmContext.tsx` + `VNSceneShell` |
+| Ducking na digitação | `VisualNovelDialog` + `useVnBgmDuck()` |
+
+## Próximos passos (produção)
+
+1. Trocar stems piloto por masters definitivos (mesmos ids de família).
+2. **TENSE** avançado: LPF no motor (hoje volume/playbackRate).
+3. **Trail** D→A: crossfade no meio da cena, se o roteiro pedir.
+4. **QA auditivo:** leitura rápida vs. lenta; níveis em TV/laptop.
 
 ---
 

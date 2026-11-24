@@ -14,6 +14,7 @@
     "dump:cutscenes": "npx --yes tsx scripts/dump-cutscenes.ts",
     "dump:story-master": "npx --yes tsx scripts/dump-story-master.ts",
     "audio:generate": "node scripts/generate-test-audio.mjs",
+    "assets:vn-bgm": "node scripts/fetch-vn-bgm.mjs",
     "assets:fetch": "node scripts/fetch-vn-assets.mjs",
     "assets:process": "node scripts/process-vn-backgrounds.mjs",
     "assets:inventory": "node scripts/generate-background-inventory.mjs && node scripts/generate-props-inventory.mjs",

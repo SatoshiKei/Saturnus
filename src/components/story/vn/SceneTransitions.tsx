@@ -14,6 +14,7 @@ import { afterReflectionComplete } from '../../../game/story/reflectionAftermath
 import { reflectionForScene, type ReflectionDef } from '../../../data/reflections'
 import { sceneIntros, type SceneId } from '../../../data/sceneIntros'
 import { playSfx } from '../../../lib/sfx'
+import { VnBgmProvider } from './VnBgmContext'
 import '../../../styles/scene-transitions.css'
 import '../../../styles/visual-novel.css'
 
@@ -112,10 +113,14 @@ export function TerminalIntro({
 export function ReflectionView({
   blocks,
   background,
+  reflectionId,
+  sceneId,
   onDone,
 }: {
   blocks: string[]
   background?: string
+  reflectionId?: string
+  sceneId?: import('../../../data/sceneIntros').SceneId
   onDone: () => void
 }) {
   const [shown, setShown] = useState(1)
@@ -208,7 +213,7 @@ export function ReflectionView({
     else if (e.deltaY < 0) rewind()
   }
 
-  return (
+  const body = (
     <div
       className={`vn-nvl tr-refl${fading ? ' tr-refl--out' : ''}`}
       data-testid="reflection-view"
@@ -257,6 +262,13 @@ export function ReflectionView({
         </div>
       </div>
     </div>
+  )
+
+  if (!reflectionId) return body
+  return (
+    <VnBgmProvider reflectionId={reflectionId} sceneId={sceneId}>
+      {body}
+    </VnBgmProvider>
   )
 }
 
@@ -359,6 +371,8 @@ export function SceneRunner({
           <ReflectionView
             blocks={reflectionDef.blocks}
             background={reflectionDef.background}
+            reflectionId={reflectionDef.id}
+            sceneId={reflectionDef.sceneId}
             onDone={() => {
               if (!gallery) {
                 setFlag(`${reflectionDef.id}_seen`, true)

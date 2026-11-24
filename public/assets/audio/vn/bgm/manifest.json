@@ -1,0 +1,33 @@
+{
+  "pilot": true,
+  "families": {
+    "A": {
+      "file": "family-a.mp3",
+      "title": "Ambient Piano",
+      "source": "https://opengameart.org/content/ambient-piano",
+      "author": "tcarisland",
+      "license": "CC-BY 4.0"
+    },
+    "B": {
+      "file": "family-b.mp3",
+      "title": "gloom (TechnoAmbient)",
+      "source": "https://opengameart.org/content/gloomy-musictechnoambient",
+      "author": "SouljahdeShiva",
+      "license": "CC-BY 3.0"
+    },
+    "C": {
+      "file": "family-c.mp3",
+      "title": "Night Calm",
+      "source": "https://opengameart.org/content/night-calm",
+      "author": "FoxSynergy",
+      "license": "CC-BY 3.0"
+    },
+    "D": {
+      "file": "family-d.mp3",
+      "title": "Looking For... Answers",
+      "source": "https://opengameart.org/content/looking-for-answers",
+      "author": "onemansymphony",
+      "license": "CC-BY 4.0"
+    }
+  }
+}

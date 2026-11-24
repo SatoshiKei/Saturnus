@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
-import { useUiState } from '../../app/uiStore'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { onSfxUnlocked, unlockSfxAudio } from '../../lib/sfx'
 import { useVnSceneHistory } from '../../lib/vnSceneHistory'
 import { ADVDialogue } from './vn/ADVDialogue'
+import { useVnBgmDuck } from './vn/VnBgmContext'
 import { useAdvTypewriter } from './vn/useAdvTypewriter'
 import { BacklogView } from './vn/NVLView'
 import { ChoiceOverlay } from './vn/ChoiceOverlay'
@@ -68,8 +68,9 @@ export function VisualNovelDialog({
   narration,
   extra,
 }: VisualNovelDialogProps) {
-  const { menuOpen } = useUiState()
+  const vnBgm = useVnBgmDuck()
   const sceneHistory = useVnSceneHistory()
+  const vnRootRef = useRef<HTMLDivElement>(null)
   const localLinesRef = useRef<VnLine[]>([])
   const localSeenRef = useRef(new Set<string>())
   const [localLines, setLocalLines] = useState<VnLine[]>([])
@@ -113,11 +114,16 @@ export function VisualNovelDialog({
   const typewriter = useAdvTypewriter(text, {
     enabled: typewriterEnabled,
     charMs: prefersReducedMotion ? 12 : 28,
-    typingSfx: speechBlipsOn,
+    typingSfx: speechBlipsOn && sfxPrimed,
     speechBlipGain: narration || !speaker ? 0.82 : 0.95,
-    pauseTyping: speechBlipsOn && !sfxPrimed,
   })
   const canRewind = Boolean(onRewind) && !hasChoices && !historyOpen
+
+  useEffect(() => {
+    if (!typewriterEnabled) return
+    vnBgm.setDuck(typewriter.isTyping && !hasChoices)
+    return () => vnBgm.setDuck(false)
+  }, [hasChoices, typewriter.isTyping, typewriterEnabled, vnBgm])
 
   const fallbackPush = useCallback((line: VnLine) => {
     if (!line.text && !line.speaker) return
@@ -158,7 +164,6 @@ export function VisualNovelDialog({
 
   const advance = useCallback(() => {
     if (historyOpen) return
-    if (menuOpen) return
     if (!canAdvance) return
 
     primeSpeechAudio()
@@ -174,23 +179,44 @@ export function VisualNovelDialog({
       return
     }
     onContinue?.()
-  }, [canAdvance, endPrimed, historyOpen, menuOpen, onContinue, primeSpeechAudio, terminalBeat, typewriter])
+  }, [canAdvance, endPrimed, historyOpen, onContinue, primeSpeechAudio, terminalBeat, typewriter])
+
+  const wheelDeltaY = useCallback((e: WheelEvent) => {
+    if (e.deltaMode === 1) return e.deltaY * 16
+    if (e.deltaMode === 2) return e.deltaY * window.innerHeight
+    return e.deltaY
+  }, [])
 
   const handleWheel = useCallback(
-    (e: React.WheelEvent) => {
+    (e: WheelEvent) => {
       if (historyOpen) return
       const now = Date.now()
       if (now - wheelLock.current < 100) return
-      wheelLock.current = now
 
       if (hasChoices) return
+      const dy = wheelDeltaY(e)
+      if (dy === 0) return
+
       e.preventDefault()
-      if (e.deltaY > 0) {
-        if (!menuOpen) advance()
-      } else if (e.deltaY < 0) openHistory()
+      wheelLock.current = now
+
+      if (dy > 0) advance()
+      else openHistory()
     },
-    [advance, hasChoices, historyOpen, menuOpen, openHistory],
+    [advance, hasChoices, historyOpen, openHistory, wheelDeltaY],
   )
+
+  useLayoutEffect(() => {
+    const onWheel = (e: WheelEvent) => {
+      const root = vnRootRef.current
+      if (!root) return
+      const scene = root.closest('.vn-scene')
+      if (!scene?.contains(e.target as Node)) return
+      handleWheel(e)
+    }
+    document.addEventListener('wheel', onWheel, { passive: false, capture: true })
+    return () => document.removeEventListener('wheel', onWheel, { capture: true })
+  }, [handleWheel])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -213,7 +239,6 @@ export function VisualNovelDialog({
         return
       }
       if (e.key === ' ' || e.key === 'Enter' || e.key === 'ArrowDown' || e.key === 'ArrowRight') {
-        if (menuOpen) return
         e.preventDefault()
         advance()
       } else if (e.key === 'Backspace' && canRewind) {
@@ -223,7 +248,7 @@ export function VisualNovelDialog({
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [advance, canRewind, closeHistory, hasChoices, historyOpen, menuOpen, onRewind, openHistory])
+  }, [advance, canRewind, closeHistory, hasChoices, historyOpen, onRewind, openHistory])
 
   const handleChoice = useCallback(
     (id: string) => {
@@ -246,10 +271,10 @@ export function VisualNovelDialog({
 
   return (
     <div
+      ref={vnRootRef}
       className="vn"
       data-testid="vn-dialog"
       data-mode={hasChoices ? 'choices' : historyOpen ? 'backlog' : 'adv'}
-      onWheel={handleWheel}
     >
       <VNCharacterLayer
         leftSrc={portraitSide === 'left' ? portraitSrc : undefined}

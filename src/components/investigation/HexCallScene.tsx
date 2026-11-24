@@ -89,7 +89,12 @@ export function HexCallScene({ onFinish }: { onFinish: () => void }) {
   if (phase === 'reflection' && refl) {
     return (
       <div className="hexcall-overlay" data-testid="hex-call-scene" data-phase="reflection">
-        <ReflectionView blocks={refl.blocks} background={refl.background} onDone={done} />
+        <ReflectionView
+          reflectionId={refl.id}
+          blocks={refl.blocks}
+          background={refl.background}
+          onDone={done}
+        />
         <div className={`tr-fade${fading ? ' tr-fade--on' : ''}`} aria-hidden />
       </div>
     )

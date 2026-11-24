@@ -198,6 +198,11 @@ export function isSfxUnlocked(): boolean {
   return sfxUnlocked || ctx?.state === 'running'
 }
 
+/** HTMLAudio (BGM) ou WebAudio já liberado após gesto do jogador. */
+export function notifySfxGestureUnlocked(): void {
+  markSfxUnlocked()
+}
+
 function noiseBuffer(c: AudioContext, seconds: number): AudioBuffer {
   const buf = c.createBuffer(1, Math.max(1, Math.floor(c.sampleRate * seconds)), c.sampleRate)
   const data = buf.getChannelData(0)

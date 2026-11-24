@@ -431,6 +431,8 @@ export function Scene() {
         {soloReflectionActive && soloReflectionId && soloReflectionDef ? (
           <div className="tr-refl-layer" data-testid="block05-solo-reflection">
             <ReflectionView
+              reflectionId={soloReflectionDef.id}
+              sceneId={soloReflectionDef.sceneId}
               blocks={soloReflectionDef.blocks}
               background={
                 // Fallback: reflection com sceneId já saiu do local → delegacia, nunca cenário antigo no hub.
