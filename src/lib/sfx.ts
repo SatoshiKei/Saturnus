@@ -9,7 +9,7 @@
  *  - delegacia: `door`, `steps`, `paper`, `keyboard`, `chair`, `ring` (loop), `pickup`, `hangup`
  *  - celular:   `vibrate`, `msg-in`, `msg-out`, `call-out`
  *  - investigação: `evidence`, `document`, `contact`, `location`, `objective`, `contradiction`, `audio-new`, `message`
- *  - VN:        `scene-in`, `scene-out`, `ambience-hush`, `fade`
+ *  - VN:        `scene-in`, `scene-out`, `ambience-hush`, `fade`, `voice-blip` (digitção ADV)
  *  - ambiente:  `ambience-phones` (várias linhas tocando ao fundo)
  */
 
@@ -37,6 +37,7 @@ export type SfxId =
   | 'scene-out'
   | 'ambience-hush'
   | 'fade'
+  | 'voice-blip'
   | 'ui'
   | 'error'
   | 'unlock'
@@ -127,6 +128,10 @@ const recipes: Record<SfxId, Note[]> = {
   'scene-out': [{ t: 0, d: 1.1, f: 70, f2: 40, type: 'sine', g: 0.12 }],
   'ambience-hush': [{ t: 0, d: 1.8, noise: true, bp: 300, g: 0.04 }],
   fade: [{ t: 0, d: 0.7, f: 220, f2: 110, type: 'sine', g: 0.05 }],
+  'voice-blip': [
+    { t: 0, d: 0.016, f: 340, type: 'sine', g: 0.045 },
+    { t: 0, d: 0.012, noise: true, bp: 2200, g: 0.018 },
+  ],
   ui: [{ t: 0, d: 0.04, f: 520, type: 'sine', g: 0.04 }],
   error: [{ t: 0, d: 0.18, f: 150, type: 'square', g: 0.06 }],
   unlock: [
@@ -139,7 +144,23 @@ const recipes: Record<SfxId, Note[]> = {
 let ctx: AudioContext | null = null
 let master: GainNode | null = null
 let muted = false
+let sfxUnlocked = false
+const unlockListeners = new Set<() => void>()
 const loops = new Map<string, number>()
+
+function markSfxUnlocked(): void {
+  if (!sfxUnlocked) {
+    sfxUnlocked = true
+    for (const fn of unlockListeners) fn()
+  }
+}
+
+/** Chamado quando o WebAudio passa a `running` após gesto do jogador. */
+export function onSfxUnlocked(listener: () => void): () => void {
+  unlockListeners.add(listener)
+  if (sfxUnlocked) listener()
+  return () => unlockListeners.delete(listener)
+}
 
 function audio(): AudioContext | null {
   if (typeof window === 'undefined') return null
@@ -155,8 +176,26 @@ function audio(): AudioContext | null {
       return null
     }
   }
-  if (ctx.state === 'suspended') void ctx.resume().catch(() => undefined)
   return ctx
+}
+
+/** Prime o WebAudio após gesto do jogador (política de autoplay). */
+export function unlockSfxAudio(): void {
+  const c = audio()
+  if (!c) return
+  const done = () => {
+    if (c.state !== 'running') return
+    markSfxUnlocked()
+  }
+  if (c.state === 'suspended') {
+    void c.resume().then(done)
+    return
+  }
+  done()
+}
+
+export function isSfxUnlocked(): boolean {
+  return sfxUnlocked || ctx?.state === 'running'
 }
 
 function noiseBuffer(c: AudioContext, seconds: number): AudioBuffer {
@@ -166,9 +205,8 @@ function noiseBuffer(c: AudioContext, seconds: number): AudioBuffer {
   return buf
 }
 
-function playNotes(notes: Note[], gainScale = 1) {
-  const c = audio()
-  if (!c || !master || muted) return
+function scheduleNotes(c: AudioContext, notes: Note[], gainScale: number) {
+  if (!master || muted) return
   const now = c.currentTime
   for (const n of notes) {
     const start = now + n.t
@@ -201,6 +239,19 @@ function playNotes(notes: Note[], gainScale = 1) {
   }
 }
 
+function playNotes(notes: Note[], gainScale = 1) {
+  const c = audio()
+  if (!c || !master || muted) return
+  const run = () => {
+    if (c.state === 'running') scheduleNotes(c, notes, gainScale)
+  }
+  if (c.state === 'suspended') {
+    void c.resume().then(run)
+    return
+  }
+  run()
+}
+
 function playFile(src: string, volume = 0.6) {
   if (muted) return
   const a = new Audio(src)
@@ -214,6 +265,50 @@ export function playSfx(id: SfxId) {
     const file = SFX_FILES[id]
     if (file) return playFile(file)
     playNotes(recipes[id])
+  } catch {
+    /* som nunca pode quebrar o jogo */
+  }
+}
+
+function blipVoiceWeb(c: AudioContext, gainScale: number) {
+  if (!master || muted) return
+  const f = 420 + Math.random() * 90
+  const now = c.currentTime
+  const peak = Math.min(0.09, 0.072 * gainScale)
+  const g = c.createGain()
+  g.gain.setValueAtTime(0, now)
+  g.gain.linearRampToValueAtTime(peak, now + 0.004)
+  g.gain.linearRampToValueAtTime(0, now + 0.022)
+  g.connect(master)
+  const filter = c.createBiquadFilter()
+  filter.type = 'lowpass'
+  filter.frequency.value = 900
+  filter.Q.value = 0.7
+  const osc = c.createOscillator()
+  osc.type = 'sine'
+  osc.frequency.value = f
+  osc.connect(filter)
+  filter.connect(g)
+  osc.start(now)
+  osc.stop(now + 0.028)
+}
+
+/** Blip curto por carácter na caixa ADV (pitch levemente aleatório). */
+export function playVoiceBlip(gainScale = 1) {
+  try {
+    if (muted) return
+    const file = SFX_FILES['voice-blip']
+    if (file) return playFile(file, Math.min(0.35, 0.22 * gainScale))
+    const c = audio()
+    if (!c || !master) return
+    const run = () => {
+      if (c.state === 'running') blipVoiceWeb(c, gainScale)
+    }
+    if (c.state === 'suspended') {
+      void c.resume().then(run)
+      return
+    }
+    run()
   } catch {
     /* som nunca pode quebrar o jogo */
   }

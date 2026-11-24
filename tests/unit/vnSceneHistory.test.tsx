@@ -1,7 +1,8 @@
 import { cleanup, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useState } from 'react'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { enterGameplay } from '../../src/app/uiStore'
 import { VisualNovelDialog, VNSceneShell } from '../../src/components/story/VisualNovelDialog'
 
 const BEATS = Array.from({ length: 30 }, (_, i) => ({
@@ -29,6 +30,10 @@ function PlaythroughHarness() {
 }
 
 afterEach(() => cleanup())
+
+beforeEach(() => {
+  enterGameplay()
+})
 
 describe('VN scene scroll-up history', () => {
   it('keeps all 30 seen lines in the scroll-up panel', async () => {

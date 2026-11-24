@@ -4,6 +4,7 @@ import { OPENING_SCENE_BEATS } from '../../data/block01/openingSceneBeats'
 import { HUB_REFLECTION_BACKGROUND } from '../../data/sceneIntros'
 import { setFlag } from '../../game/state/investigationStore'
 import { assetPath } from '../../lib/assetPath'
+import { unlockSfxAudio } from '../../lib/sfx'
 import { portraitSrcForStory } from '../../lib/characterSprites'
 import { VisualNovelDialog, VNSceneShell } from './VisualNovelDialog'
 import '../../styles/visual-novel.css'
@@ -44,6 +45,7 @@ export function Block01Opening({ onDone }: { onDone: () => void }) {
       <div
         className={`block01-opening${phase === 'out' ? ' block01-opening--out' : ''}`}
         data-testid="block01-opening"
+        onPointerDown={() => unlockSfxAudio()}
       >
         {phase === 'title' || phase === 'out' ? (
           <p className="block01-opening__date">3 de novembro de 2026 — 08:42</p>

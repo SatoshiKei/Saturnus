@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react'
-import { formatAdvDialogueText } from './advText'
 
 export function ADVDialogue({
   speaker,
@@ -9,6 +8,8 @@ export function ADVDialogue({
   onAdvance,
   continueLabel,
   endPrimed,
+  textReady,
+  onPrimeAudio,
   extra,
 }: {
   speaker?: string
@@ -18,8 +19,12 @@ export function ADVDialogue({
   onAdvance: () => void
   continueLabel?: string
   endPrimed?: boolean
+  /** Período actual revelado por completo — mostra ▾. */
+  textReady?: boolean
+  onPrimeAudio?: () => void
   extra?: ReactNode
 }) {
+  const showNext = canAdvance && (textReady ?? true)
   return (
     <>
       <div className="vn-adv__shade" aria-hidden />
@@ -27,8 +32,15 @@ export function ADVDialogue({
         className="vn-adv"
         data-testid="vn-advance-zone"
         data-advance={canAdvance}
+        data-ready={showNext || undefined}
         data-end-primed={endPrimed || undefined}
-        onClick={() => canAdvance && onAdvance()}
+        onPointerDown={() => onPrimeAudio?.()}
+        onClick={(e) => {
+          if (!canAdvance) return
+          const target = e.target as HTMLElement
+          if (target.closest('button, a, input, textarea, select, label')) return
+          onAdvance()
+        }}
         onKeyDown={(e) => {
           if (canAdvance && (e.key === 'Enter' || e.key === ' ')) {
             e.preventDefault()
@@ -41,9 +53,9 @@ export function ADVDialogue({
       >
         <div className="vn-adv__panel" data-narration={narration || undefined}>
           {speaker ? <p className="vn-adv__speaker">{speaker.toUpperCase()}</p> : null}
-          <p className="vn-adv__text">{formatAdvDialogueText(text)}</p>
+          <p className="vn-adv__text">{text}</p>
           {extra}
-          {canAdvance ? <span className="vn-adv__next" aria-hidden /> : null}
+          {showNext ? <span className="vn-adv__next" aria-hidden /> : null}
         </div>
       </div>
     </>

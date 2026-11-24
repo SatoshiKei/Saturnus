@@ -1,4 +1,5 @@
 import { useEffect, type ReactNode } from 'react'
+import { unlockSfxAudio } from '../lib/sfx'
 import { addPlayTime, loadGame } from '../game/state/investigationStore'
 import { MainMenuOverlay } from '../components/investigation/MainMenuOverlay'
 import { DevStoryPanel } from '../components/investigation/DevStoryPanel'
@@ -10,6 +11,16 @@ export function InvestigationBootstrap({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     loadGame()
+  }, [])
+
+  useEffect(() => {
+    const prime = () => unlockSfxAudio()
+    window.addEventListener('pointerdown', prime, { capture: true })
+    window.addEventListener('keydown', prime, { capture: true })
+    return () => {
+      window.removeEventListener('pointerdown', prime, { capture: true })
+      window.removeEventListener('keydown', prime, { capture: true })
+    }
   }, [])
 
   useEffect(() => {
