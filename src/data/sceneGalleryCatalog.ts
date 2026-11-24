@@ -101,7 +101,7 @@ export function buildSceneGalleryEntries(): SceneGalleryEntry[] {
     subtitle: '3 de novembro · reconstrução com Mari',
     kind: 'mari-apartment',
     prepBeforeCheckpoint: 'b01-after-bo',
-    thumbnail: '/assets/scenes/apartment/mariana-402-interior-phone.jpg',
+    thumbnail: '/assets/scenes/apartment/mariana-402-house-inside.png',
     patchPrep: (st) => {
       st.flags.block01_opening_seen = true
       st.flags.mari_flashback_apt_0803_seen = false
@@ -284,7 +284,7 @@ export function galleryThumbnailFor(entry: SceneGalleryEntry): string {
     case 'opening':
       return HUB_REFLECTION_BACKGROUND
     case 'mari-apartment':
-      return '/assets/scenes/apartment/mariana-402-interior-phone.jpg'
+      return '/assets/scenes/apartment/mariana-402-house-inside.png'
     case 'morsa-cctv':
       return MORSA_GALLERY_THUMB
     case 'vertice':

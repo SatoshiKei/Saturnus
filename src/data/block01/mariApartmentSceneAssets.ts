@@ -2,7 +2,11 @@ import { HUB_REFLECTION_BACKGROUND } from '../sceneIntros'
 
 /** Dois fundos canônicos da reconstrução 402 — não reutilizar em outras residências. */
 export const MARIANA_402_DOOR = '/assets/scenes/apartment/porta-angelim-solida-fri-13.webp'
-export const MARIANA_402_INTERIOR_PHONE = '/assets/scenes/apartment/mariana-402-interior-phone.jpg'
+/** Interior ativo na cena (sala Mariana). */
+export const MARIANA_402_INTERIOR = '/assets/scenes/apartment/mariana-402-house-inside.png'
+/** Reserva (stock quarto vazio) — não apagar; troca rápida se precisar. */
+export const MARIANA_402_INTERIOR_RESERVE =
+  '/assets/scenes/apartment/mariana-402-interior-phone.jpg'
 
 export const MELODIE_PHONE_AUDIO_SRC = '/assets/audio/phone/melodie.mp3'
 export const MELODIE_PHONE_FILE_ID = 'mf-dl-melodie'
@@ -16,7 +20,7 @@ export function apartmentReconstructionBackgroundStyle(bgKey?: MariAptBgKey): {
   backgroundSize: string
   backgroundPosition: string
 } {
-  const src = bgKey === 'interior' ? MARIANA_402_INTERIOR_PHONE : MARIANA_402_DOOR
+  const src = bgKey === 'interior' ? MARIANA_402_INTERIOR : MARIANA_402_DOOR
   return {
     backgroundImage: `${VEIL_DARK}, url(${src})`,
     backgroundSize: 'cover',

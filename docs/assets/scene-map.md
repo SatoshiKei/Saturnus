@@ -17,7 +17,7 @@ Legenda: `raw` = candidato bruto; `processed` = tratamento VN; escolher 1–2 fi
 
 | Uso narrativo (mock) | Categorias | Candidatos | Notas |
 | --- | --- | --- | --- |
-| Apartamento Mariana (402) | `apartment/mariana` | `mariana-apt-*` apenas na cena 03/11 | Não reutilizar em residências de NPC (Samuel, Jana, etc.) |
+| Apartamento Mariana (402) | `apartment/mariana` | Cena 03/11: `mariana-402-house-inside.png` + porta angelim; reserva `mariana-402-interior-phone.jpg` | Não reutilizar em residências de NPC (Samuel, Jana, etc.) |
 | Casa testemunha | `misc` | `misc-08` | Exterior simples |
 | Cozinha / vida cotidiana | `apartment` | `apartment-02` | |
 

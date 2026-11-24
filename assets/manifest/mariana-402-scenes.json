@@ -7,7 +7,14 @@
     "narrativeFit": "Porta sólida de angelim — entrada do apartamento (402)"
   },
   {
-    "id": "mariana-402-interior",
+    "id": "mariana-402-interior-active",
+    "filename": "mariana-402-house-inside.png",
+    "publicPath": "public/assets/scenes/apartment/mariana-402-house-inside.png",
+    "source": "local",
+    "narrativeFit": "Sala do apartamento 402 — cena reconstrução"
+  },
+  {
+    "id": "mariana-402-interior-reserve",
     "filename": "mariana-402-interior-phone.jpg",
     "publicPath": "public/assets/scenes/apartment/mariana-402-interior-phone.jpg",
     "url": "https://images.pexels.com/photos/7027998/pexels-photo-7027998.jpeg?auto=compress&cs=tinysrgb&w=2400",
@@ -15,6 +22,6 @@
     "author": "Curtis Adams",
     "source": "Pexels",
     "license": "Pexels License",
-    "narrativeFit": "Quarto vazio — apartamento despojado no local"
+    "narrativeFit": "Reserva — quarto vazio stock (regenerar com build_mariana_402_scene_assets.py)"
   }
 ]

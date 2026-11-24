@@ -53,7 +53,7 @@ def main() -> None:
     entries = json.loads(MANIFEST.read_text(encoding="utf-8"))
     by_id = {e["id"]: e for e in entries}
     room_cache = CACHE / "interior-room.jpg"
-    download(by_id["mariana-402-interior"]["url"], room_cache)
+    download(by_id["mariana-402-interior-reserve"]["url"], room_cache)
     build_interior(room_cache)
     print(INTERIOR_OUT.relative_to(ROOT))
 
