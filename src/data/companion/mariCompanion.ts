@@ -35,7 +35,7 @@ export const MARI_COMPANION_BEATS: MariCompanionBeat[] = [
       {
         speaker: 'Mari',
         portraitId: 'mari',
-        text: 'Eu fico do lado de cá. Se o senhor se perder no material, me chama — eu conheço onde a casa esconde as coisas.',
+        text: 'Eu fico do lado de cá. Se o senhor se perder no material, me chama, eu conheço onde a casa esconde as coisas.',
       },
       {
         speaker: 'Augusto',
@@ -135,7 +135,7 @@ export const MARI_COMPANION_BEATS: MariCompanionBeat[] = [
       {
         speaker: 'Mari',
         portraitId: 'mari',
-        text: 'Casa noturna que passou por reforma e troca de gente costuma ter arquivo capenga — igual prateleira de supermercado depois de promoção. Se sobrou alguma coisa daquela época, tá enfiada no canto que ninguém quis limpar.',
+        text: 'Casa noturna que passou por reforma e troca de gente costuma ter arquivo capenga, igual prateleira de supermercado depois de promoção. Se sobrou alguma coisa daquela época, tá enfiada no canto que ninguém quis limpar.',
       },
       {
         speaker: 'Augusto',
@@ -181,7 +181,7 @@ export const MARI_COMPANION_BEATS: MariCompanionBeat[] = [
       {
         speaker: 'Mari',
         portraitId: 'mari',
-        text: 'Gente de cabine e de palco tem uma relação esquisita com relógio — pra eles, a noite só acaba quando apagam a luz ou quando a cabeça pifa.',
+        text: 'Gente de cabine e de palco tem uma relação esquisita com relógio, pra eles, a noite só acaba quando apagam a luz ou quando a cabeça pifa.',
       },
       {
         speaker: 'Augusto',

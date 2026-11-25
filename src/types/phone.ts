@@ -31,7 +31,6 @@ export type PhoneRoute =
   | { screen: 'note'; noteId: string }
   | { screen: 'calendar-event'; eventId: string }
   | { screen: 'appstore' }
-  | { screen: 'recorder' }
   | { screen: 'wavelab' }
   | { screen: 'device-settings' }
   | { screen: 'photos' }

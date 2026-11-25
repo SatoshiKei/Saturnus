@@ -78,7 +78,7 @@ export function VerticeInterviewScene({ onClose }: { onClose: () => void }) {
   const currentBeat = mode === 'play' && activeTopic ? verticeBeats[activeTopic][beatIndex] : null
   const hint = setCrossrefUnlocked(inv.flags)
     ? 'Agora há uma gravação e uma referência para procurar nos arquivos internos.'
-    : 'Casa fechada — mas quem trabalha aqui ainda lembra de Mariana.'
+    : 'Casa fechada, mas quem trabalha aqui ainda lembra de Mariana.'
 
   return (
     <VNSceneShell

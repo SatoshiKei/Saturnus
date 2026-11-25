@@ -9,7 +9,7 @@ import { newContactIds } from '../lib/contactsSeen'
 import type { PhoneAppId } from '../types/phone'
 
 /** Apps de cenário sem tela própria: tocar não faz nada (sem “bloqueado”). */
-const COMMON_INERT = new Set<PhoneAppId>(['browser', 'messages', 'camera', 'mail', 'maps'])
+const COMMON_INERT = new Set<PhoneAppId>(['browser', 'messages', 'camera', 'mail', 'maps', 'recorder'])
 
 const DOCK: PhoneAppId[] = ['phone', 'whatsapp', 'messages', 'settings']
 const PAGE_SIZE = 12
@@ -66,10 +66,6 @@ export function PhoneHome() {
     }
     if (id === 'wavelab-mobile') {
       push({ screen: 'wavelab' })
-      return
-    }
-    if (id === 'recorder') {
-      push({ screen: 'recorder' })
       return
     }
     if (id === 'settings') {

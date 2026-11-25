@@ -1,8 +1,8 @@
 import type { AppDefinition } from '../../game/types'
 
 /**
- * Apps dos dois aparelhos. Apps comuns sem função narrativa (câmera, mail, mapas…) existem para o
- * celular parecer um celular de verdade: tocar neles não faz nada (sem “bloqueado”).
+ * Apps dos dois aparelhos. Apps comuns sem função narrativa (câmera, mail, mapas, gravador…) existem
+ * para o celular parecer um celular de verdade: tocar neles não faz nada (sem “bloqueado”).
  *
  * `hidden-diary` só entra no launcher depois que a Perícia restaura o pacote no aparelho
  * (`block04_diary_icon_revealed` / `block04_forensics_access`). O PIN continua sendo o do Hexágono.

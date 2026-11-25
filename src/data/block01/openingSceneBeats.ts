@@ -17,7 +17,7 @@ export const OPENING_SCENE_BEATS: OpeningBeat[] = [
   {
     narration: true,
     portraitId: 'augusto',
-    text: 'Ele rodou, eu assumi — interino, no tapa — e o primeiro caso que cai no meu colo já é desaparecimento.',
+    text: 'Ele rodou, eu assumi, interino, no tapa, e o primeiro caso que cai no meu colo já é desaparecimento.',
   },
   {
     narration: true,

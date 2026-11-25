@@ -5,7 +5,6 @@ import {
   useRef,
   useState,
   type ReactNode,
-  type WheelEvent,
 } from 'react'
 import { assetPath } from '../../../lib/assetPath'
 import { useGalleryPlayback } from '../../../app/GalleryPlaybackContext'
@@ -13,8 +12,9 @@ import { getInvestigationState, setFlag } from '../../../game/state/investigatio
 import { afterReflectionComplete } from '../../../game/story/reflectionAftermath'
 import { reflectionForScene, type ReflectionDef } from '../../../data/reflections'
 import { sceneIntros, type SceneId } from '../../../data/sceneIntros'
-import { playSfx } from '../../../lib/sfx'
-import { VnBgmProvider } from './VnBgmContext'
+import { onSfxUnlocked, playSfx, unlockSfxAudio } from '../../../lib/sfx'
+import { VnBgmProvider, useVnBgmDuck } from './VnBgmContext'
+import { useAdvTypewriter } from './useAdvTypewriter'
 import '../../../styles/scene-transitions.css'
 import '../../../styles/visual-novel.css'
 
@@ -110,29 +110,72 @@ export function TerminalIntro({
 
 /* ───────────────────────── Modo Reflexão (mesmo padrão NVL das cenas VN) ───────────────────────── */
 
-export function ReflectionView({
+const REFL_ADVANCE_DEBOUNCE_MS = import.meta.env.MODE === 'test' ? 0 : 140
+
+function ReflectionViewBody({
   blocks,
   background,
-  reflectionId,
-  sceneId,
   onDone,
 }: {
   blocks: string[]
   background?: string
-  reflectionId?: string
-  sceneId?: import('../../../data/sceneIntros').SceneId
   onDone: () => void
 }) {
-  const [shown, setShown] = useState(1)
-  const atEnd = shown >= blocks.length
+  const vnBgm = useVnBgmDuck()
+  const rootRef = useRef<HTMLDivElement>(null)
+  const [blockIndex, setBlockIndex] = useState(0)
+  const atEnd = blocks.length > 0 && blockIndex >= blocks.length - 1
   const [endPrimed, setEndPrimed] = useState(false)
   const [fading, setFading] = useState(false)
+  const [sfxPrimed, setSfxPrimed] = useState(false)
   const wheelLock = useRef(0)
+  const advanceLock = useRef(0)
   const doneRef = useRef(false)
   const scrollRef = useRef<HTMLDivElement>(null)
 
+  const reducedMotion =
+    typeof window !== 'undefined' &&
+    Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches)
+  const typewriterEnabled = import.meta.env.MODE !== 'test'
+  const speechBlipsOn = typewriterEnabled
+
+  const activeText = blocks[blockIndex] ?? ''
+  const typewriter = useAdvTypewriter(activeText, {
+    enabled: typewriterEnabled && Boolean(activeText),
+    charMs: reducedMotion ? 12 : 28,
+    typingSfx: speechBlipsOn && sfxPrimed,
+    speechBlipGain: 0.82,
+  })
+
+  const primeSpeechAudio = useCallback(() => {
+    if (!speechBlipsOn) return
+    unlockSfxAudio()
+  }, [speechBlipsOn])
+
   useEffect(() => {
-    setShown(blocks.length ? 1 : 0)
+    if (!speechBlipsOn) return
+    return onSfxUnlocked(() => setSfxPrimed(true))
+  }, [speechBlipsOn])
+
+  useEffect(() => {
+    if (!speechBlipsOn || sfxPrimed) return
+    const onPrime = () => primeSpeechAudio()
+    window.addEventListener('pointerdown', onPrime, { capture: true })
+    window.addEventListener('keydown', onPrime, { capture: true })
+    return () => {
+      window.removeEventListener('pointerdown', onPrime, { capture: true })
+      window.removeEventListener('keydown', onPrime, { capture: true })
+    }
+  }, [primeSpeechAudio, sfxPrimed, speechBlipsOn])
+
+  useEffect(() => {
+    if (!typewriterEnabled) return
+    vnBgm.setDuck(typewriter.isTyping)
+    return () => vnBgm.setDuck(false)
+  }, [typewriter.isTyping, typewriterEnabled, vnBgm])
+
+  useEffect(() => {
+    setBlockIndex(0)
     setEndPrimed(false)
     doneRef.current = false
   }, [blocks])
@@ -141,7 +184,7 @@ export function ReflectionView({
     const el = scrollRef.current
     if (!el) return
     el.scrollTop = el.scrollHeight
-  }, [shown, blocks])
+  }, [blockIndex, blocks, typewriter.displayedText])
 
   const finish = useCallback(() => {
     if (doneRef.current) return
@@ -152,14 +195,23 @@ export function ReflectionView({
   }, [onDone])
 
   const advance = useCallback(() => {
-    if (doneRef.current) return
+    if (doneRef.current || fading) return
     if (blocks.length === 0) {
       finish()
       return
     }
-    if (shown < blocks.length) {
+
+    primeSpeechAudio()
+
+    const now = Date.now()
+    if (now - advanceLock.current < REFL_ADVANCE_DEBOUNCE_MS) return
+    advanceLock.current = now
+
+    if (typewriter.consumeAdvance()) return
+
+    if (blockIndex < blocks.length - 1) {
       playSfx('ui')
-      setShown((n) => n + 1)
+      setBlockIndex((n) => n + 1)
       setEndPrimed(false)
       return
     }
@@ -168,26 +220,53 @@ export function ReflectionView({
       return
     }
     finish()
-  }, [blocks.length, endPrimed, finish, shown])
+  }, [blockIndex, blocks.length, endPrimed, fading, finish, primeSpeechAudio, typewriter])
 
-  const rewind = useCallback(() => {
-    if (doneRef.current) return
-    if (shown > 1) {
-      setShown((n) => n - 1)
-      setEndPrimed(false)
+  const wheelDeltaY = useCallback((e: WheelEvent) => {
+    if (e.deltaMode === 1) return e.deltaY * 16
+    if (e.deltaMode === 2) return e.deltaY * window.innerHeight
+    return e.deltaY
+  }, [])
+
+  const handleWheel = useCallback(
+    (e: WheelEvent) => {
+      if (doneRef.current || fading) return
+      const now = Date.now()
+      if (now - wheelLock.current < 100) return
+
+      const dy = wheelDeltaY(e)
+      if (dy <= 0) return
+
+      const el = scrollRef.current
+      if (el) {
+        const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 12
+        if (!atBottom) return
+      }
+
+      e.preventDefault()
+      wheelLock.current = now
+      advance()
+    },
+    [advance, fading, wheelDeltaY],
+  )
+
+  useLayoutEffect(() => {
+    const onWheel = (e: WheelEvent) => {
+      const root = rootRef.current
+      if (!root?.contains(e.target as Node)) return
+      handleWheel(e)
     }
-  }, [shown])
+    document.addEventListener('wheel', onWheel, { passive: false, capture: true })
+    return () => document.removeEventListener('wheel', onWheel, { capture: true })
+  }, [handleWheel])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === ' ' || e.key === 'Enter' || e.key === 'ArrowDown') {
+      if (doneRef.current || fading) return
+      if (e.key === ' ' || e.key === 'Enter' || e.key === 'ArrowDown' || e.key === 'ArrowRight') {
         e.preventDefault()
         e.stopPropagation()
         advance()
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault()
-        e.stopPropagation()
-        rewind()
       } else if (e.key === 'Escape') {
         e.preventDefault()
         e.stopPropagation()
@@ -196,40 +275,33 @@ export function ReflectionView({
     }
     window.addEventListener('keydown', onKey, true)
     return () => window.removeEventListener('keydown', onKey, true)
-  }, [advance, atEnd, finish, rewind])
+  }, [advance, fading, finish])
 
-  const onWheel = (e: WheelEvent) => {
-    const now = Date.now()
-    if (now - wheelLock.current < 120) return
-    const el = scrollRef.current
-    if (el && e.deltaY > 0) {
-      const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 12
-      if (!atBottom) return
-    }
-    if (el && e.deltaY < 0 && el.scrollTop > 4) return
-    wheelLock.current = now
-    e.preventDefault()
-    if (e.deltaY > 0) advance()
-    else if (e.deltaY < 0) rewind()
-  }
+  const footHint =
+    blocks.length === 0
+      ? 'Encerrar reflexão'
+      : atEnd
+        ? endPrimed
+          ? 'Encerrar reflexão'
+          : 'Confirmar leitura'
+        : 'Clique ou Espaço para continuar'
 
-  const body = (
+  return (
     <div
+      ref={rootRef}
       className={`vn-nvl tr-refl${fading ? ' tr-refl--out' : ''}`}
       data-testid="reflection-view"
       data-end-primed={endPrimed || undefined}
       data-inert={fading || undefined}
+      data-text-ready={typewriter.ready || undefined}
       style={{
         ...(background ? { backgroundImage: `url(${assetPath(background)})` } : undefined),
         pointerEvents: fading ? 'none' : undefined,
       }}
       onClick={() => {
         if (fading) return
+        primeSpeechAudio()
         advance()
-      }}
-      onWheel={(e) => {
-        if (fading) return
-        onWheel(e)
       }}
       role="presentation"
     >
@@ -247,23 +319,42 @@ export function ReflectionView({
       </button>
       <div className="vn-nvl__column tr-refl__column">
         <div ref={scrollRef} className="vn-nvl__page tr-refl__scroll" data-vn-history-scroll>
-          {blocks.slice(0, shown).map((b, i) => (
-            <div key={i} className="vn-nvl__block tr-refl__block">
+          {blocks.slice(0, blockIndex).map((b, i) => (
+            <div key={`done-${i}`} className="vn-nvl__block tr-refl__block">
               {i === 0 ? <p className="vn-nvl__speaker">AUGUSTO</p> : null}
               <p className="vn-nvl__text">{b}</p>
             </div>
           ))}
+          {blocks.length > 0 && blockIndex < blocks.length ? (
+            <div key={`active-${blockIndex}`} className="vn-nvl__block tr-refl__block">
+              {blockIndex === 0 ? <p className="vn-nvl__speaker">AUGUSTO</p> : null}
+              <p className="vn-nvl__text">{typewriter.displayedText}</p>
+            </div>
+          ) : null}
         </div>
         <div className="vn-nvl__foot">
-          <span className="vn-nvl__next-hint">
-            {atEnd ? (endPrimed ? 'Encerrar reflexão' : 'Confirmar leitura') : 'Clique ou Espaço para continuar'}
-          </span>
+          <span className="vn-nvl__next-hint">{footHint}</span>
           <span className="vn-adv__next vn-nvl__chevron" aria-hidden />
         </div>
       </div>
     </div>
   )
+}
 
+export function ReflectionView({
+  blocks,
+  background,
+  reflectionId,
+  sceneId,
+  onDone,
+}: {
+  blocks: string[]
+  background?: string
+  reflectionId?: string
+  sceneId?: SceneId
+  onDone: () => void
+}) {
+  const body = <ReflectionViewBody blocks={blocks} background={background} onDone={onDone} />
   if (!reflectionId) return body
   return (
     <VnBgmProvider reflectionId={reflectionId} sceneId={sceneId}>
