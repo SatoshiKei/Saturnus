@@ -138,7 +138,7 @@ function milestoneTier3(puzzleId: string, ctx: MariHintTriggerContext): boolean 
     case 'puzzle-01-cassini':
       return (
         (f?.recoveredCount ?? 0) >= 3 ||
-        (f?.hasNoiseProfile && (f?.spectralReduction ?? 0) >= 50)
+        Boolean(f?.hasNoiseProfile && (f?.spectralReduction ?? 0) >= 50)
       )
     case 'puzzle-02-iapetus':
       return Boolean(f?.containerRebuilt)
