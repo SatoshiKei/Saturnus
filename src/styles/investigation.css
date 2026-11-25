@@ -406,11 +406,6 @@
   outline: none;
 }
 
-.inv-gallery__screen--locked {
-  filter: blur(7px) saturate(0.35);
-  transform: scale(1.04);
-}
-
 .inv-gallery__lock {
   position: absolute;
   inset: 0;
@@ -454,6 +449,11 @@
     filter 220ms ease;
 }
 
+.inv-gallery__screen img.inv-gallery__screen--locked {
+  filter: blur(14px) saturate(0.2) contrast(0.92);
+  transform: scale(1.08);
+}
+
 .inv-gallery__screen-glass {
   position: absolute;
   inset: 0;
@@ -461,8 +461,8 @@
   background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), transparent 42%, rgba(0, 0, 0, 0.22));
 }
 
-.inv-gallery__card:hover .inv-gallery__screen img,
-.inv-gallery__card:focus-visible .inv-gallery__screen img {
+.inv-gallery__card:not([data-locked]):hover .inv-gallery__screen img,
+.inv-gallery__card:not([data-locked]):focus-visible .inv-gallery__screen img {
   transform: scale(1.04);
   filter: saturate(1) contrast(1.06);
 }
